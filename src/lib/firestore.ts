@@ -4,19 +4,18 @@ import {
   getDocs,
   getDoc,
   addDoc,
-  updateDoc,
   query,
   where,
   orderBy,
-  limit,
   Timestamp,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, isConfigured } from "./firebase";
 import type { Plumber, City, Lead } from "./types";
 
 // --- Plumber helpers ---
 
 export async function getPlumbersByCity(citySlug: string): Promise<Plumber[]> {
+  if (!isConfigured || !db) return [];
   const q = query(
     collection(db, "plumbers"),
     where("serviceCities", "array-contains", citySlug),
@@ -29,6 +28,7 @@ export async function getPlumbersByCity(citySlug: string): Promise<Plumber[]> {
 }
 
 export async function getPlumberById(id: string): Promise<Plumber | null> {
+  if (!isConfigured || !db) return null;
   const docRef = doc(db, "plumbers", id);
   const snapshot = await getDoc(docRef);
   if (!snapshot.exists()) return null;
@@ -36,6 +36,7 @@ export async function getPlumberById(id: string): Promise<Plumber | null> {
 }
 
 export async function getAllPlumbers(): Promise<Plumber[]> {
+  if (!isConfigured || !db) return [];
   const q = query(collection(db, "plumbers"), orderBy("businessName"));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Plumber);
@@ -44,6 +45,7 @@ export async function getAllPlumbers(): Promise<Plumber[]> {
 // --- City helpers ---
 
 export async function getCityBySlug(slug: string): Promise<City | null> {
+  if (!isConfigured || !db) return null;
   const docRef = doc(db, "cities", slug);
   const snapshot = await getDoc(docRef);
   if (!snapshot.exists()) return null;
@@ -51,6 +53,7 @@ export async function getCityBySlug(slug: string): Promise<City | null> {
 }
 
 export async function getPublishedCities(): Promise<City[]> {
+  if (!isConfigured || !db) return [];
   const q = query(
     collection(db, "cities"),
     where("isPublished", "==", true),
@@ -61,6 +64,7 @@ export async function getPublishedCities(): Promise<City[]> {
 }
 
 export async function getAllCities(): Promise<City[]> {
+  if (!isConfigured || !db) return [];
   const q = query(collection(db, "cities"), orderBy("name"));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as City);
@@ -69,6 +73,7 @@ export async function getAllCities(): Promise<City[]> {
 // --- Lead helpers ---
 
 export async function trackLead(lead: Omit<Lead, "id">): Promise<string> {
+  if (!isConfigured || !db) return "";
   const docRef = await addDoc(collection(db, "leads"), lead);
   return docRef.id;
 }
@@ -85,6 +90,7 @@ export async function submitBusiness(data: {
   is24Hour: boolean;
   licenseNumber: string;
 }): Promise<string> {
+  if (!isConfigured || !db) return "";
   const docRef = await addDoc(collection(db, "plumbers"), {
     ...data,
     ownerName: "",
@@ -102,7 +108,7 @@ export async function submitBusiness(data: {
     yelpRating: null,
     insured: false,
     yearsInBusiness: null,
-    isActive: false, // Admin must approve
+    isActive: false,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
     notes: "Submitted via public form — pending review",

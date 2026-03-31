@@ -1,20 +1,12 @@
 import Link from "next/link";
 import { Wrench, Mail, MapPin } from "lucide-react";
+import { CITY_LIST } from "@/lib/city-list";
 
-const cityLinks = [
-  { name: "Crystal Lake, IL", slug: "crystal-lake-il" },
-  { name: "McHenry, IL", slug: "mchenry-il" },
-  { name: "Algonquin, IL", slug: "algonquin-il" },
-  { name: "Lake in the Hills, IL", slug: "lake-in-the-hills-il" },
-  { name: "Huntley, IL", slug: "huntley-il" },
-  { name: "Woodstock, IL", slug: "woodstock-il" },
-  { name: "Cary, IL", slug: "cary-il" },
-  { name: "Elgin, IL", slug: "elgin-il" },
-  { name: "Naperville, IL", slug: "naperville-il" },
-  { name: "Schaumburg, IL", slug: "schaumburg-il" },
-  { name: "Aurora, IL", slug: "aurora-il" },
-  { name: "Arlington Heights, IL", slug: "arlington-heights-il" },
-];
+// Show top cities in footer (by name, capped at 15)
+const cityLinks = CITY_LIST.slice(0, 15).map((c) => ({
+  name: `${c.name}, ${c.state}`,
+  slug: c.slug,
+}));
 
 export default function Footer() {
   return (

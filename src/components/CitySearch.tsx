@@ -3,42 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-
-const CITIES = [
-  { name: "Crystal Lake", state: "IL", slug: "crystal-lake-il" },
-  { name: "McHenry", state: "IL", slug: "mchenry-il" },
-  { name: "Algonquin", state: "IL", slug: "algonquin-il" },
-  { name: "Lake in the Hills", state: "IL", slug: "lake-in-the-hills-il" },
-  { name: "Huntley", state: "IL", slug: "huntley-il" },
-  { name: "Woodstock", state: "IL", slug: "woodstock-il" },
-  { name: "Cary", state: "IL", slug: "cary-il" },
-  { name: "Marengo", state: "IL", slug: "marengo-il" },
-  { name: "Harvard", state: "IL", slug: "harvard-il" },
-  { name: "Carpentersville", state: "IL", slug: "carpentersville-il" },
-  { name: "Elgin", state: "IL", slug: "elgin-il" },
-  { name: "South Elgin", state: "IL", slug: "south-elgin-il" },
-  { name: "St. Charles", state: "IL", slug: "st-charles-il" },
-  { name: "Geneva", state: "IL", slug: "geneva-il" },
-  { name: "Batavia", state: "IL", slug: "batavia-il" },
-  { name: "Aurora", state: "IL", slug: "aurora-il" },
-  { name: "Naperville", state: "IL", slug: "naperville-il" },
-  { name: "Wheaton", state: "IL", slug: "wheaton-il" },
-  { name: "Schaumburg", state: "IL", slug: "schaumburg-il" },
-  { name: "Arlington Heights", state: "IL", slug: "arlington-heights-il" },
-];
+import { CITY_LIST } from "@/lib/city-list";
 
 export default function CitySearch() {
   const [query, setQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
 
-  const filtered = query.length > 0
-    ? CITIES.filter(
-        (c) =>
-          c.name.toLowerCase().includes(query.toLowerCase()) ||
-          c.slug.includes(query.toLowerCase())
-      )
-    : [];
+  const filtered =
+    query.length > 0
+      ? CITY_LIST.filter(
+          (c) =>
+            c.name.toLowerCase().includes(query.toLowerCase()) ||
+            c.slug.includes(query.toLowerCase())
+        ).slice(0, 8)
+      : [];
 
   const handleSelect = (slug: string) => {
     setShowDropdown(false);

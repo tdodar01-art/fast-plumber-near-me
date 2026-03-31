@@ -4,373 +4,11 @@ import type { Metadata } from "next";
 import { MapPin, Clock, AlertTriangle, ArrowRight, Phone, HelpCircle } from "lucide-react";
 import PlumberCard from "@/components/PlumberCard";
 import CallToAction from "@/components/CallToAction";
-import type { Plumber } from "@/lib/types";
-
-// Static city data for build-time generation (will be replaced by Firestore fetch later)
-const CITY_DATA: Record<
-  string,
-  {
-    name: string;
-    state: string;
-    county: string;
-    heroContent: string;
-    nearbyCities: { name: string; slug: string }[];
-  }
-> = {
-  "crystal-lake-il": {
-    name: "Crystal Lake",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "Crystal Lake is the largest city in McHenry County, with older homes and aging plumbing infrastructure that can lead to emergencies — especially during harsh Illinois winters. Frozen pipes, water heater failures, and sewer backups are common issues for Crystal Lake homeowners. Our verified plumbers serve all Crystal Lake neighborhoods including downtown, the lake area, and surrounding subdivisions.",
-    nearbyCities: [
-      { name: "McHenry", slug: "mchenry-il" },
-      { name: "Algonquin", slug: "algonquin-il" },
-      { name: "Lake in the Hills", slug: "lake-in-the-hills-il" },
-      { name: "Cary", slug: "cary-il" },
-      { name: "Woodstock", slug: "woodstock-il" },
-    ],
-  },
-  "mchenry-il": {
-    name: "McHenry",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "McHenry residents know that plumbing emergencies don't wait for business hours. With the Fox River running through town and seasonal temperature swings, pipes can freeze, burst, or back up at any time. Our AI-verified plumbers in McHenry are confirmed to be available for emergency calls — day or night.",
-    nearbyCities: [
-      { name: "Crystal Lake", slug: "crystal-lake-il" },
-      { name: "Woodstock", slug: "woodstock-il" },
-      { name: "Huntley", slug: "huntley-il" },
-      { name: "Lake in the Hills", slug: "lake-in-the-hills-il" },
-    ],
-  },
-  "algonquin-il": {
-    name: "Algonquin",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "Algonquin is a rapidly growing community straddling McHenry and Kane counties. With a mix of newer construction and established neighborhoods, plumbing emergencies range from slab leaks to water heater failures. Our verified Algonquin plumbers are ready to respond to your emergency around the clock.",
-    nearbyCities: [
-      { name: "Crystal Lake", slug: "crystal-lake-il" },
-      { name: "Lake in the Hills", slug: "lake-in-the-hills-il" },
-      { name: "Carpentersville", slug: "carpentersville-il" },
-      { name: "Huntley", slug: "huntley-il" },
-    ],
-  },
-  "lake-in-the-hills-il": {
-    name: "Lake in the Hills",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "Lake in the Hills is a vibrant community in McHenry County with many homes built in the 1990s and 2000s. As these homes age, plumbing issues become more common — from water heater failures to drain clogs and pipe leaks. Our verified plumbers in Lake in the Hills are confirmed available for emergency calls.",
-    nearbyCities: [
-      { name: "Crystal Lake", slug: "crystal-lake-il" },
-      { name: "Algonquin", slug: "algonquin-il" },
-      { name: "Huntley", slug: "huntley-il" },
-      { name: "Cary", slug: "cary-il" },
-    ],
-  },
-  "huntley-il": {
-    name: "Huntley",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "Huntley has been one of the fastest-growing communities in the Chicago suburbs. With rapid development comes a need for reliable emergency plumbing services. Whether you're in the Del Webb community or the newer subdivisions off Route 47, our verified plumbers can be there when you need them.",
-    nearbyCities: [
-      { name: "Crystal Lake", slug: "crystal-lake-il" },
-      { name: "Lake in the Hills", slug: "lake-in-the-hills-il" },
-      { name: "Algonquin", slug: "algonquin-il" },
-      { name: "Woodstock", slug: "woodstock-il" },
-    ],
-  },
-  "woodstock-il": {
-    name: "Woodstock",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "Woodstock, the McHenry County seat and home of the famous Groundhog Day square, has many historic homes with aging plumbing systems. Frozen pipes in winter and sewer issues are common concerns. Our verified emergency plumbers serving Woodstock are available 24/7 to handle any plumbing crisis.",
-    nearbyCities: [
-      { name: "Crystal Lake", slug: "crystal-lake-il" },
-      { name: "McHenry", slug: "mchenry-il" },
-      { name: "Huntley", slug: "huntley-il" },
-      { name: "Harvard", slug: "harvard-il" },
-      { name: "Marengo", slug: "marengo-il" },
-    ],
-  },
-  "cary-il": {
-    name: "Cary",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "Cary is a charming village nestled along the Fox River in McHenry County. With many homes dating back several decades, plumbing emergencies like burst pipes, water heater failures, and sewer line problems can strike without warning. Our verified Cary plumbers are just a call away.",
-    nearbyCities: [
-      { name: "Crystal Lake", slug: "crystal-lake-il" },
-      { name: "Algonquin", slug: "algonquin-il" },
-      { name: "Lake in the Hills", slug: "lake-in-the-hills-il" },
-    ],
-  },
-  "elgin-il": {
-    name: "Elgin",
-    state: "IL",
-    county: "Kane",
-    heroContent:
-      "Elgin is one of the largest cities in the Fox Valley, with a diverse housing stock ranging from historic Victorian homes to modern developments. Aging pipes, sewer issues, and water heater emergencies are everyday realities for Elgin homeowners. Find a verified emergency plumber in Elgin who will actually answer your call.",
-    nearbyCities: [
-      { name: "South Elgin", slug: "south-elgin-il" },
-      { name: "Carpentersville", slug: "carpentersville-il" },
-      { name: "St. Charles", slug: "st-charles-il" },
-      { name: "Schaumburg", slug: "schaumburg-il" },
-    ],
-  },
-  "naperville-il": {
-    name: "Naperville",
-    state: "IL",
-    county: "DuPage",
-    heroContent:
-      "Naperville is consistently ranked as one of the best places to live in Illinois, but even great cities have plumbing emergencies. From the historic downtown to newer communities along Route 59, water heater failures, burst pipes, and drain backups can happen anytime. Our AI-verified plumbers in Naperville are confirmed responsive.",
-    nearbyCities: [
-      { name: "Aurora", slug: "aurora-il" },
-      { name: "Wheaton", slug: "wheaton-il" },
-      { name: "Geneva", slug: "geneva-il" },
-      { name: "Batavia", slug: "batavia-il" },
-    ],
-  },
-  "schaumburg-il": {
-    name: "Schaumburg",
-    state: "IL",
-    county: "Cook",
-    heroContent:
-      "Schaumburg is a major suburban hub in Cook County with thousands of homes and businesses that depend on reliable plumbing. Whether you're near Woodfield Mall or in one of the many residential neighborhoods, plumbing emergencies demand fast response. Our verified Schaumburg plumbers are tested for responsiveness.",
-    nearbyCities: [
-      { name: "Arlington Heights", slug: "arlington-heights-il" },
-      { name: "Elgin", slug: "elgin-il" },
-      { name: "Wheaton", slug: "wheaton-il" },
-    ],
-  },
-  "aurora-il": {
-    name: "Aurora",
-    state: "IL",
-    county: "Kane",
-    heroContent:
-      "Aurora is the second-largest city in Illinois, spanning four counties with a vast range of housing. From older east-side homes to new construction on the far west side, plumbing emergencies are a constant. Our AI-verified emergency plumbers serving Aurora are confirmed to answer calls and dispatch quickly.",
-    nearbyCities: [
-      { name: "Naperville", slug: "naperville-il" },
-      { name: "Batavia", slug: "batavia-il" },
-      { name: "Geneva", slug: "geneva-il" },
-      { name: "South Elgin", slug: "south-elgin-il" },
-    ],
-  },
-  "arlington-heights-il": {
-    name: "Arlington Heights",
-    state: "IL",
-    county: "Cook",
-    heroContent:
-      "Arlington Heights is one of the largest villages in Illinois, with a mix of mid-century homes and newer developments. Aging plumbing systems in older neighborhoods mean burst pipes, water heater failures, and sewer problems are common. Our verified plumbers in Arlington Heights are ready 24/7.",
-    nearbyCities: [
-      { name: "Schaumburg", slug: "schaumburg-il" },
-      { name: "Wheaton", slug: "wheaton-il" },
-      { name: "Elgin", slug: "elgin-il" },
-    ],
-  },
-  "south-elgin-il": {
-    name: "South Elgin",
-    state: "IL",
-    county: "Kane",
-    heroContent:
-      "South Elgin is a growing community along the Fox River in Kane County. With a mix of established and newer neighborhoods, plumbing issues can range from aging pipe failures to new construction settling problems. Our verified emergency plumbers are ready to respond.",
-    nearbyCities: [
-      { name: "Elgin", slug: "elgin-il" },
-      { name: "St. Charles", slug: "st-charles-il" },
-      { name: "Geneva", slug: "geneva-il" },
-      { name: "Carpentersville", slug: "carpentersville-il" },
-    ],
-  },
-  "st-charles-il": {
-    name: "St. Charles",
-    state: "IL",
-    county: "Kane",
-    heroContent:
-      "St. Charles is a picturesque Fox River community with historic homes and modern developments alike. Plumbing emergencies from frozen pipes to sewer backups don't wait for business hours. Our AI-verified St. Charles plumbers are confirmed available for emergency service.",
-    nearbyCities: [
-      { name: "Geneva", slug: "geneva-il" },
-      { name: "South Elgin", slug: "south-elgin-il" },
-      { name: "Batavia", slug: "batavia-il" },
-      { name: "Elgin", slug: "elgin-il" },
-    ],
-  },
-  "geneva-il": {
-    name: "Geneva",
-    state: "IL",
-    county: "Kane",
-    heroContent:
-      "Geneva is a charming Fox River community known for its historic Third Street shopping district and beautiful homes. Many of these older homes have plumbing systems that need emergency attention. Our verified emergency plumbers serving Geneva are tested for fast response times.",
-    nearbyCities: [
-      { name: "St. Charles", slug: "st-charles-il" },
-      { name: "Batavia", slug: "batavia-il" },
-      { name: "Naperville", slug: "naperville-il" },
-    ],
-  },
-  "batavia-il": {
-    name: "Batavia",
-    state: "IL",
-    county: "Kane",
-    heroContent:
-      "Batavia, the oldest city in Kane County, features homes spanning over a century of construction. This means a wide variety of plumbing systems — and potential emergencies. Our AI-verified plumbers serving Batavia are ready to handle everything from burst pipes to complete sewer line failures.",
-    nearbyCities: [
-      { name: "Geneva", slug: "geneva-il" },
-      { name: "Aurora", slug: "aurora-il" },
-      { name: "St. Charles", slug: "st-charles-il" },
-      { name: "Naperville", slug: "naperville-il" },
-    ],
-  },
-  "wheaton-il": {
-    name: "Wheaton",
-    state: "IL",
-    county: "DuPage",
-    heroContent:
-      "Wheaton is the DuPage County seat, home to beautiful tree-lined neighborhoods and a vibrant downtown. Many homes in Wheaton have older plumbing that's prone to emergencies, especially during winter freezes. Our verified plumbers are confirmed responsive to emergency calls in Wheaton.",
-    nearbyCities: [
-      { name: "Naperville", slug: "naperville-il" },
-      { name: "Schaumburg", slug: "schaumburg-il" },
-      { name: "Geneva", slug: "geneva-il" },
-    ],
-  },
-  "marengo-il": {
-    name: "Marengo",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "Marengo is a small but growing community in western McHenry County. With many older homes and rural properties, plumbing emergencies can be especially stressful when help seems far away. Our verified emergency plumbers serve the Marengo area and are confirmed to respond quickly.",
-    nearbyCities: [
-      { name: "Woodstock", slug: "woodstock-il" },
-      { name: "Harvard", slug: "harvard-il" },
-      { name: "Huntley", slug: "huntley-il" },
-    ],
-  },
-  "harvard-il": {
-    name: "Harvard",
-    state: "IL",
-    county: "McHenry",
-    heroContent:
-      "Harvard sits at the northern edge of McHenry County near the Wisconsin border. Finding a reliable emergency plumber in this area can be challenging due to the rural surroundings. Our AI-verified plumbers serving Harvard are confirmed to respond to emergency calls.",
-    nearbyCities: [
-      { name: "Woodstock", slug: "woodstock-il" },
-      { name: "Marengo", slug: "marengo-il" },
-    ],
-  },
-  "carpentersville-il": {
-    name: "Carpentersville",
-    state: "IL",
-    county: "Kane",
-    heroContent:
-      "Carpentersville is a diverse community along the Fox River with housing ranging from affordable to upscale. Plumbing emergencies don't discriminate by neighborhood — burst pipes and water heater failures can happen anywhere. Our verified plumbers serving Carpentersville are ready 24/7.",
-    nearbyCities: [
-      { name: "Algonquin", slug: "algonquin-il" },
-      { name: "Elgin", slug: "elgin-il" },
-      { name: "South Elgin", slug: "south-elgin-il" },
-    ],
-  },
-};
-
-// Sample plumber data for initial build (will come from Firestore)
-function getSamplePlumbers(citySlug: string): Plumber[] {
-  const cityName = CITY_DATA[citySlug]?.name || "Your City";
-  return [
-    {
-      id: "sample-1",
-      businessName: `${cityName} Emergency Plumbing`,
-      ownerName: "John Smith",
-      phone: "(815) 555-0101",
-      website: "https://example.com",
-      email: null,
-      address: { street: "", city: cityName, state: "IL", zip: "", lat: 0, lng: 0 },
-      serviceCities: [citySlug],
-      services: ["emergency", "water-heater", "sewer", "drain"],
-      is24Hour: true,
-      licenseNumber: "055-012345",
-      insured: true,
-      yearsInBusiness: 15,
-      verificationStatus: "verified",
-      reliabilityScore: 94,
-      lastVerifiedAt: null,
-      totalCallAttempts: 12,
-      totalCallAnswered: 11,
-      answerRate: 92,
-      avgResponseTime: 8,
-      listingTier: "featured",
-      googleRating: 4.8,
-      googleReviewCount: 127,
-      yelpRating: 4.5,
-      isActive: true,
-      createdAt: null as unknown as import("firebase/firestore").Timestamp,
-      updatedAt: null as unknown as import("firebase/firestore").Timestamp,
-      notes: "",
-    },
-    {
-      id: "sample-2",
-      businessName: "Fox Valley Plumbing & Drain",
-      ownerName: "Mike Johnson",
-      phone: "(815) 555-0102",
-      website: null,
-      email: null,
-      address: { street: "", city: cityName, state: "IL", zip: "", lat: 0, lng: 0 },
-      serviceCities: [citySlug],
-      services: ["emergency", "drain", "sewer"],
-      is24Hour: true,
-      licenseNumber: "055-067890",
-      insured: true,
-      yearsInBusiness: 8,
-      verificationStatus: "verified",
-      reliabilityScore: 87,
-      lastVerifiedAt: null,
-      totalCallAttempts: 8,
-      totalCallAnswered: 7,
-      answerRate: 88,
-      avgResponseTime: 12,
-      listingTier: "premium",
-      googleRating: 4.6,
-      googleReviewCount: 89,
-      yelpRating: 4.0,
-      isActive: true,
-      createdAt: null as unknown as import("firebase/firestore").Timestamp,
-      updatedAt: null as unknown as import("firebase/firestore").Timestamp,
-      notes: "",
-    },
-    {
-      id: "sample-3",
-      businessName: "Rapid Response Plumbing",
-      ownerName: "Dave Williams",
-      phone: "(847) 555-0103",
-      website: null,
-      email: null,
-      address: { street: "", city: cityName, state: "IL", zip: "", lat: 0, lng: 0 },
-      serviceCities: [citySlug],
-      services: ["emergency", "water-heater", "drain"],
-      is24Hour: false,
-      licenseNumber: null,
-      insured: true,
-      yearsInBusiness: 5,
-      verificationStatus: "unverified",
-      reliabilityScore: 0,
-      lastVerifiedAt: null,
-      totalCallAttempts: 0,
-      totalCallAnswered: 0,
-      answerRate: 0,
-      avgResponseTime: 0,
-      listingTier: "free",
-      googleRating: 4.2,
-      googleReviewCount: 34,
-      yelpRating: null,
-      isActive: true,
-      createdAt: null as unknown as import("firebase/firestore").Timestamp,
-      updatedAt: null as unknown as import("firebase/firestore").Timestamp,
-      notes: "",
-    },
-  ];
-}
+import { CITY_DATA, getAllCitySlugs } from "@/lib/cities-data";
+import { getPlumbersByCity } from "@/lib/firestore";
 
 export function generateStaticParams() {
-  return Object.keys(CITY_DATA).map((cityState) => ({ cityState }));
+  return getAllCitySlugs().map((cityState) => ({ cityState }));
 }
 
 export async function generateMetadata({
@@ -452,9 +90,23 @@ export default async function CityPage({
   const city = CITY_DATA[cityState];
   if (!city) notFound();
 
-  // In production, this will fetch from Firestore:
-  // const plumbers = await getPlumbersByCity(cityState);
-  const plumbers = getSamplePlumbers(cityState);
+  // Fetch plumbers from Firestore — returns empty array if Firebase not configured
+  let plumbers: Awaited<ReturnType<typeof getPlumbersByCity>> = [];
+  try {
+    plumbers = await getPlumbersByCity(cityState);
+  } catch {
+    // Firebase not configured yet — will show empty state
+  }
+
+  // Sort: featured > premium > free, then by reliabilityScore desc, then googleRating desc, then reviewCount desc
+  plumbers.sort((a, b) => {
+    const tierOrder = { featured: 0, premium: 1, free: 2 };
+    const tierDiff = tierOrder[a.listingTier] - tierOrder[b.listingTier];
+    if (tierDiff !== 0) return tierDiff;
+    if (b.reliabilityScore !== a.reliabilityScore) return b.reliabilityScore - a.reliabilityScore;
+    if ((b.googleRating || 0) !== (a.googleRating || 0)) return (b.googleRating || 0) - (a.googleRating || 0);
+    return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
+  });
 
   // JSON-LD structured data
   const jsonLd = {
@@ -542,11 +194,29 @@ export default async function CityPage({
 
       <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
         {/* Plumber listings */}
-        <div className="space-y-4 mb-12">
-          {plumbers.map((plumber) => (
-            <PlumberCard key={plumber.id} plumber={plumber} citySlug={cityState} />
-          ))}
-        </div>
+        {plumbers.length > 0 ? (
+          <div className="space-y-4 mb-12">
+            {plumbers.map((plumber) => (
+              <PlumberCard key={plumber.id} plumber={plumber} citySlug={cityState} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 text-center mb-12">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              Plumber Listings Coming Soon
+            </h2>
+            <p className="text-gray-600 mb-4">
+              We&apos;re currently adding verified plumbers in {city.name}. Check back soon or
+              list your plumbing business below.
+            </p>
+            <Link
+              href="/add-your-business"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+            >
+              List Your Business
+            </Link>
+          </div>
+        )}
 
         {/* City-specific content */}
         <section className="mb-12">
@@ -623,21 +293,23 @@ export default async function CityPage({
         )}
 
         {/* Emergency CTA */}
-        <div className="bg-accent/5 border-2 border-accent/20 rounded-2xl p-6 sm:p-8 text-center">
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Plumbing Emergency Right Now?
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Don&apos;t wait — call a verified plumber in {city.name} immediately.
-          </p>
-          <a
-            href={`tel:${plumbers[0]?.phone || "(815) 555-0101"}`}
-            className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white font-bold py-4 px-8 rounded-xl text-lg transition-colors shadow-lg shadow-accent/25"
-          >
-            <Phone className="w-5 h-5" />
-            Call Top-Rated Plumber Now
-          </a>
-        </div>
+        {plumbers.length > 0 && (
+          <div className="bg-accent/5 border-2 border-accent/20 rounded-2xl p-6 sm:p-8 text-center">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              Plumbing Emergency Right Now?
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Don&apos;t wait — call a verified plumber in {city.name} immediately.
+            </p>
+            <a
+              href={`tel:${plumbers[0].phone}`}
+              className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white font-bold py-4 px-8 rounded-xl text-lg transition-colors shadow-lg shadow-accent/25"
+            >
+              <Phone className="w-5 h-5" />
+              Call Top-Rated Plumber Now
+            </a>
+          </div>
+        )}
       </div>
 
       <CallToAction />

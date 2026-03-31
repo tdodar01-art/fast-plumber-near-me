@@ -7,6 +7,7 @@ export interface PlumberAddress {
   zip: string;
   lat: number;
   lng: number;
+  full?: string;
 }
 
 export interface Plumber {
@@ -24,7 +25,7 @@ export interface Plumber {
   insured: boolean;
   yearsInBusiness: number | null;
 
-  // Verification & Scoring
+  // Verification & Scoring (Phase 2 — AI calls)
   verificationStatus: "unverified" | "verified" | "failed";
   reliabilityScore: number;
   lastVerifiedAt: Timestamp | null;
@@ -36,9 +37,28 @@ export interface Plumber {
   // Listing tier
   listingTier: "free" | "premium" | "featured";
 
-  // Reviews
+  // Google data (from Outscraper)
   googleRating: number | null;
   googleReviewCount: number | null;
+  googlePlaceId: string | null;
+  googleId: string | null;
+  googleVerified: boolean;
+  workingHours: Record<string, string> | null;
+  category: string | null;
+  isAreaService: boolean;
+  photoUrl: string | null;
+  logoUrl: string | null;
+  description: string | null;
+  businessStatus: string | null;
+  bookingLink: string | null;
+
+  // Social
+  social: {
+    facebook: string | null;
+    instagram: string | null;
+  };
+
+  // Legacy / other reviews
   yelpRating: number | null;
 
   // Meta

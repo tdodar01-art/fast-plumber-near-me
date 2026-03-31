@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone, Globe, Clock, Shield, Star, Award } from "lucide-react";
+import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar } from "lucide-react";
 import type { Plumber } from "@/lib/types";
 import ReliabilityBadge from "./ReliabilityBadge";
 import VerifiedBadge from "./VerifiedBadge";
@@ -89,8 +89,14 @@ export default function PlumberCard({
       {/* Badges */}
       <div className="flex flex-wrap items-center gap-2 mt-2">
         {plumber.verificationStatus === "verified" && <VerifiedBadge />}
-        {plumber.is24Hour && (
+        {plumber.googleVerified && (
           <span className="inline-flex items-center gap-1 text-xs font-medium bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">
+            <BadgeCheck className="w-3 h-3" />
+            Google Verified
+          </span>
+        )}
+        {plumber.is24Hour && (
+          <span className="inline-flex items-center gap-1 text-xs font-medium bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full">
             <Clock className="w-3 h-3" />
             24/7
           </span>
@@ -156,7 +162,7 @@ export default function PlumberCard({
           <Phone className="w-5 h-5" />
           CALL NOW {plumber.phone}
         </a>
-        {plumber.website && plumber.listingTier !== "free" && (
+        {plumber.website && (
           <a
             href={plumber.website}
             target="_blank"
@@ -177,6 +183,17 @@ export default function PlumberCard({
           >
             <Globe className="w-4 h-4" />
             Website
+          </a>
+        )}
+        {plumber.bookingLink && (
+          <a
+            href={plumber.bookingLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 border-2 border-success text-success hover:bg-success hover:text-white font-semibold py-3 px-4 rounded-xl transition-colors"
+          >
+            <Calendar className="w-4 h-4" />
+            Book
           </a>
         )}
       </div>

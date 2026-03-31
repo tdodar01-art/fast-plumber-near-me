@@ -1,29 +1,7 @@
 import { MetadataRoute } from "next";
+import { getAllCitySlugs } from "@/lib/cities-data";
 
 const BASE_URL = "https://fastplumbernearme.com";
-
-const cities = [
-  "crystal-lake-il",
-  "mchenry-il",
-  "algonquin-il",
-  "lake-in-the-hills-il",
-  "huntley-il",
-  "woodstock-il",
-  "cary-il",
-  "marengo-il",
-  "harvard-il",
-  "carpentersville-il",
-  "elgin-il",
-  "south-elgin-il",
-  "st-charles-il",
-  "geneva-il",
-  "batavia-il",
-  "aurora-il",
-  "naperville-il",
-  "wheaton-il",
-  "schaumburg-il",
-  "arlington-heights-il",
-];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
@@ -37,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.2 },
   ];
 
-  const cityPages = cities.map((city) => ({
+  const cityPages = getAllCitySlugs().map((city) => ({
     url: `${BASE_URL}/emergency-plumbers/${city}`,
     lastModified: new Date(),
     changeFrequency: "daily" as const,

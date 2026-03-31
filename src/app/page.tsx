@@ -2,21 +2,9 @@ import Link from "next/link";
 import { Phone, ShieldCheck, Clock, Search, ArrowRight, CheckCircle } from "lucide-react";
 import CitySearch from "@/components/CitySearch";
 import CallToAction from "@/components/CallToAction";
+import { FEATURED_CITIES } from "@/lib/city-list";
 
-const featuredCities = [
-  { name: "Crystal Lake", state: "IL", slug: "crystal-lake-il" },
-  { name: "McHenry", state: "IL", slug: "mchenry-il" },
-  { name: "Algonquin", state: "IL", slug: "algonquin-il" },
-  { name: "Lake in the Hills", state: "IL", slug: "lake-in-the-hills-il" },
-  { name: "Huntley", state: "IL", slug: "huntley-il" },
-  { name: "Woodstock", state: "IL", slug: "woodstock-il" },
-  { name: "Elgin", state: "IL", slug: "elgin-il" },
-  { name: "Naperville", state: "IL", slug: "naperville-il" },
-  { name: "Schaumburg", state: "IL", slug: "schaumburg-il" },
-  { name: "Aurora", state: "IL", slug: "aurora-il" },
-  { name: "Arlington Heights", state: "IL", slug: "arlington-heights-il" },
-  { name: "St. Charles", state: "IL", slug: "st-charles-il" },
-];
+const featuredCities = FEATURED_CITIES;
 
 export default function HomePage() {
   return (
