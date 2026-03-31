@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { Phone, ShieldCheck, Clock, Search, ArrowRight, CheckCircle } from "lucide-react";
+import { Phone, ShieldCheck, Clock, Search, ArrowRight, CheckCircle, MapPin, Building } from "lucide-react";
 import CitySearch from "@/components/CitySearch";
 import CallToAction from "@/components/CallToAction";
-import { FEATURED_CITIES } from "@/lib/city-list";
+import { FEATURED_CITIES, CITY_LIST } from "@/lib/city-list";
+import { getStatesWithCities, getTotalCityCount } from "@/lib/cities-data";
 
 const featuredCities = FEATURED_CITIES;
+const totalCities = getTotalCityCount();
+const totalStates = getStatesWithCities().length;
 
 export default function HomePage() {
   return (
@@ -21,9 +24,16 @@ export default function HomePage() {
             the phone and show up. Find 24/7 emergency plumbers you can trust.
           </p>
           <CitySearch />
-          <p className="text-sm text-blue-300 mt-4">
-            Serving Northern Illinois — Crystal Lake, McHenry, Algonquin, and more
-          </p>
+          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-blue-300">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-4 h-4" />
+              {totalCities} cities
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Building className="w-4 h-4" />
+              {totalStates} states
+            </span>
+          </div>
         </div>
       </section>
 
@@ -98,8 +108,8 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {featuredCities.map((city) => (
               <Link
-                key={city.slug}
-                href={`/emergency-plumbers/${city.slug}`}
+                key={`${city.stateSlug}-${city.citySlug}`}
+                href={`/emergency-plumbers/${city.stateSlug}/${city.citySlug}`}
                 className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-primary hover:bg-blue-50 transition-colors group"
               >
                 <span className="font-medium text-gray-900 text-sm">

@@ -5,7 +5,7 @@ import { CITY_LIST } from "@/lib/city-list";
 // Show top cities in footer (by name, capped at 15)
 const cityLinks = CITY_LIST.slice(0, 15).map((c) => ({
   name: `${c.name}, ${c.state}`,
-  slug: c.slug,
+  href: `/emergency-plumbers/${c.stateSlug}/${c.citySlug}`,
 }));
 
 export default function Footer() {
@@ -63,9 +63,9 @@ export default function Footer() {
             <h3 className="font-semibold mb-3">Service Areas</h3>
             <ul className="space-y-1.5 text-sm text-blue-200">
               {cityLinks.map((city) => (
-                <li key={city.slug}>
+                <li key={city.href}>
                   <Link
-                    href={`/emergency-plumbers/${city.slug}`}
+                    href={city.href}
                     className="hover:text-white transition-colors"
                   >
                     {city.name}

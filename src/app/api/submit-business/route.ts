@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,11 +14,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // In production, this will write to Firestore:
-    // import { submitBusiness } from "@/lib/firestore";
-    // const id = await submitBusiness(data);
-
-    console.log("Business submission received:", data);
+    if (db) {
+      await addDoc(collection(db, "businessSubmissions"), {
+        ...data,
+        createdAt: serverTimestamp(),
+        status: "pending",
+      });
+    }
 
     return NextResponse.json({ success: true, message: "Business submitted for review" });
   } catch {
