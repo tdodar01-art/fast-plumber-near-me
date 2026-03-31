@@ -1,65 +1,179 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Phone, ShieldCheck, Clock, Search, ArrowRight, CheckCircle } from "lucide-react";
+import CitySearch from "@/components/CitySearch";
+import CallToAction from "@/components/CallToAction";
 
-export default function Home() {
+const featuredCities = [
+  { name: "Crystal Lake", state: "IL", slug: "crystal-lake-il" },
+  { name: "McHenry", state: "IL", slug: "mchenry-il" },
+  { name: "Algonquin", state: "IL", slug: "algonquin-il" },
+  { name: "Lake in the Hills", state: "IL", slug: "lake-in-the-hills-il" },
+  { name: "Huntley", state: "IL", slug: "huntley-il" },
+  { name: "Woodstock", state: "IL", slug: "woodstock-il" },
+  { name: "Elgin", state: "IL", slug: "elgin-il" },
+  { name: "Naperville", state: "IL", slug: "naperville-il" },
+  { name: "Schaumburg", state: "IL", slug: "schaumburg-il" },
+  { name: "Aurora", state: "IL", slug: "aurora-il" },
+  { name: "Arlington Heights", state: "IL", slug: "arlington-heights-il" },
+  { name: "St. Charles", state: "IL", slug: "st-charles-il" },
+];
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      {/* Hero */}
+      <section className="bg-gradient-to-br from-primary via-primary-dark to-primary text-white py-16 sm:py-24">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight mb-4">
+            Find a Reliable Emergency Plumber
+            <span className="text-accent-light"> — Right Now</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg sm:text-xl text-blue-200 max-w-2xl mx-auto mb-8">
+            We don&apos;t just list plumbers — we call them to verify they actually pick up
+            the phone and show up. Find 24/7 emergency plumbers you can trust.
+          </p>
+          <CitySearch />
+          <p className="text-sm text-blue-300 mt-4">
+            Serving Northern Illinois — Crystal Lake, McHenry, Algonquin, and more
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-12">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">1. Search Your City</h3>
+              <p className="text-gray-600">
+                Enter your city or zip code to find emergency plumbers in your area.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-success/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <ShieldCheck className="w-8 h-8 text-success" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">2. See Verified Plumbers</h3>
+              <p className="text-gray-600">
+                Every plumber is AI-verified. We call them to confirm they&apos;re actually available
+                for emergency service.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Phone className="w-8 h-8 text-accent" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">3. Call Now</h3>
+              <p className="text-gray-600">
+                Tap to call a verified plumber who will actually pick up and come help.
+              </p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Trust Badges */}
+      <section className="py-12 border-b border-gray-100">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex items-center gap-3 justify-center sm:justify-start">
+              <CheckCircle className="w-6 h-6 text-success flex-shrink-0" />
+              <span className="font-semibold text-gray-900">AI-Verified Plumbers</span>
+            </div>
+            <div className="flex items-center gap-3 justify-center">
+              <Clock className="w-6 h-6 text-primary flex-shrink-0" />
+              <span className="font-semibold text-gray-900">24/7 Emergency Service</span>
+            </div>
+            <div className="flex items-center gap-3 justify-center sm:justify-end">
+              <ShieldCheck className="w-6 h-6 text-primary flex-shrink-0" />
+              <span className="font-semibold text-gray-900">Licensed &amp; Insured</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Cities */}
+      <section className="py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-4">
+            Emergency Plumbers by City
+          </h2>
+          <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
+            Select your city to see verified emergency plumbers ready to help right now.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {featuredCities.map((city) => (
+              <Link
+                key={city.slug}
+                href={`/emergency-plumbers/${city.slug}`}
+                className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-primary hover:bg-blue-50 transition-colors group"
+              >
+                <span className="font-medium text-gray-900 text-sm">
+                  {city.name}, {city.state}
+                </span>
+                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
+              </Link>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link
+              href="/emergency-plumbers"
+              className="text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-1 transition-colors"
+            >
+              View All Cities <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-12">
+            Why Fast Plumber Near Me?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-2">We Actually Call Them</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Unlike other directories, we use AI to periodically call every listed plumber at random
+                times — including nights and weekends. If they don&apos;t answer, their score drops. Only
+                responsive plumbers stay listed.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-2">Real Reliability Scores</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Every plumber gets a reliability score based on how often they answer, how fast they
+                respond, and whether they confirm they can come help. No pay-to-play rankings.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-2">Emergency-Focused</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                We&apos;re not a general contractor directory. We focus exclusively on emergency
+                plumbing — burst pipes, water heater failures, sewer backups, and drain emergencies.
+              </p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-2">Click and Call</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                No accounts, no forms, no waiting for quotes. Find a plumber, tap the call button,
+                and get help. That&apos;s it. When your basement is flooding, every second counts.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <CallToAction />
+    </>
   );
 }

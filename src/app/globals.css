@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: #1a365d;
+  --color-primary-light: #2a4a7f;
+  --color-primary-dark: #0f2440;
+  --color-accent: #e53e3e;
+  --color-accent-light: #fc8181;
+  --color-accent-dark: #c53030;
+  --color-success: #38a169;
+  --color-success-light: #c6f6d5;
+  --color-warning: #d69e2e;
+  --color-warning-light: #fefcbf;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  color: #1a202c;
+  background: #ffffff;
+}
+
+/* Click-to-call button pulse animation */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.cta-pulse {
+  animation: pulse-ring 2s ease-in-out infinite;
 }
