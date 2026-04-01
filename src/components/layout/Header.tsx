@@ -28,6 +28,9 @@ export default function Header() {
             <Link href="/add-your-business" className="hover:text-accent-light transition-colors">
               List Your Business
             </Link>
+            <Link href="/blog" className="hover:text-accent-light transition-colors">
+              Guides
+            </Link>
             <Link href="/about" className="hover:text-accent-light transition-colors">
               About
             </Link>
@@ -75,6 +78,13 @@ export default function Header() {
               onClick={() => setMobileOpen(false)}
             >
               List Your Business
+            </Link>
+            <Link
+              href="/blog"
+              className="block px-3 py-2 rounded-lg hover:bg-primary-light transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              Guides
             </Link>
             <Link
               href="/about"

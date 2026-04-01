@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { Phone, ShieldCheck, Clock, Search, ArrowRight, CheckCircle, MapPin, Building } from "lucide-react";
 import CitySearch from "@/components/CitySearch";
+import UseMyLocation from "@/components/UseMyLocation";
 import CallToAction from "@/components/CallToAction";
 import { FEATURED_CITIES, CITY_LIST } from "@/lib/city-list";
 import { getStatesWithCities, getTotalCityCount } from "@/lib/cities-data";
+import { getCityCoords } from "@/lib/city-coords";
 
 const featuredCities = FEATURED_CITIES;
 const totalCities = getTotalCityCount();
 const totalStates = getStatesWithCities().length;
+const cityCoords = getCityCoords();
 
 export default function HomePage() {
   return (
@@ -24,7 +27,8 @@ export default function HomePage() {
             the phone and show up. Find 24/7 emergency plumbers you can trust.
           </p>
           <CitySearch />
-          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-blue-300">
+          <UseMyLocation cities={cityCoords} />
+          <div className="flex items-center justify-center gap-6 mt-4 text-sm text-blue-300">
             <span className="flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
               {totalCities} cities

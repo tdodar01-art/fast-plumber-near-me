@@ -1,7 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# data (CSV exports, not for version control)
-/data
+# data — keep synthesized JSON (needed at build time), ignore raw/CSV/progress
+/data/outscraper-plumbers.csv
+/data/raw/.scrape-progress.json
+/data/synthesized/.synthesis-progress.json
 
 # dependencies
 /node_modules
@@ -33,8 +35,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files and secrets
 .env*
+service-account.json
 
 # vercel
 .vercel

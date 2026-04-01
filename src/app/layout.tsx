@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, DM_Sans, Fraunces } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
@@ -7,6 +7,18 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-dm-sans",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fraunces",
 });
 
 export const metadata: Metadata = {
@@ -29,6 +41,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  other: {
+    "theme-color": "#1a365d",
+  },
 };
 
 export default function RootLayout({
@@ -37,7 +52,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className} h-full`}>
+    <html lang="en" className={`${inter.className} ${dmSans.variable} ${fraunces.variable} h-full`}>
+      <head>
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-full flex flex-col antialiased">
         <Header />
         <main className="flex-1">{children}</main>

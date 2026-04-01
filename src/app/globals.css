@@ -12,6 +12,22 @@
   --color-warning: #d69e2e;
   --color-warning-light: #fefcbf;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-dm-sans: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
+  --font-fraunces: var(--font-fraunces), "Fraunces", Georgia, serif;
+
+  /* Profile page design system */
+  --color-trust-green: #0F6E56;
+  --color-trust-green-bg: #E1F5EE;
+  --color-trust-red: #A32D2D;
+  --color-trust-red-dark: #791F1F;
+  --color-trust-red-bg: #FCEBEB;
+  --color-trust-red-border: #F09595;
+  --color-trust-amber: #854F0B;
+  --color-trust-amber-dark: #BA7517;
+  --color-trust-amber-bg: #FAEEDA;
+  --color-trust-blue: #0C447C;
+  --color-trust-blue-bg: #E6F1FB;
+  --color-trust-gold: #EF9F27;
 }
 
 body {
@@ -29,4 +45,13 @@ body {
 
 .cta-pulse {
   animation: pulse-ring 2s ease-in-out infinite;
+}
+
+/* Hide scrollbar for badge overflow on mobile */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

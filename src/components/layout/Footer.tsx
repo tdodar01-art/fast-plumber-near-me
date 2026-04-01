@@ -44,6 +44,7 @@ export default function Footer() {
               <li><Link href="/emergency-plumbers" className="hover:text-white transition-colors">Find a Plumber</Link></li>
               <li><Link href="/how-we-verify" className="hover:text-white transition-colors">How We Verify</Link></li>
               <li><Link href="/add-your-business" className="hover:text-white transition-colors">List Your Business</Link></li>
+              <li><Link href="/blog" className="hover:text-white transition-colors">Emergency Guides</Link></li>
               <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>

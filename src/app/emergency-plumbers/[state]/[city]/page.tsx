@@ -21,12 +21,18 @@ export async function generateMetadata({
   const city = getCityData(stateSlug, citySlug);
   if (!city) return {};
 
+  const ogUrl = new URL("https://fastplumbernearme.com/api/og");
+  ogUrl.searchParams.set("city", city.name);
+  ogUrl.searchParams.set("state", city.state);
+  ogUrl.searchParams.set("county", city.county);
+
   return {
     title: `Emergency Plumbers in ${city.name}, ${city.state} — 24/7 Verified`,
     description: `Find verified 24/7 emergency plumbers in ${city.name}, ${city.state}. AI-verified for responsiveness. Burst pipes, water heaters, sewers & drains. Call now.`,
     openGraph: {
       title: `Emergency Plumbers in ${city.name}, ${city.state}`,
       description: `Verified 24/7 emergency plumbers in ${city.name}. We call them so you don't have to wonder if they'll pick up.`,
+      images: [{ url: ogUrl.toString(), width: 1200, height: 630 }],
     },
   };
 }
@@ -39,12 +45,16 @@ const emergencyTypes = [
   { title: "Gas Line Issues", description: "If you smell gas, evacuate immediately and call 911 first. Then call a licensed plumber for gas line repair." },
 ];
 
-const faqs = [
-  { question: "How much does an emergency plumber cost?", answer: "Emergency plumber rates vary but typically range from $150-$300 for the service call, plus parts and labor. After-hours and weekend calls may cost more. Always ask for an estimate before work begins." },
-  { question: "What should I do while waiting for the plumber?", answer: "Shut off the main water valve to stop water flow. If there's standing water, turn off electricity to affected areas. Move valuables away from water. Take photos for insurance purposes." },
-  { question: "How quickly can an emergency plumber arrive?", answer: "Most emergency plumbers aim to arrive within 30-60 minutes. Our verified plumbers are tested for response time and confirmed to dispatch quickly." },
-  { question: "Should I attempt DIY plumbing repairs in an emergency?", answer: "Only take immediate steps like shutting off water valves. DIY repairs on pressurized water lines or sewer systems can make the problem worse and void insurance claims." },
-];
+function getCityFaqs(cityName: string, stateName: string, county: string) {
+  return [
+    { question: `How much does an emergency plumber cost in ${cityName}, ${stateName}?`, answer: `Emergency plumber rates in ${cityName} typically range from $150-$300 for the service call, plus parts and labor. After-hours and weekend calls in ${county} County may cost more. Always ask for a written estimate before work begins.` },
+    { question: `What should I do during a plumbing emergency in ${cityName}?`, answer: `Shut off the main water valve to stop water flow. If there's standing water, turn off electricity to affected areas. Move valuables away from water and take photos for insurance. Then call a verified emergency plumber in ${cityName} immediately.` },
+    { question: `How quickly can an emergency plumber arrive in ${cityName}?`, answer: `Most emergency plumbers in ${cityName}, ${stateName} aim to arrive within 30-60 minutes depending on your location in ${county} County. Our verified plumbers are tested for response time and confirmed to dispatch quickly.` },
+    { question: `Should I attempt DIY plumbing repairs in ${cityName}?`, answer: `Only take immediate steps like shutting off water valves and containing water damage. DIY repairs on pressurized water lines or sewer systems can make the problem worse, cause additional damage, and void insurance claims. Call a licensed plumber in ${cityName} instead.` },
+    { question: `Are emergency plumbers in ${cityName} available 24/7?`, answer: `Yes — the emergency plumbers listed on Fast Plumber Near Me serving ${cityName} and ${county} County offer 24/7 availability. We verify that they actually answer emergency calls at all hours, including nights, weekends, and holidays.` },
+    { question: `What are the most common plumbing emergencies in ${cityName}?`, answer: `The most common plumbing emergencies in ${cityName}, ${stateName} include burst or frozen pipes, water heater failures, sewer line backups, clogged drains, and gas line issues. ${county} County homes may be especially susceptible depending on the age and type of construction.` },
+  ];
+}
 
 export default async function CityPage({
   params,
@@ -80,6 +90,8 @@ export default async function CityPage({
     if ((b.googleRating || 0) !== (a.googleRating || 0)) return (b.googleRating || 0) - (a.googleRating || 0);
     return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
   });
+
+  const faqs = getCityFaqs(city.name, city.state, city.county);
 
   // JSON-LD
   const breadcrumbJsonLd = {
