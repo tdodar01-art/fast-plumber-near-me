@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Phone, Star, ArrowRight } from "lucide-react";
 import {
   getPlumbersRanked,
@@ -45,7 +46,9 @@ export default function PlumbersDirectoryPage() {
       </div>
 
       {/* Filters */}
-      <DirectoryFilters cities={cities} />
+      <Suspense fallback={<div className="h-8 mb-5" />}>
+        <DirectoryFilters cities={cities} />
+      </Suspense>
 
       {/* Plumber List */}
       <div className="space-y-3" id="plumber-list">

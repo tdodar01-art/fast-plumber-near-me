@@ -19,7 +19,7 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link href="/emergency-plumbers" className="hover:text-accent-light transition-colors">
+            <Link href="/plumbers" className="hover:text-accent-light transition-colors">
               Find a Plumber
             </Link>
             <Link href="/how-we-verify" className="hover:text-accent-light transition-colors">
@@ -59,7 +59,7 @@ export default function Header() {
         <nav className="md:hidden bg-primary-dark border-t border-primary-light">
           <div className="px-4 py-3 space-y-2">
             <Link
-              href="/emergency-plumbers"
+              href="/plumbers"
               className="block px-3 py-2 rounded-lg hover:bg-primary-light transition-colors"
               onClick={() => setMobileOpen(false)}
             >

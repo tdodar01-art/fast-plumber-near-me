@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface DirectoryFiltersProps {
   cities: string[];
@@ -21,7 +22,10 @@ const priceOptions = [
 ];
 
 export default function DirectoryFilters({ cities }: DirectoryFiltersProps) {
-  const [city, setCity] = useState("");
+  const searchParams = useSearchParams();
+  const initialCity = searchParams.get("city") || "";
+
+  const [city, setCity] = useState(initialCity);
   const [trust, setTrust] = useState("");
   const [price, setPrice] = useState("");
 
@@ -42,6 +46,13 @@ export default function DirectoryFilters({ cities }: DirectoryFiltersProps) {
     },
     []
   );
+
+  // Apply initial city filter from URL on mount
+  useEffect(() => {
+    if (initialCity) {
+      applyFilters(initialCity, trust, price);
+    }
+  }, [initialCity, applyFilters, trust, price]);
 
   return (
     <div className="flex flex-wrap gap-2 mb-5">

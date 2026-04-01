@@ -27,7 +27,9 @@ export default function HomePage() {
             the phone and show up. Find 24/7 emergency plumbers you can trust.
           </p>
           <CitySearch />
-          <UseMyLocation cities={cityCoords} />
+          <div className="flex items-center justify-center gap-1.5 mt-3">
+            <UseMyLocation cities={cityCoords} />
+          </div>
           <div className="flex items-center justify-center gap-6 mt-4 text-sm text-blue-300">
             <span className="flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
