@@ -1,0 +1,598 @@
+#!/usr/bin/env node
+
+/**
+ * Daily scrape runner — picks next cities from queue, scrapes, synthesizes.
+ *
+ * Usage:
+ *   node scripts/daily-scrape.js
+ *
+ * Reads scrape-queue.json, respects monthly budget, deduplicates against
+ * existing data, and updates all output files.
+ */
+
+const fs = require("fs");
+const path = require("path");
+
+// ---------------------------------------------------------------------------
+// Paths
+// ---------------------------------------------------------------------------
+
+const QUEUE_PATH = path.join(__dirname, "scrape-queue.json");
+const RAW_PATH = path.join(__dirname, "..", "data", "raw", "plumbers-latest.json");
+const SYNTH_PATH = path.join(__dirname, "..", "data", "synthesized", "plumbers-synthesized.json");
+const LEADERBOARD_PATH = path.join(__dirname, "..", "data", "synthesized", "leaderboard.json");
+const LOG_DIR = path.join(__dirname, "..", "data", "logs");
+
+// ---------------------------------------------------------------------------
+// Safety constants
+// ---------------------------------------------------------------------------
+
+const MAX_DAILY_CALLS = 50;
+const MIN_DAILY_CALLS = 20;
+const MONTHLY_BUFFER = 50; // stop at budget - 50
+const RATE_LIMIT_MS = 300;
+const SYNTH_RATE_LIMIT_MS = 500;
+
+// ---------------------------------------------------------------------------
+// Load env
+// ---------------------------------------------------------------------------
+
+function loadEnv() {
+  const envPath = path.join(__dirname, "..", ".env.local");
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, "utf-8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const val = trimmed.slice(eqIdx + 1).trim();
+    if (!process.env[key]) process.env[key] = val;
+  }
+}
+
+loadEnv();
+
+const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+if (!GOOGLE_API_KEY) {
+  console.error("ERROR: GOOGLE_PLACES_API_KEY missing. Set in .env.local.");
+  process.exit(1);
+}
+if (!ANTHROPIC_API_KEY) {
+  console.error("ERROR: ANTHROPIC_API_KEY missing. Set in .env.local.");
+  process.exit(1);
+}
+
+// ---------------------------------------------------------------------------
+// Logging
+// ---------------------------------------------------------------------------
+
+const today = new Date().toISOString().slice(0, 10);
+fs.mkdirSync(LOG_DIR, { recursive: true });
+const logFile = path.join(LOG_DIR, `daily-scrape-${today}.log`);
+const logStream = fs.createWriteStream(logFile, { flags: "a" });
+
+function log(msg) {
+  const ts = new Date().toISOString();
+  const line = `[${ts}] ${msg}`;
+  console.log(line);
+  logStream.write(line + "\n");
+}
+
+// ---------------------------------------------------------------------------
+// API call counter
+// ---------------------------------------------------------------------------
+
+let apiCallsMade = 0;
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+function slugify(text) {
+  return text.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function formatPhone(raw) {
+  if (!raw) return "";
+  const digits = raw.replace(/\D/g, "");
+  const d = digits.startsWith("1") && digits.length === 11 ? digits.slice(1) : digits;
+  if (d.length === 10) return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+  return raw;
+}
+
+function daysLeftInMonth() {
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  return lastDay - now.getDate() + 1; // include today
+}
+
+function currentMonthKey() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+}
+
+// ---------------------------------------------------------------------------
+// Google Places API — with call counting
+// ---------------------------------------------------------------------------
+
+async function textSearch(query) {
+  const url = new URL("https://maps.googleapis.com/maps/api/place/textsearch/json");
+  url.searchParams.set("query", query);
+  url.searchParams.set("key", GOOGLE_API_KEY);
+  url.searchParams.set("type", "plumber");
+
+  apiCallsMade++;
+  const res = await fetch(url.toString());
+  const data = await res.json();
+
+  if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
+    log(`  API error: ${data.status} — ${data.error_message || ""}`);
+    return [];
+  }
+  return data.results || [];
+}
+
+async function getPlaceDetails(placeId) {
+  const url = new URL("https://maps.googleapis.com/maps/api/place/details/json");
+  url.searchParams.set("place_id", placeId);
+  url.searchParams.set("key", GOOGLE_API_KEY);
+  url.searchParams.set("fields",
+    "place_id,name,formatted_address,geometry,rating,user_ratings_total," +
+    "formatted_phone_number,international_phone_number,website,opening_hours," +
+    "business_status,types,reviews,price_level,editorial_summary"
+  );
+
+  apiCallsMade++;
+  const res = await fetch(url.toString());
+  const data = await res.json();
+
+  if (data.status !== "OK") {
+    log(`  Details error for ${placeId}: ${data.status}`);
+    return null;
+  }
+  return data.result || null;
+}
+
+// ---------------------------------------------------------------------------
+// Transform place result
+// ---------------------------------------------------------------------------
+
+function transformPlace(place, city, region) {
+  const name = place.name || "Unknown";
+  const phone = place.formatted_phone_number || place.international_phone_number || "";
+  const hours = place.opening_hours?.weekday_text || null;
+
+  return {
+    placeId: place.place_id,
+    name,
+    slug: slugify(name),
+    phone: formatPhone(phone),
+    website: place.website || null,
+    address: place.formatted_address || "",
+    city,
+    state: "IL",
+    region,
+    location: place.geometry?.location
+      ? { lat: place.geometry.location.lat, lng: place.geometry.location.lng }
+      : null,
+    googleRating: place.rating || null,
+    googleReviewCount: place.user_ratings_total || 0,
+    businessStatus: place.business_status || "OPERATIONAL",
+    types: place.types || [],
+    priceLevel: place.price_level ?? null,
+    editorialSummary: place.editorial_summary?.overview || null,
+    reviews: (place.reviews || []).map((r) => ({
+      author: r.author_name || "Anonymous",
+      rating: r.rating || 0,
+      text: r.text || "",
+      time: r.time ? new Date(r.time * 1000).toISOString() : "",
+      relativeTime: r.relative_time_description || "",
+    })),
+    is24Hour: hours ? hours.some((h) => h.toLowerCase().includes("open 24 hours")) : false,
+    workingHours: hours,
+    scrapedAt: new Date().toISOString(),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Claude API for synthesis
+// ---------------------------------------------------------------------------
+
+async function callClaude(prompt) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1024,
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Claude API error (${res.status}): ${text.slice(0, 300)}`);
+  }
+
+  const data = await res.json();
+  return data.content[0]?.text || "";
+}
+
+function buildSynthesisPrompt(plumber) {
+  const reviewText = plumber.reviews
+    .map((r, i) => `Review ${i + 1} (${r.rating}/5 by ${r.author}): "${r.text}"`)
+    .join("\n");
+
+  return `You are analyzing Google reviews for a plumbing company to help homeowners decide who to hire for emergencies.
+
+BUSINESS: ${plumber.name}
+CITY: ${plumber.city}, IL
+GOOGLE RATING: ${plumber.googleRating || "N/A"}/5 (${plumber.googleReviewCount || 0} reviews)
+24-HOUR SERVICE: ${plumber.is24Hour ? "Yes" : "Unknown"}
+
+REVIEWS:
+${reviewText || "No review text available."}
+
+Analyze these reviews and return a JSON object (no markdown, no code fences, just raw JSON) with these exact fields:
+
+{
+  "score": <number 1-100, your overall trust/quality score>,
+  "trustLevel": <"high" | "moderate" | "low">,
+  "summary": <string, 2-3 sentences written for a homeowner deciding whether to call this plumber in an emergency>,
+  "strengths": [<up to 4 short strings>],
+  "weaknesses": [<up to 3 short strings>],
+  "bestFor": [<up to 3 strings like "emergency repairs", "bathroom remodels", "water heater replacement">],
+  "redFlags": [<strings describing serious concerns, empty array if none>],
+  "priceSignal": <"budget" | "mid-range" | "premium" | "unknown">,
+  "topQuote": <string, the most helpful/positive customer quote from the reviews, or null>,
+  "worstQuote": <string, the most concerning customer quote, or null>
+}
+
+If there are very few reviews, be conservative with the score. Weight emergency responsiveness and reliability heavily.`;
+}
+
+function parseSynthesis(text) {
+  let cleaned = text.trim();
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  }
+  const parsed = JSON.parse(cleaned);
+  if (typeof parsed.score !== "number" || parsed.score < 1 || parsed.score > 100) {
+    throw new Error(`Invalid score: ${parsed.score}`);
+  }
+  return {
+    score: parsed.score,
+    trustLevel: parsed.trustLevel || "moderate",
+    summary: parsed.summary || "",
+    strengths: parsed.strengths || [],
+    weaknesses: parsed.weaknesses || [],
+    bestFor: parsed.bestFor || [],
+    redFlags: parsed.redFlags || [],
+    priceSignal: parsed.priceSignal || "unknown",
+    topQuote: parsed.topQuote || null,
+    worstQuote: parsed.worstQuote || null,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+async function main() {
+  log("=== Daily Scrape Starting ===");
+
+  // Load queue
+  if (!fs.existsSync(QUEUE_PATH)) {
+    log("ERROR: scrape-queue.json not found");
+    process.exit(1);
+  }
+  const queue = JSON.parse(fs.readFileSync(QUEUE_PATH, "utf-8"));
+
+  // Monthly reset check
+  const monthKey = currentMonthKey();
+  if (queue.currentMonth !== monthKey) {
+    log(`New month detected (${queue.currentMonth} -> ${monthKey}). Resetting usage.`);
+    queue.usedThisMonth = 0;
+    queue.currentMonth = monthKey;
+  }
+
+  // Budget calculations
+  const remainingBudget = queue.monthlyBudget - queue.usedThisMonth - MONTHLY_BUFFER;
+  if (remainingBudget <= 0) {
+    log(`Monthly budget exhausted (${queue.usedThisMonth}/${queue.monthlyBudget} used, ${MONTHLY_BUFFER} buffer). Stopping.`);
+    process.exit(0);
+  }
+
+  const daysLeft = daysLeftInMonth();
+  const rawDailyBudget = Math.floor(remainingBudget / daysLeft);
+  const dailyBudget = Math.max(MIN_DAILY_CALLS, Math.min(MAX_DAILY_CALLS, rawDailyBudget));
+
+  log(`Budget: ${queue.usedThisMonth}/${queue.monthlyBudget} used | ${remainingBudget} remaining | ${daysLeft} days left`);
+  log(`Today's budget: ${dailyBudget} API calls`);
+
+  // Load existing plumber data for dedup
+  let existingPlumbers = {};
+  if (fs.existsSync(RAW_PATH)) {
+    const raw = JSON.parse(fs.readFileSync(RAW_PATH, "utf-8"));
+    for (const p of raw.plumbers) {
+      existingPlumbers[p.placeId] = p;
+    }
+    log(`Loaded ${Object.keys(existingPlumbers).length} existing plumbers for dedup`);
+  }
+
+  // Load existing synthesis data
+  let existingSynthesis = {};
+  if (fs.existsSync(SYNTH_PATH)) {
+    const synth = JSON.parse(fs.readFileSync(SYNTH_PATH, "utf-8"));
+    for (const p of synth.plumbers) {
+      if (p.synthesis) existingSynthesis[p.placeId] = p.synthesis;
+    }
+    log(`Loaded ${Object.keys(existingSynthesis).length} existing syntheses`);
+  }
+
+  // Pick cities from queue that fit today's budget
+  const pending = queue.queue.filter((c) => c.status === "pending");
+  if (pending.length === 0) {
+    log("Queue is empty — all cities scraped!");
+    process.exit(0);
+  }
+
+  const todayCities = [];
+  let estBudgetUsed = 0;
+  for (const city of pending) {
+    if (estBudgetUsed + city.estCalls > dailyBudget) {
+      // If we haven't picked any city yet and this one is close, take it anyway
+      if (todayCities.length === 0 && city.estCalls <= dailyBudget + 10) {
+        todayCities.push(city);
+        estBudgetUsed += city.estCalls;
+      }
+      break;
+    }
+    todayCities.push(city);
+    estBudgetUsed += city.estCalls;
+  }
+
+  if (todayCities.length === 0) {
+    log("No cities fit today's budget. Waiting for tomorrow.");
+    process.exit(0);
+  }
+
+  log(`Today's cities: ${todayCities.map((c) => c.city).join(", ")} (est ${estBudgetUsed} calls)`);
+
+  // =========================================================================
+  // SCRAPE
+  // =========================================================================
+
+  let totalNewPlumbers = 0;
+  let totalDeduped = 0;
+  const citiesProcessed = [];
+
+  for (const cityEntry of todayCities) {
+    const callsBefore = apiCallsMade;
+    const cityName = cityEntry.city;
+    const region = cityEntry.region;
+
+    log(`\nScraping: ${cityName}, IL (${region})`);
+
+    try {
+      await sleep(RATE_LIMIT_MS);
+      const searchResults = await textSearch(`emergency plumber in ${cityName}, Illinois`);
+      log(`  Found ${searchResults.length} search results`);
+
+      let cityNew = 0;
+      let cityDeduped = 0;
+
+      for (const sr of searchResults) {
+        const placeId = sr.place_id;
+
+        // DEDUP: skip Place Details API call if we already have this plumber
+        if (existingPlumbers[placeId]) {
+          cityDeduped++;
+          totalDeduped++;
+          continue;
+        }
+
+        // Hard stop: never exceed daily budget
+        if (apiCallsMade - callsBefore + 1 >= dailyBudget && todayCities.indexOf(cityEntry) < todayCities.length - 1) {
+          log(`  Approaching daily budget, stopping early for ${cityName}`);
+          break;
+        }
+
+        await sleep(RATE_LIMIT_MS);
+        const details = await getPlaceDetails(placeId);
+        if (!details) continue;
+
+        const plumber = transformPlace(details, cityName, region);
+        if (!plumber.phone) {
+          log(`  Skipping ${plumber.name} — no phone`);
+          continue;
+        }
+
+        existingPlumbers[plumber.placeId] = plumber;
+        cityNew++;
+        totalNewPlumbers++;
+      }
+
+      const callsUsed = apiCallsMade - callsBefore;
+      log(`  +${cityNew} new, ${cityDeduped} deduped, ${callsUsed} API calls`);
+
+      // Mark city as done in queue
+      const queueEntry = queue.queue.find((c) => c.city === cityName && c.status === "pending");
+      if (queueEntry) {
+        queueEntry.status = "done";
+      }
+      queue.completed.push({
+        city: cityName,
+        state: cityEntry.state,
+        county: cityEntry.county,
+        region,
+        status: "done",
+        actualCalls: callsUsed,
+        plumbersFound: cityNew,
+        completedAt: today,
+      });
+
+      citiesProcessed.push({ city: cityName, newPlumbers: cityNew, calls: callsUsed });
+    } catch (err) {
+      log(`  FAILED: ${err.message}`);
+      const queueEntry = queue.queue.find((c) => c.city === cityName && c.status === "pending");
+      if (queueEntry) queueEntry.status = "failed";
+    }
+
+    // Update queue after every city
+    queue.usedThisMonth += (apiCallsMade - callsBefore);
+    fs.writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2));
+  }
+
+  // Remove completed/failed from queue array
+  queue.queue = queue.queue.filter((c) => c.status === "pending");
+  fs.writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2));
+
+  // =========================================================================
+  // WRITE RAW DATA
+  // =========================================================================
+
+  const allPlumbersList = Object.values(existingPlumbers);
+  allPlumbersList.sort((a, b) => (b.googleReviewCount || 0) - (a.googleReviewCount || 0));
+
+  const rawOutput = {
+    meta: {
+      scrapedAt: new Date().toISOString(),
+      totalPlumbers: allPlumbersList.length,
+      citiesScraped: queue.completed.length,
+    },
+    plumbers: allPlumbersList,
+  };
+
+  fs.mkdirSync(path.dirname(RAW_PATH), { recursive: true });
+  fs.writeFileSync(RAW_PATH, JSON.stringify(rawOutput, null, 2));
+  log(`\nRaw data saved: ${allPlumbersList.length} total plumbers`);
+
+  // =========================================================================
+  // SYNTHESIZE NEW PLUMBERS
+  // =========================================================================
+
+  const needsSynthesis = allPlumbersList.filter(
+    (p) => !existingSynthesis[p.placeId] && p.reviews && p.reviews.length > 0
+  );
+
+  log(`\nPlumbers needing synthesis: ${needsSynthesis.length}`);
+
+  let synthSuccess = 0;
+  let synthFailed = 0;
+
+  for (let i = 0; i < needsSynthesis.length; i++) {
+    const plumber = needsSynthesis[i];
+    process.stdout.write(`  [${i + 1}/${needsSynthesis.length}] ${plumber.name}... `);
+
+    try {
+      await sleep(SYNTH_RATE_LIMIT_MS);
+      const prompt = buildSynthesisPrompt(plumber);
+      const response = await callClaude(prompt);
+      const synthesis = parseSynthesis(response);
+      existingSynthesis[plumber.placeId] = synthesis;
+      synthSuccess++;
+      console.log(`score=${synthesis.score} (${synthesis.trustLevel})`);
+      log(`  Synthesized: ${plumber.name} — score=${synthesis.score}`);
+    } catch (err) {
+      console.log(`FAILED: ${err.message}`);
+      log(`  Synthesis failed: ${plumber.name} — ${err.message}`);
+      synthFailed++;
+    }
+  }
+
+  // =========================================================================
+  // WRITE SYNTHESIZED DATA + LEADERBOARD
+  // =========================================================================
+
+  const synthesizedPlumbers = allPlumbersList.map((p) => ({
+    ...p,
+    synthesis: existingSynthesis[p.placeId] || null,
+  }));
+
+  const synthOutput = {
+    meta: {
+      ...rawOutput.meta,
+      synthesizedAt: new Date().toISOString(),
+      totalSynthesized: Object.keys(existingSynthesis).length,
+      model: "claude-sonnet-4-20250514",
+    },
+    plumbers: synthesizedPlumbers,
+  };
+
+  fs.mkdirSync(path.dirname(SYNTH_PATH), { recursive: true });
+  fs.writeFileSync(SYNTH_PATH, JSON.stringify(synthOutput, null, 2));
+
+  // Leaderboard
+  const ranked = synthesizedPlumbers
+    .filter((p) => p.synthesis?.score)
+    .sort((a, b) => b.synthesis.score - a.synthesis.score)
+    .map((p, i) => ({
+      rank: i + 1,
+      name: p.name,
+      city: p.city,
+      score: p.synthesis.score,
+      trustLevel: p.synthesis.trustLevel,
+      googleRating: p.googleRating,
+      reviewCount: p.googleReviewCount,
+      phone: p.phone,
+      summary: p.synthesis.summary,
+      bestFor: p.synthesis.bestFor,
+      redFlags: p.synthesis.redFlags,
+    }));
+
+  fs.writeFileSync(LEADERBOARD_PATH, JSON.stringify({
+    generatedAt: new Date().toISOString(),
+    totalRanked: ranked.length,
+    plumbers: ranked,
+  }, null, 2));
+
+  // =========================================================================
+  // SUMMARY
+  // =========================================================================
+
+  log(`\n${"=".repeat(50)}`);
+  log(`Daily scrape complete`);
+  log(`  Cities: ${citiesProcessed.map((c) => `${c.city} (+${c.newPlumbers})`).join(", ")}`);
+  log(`  API calls: ${apiCallsMade}`);
+  log(`  New plumbers: ${totalNewPlumbers}`);
+  log(`  Deduped (skipped): ${totalDeduped}`);
+  log(`  Synthesized: ${synthSuccess} new, ${synthFailed} failed`);
+  log(`  Total plumbers: ${allPlumbersList.length}`);
+  log(`  Total synthesized: ${Object.keys(existingSynthesis).length}`);
+  log(`  Monthly usage: ${queue.usedThisMonth}/${queue.monthlyBudget}`);
+  log(`  Queue remaining: ${queue.queue.length} cities`);
+
+  logStream.end();
+
+  // Return summary for daily-publish
+  return {
+    citiesProcessed,
+    newPlumbers: totalNewPlumbers,
+    totalPlumbers: allPlumbersList.length,
+    apiCalls: apiCallsMade,
+  };
+}
+
+// Run and export result
+main()
+  .then((result) => {
+    // Write result for daily-publish to read
+    const resultPath = path.join(LOG_DIR, `daily-result-${today}.json`);
+    fs.writeFileSync(resultPath, JSON.stringify(result, null, 2));
+    process.exit(0);
+  })
+  .catch((err) => {
+    log(`FATAL: ${err.message}`);
+    logStream.end();
+    process.exit(1);
+  });
