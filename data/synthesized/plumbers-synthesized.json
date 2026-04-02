@@ -1,13 +1,112 @@
 {
   "meta": {
-    "scrapedAt": "2026-04-01T18:10:33.638Z",
-    "totalPlumbers": 71,
-    "citiesScraped": 11,
-    "synthesizedAt": "2026-04-01T18:11:58.013Z",
-    "totalSynthesized": 70,
+    "scrapedAt": "2026-04-02T11:50:33.568Z",
+    "totalPlumbers": 80,
+    "citiesScraped": 12,
+    "synthesizedAt": "2026-04-02T11:51:26.961Z",
+    "totalSynthesized": 79,
     "model": "claude-sonnet-4-20250514"
   },
   "plumbers": [
+    {
+      "placeId": "ChIJZdoGXyK8D4gREXOPmQijezk",
+      "name": "ABC Plumbing, Sewer, Heating, Cooling & Electric",
+      "slug": "abc-plumbing-sewer-heating-cooling-electric",
+      "phone": "(888) 991-3942",
+      "website": "https://www.4abc.com/il",
+      "address": "220 W Campus Dr, Arlington Heights, IL 60004, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 42.135089,
+        "lng": -87.9861425
+      },
+      "googleRating": 4.7,
+      "googleReviewCount": 22975,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "electrician",
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Misha Pendersen",
+          "rating": 5,
+          "text": "Edgar Rodriguez was a phenomenal representative of the company. He was professional, respectful, friendly, and knowledgeable. We also received a free total house inspection for all our plumbing and heating.\n\nGreg Skalski and Pedro Olascoaga installed my new toilet and upgraded the main valve in my powder room. They, too, were professional, courteous, knowledgeable,\nand expedient.\n\nI highly recommend this company.",
+          "time": "2026-03-02T21:17:16.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Scott Norman",
+          "rating": 5,
+          "text": "Very professional and courteous. Did an amazing job with my project. He and his colleague came back early the next day and stayed 12 hours to make sure everything worked. Clean up was amazing. Highly recommend David for electrical needs. Super friendly and great attention to detail. 5 stars for ABC Electric. Will use again. If you get their AI system just follow the prompts, they will call you back quickly. Happy customer!",
+          "time": "2025-11-06T06:03:55.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Samall Hazziez",
+          "rating": 5,
+          "text": "This is ‘Part 2’ from my August 16th post:  The ‘Actual Install’\n\nIf I attempt to communicate my satisfaction with the work, craftsmanship, and professionalism of Esteban and his partner Tyler, it would be an outright ‘INSULT’…!  These guys were (are), simply the best of the ‘BEST’…End-to-End they were focused and meticulous with their work and ‘QUALITY’ checks…WOW, I AM SO PLEASED WITH MY SYSTEM…!\n\nThe actual install/equipment removal was a site to see…’It was like Esteban/Tyler, were building a ‘CASTLE’…It was like they were handling ‘PRECIOUS CARGO’…. Layer, upon Layer…The discipline, the order, the patience (with my questions), their attentiveness to keeping the work area safe and clean.  When it came down to the ‘Verification & Validation’ activities for the system (Testing/Quality Checks), they left ‘ABSOLUTELY NO STONE UN-TURNED’…!\n\nIt has been a long, long, LOOONNNGGG-TIME, sense I (my family) was on the receiving end of excellent service and a quality assured, quality driven product solution.  I and my family are eternally grateful for what the ABC corporation has/is investing in their team[s].\n\nFrom the point of my initial consult and problem eval/assessment with Bob and Tony, through the path of installation/solution validation (testing) with Esteban and Tyler, these guys were absolute champions.  Every home/business should (must) have at their fingertips a master HVAC point of contact.  I recommend (without giving it a second thought), the ABC Team.\n\nI’m not ashamed to admit that I am (at times), a selfish man.  Esteban and Tyler had me believing that I had my own dedicated (quasi) service enablement team.  With that said, Bob M., I will be contacting you ASAP, for my next project/my next consult…’CONSIDER IT DONE’",
+          "time": "2026-01-17T01:08:40.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Muminah Muhammad",
+          "rating": 5,
+          "text": "We are members of ABC and having a membership has its perks.  Our appointment had to be rescheduled twice due to dire emergencies and scheduling conflicts.\n\nThe third appointment ABC scheduled Mr. Darrell Bell, the Drain Technician to come out and inspect our drainage issue.  Mr. Bell was very professional, he introduced himself, listen to our issue and concerns, provided quality service and gave us the best solution going forward.\n\nWe were very impressed that he didn’t make a mess and cleaned up very well when the job was completed.\n\nWell as they say, “the third time’s a charm”.  We are very satisfied with Mr. Bell’s service!\n\n~The Muhammad Family",
+          "time": "2026-01-04T03:08:38.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Sara Qawwas",
+          "rating": 5,
+          "text": "Jose was a great tech helping me with moving and putting back the radiators in my home for some restoration work being done. He was very attentive to details and worked extra time to make sure it was all done properly.\n\nMy 5 star review is mostly for him. Pricing wise I think they over charge quite a bit but I'm happy with the outcome of the work itself!",
+          "time": "2026-02-26T21:04:07.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-02T11:50:32.457Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "ABC Plumbing demonstrates exceptional professionalism and craftsmanship across all services, with technicians consistently praised for their attention to detail, cleanliness, and thorough work. With 24-hour emergency service and a 4.7/5 rating from nearly 23,000 reviews, they appear highly reliable for emergency situations, though expect premium pricing.",
+        "strengths": [
+          "Exceptional professionalism and courtesy",
+          "Meticulous attention to detail and quality",
+          "Thorough cleanup after work",
+          "24-hour emergency availability"
+        ],
+        "weaknesses": [
+          "Higher pricing than competitors",
+          "Occasional scheduling conflicts"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "HVAC installations",
+          "electrical work"
+        ],
+        "redFlags": [],
+        "priceSignal": "premium",
+        "topQuote": "Every home/business should (must) have at their fingertips a master HVAC point of contact. I recommend (without giving it a second thought), the ABC Team.",
+        "worstQuote": "Pricing wise I think they over charge quite a bit but I'm happy with the outcome of the work itself!"
+      }
+    },
     {
       "placeId": "ChIJgZWOWi4ND4gRKmO1_H4v9qE",
       "name": "Black Diamond Plumbing & Mechanical Inc.",
@@ -102,12 +201,7 @@
         "priceSignal": "mid-range",
         "topQuote": "I always get several quotes for big repairs and Black Diamond is always the best!! They are worth every penny. Honest up front pricing, no surprises, service windows are convenient, always on time, no employee turnover (i have had the same techs) and always knowledgeable and respectful.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Crystal Lake",
-        "McHenry",
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJtWd7jKcbD4gRqXWS7x2eeNk",
@@ -205,12 +299,210 @@
         "priceSignal": "unknown",
         "topQuote": "Less than 24 hours later we have a new water heater. Melissa in the back office was great giving us timing expectation. Kyle explained what happened to the old heater and what he did with the new one and why.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJtUl5kEUdD4gRlTUT7q_xMbA",
+      "name": "Mendel Plumbing, Heating & Electric",
+      "slug": "mendel-plumbing-heating-electric",
+      "phone": "(630) 377-3608",
+      "website": "https://www.callmendel.com/?utm_source=GBP&utm_medium=organic",
+      "address": "3N640 N 17th St, St. Charles, IL 60174, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.920476,
+        "lng": -88.3353868
       },
-      "serviceCities": [
-        "Algonquin",
-        "Carpentersville",
-        "Elgin"
-      ]
+      "googleRating": 4.9,
+      "googleReviewCount": 2838,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "electrician",
+        "establishment",
+        "general_contractor",
+        "home_goods_store",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Chris Synal",
+          "rating": 5,
+          "text": "Mendel came out when the original home filter casing finally broke and started pouring out water. No other service company was willing to come or care for concern.\n\nWithin 25 minutes the technician showed up after I shut of the main to the house.  After a an unsuccessful install of the replacement the new housing was faulty also.  After listening and spending beyond the time to care and explain some future issues that might occur in other areas while he waiting couple of hrs for a new housing to arrive we finally have water (note was not the technician fault to wait to hrs it was the gentleman delivering the canister)\n\nThank you and look forward to working with Mendel in the future.\n\nAttached is some before and after shot.",
+          "time": "2026-01-20T02:00:51.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Brandon Gentile",
+          "rating": 5,
+          "text": "Tonight I came home and heard running water.  I called Mendel to the first time and my experience couldn't have been more awesome!!  Jenna took my call and was so professional!  I was all worked up when I called and after she reassured me that a tech would be dispatched, I hung up with her feeling a little more at ease!  Jared was the technician that came out and he was just absolutely great from the second he walked in my door.  He quickly assessed the issue and gave me several options!  He showed me several pictures of the issue(I wasn't getting in the crawl space).  He explained every option and weighed the pros and cons of each option with me.  Once I decided, he had everything needed in his van and he got right to work.  Had the repair done in a fair amount of time and showed me pictures of all the work he did after.  I have future plumbing work that I will need and I will be asking for Jared to come do the work!  10/10 Recommend!",
+          "time": "2026-02-07T03:41:32.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Ed Dziewior",
+          "rating": 5,
+          "text": "Unfortunately woke up on Saturday morning to find our pipes had frozen due to the weather. Called for service and was assured that a technician would be arriving later this morning. Received a text with the technicians' name and estimate  time of arrival. Dave was the technician that arrived and promptly evaluated the situation we were having. He gave us an estimate for the repair and mentioned that if unseen issues appeared we would have to reevaluate the repair cost. This was acceptable to my wife and I. His inspection did not turn up any water leakage. He isolated the area that he felt was the area of concern. He went his truck to get a piece of equipment that would place a electrical charge to the copper pipe to try to heat the pipe and breakup the ice blockage. He was successful in removing the blockage. No damage to the drywall, no split pipe, and running water again throughout the house. Thank you Dave for your experience and dedication in resolving our issue. He has a pleasant personality, listens to your concerns, and does his job professionally and with efficiency which is reassuring.",
+          "time": "2026-01-24T22:14:41.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Andrew Nickel",
+          "rating": 1,
+          "text": "My 78 year old mother, who lives alone, has used Mendel for years.  Recently moved and had them come inspect the furnace.  Technician said it was fine and just needed servicing.  A couple months later, the furnace seemed loud, so she had another tech come out.  This guy said the furnace (less than 10 years old) had deadly problems.  Actually turned the unit off and said he did not want to be in the house with the unit on.  Said needed full replacement right away.  A sales person came out later that day and quoted $25,000+ for new furnace and install.  Said they could come out the very next day, take her money, and put in the new one.  Rush, rush.\n\nShe had another company come out the next day and they said the humidifier needed a new part, but otherwise the furnace was perfectly fine.\n\nDraw your own conclusions.",
+          "time": "2026-03-03T19:29:37.000Z",
+          "relativeTime": "4 weeks ago"
+        },
+        {
+          "author": "Kenneth Weber",
+          "rating": 5,
+          "text": "They sent Paul out on very short notice. He solved our problems quicker than expected was super friendly and gave us great information and technical advice for how to avoid problems in the future. Will absolutely call them the next time we need a plumber.  And definitely I would request Paul if he is available he was OUTSTANDING!",
+          "time": "2026-02-28T16:12:08.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:30 AM – 9:00 PM",
+        "Tuesday: 7:30 AM – 9:00 PM",
+        "Wednesday: 7:30 AM – 9:00 PM",
+        "Thursday: 7:30 AM – 9:00 PM",
+        "Friday: 7:30 AM – 9:00 PM",
+        "Saturday: 8:00 AM – 7:00 PM",
+        "Sunday: 9:00 AM – 7:00 PM"
+      ],
+      "scrapedAt": "2026-04-02T11:50:30.994Z",
+      "synthesis": {
+        "score": 78,
+        "trustLevel": "moderate",
+        "summary": "Mendel Plumbing shows strong emergency response capabilities with quick arrival times and skilled technicians who communicate well. However, a concerning review about aggressive upselling tactics on a vulnerable elderly customer raises trust issues that can't be ignored.",
+        "strengths": [
+          "Excellent emergency response times (25 minutes reported)",
+          "Professional customer service and communication",
+          "Skilled technicians who explain options clearly",
+          "Come equipped with necessary tools and parts"
+        ],
+        "weaknesses": [
+          "Potential aggressive upselling tactics",
+          "May target vulnerable customers for unnecessary expensive work",
+          "Inconsistent assessments between technicians"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "frozen pipe issues",
+          "water filtration problems"
+        ],
+        "redFlags": [
+          "One technician allegedly quoted $25,000+ for unnecessary furnace replacement to elderly customer when only humidifier part was needed"
+        ],
+        "priceSignal": "unknown",
+        "topQuote": "Within 25 minutes the technician showed up after I shut of the main to the house... After listening and spending beyond the time to care and explain some future issues that might occur in other areas while he waiting couple of hrs for a new housing to arrive we finally have water",
+        "worstQuote": "This guy said the furnace (less than 10 years old) had deadly problems. Actually turned the unit off and said he did not want to be in the house with the unit on. Said needed full replacement right away... quoted $25,000+ for new furnace and install"
+      }
+    },
+    {
+      "placeId": "ChIJcVhjR_LkDogRqX0eZAnO2Tw",
+      "name": "Andersen Plumbing, Heating and AC Repair",
+      "slug": "andersen-plumbing-heating-and-ac-repair",
+      "phone": "(630) 557-8405",
+      "website": "https://andersenph.com/aurora-plumbers/?utm_source=google&utm_medium=organic&utm_campaign=gbp_aurora",
+      "address": "700 Terry Ave, Aurora, IL 60506, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7468462,
+        "lng": -88.34324509999999
+      },
+      "googleRating": 4.9,
+      "googleReviewCount": 1727,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "home_goods_store",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Anthony DiAngelo",
+          "rating": 5,
+          "text": "Highly recommend Joe and the Anderson team. Joe replaced our sump pump and was outstanding to work with. He took the time to educate us, clearly laid out all of our options, and explained the trade-offs so we could make an informed decision—no pressure, just solid guidance. The quality of the work was excellent.\n\nWe’ve had Anderson out to our house multiple times over the past few months for different issues, and each experience has been consistently superb. Professional, knowledgeable, and reliable service every time. We wouldn’t hesitate to call Joe or Anderson again.",
+          "time": "2026-02-02T22:31:10.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Mariah Wright",
+          "rating": 5,
+          "text": "Nate & Zach were great! They were on time, very polite and very knowledgeable. Immediately was able to identify the issue and provide a solution. Walked me through everything in a way I understood. Great service all around! “Im just a girl” lol and I was able to explain the issue no problem to my husband as well. 10/10!!",
+          "time": "2026-02-13T18:29:18.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Jeanette Hoffman",
+          "rating": 5,
+          "text": "Jon and Cesar came out to diagnose a noise I heard coming from the furnace. They arrived quickly, were polite and professional and did a thorough inspection of the entire furnace. They were able to figure out the issue and discussed with me the other things they saw that looked like they should be addressed to keep the furnace running smoothly. They offered me different options on what to repair urgently and what should be addressed but could wait a bit longer. They were not pushy at all and explained everything thoroughly while showing me pictures of what they were seeing. I continue to use Anderson because every time I’ve needed them this is the same reliable and professional service I receive.",
+          "time": "2026-02-28T17:49:26.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Max",
+          "rating": 5,
+          "text": "I recently had a bathtub faucet installed by Andersen, and I couldn’t be happier with the experience. Evan and Michelle were professional, courteous, and clearly knew what they were doing. They took the time to make sure everything was installed properly and working perfectly before they left.\n\nTheir workmanship was clean and precise, and they made sure the area was spotless when the job was finished. It’s clear they take pride in the quality of their work. I would definitely recommend this company to anyone looking for reliable and professional plumbing services.",
+          "time": "2026-02-26T23:53:26.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Andre Porche",
+          "rating": 5,
+          "text": "We had an outstanding experience working with Joe Harkins. From the moment he arrived, he demonstrated a high level of professionalism, knowledge, and attention to detail. He took the time to thoroughly assess our home and carefully identify the source of the leak, explaining each step of the process in a clear and reassuring manner.\nJoe truly went above and beyond to ensure we felt confident that the issue was properly diagnosed and that our system was secure. His expertise and patience gave us peace of mind during what could have been a very stressful situation.\nIn addition, he provided thoughtful recommendations for trusted services that could assist with the necessary repairs. That extra level of guidance showed that he genuinely cares about his clients and the long-term well-being of their homes.\nWe highly recommend Joe Harkins to anyone in need of a knowledgeable, dependable, and customer-focused professional.",
+          "time": "2026-02-26T20:49:31.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-02T11:50:31.737Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Andersen Plumbing demonstrates exceptional reliability with consistently professional technicians who take time to educate customers and explain all options without pressure. Multiple customers praise their thorough diagnostics, quality workmanship, and ability to handle both emergency situations and planned repairs with the same high standard of service.",
+        "strengths": [
+          "Thorough diagnosis and explanation of issues",
+          "Professional, knowledgeable technicians",
+          "No-pressure approach with clear options",
+          "Consistent quality across multiple visits"
+        ],
+        "weaknesses": [
+          "All reviews are 5-star which may indicate selective sampling"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "sump pump replacement",
+          "furnace diagnostics and repair"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "We've had Anderson out to our house multiple times over the past few months for different issues, and each experience has been consistently superb. Professional, knowledgeable, and reliable service every time.",
+        "worstQuote": null
+      }
     },
     {
       "placeId": "ChIJdRSS5aBzD4gRCnalkoNxHD0",
@@ -309,12 +601,7 @@
         "priceSignal": "premium",
         "topQuote": "Israel and Mike didn't just stop once the clog was cleared, they went through the pipes multiple times in order to guarantee the pipes were completely clear and told us the further steps to take.",
         "worstQuote": "The price was a bit steep, it was around 720$ for them to do this service which hurt, but unfortunately it wasn't too surprising."
-      },
-      "serviceCities": [
-        "Cary",
-        "Crystal Lake",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJaS-lUz8LD4gRx62LLAXCrCw",
@@ -411,14 +698,105 @@
         "priceSignal": "mid-range",
         "topQuote": "Dan was here within 45 minutes. He looked at the obvious issue but then investigated further to make sure that there were no other related issues such as frozen drain lines, etc. He went through all of the options from doing a simple repair to replace it with a top quality sump pump and backup system. He did not push me in any direction nor try to upsell me.",
         "worstQuote": "Their prices have gone up quite a bit since our last appointment, but I guess it's on par with every other price increase in the country."
+      }
+    },
+    {
+      "placeId": "ChIJ05NlKyy5D4gRUQSMZNOxjFk",
+      "name": "Fly Plumbing & HVAC",
+      "slug": "fly-plumbing-hvac",
+      "phone": "(847) 868-1444",
+      "website": "https://www.flyplumbing.com/",
+      "address": "584 Chaddick Dr, Wheeling, IL 60090, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 42.1282099,
+        "lng": -87.9137441
       },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake",
-        "Fox River Grove",
-        "Lake in the Hills"
-      ]
+      "googleRating": 4.9,
+      "googleReviewCount": 1029,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Catherine Ortiz",
+          "rating": 5,
+          "text": "Great service. Respectful to our property and cleaned up after work was completed.\nWe needed an outdoor spigot replaced and they recommended an anti-freeze spigot which I had no idea was an option.\nThey send us pics of the completed job and accommodated a service latch.\nShawn did a great job. This is our second time using their services and they do not disappoint. I recommend Fly Plumbing.",
+          "time": "2025-11-14T02:30:57.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Michael Hansen",
+          "rating": 5,
+          "text": "A very positive experience with Fly Plumbing. The company is always very responsive and goes above & beyond. I had a back up in my basement on a Sunday evening. I was able to easily reach them and set up a next day appointment (they had offered same day service, but the water had gone down). I requested Adrian (he had been out before) and they accommodated my request without issue. Adrian and Ben came out and addressed the issue. They were communicative, knowledgeable, kind and attentive. They remedied my issue & left my home clean. I highly recommend Adrian, Ben & Fly Plumbing!",
+          "time": "2026-02-03T02:51:29.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Courtney Biewald",
+          "rating": 5,
+          "text": "Miguel and Adrian were amazing. They really helped explain the process of everything they did and tips for the future. I will 100% be a returning customer and will be recommending them to everyone in the area! Thank you again! Excellent service.",
+          "time": "2026-01-26T19:46:27.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "yaakov sugarman",
+          "rating": 5,
+          "text": "Adrian was amazing! He was very thorough and a pleasure to work with. He explained everything clearly, and I would definitely use him again.",
+          "time": "2026-02-20T16:41:17.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Manny Arenivas",
+          "rating": 5,
+          "text": "Got some work done on a few drains in my basement that were overflowing. Mikhail and Mickey did a great job getting everything sealed and cleaned. Very polite, friendly, and efficient. I will only go with this crew for any job moving forward. 5 stars.",
+          "time": "2026-01-14T19:21:53.000Z",
+          "relativeTime": "2 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-02T11:50:32.097Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "Fly Plumbing & HVAC appears to be a highly reliable company with excellent emergency response and professional service. Customers consistently praise their knowledgeable technicians, cleanliness, and clear communication, making them a strong choice for emergency plumbing needs.",
+        "strengths": [
+          "Excellent emergency responsiveness",
+          "Knowledgeable and communicative technicians",
+          "Clean work and property respect",
+          "Consistent quality across multiple visits"
+        ],
+        "weaknesses": [
+          "Limited sample of challenging situations",
+          "All reviews are 5-star (may not show full picture)"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "drain cleaning",
+          "outdoor plumbing work"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "I had a back up in my basement on a Sunday evening. I was able to easily reach them and set up a next day appointment (they had offered same day service, but the water had gone down). Adrian and Ben came out and addressed the issue. They were communicative, knowledgeable, kind and attentive.",
+        "worstQuote": null
+      }
     },
     {
       "placeId": "ChIJ9VBUs04bD4gR_kd_PIfWtYk",
@@ -517,11 +895,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Absolute incredible experience from start to finish with the Restore team. From my very first phone call, everything was handled professionally, clearly, and with real care.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJO-mkwWgUD4gRNIMUtvw8tk8",
@@ -618,14 +992,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Mike is a true honest business owner that genuinely cares about his customers and goes well beyond the norm in regards to typical customer service.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake",
-        "Fox River Grove",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJD6-5Cwl4D4gR9jNsJeI0pjw",
@@ -723,11 +1090,7 @@
         "priceSignal": "mid-range",
         "topQuote": "They literally left the area cleaner than when they arrived. I assumed they would make a mess, so I didn't vacuum up the dust that is frequently in a basement. I also didn't clean up the mess from the basement being flooded. All was cleaned up.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Fox River Grove",
-        "Round Lake"
-      ]
+      }
     },
     {
       "placeId": "ChIJGQDo51sLD4gR5Z0S_vaeM7o",
@@ -825,13 +1188,7 @@
         "priceSignal": "unknown",
         "topQuote": "My furnace stopped working in the middle of the night, and he spent nearly 30 minutes on the phone with me at 4 AM troubleshooting the issue. He was patient, thorough, and even followed up exactly at 8 AM like he promised.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake",
-        "Fox River Grove"
-      ]
+      }
     },
     {
       "placeId": "ChIJZVmilB-9D4gRM24JdyEvKuo",
@@ -928,11 +1285,7 @@
         "priceSignal": "premium",
         "topQuote": "Woke up with no hot water and the water tank leaking. Called two places. The first was a machine left message. Gino picked up on the second ring gave me a rough estimate... His team showed up 1 hours later. They did a great job, cleaned up after, and since there were no issues with the replacement, the estimate was accurate.",
         "worstQuote": "Price not transparent and seemingly high. Senior discount not in invoice detail. Appealing to 'customer service' resulted in the contractor calling me up and was explained away as implied in the final amount. Clumsy and unsatisfying."
-      },
-      "serviceCities": [
-        "Fox River Grove",
-        "Lake Zurich"
-      ]
+      }
     },
     {
       "placeId": "ChIJLxrQhiZxD4gRCW2qayh1twM",
@@ -1031,10 +1384,7 @@
         "priceSignal": "mid-range",
         "topQuote": "He is knowledgeable about the job, very professional, and communicated well. He showed me areas concern, and told me what to do to make sure the problem we had would not be back, but if it does come back, we know who to call!",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "McHenry"
-      ]
+      }
     },
     {
       "placeId": "ChIJh23c9k0OD4gRijQ0QUxwOOk",
@@ -1132,11 +1482,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Had the last thing you want during a cold wave with our boiler giving us no heat to the entire house and Justin was able to come out quickly and troubleshoot the issue... Justin was also able to temporarily provide heat to house while we waited for the part to arrive.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Carpentersville"
-      ]
+      }
     },
     {
       "placeId": "ChIJR6HNYsQFD4gRydHIumRyNjs",
@@ -1234,12 +1580,7 @@
         "priceSignal": "budget",
         "topQuote": "The estimate from Tom's plumbing was by far the best out of the 5 plumbers I asked estimates for. Bob went above and beyond on the job, was quick, and was very respectful.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin",
-        "Streamwood"
-      ]
+      }
     },
     {
       "placeId": "ChIJ9yIJX1CfD4gRvBf7vMZOQNE",
@@ -1333,10 +1674,7 @@
         "priceSignal": "mid-range",
         "topQuote": "This company answered right away and scheduled a call within two hours that same day. Our service technician, Jake, was extremely knowledgeable, honest, and professional. Jake explained everything in detail so that I understood what was broken and what needed to be fixed. He was truly kind and honest. I felt that he was there to help, rather than worrying about being taken advantage of with quotes of unnecessary work.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Fox River Grove"
-      ]
+      }
     },
     {
       "placeId": "ChIJfz_G8rcND4gRrBdQWXTwKC0",
@@ -1433,14 +1771,7 @@
         "priceSignal": "budget",
         "topQuote": "Called Matt on Saturday, found my water heater was leaking pretty bad. He swung bye on Sunday and confirmed the tank was compromised and that we'd need to wait until Monday to replace. Gave me a call at 7:30 am first thing with a quote, price was amazing, well under quotes I got from other larger plumbing companies.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Carpentersville",
-        "Cary",
-        "Fox River Grove",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJo8IYAQtDD4gR85DxpDfxuKU",
@@ -1538,11 +1869,7 @@
         "priceSignal": "unknown",
         "topQuote": "They were very efficient and got everything handled in a very short turnaround time (next day). Overall, they ALL are very friendly and empathetic which truly helps when dealing with plumbing emergencies that always seem to happen at the worst times.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Harvard",
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJmc9k3dAND4gRuhnuvnSryCI",
@@ -1638,14 +1965,7 @@
         "priceSignal": "unknown",
         "topQuote": "came home and my ceiling was about to cave in, called them and they were here in the blink of an eye. Justin did an excellent job and was done in less than 20 minutes. Super friendly and professional.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake",
-        "Fox River Grove",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJWbF8CHVtD4gRYOaFZ1WAFa8",
@@ -1742,14 +2062,103 @@
         "priceSignal": "mid-range",
         "topQuote": "Pedro arrived within 1 hour on a Monday morning after I called for a leak investigation. He is very knowledgeable and thoughtful during the troubleshooting process, and quickly identified the source of the leak.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJk_BXQzgFD4gRlgAgwla0RZ4",
+      "name": "Titan Plumbing & Drain Services",
+      "slug": "titan-plumbing-drain-services",
+      "phone": "(630) 907-9655",
+      "website": "https://www.bringthetitan.com/",
+      "address": "1830 Wallace Ave STE 217, St. Charles, IL 60174, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.9089569,
+        "lng": -88.28073049999999
       },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake",
-        "Fox River Grove",
-        "Lake in the Hills"
-      ]
+      "googleRating": 4.8,
+      "googleReviewCount": 327,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Jessie Zepeda",
+          "rating": 5,
+          "text": "Absolutely wonderful we are happy with Titan. We were pretty much in a jam not only one clog. We had three clogs in our master bedroom and our kitchen and in our laundry room. I know nothing about Plumbing or how to find somebody so I went on the Internet. I found about 10 plumbers and I checked for reviews, after talking to a few plumbers some of them absolutely were scared to work at my home so that terrified me and my wife we didn’t think we’re gonna find any Plumber since we had an old home, wow when I got to tighten I told him I need somebody very experience they sent out Dave, not only did he make us feel calm and cool. He said will be able to do the job. He didn’t turn it down. He actually went over everything with the Plumbing with us and sat down with us and told us what it was our option we said let’s just get it all done so he came on a Saturday not only did he fix one room, but he was able to fix all three rooms my laundry room, my master bedroom and my kitchen. Our plumbing is running great better than before and trust me. Our pipes were really bad so I wanna take Titan and Dave especially for helping us out when we really need them not only do I recommend them. They’re the only people we’re gonna use for our Plumbing trust me if I can give them 10 stars I will let me tell you this they’re pricing was unbelievable. We can afford it. Me and my wife are on a budget. Tighten worked with us. He went over every job and how much it was gonna be. I appreciate that.",
+          "time": "2025-08-02T23:54:41.000Z",
+          "relativeTime": "8 months ago"
+        },
+        {
+          "author": "Michael Trejo",
+          "rating": 5,
+          "text": "Out of the 4 places I called this morning they were the only ones that had a person actually pick up the phone. Schedule a service call for the afternoon but I was able to finally unclog my toilet. I called the cancel and it was smooth with no pressure for them to still come out. If I ever have a plumbing issue I will be coming to Titan.",
+          "time": "2026-03-07T16:57:46.000Z",
+          "relativeTime": "3 weeks ago"
+        },
+        {
+          "author": "Timo Lyons",
+          "rating": 5,
+          "text": "Titan always delivers. I went down to my basement New Year’s Eve and found my hot water heater leaking. A quick call to Titan and they had a plumber out to my place within 2 hours and a new water heater installed shortly after. They were professional, tidy and skilled. I highly recommend these guy!!",
+          "time": "2026-01-08T15:34:25.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "matt trinidad",
+          "rating": 5,
+          "text": "Worked with titan plumbing since we moved into the house and they have been amazing. Recently added a clean out since out house didn’t have one and it’s made fixing any plumbing problems a breeze. david was on site doing amazing work and thoroughly explained the issue and what the options are. Pam was great at coordinating any updates that would come up and wanted to make sure that my plumbing problems were no more. highly recommend.",
+          "time": "2026-01-09T16:30:13.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Janice Holland",
+          "rating": 5,
+          "text": "Titan came out quickly when our sump pump went out. Lou was very professional and answered all our questions. He gave us all our options and the prices so we could choose the sump pump we wanted. Many plumbers just give one option, and that’s what they install. That is what our old plumber did. Lou patiently trained an apprentice plumber that day, even though they were very busy. Lou came back again to install a new backup pump and used a special camera to check our drain tile which also needs work. It was backing up during the heavy rain. This is a really good plumbing company. I would definitely use them again. The company we always used told us to get someone else because they were too busy that day due to heavy rains. Titan is so helpful and cares about the quality of service they provide to their customers.",
+          "time": "2025-08-26T16:28:06.000Z",
+          "relativeTime": "7 months ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:00 AM – 7:00 PM",
+        "Tuesday: 7:00 AM – 7:00 PM",
+        "Wednesday: 7:00 AM – 7:30 PM",
+        "Thursday: 7:00 AM – 7:00 PM",
+        "Friday: 7:00 AM – 7:00 PM",
+        "Saturday: 7:00 AM – 7:00 PM",
+        "Sunday: 8:00 AM – 5:00 PM"
+      ],
+      "scrapedAt": "2026-04-02T11:50:31.367Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Titan Plumbing delivers exceptional emergency service with rapid response times, including New Year's Eve water heater replacement within 2 hours. Their experienced technicians handle complex jobs other plumbers won't take, provide multiple options with transparent pricing, and maintain excellent communication throughout the process.",
+        "strengths": [
+          "Exceptional emergency response (2-hour service on holidays)",
+          "Takes on complex jobs other plumbers refuse",
+          "Transparent pricing with multiple options provided",
+          "Professional communication and thorough explanations"
+        ],
+        "weaknesses": [
+          "Limited sample size of reviews to assess consistency"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "water heater replacement",
+          "complex multi-room plumbing issues"
+        ],
+        "redFlags": [],
+        "priceSignal": "budget",
+        "topQuote": "A quick call to Titan and they had a plumber out to my place within 2 hours and a new water heater installed shortly after. They were professional, tidy and skilled.",
+        "worstQuote": null
+      }
     },
     {
       "placeId": "ChIJza8hVQpHD4gR21DNCVonYDQ",
@@ -1847,10 +2256,7 @@
         "priceSignal": "unknown",
         "topQuote": "They were so professional, friendly and personable. We just bought our townhouse and only rented prior so I guess you could say this was my first rodeo 'Adulting'. I didn't know what to expect and they made the whole process feel so seamless.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Marengo"
-      ]
+      }
     },
     {
       "placeId": "ChIJQzvYQ18TD4gReC8NU6lPfY4",
@@ -1950,13 +2356,104 @@
         "priceSignal": "unknown",
         "topQuote": "We had an emergency sewer overflow with a hole in our pipe and a blockage. They fixed it, helped us understand what was happening and why, and were able to help us navigate some additional preventative sewer lining to save us from a much bigger disaster down the road. They were friendly, and when offering services they didn't put pressure on us to say yes.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJnYW8amAjD4gRfZmT_1D45vk",
+      "name": "Flotek Plumbing",
+      "slug": "flotek-plumbing",
+      "phone": "(630) 465-1139",
+      "website": "https://flotekplumbing.com/?utm_source=GBPlisting&utm_medium=organic",
+      "address": "608 S 1st St, St. Charles, IL 60174, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.9086477,
+        "lng": -88.3124272
       },
-      "serviceCities": [
-        "Algonquin",
-        "Carpentersville",
-        "Huntley",
-        "Lake in the Hills"
-      ]
+      "googleRating": 5,
+      "googleReviewCount": 258,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Betsy Wassilak",
+          "rating": 5,
+          "text": "This review is long overdue. We have used Flotek for a couple years now and in a couple houses. They are always very responsive. Of course things always seem to happen over the weekend. No problem with Flotek. They always respond and will even let you know if it is urgent or can wait. They have replaced an ejector pump, removed an old battery back up and replaced our toilet fill valve and flapper. They seem reasonably priced but I am a believer in sometimes you get what you pay for! Professional and friendly service every time! Thanks Henry and Gabriel!",
+          "time": "2026-02-16T16:58:55.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Cheryl Taylor",
+          "rating": 5,
+          "text": "A backup in the sewage pipes at my place of business left my customers without a bathroom. I called Flotek at 9:00 a.m., the problem was cleared up by noon the same day! They were happy to speak with my septic guy to gather all info beforehand and find the best solution to my problem. Prices were given ahead of time. Very nice guys, will use again- but hopefully not too soon ;)",
+          "time": "2026-02-02T17:58:33.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Joe Kuryla",
+          "rating": 5,
+          "text": "I just had a water softener replaced, and about a year ago I had a water heater replaced in the winter around the holidays.  High quality work, easy to get scheduled, great products, and reasonable prices.  Flotek has become my go-to company for plumbing work.",
+          "time": "2026-02-27T16:51:37.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "J Matthews",
+          "rating": 5,
+          "text": "We hired Flotek Plumbing to replace a hot water heater, install a garbage disposal, run a new water line for our refrigerator, and install a new primary sump pump along with a battery backup.  Flotek was very professional and responsive from the initial meeting for the estimate through the completion of the project.  They were prompt and came prepared.  They completed all the work in one day.  Once the installations were complete, Gabriel spent some time going over everything with me.  I have to say, the quality of their sump pumps is fantastic, they are very quiet.  All in all I highly recommend Flotek for any plumbing needs you may have.",
+          "time": "2025-01-21T12:55:44.000Z",
+          "relativeTime": "a year ago"
+        },
+        {
+          "author": "victor Vukovich",
+          "rating": 5,
+          "text": "Our toilet would not drain properly.\nUpon arrival, Gabriel quickly confirmed the main line was clogged.\nWrote up a proposal and explained in detail what was wrong and what needed to be done. No BS. No extraneous explanation.\n\nYes, an expensive repair but the pricing was fair and the tech was HIGHLY professional and thorough. Plus, per our request, Flotek arrived within less than an hour after we called.",
+          "time": "2025-10-24T22:12:19.000Z",
+          "relativeTime": "5 months ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:00 AM – 6:00 PM",
+        "Tuesday: 7:00 AM – 6:00 PM",
+        "Wednesday: 7:00 AM – 6:00 PM",
+        "Thursday: 7:00 AM – 6:00 PM",
+        "Friday: 7:00 AM – 6:00 PM",
+        "Saturday: 7:00 AM – 4:00 PM",
+        "Sunday: Closed"
+      ],
+      "scrapedAt": "2026-04-02T11:50:30.613Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Flotek Plumbing demonstrates exceptional emergency responsiveness and reliability, with multiple customers praising their quick response times including same-day service and arrival within an hour when requested. Their consistently professional service, transparent pricing, and ability to handle both emergency repairs and complex installations make them a strong choice for urgent plumbing needs.",
+        "strengths": [
+          "Extremely responsive for emergencies",
+          "Professional and thorough technicians",
+          "Transparent upfront pricing",
+          "High-quality work and products"
+        ],
+        "weaknesses": [
+          "Pricing may be on the higher side",
+          "Limited sample of reviews for full assessment"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "sewer line issues",
+          "water heater replacement"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "Plus, per our request, Flotek arrived within less than an hour after we called.",
+        "worstQuote": "Yes, an expensive repair but the pricing was fair"
+      }
     },
     {
       "placeId": "ChIJzyLWlL1HD4gRB9wN3PVCT0Y",
@@ -2058,12 +2555,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Called Hansen, they were here in less than an hour. Brought in the auger and fixed our problem in less than an hour. Great work.",
         "worstQuote": "The exact issue happened again about 40 days later and they told us they only warranty their work for 30 days. A waste $715."
-      },
-      "serviceCities": [
-        "Huntley",
-        "Lake in the Hills",
-        "Marengo"
-      ]
+      }
     },
     {
       "placeId": "ChIJFZBT_mBxD4gRyFeEPxhZoeU",
@@ -2161,11 +2653,7 @@
         "priceSignal": "mid-range",
         "topQuote": "I came home from vacation to a leaking pipe and puddle of water on the floor. Helton was able to come within a couple of hours. Carey immediately put my mind at ease. He diagnosed the problem and explained it to me with a photo.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "McHenry",
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJv-3SRKYFD4gRuhm9MXqRDAk",
@@ -2263,11 +2751,7 @@
         "priceSignal": "budget",
         "topQuote": "I called Alexander Plumbing and they were at our home within the hour! They had the line rodded out and were all done in two hours. AND, they cleaned the floor in the laundry room. Looked like nothing ever happened, all resolved by 11am.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJ7RaryKeWUmMRugOMbPT3624",
@@ -2372,15 +2856,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Konstantin reached out and was able to squeeze me in last minute to provide assistance and repair a copper pipe that was damaged during a remodel project. That speed in which he replied and showed up for the repair, the professionalism, the knowledge, and the efficiency he displayed during the short, quick visit was phenomenal.",
         "worstQuote": "$35,000 DISASTER FROM A SIMPLE CLOGGED TOILET!!! We called 'Emergency Plumbing' with a clogged toilet in August 2024. After their plumber visited us, we ended up with THREE ROOMS DESTROYED BY WATER AND SEWAGE, costing $35,000 IN REPAIRS that took SEVERAL MONTHS, and then later getting dropped by our brand new homeowners insurance due to the claim!"
-      },
-      "serviceCities": [
-        "Deerfield",
-        "Fox River Grove",
-        "Glencoe",
-        "Highland Park",
-        "Northbrook",
-        "Winnetka"
-      ]
+      }
     },
     {
       "placeId": "ChIJM9WGLBgFD4gRXRcNsyiCKVc",
@@ -2479,11 +2955,201 @@
         "priceSignal": "unknown",
         "topQuote": "He is a great guy to work with and is very thorough and up front and explains everything in detail. You can tell he's a guy who cares about the work he does and wants to do the right thing for the home owner.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJTUJoPUzjDogRfFueyqqSdoE",
+      "name": "Restoration Plumbing Inc.",
+      "slug": "restoration-plumbing-inc",
+      "phone": "(630) 879-2900",
+      "website": "http://restorationplbg.com/",
+      "address": "703 Millview Dr, Batavia, IL 60510, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.8417153,
+        "lng": -88.3280692
       },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin"
-      ]
+      "googleRating": 5,
+      "googleReviewCount": 188,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Donna Bode",
+          "rating": 5,
+          "text": "The team at Restoration Plumbing are excellent. Brandon and Aden were the technicians who worked at my house today and they were one-time, communicative, and ensured I understood what they were doing and that I was happy with the results of their work. From Derek, the owner, to every team member of this company you will experience their in-depth knowledgeable, their kindness, and professionalism. There is no other plumbing company I would have out to my home. I am a Realtor and if a client is in need of plumbing services, Derek and his team at Restoration Plumbing is the number I share. A+++ plumbing service and a very easy referral for me to make!",
+          "time": "2026-01-28T20:35:36.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Billy Vigliotti",
+          "rating": 5,
+          "text": "Derek was very responsive from first contact and easy to work with.  Brandon and his son were great on the job.  They supplied and installed a new ejector pump and replaced 2 outdoor faucets. The team was very professional and thorough.\nHighly recommended and will definitely call for any future needs!",
+          "time": "2025-10-08T17:20:55.000Z",
+          "relativeTime": "5 months ago"
+        },
+        {
+          "author": "Rebecca Gorski",
+          "rating": 5,
+          "text": "The individual that installed our shelves drilled into a waste pipe thinking it was a stud, and we didn’t find out until the following evening after using our shower. We called Restoration first thing the next morning and they were able to send someone out that afternoon. Our plumber, Brandon, was incredibly knowledgeable and rolled with all the punches that came from communication with our shelf installer (as it turns out, he had drilled TWO holes into the same pipe). Brandon took the time to be sure the job was done right and answered all of our questions thoroughly and with kindness (and as new homeowners, we had quite a few!). We are so appreciative to have found plumbers we can absolutely trust and they will be our go-to from here on out!",
+          "time": "2025-12-18T19:20:32.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Steve Beach",
+          "rating": 5,
+          "text": "Brandon & Aiden did a great job! They were on time, friendly and affordable! They repaired a small leak we had and were very honest. They only replaced what needed it and did a very professional and clean job! Would definitely recommend!👍🏻🪠",
+          "time": "2025-12-05T20:39:46.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Peter Heald",
+          "rating": 5,
+          "text": "The team at Restoration plumbing did a great job replacing our water heater. They explained everything, gave a fair quote, and worked quickly and cleanly. We trust them for all our plumbing needs.",
+          "time": "2026-02-05T19:08:43.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:30 AM – 5:00 PM",
+        "Tuesday: 7:30 AM – 5:00 PM",
+        "Wednesday: 7:30 AM – 5:00 PM",
+        "Thursday: 7:30 AM – 5:00 PM",
+        "Friday: 7:30 AM – 5:00 PM",
+        "Saturday: Closed",
+        "Sunday: Closed"
+      ],
+      "scrapedAt": "2026-04-02T11:50:33.567Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Restoration Plumbing Inc. demonstrates exceptional reliability and professionalism with consistently high-quality work and excellent communication. Multiple reviews highlight their responsiveness to urgent situations and honest, thorough approach to repairs. This appears to be a trustworthy choice for emergency plumbing needs.",
+        "strengths": [
+          "Highly responsive to urgent situations",
+          "Excellent communication and customer education",
+          "Professional and thorough workmanship",
+          "Honest pricing and recommendations"
+        ],
+        "weaknesses": [
+          "24-hour availability unclear",
+          "Limited sample of review types"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "water heater replacement",
+          "general plumbing repairs"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "We called Restoration first thing the next morning and they were able to send someone out that afternoon. Our plumber, Brandon, was incredibly knowledgeable and rolled with all the punches... Brandon took the time to be sure the job was done right and answered all of our questions thoroughly and with kindness",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJoQvDsnv9DogRk4RlDWxIGZE",
+      "name": "J. Blanton Plumbing, Sewer and Drain",
+      "slug": "j-blanton-plumbing-sewer-and-drain",
+      "phone": "(630) 273-7421",
+      "website": "https://jblantonplumbing.com/geneva",
+      "address": "115 Campbell St #201C, Geneva, IL 60134, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.88583999999999,
+        "lng": -88.3062757
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 178,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Bobby L",
+          "rating": 5,
+          "text": "Mike was very professional and did a great job. They showed up the very next day after my initial estimate and jetting of my drains and they even finished the job by 2:00 with me only having to miss a very small part of my work day to let them. Like I said before they were professional friendly and I had no issues trusting them to be in my home while I went back to work and they definitely proved me to be right by doing a phenomenal job and I would definitely recommend them to friends and family so in my opinion they definitely deserve a free lunch, now wish I would of thought of it cause to be honest they probably deserve 2 free lunches",
+          "time": "2026-03-06T22:07:43.000Z",
+          "relativeTime": "3 weeks ago"
+        },
+        {
+          "author": "Mark Anderson",
+          "rating": 5,
+          "text": "Jovany did a great job explaining the entire process of Hydro Jetting my sewer lines. He cleaned out our entire line from our interior clean out all the way out to the street. We watched the camera back before and after the cleaning. Great to see how much cleaner the lines were after he was done. The equipment was all like new. Jovany was very clean when bringing the jet washing lines and camera into and out of our house.\nHopefully this is the first and last time I'll need this done.",
+          "time": "2025-11-17T18:57:41.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "RAY IVES",
+          "rating": 5,
+          "text": "J Blanton Plumbing and Plumber, Peter Carrillo, did an outstanding job on a very difficult plumbing project at my home. Peter was professional, punctual, and extremely detailed from start to finish. The job required additional parts and unexpected adjustments, and Peter made multiple trips to get the right supplies without hesitation to ensure everything was done properly.\n\nHe was courteous, polite, and treated my home with the highest level of respect. He communicated clearly, worked efficiently, and did not cut corners. It is rare to find someone who combines technical skill with this level of professionalism and integrity.\n\nI highly recommend J Blanton Plumbing and Peter Carrillo to anyone looking for a dependable and highly capable plumber.\n\nRay Ives",
+          "time": "2026-02-17T13:54:41.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Sue Lannin",
+          "rating": 5,
+          "text": "Blanton plumbing technician Thomas Maloney discovered the street parking in my neighborhood can be quite challenging but kept a good sense of humor & commitment to service, which I appreciated. He was thorough & diligent in making the needed installations of new sink & toilet water shutoff valves in Apt B, replacing the badly leaking bathroom sink faucet & its worn out piping, unclogging Apt A’s bathroom tub drain, ensuring that faucets & drains in our tenants‘ bathrooms are now working properly. He communicated clearly what his labor would entail, acquired the necessary parts, cleaned up both work areas, and answered questions to my satisfaction. I highly recommend him as a capable, reliable tradesman who understood the work required. Alex Ybarra from Blanton was the sales rep & cost estimator for the project, so Alex & Tom had communicated about the job, with Tom having seen notes & photos Alex provided, saving me time (no explanations needed!) & giving me confidence in Blanton‘s teamwork & professionalism.",
+          "time": "2026-02-26T19:51:08.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Alexis Black",
+          "rating": 5,
+          "text": "J. Blanton did a sewer liner project for me. Everyone did a great job of communicating what they would be doing and answering my many questions. All of the technicians were courteous and respectful. The work was of high quality and they completed it quickly. Dominic did the jetting on day one, and Colton, Nick and Peter were the team on day two. They were all wonderful to work with and did an excellent job. Thank you!",
+          "time": "2026-02-16T18:47:33.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-02T11:50:33.199Z",
+      "synthesis": {
+        "score": 87,
+        "trustLevel": "high",
+        "summary": "J. Blanton Plumbing consistently delivers professional, high-quality service with excellent communication and attention to detail. Multiple reviewers praise their technicians' professionalism, thoroughness, and ability to handle complex plumbing projects efficiently.",
+        "strengths": [
+          "Highly professional and courteous technicians",
+          "Excellent communication and project explanation",
+          "Quality workmanship without cutting corners",
+          "Clean, organized work practices"
+        ],
+        "weaknesses": [
+          "Limited sample of emergency response times",
+          "No pricing feedback in reviews"
+        ],
+        "bestFor": [
+          "sewer and drain cleaning",
+          "hydro jetting services",
+          "complex plumbing repairs"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "He was courteous, polite, and treated my home with the highest level of respect. He communicated clearly, worked efficiently, and did not cut corners. It is rare to find someone who combines technical skill with this level of professionalism and integrity.",
+        "worstQuote": null
+      }
     },
     {
       "placeId": "ChIJBYFNdRcWD4gR0Ww7YhldxbU",
@@ -2580,11 +3246,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Ron walked me through shutting off the gas and the water and then directed me on how to drain it before he got there. It minimized the damage and he was able to install a new water heater the next day.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Huntley"
-      ]
+      }
     },
     {
       "placeId": "ChIJfz_G8rcND4gRZKaMvghCi3M",
@@ -2681,13 +3343,7 @@
         "priceSignal": "mid-range",
         "topQuote": "My sump pump failed over the weekend, and they were the only company willing to come out on a Sunday without hesitation. The technician arrived on time, quickly diagnosed the issue, and replaced the sump pump efficiently and professionally.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJkyuOpE6HD4gR2c9eSM4C9TA",
@@ -2784,11 +3440,7 @@
         "priceSignal": "budget",
         "topQuote": "So we called Family Rooter and they were able to come out and give us a second opinion which was Much better news than we were expecting. They were able to fix the issue same day (hydro jetting the line), explained everything thoroughly, answered all our questions",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Fox River Grove",
-        "Round Lake"
-      ]
+      }
     },
     {
       "placeId": "ChIJ27laIvpwD4gRQ3bY_2-QCb0",
@@ -2885,11 +3537,7 @@
         "priceSignal": "mid-range",
         "topQuote": "First of all, I had an emergency with a broken pipe and they responded quickly. Dave came out, assessed the problem and expertly repaired thr pipe. Im very happy with the whole experience.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "McHenry",
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJawNwQs4AUyURuTXyeTA3aQo",
@@ -2987,11 +3635,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Called him at 8am on Super Bowl Sunday and answered right away. In fact he was already on his way to another job. Adam showed up ready to work... He completed the install at the quoted cost, and even wiped our floor before he left.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Fox River Grove",
-        "Round Lake"
-      ]
+      }
     },
     {
       "placeId": "ChIJZalbsgYFD4gR5EbjU0kO6YY",
@@ -3088,12 +3732,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Matt from Fox Valley is extremely knowledgeable and is the only plumber who thinks outside of the box unlike many other plumbers who stick to the basics and unable to figure out any issues. Matt helped us diagnose issues that we never knew we had.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin",
-        "Streamwood"
-      ]
+      }
     },
     {
       "placeId": "ChIJWRltYKgYxYERzT6Sb0BFNFc",
@@ -3193,10 +3832,7 @@
         "priceSignal": "mid-range",
         "topQuote": "110% satisfied! Dylan is knowledgeable, timely, professional and clean. He absolutely blows the other plumbers I've used out of the water. Based on what I've paid for smaller jobs, I feel that Turner Plumbings pricing is fair and competitive.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Marengo"
-      ]
+      }
     },
     {
       "placeId": "ChIJh1UZvox5D4gRzbNKJhVNdqA",
@@ -3293,10 +3929,7 @@
         "priceSignal": "mid-range",
         "topQuote": "I had a Sunday afternoon backup of sewage in my basement floor drain. I called and spoke to Keith Jr., who made it by the same day within a couple hours. He talked me through the process and accurately quoted me the cost over the phone.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "McHenry"
-      ]
+      }
     },
     {
       "placeId": "ChIJm9HB8z1zD4gRBcyvYucjBpw",
@@ -3393,14 +4026,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Colin came the same day, determined to find it and fix it -- and he did! So many people, including other professionals that I hired, had searched everywhere down there and given up.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake",
-        "Fox River Grove",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJHcESCGx7D4gRWBzqejED3lc",
@@ -3500,10 +4126,7 @@
         "priceSignal": "budget",
         "topQuote": "I left a message and got a return call within a few minutes. JVS was able to send someone out in less than hour! Christian was able to fix the leak quickly.",
         "worstQuote": "I was not contacted again for 11 days, and after the holiday... Absolutely unacceptable way to run a business."
-      },
-      "serviceCities": [
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJk6M2u5kND4gRpRt1gsRH0GY",
@@ -3602,14 +4225,7 @@
         "priceSignal": "unknown",
         "topQuote": "Even though they were technically closed, they answered my call, gave me instructions for safety until they could arrive the following morning",
         "worstQuote": "Total ripoff! I hired them to take a look for a partially clogged toilet... He said we will remove the whole toilet and unclogged... it will cost you $825!!!"
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Carpentersville",
-        "Cary",
-        "Crystal Lake",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJC6qdj3sDD4gRhQ6IUNCfMDo",
@@ -3707,12 +4323,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Called 3 different plumbers. Ed called me back within minutes and stopped by within 15 to take a look at what needed to be done. Quoted me on the spot, scheduled to have the village shut off the water a few days later and was here a few minutes after the water was turned off.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin",
-        "St. Charles"
-      ]
+      }
     },
     {
       "placeId": "ChIJY_Oi11sUD4gR8JOqpKHLOx0",
@@ -3815,12 +4426,7 @@
         "priceSignal": "mid-range",
         "topQuote": "My furnace decides to go out when it's zero degrees on a Saturday. I call Cork's and they find the part for my 20 year old furnace. Gil shows up and I'm back in business 30 minutes after he arrives. Can't ask for more than that!!!",
         "worstQuote": "never checked the furnace for other problems that could cause the problem and told me to lower the gas valve if the problem persists a highly dangerous thing to do"
-      },
-      "serviceCities": [
-        "Huntley",
-        "Lake in the Hills",
-        "Marengo"
-      ]
+      }
     },
     {
       "placeId": "ChIJIcXOedYED4gRoNmZt1WQqvA",
@@ -3920,11 +4526,7 @@
         "priceSignal": "unknown",
         "topQuote": "I called them this morning and the issue was solved before noon. Excellent service!!!",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJiy2xf09GD4gRuCdskT81Kaw",
@@ -4024,10 +4626,7 @@
         "priceSignal": "mid-range",
         "topQuote": "We had a broken waste line and Kyle came out at midnight to confirm. Rest of the crew came today and fixed it. Excellent work. Nice people. Honest. They don't make them like this anymore.",
         "worstQuote": "Totally not dependable. 1st call -did not bring proper equipment. second call - routed out old cast iron pipe but did not water jet the entire length which made for overflowed sewer again because of debris left in the pipe."
-      },
-      "serviceCities": [
-        "Marengo"
-      ]
+      }
     },
     {
       "placeId": "ChIJp7QyQ-VaD4gRPViUn2vyfcs",
@@ -4127,10 +4726,7 @@
         "priceSignal": "unknown",
         "topQuote": "Not only did they respond with a tech at my house within an hour, but he did the work so quickly and clean. He was very kind and helpful.",
         "worstQuote": "One of your drivers just straight up ran a red light in downtown west Dundee just now. And then when I passed him I saw he was on his phone."
-      },
-      "serviceCities": [
-        "Harvard"
-      ]
+      }
     },
     {
       "placeId": "ChIJBTPc_KwFD4gRvcW2zDzjJVg",
@@ -4227,11 +4823,7 @@
         "priceSignal": "mid-range",
         "topQuote": "They moved their schedule around, got the permits, rented the equipment, etc in the matter of about a day. Most people would have told us 'oh well you'll have to wait', but the Tims CARE and that's the difference.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJq6pqKmoLD4gRRC0wP-8pT9I",
@@ -4329,12 +4921,7 @@
         "priceSignal": "mid-range",
         "topQuote": "John came the next day to help me out. He did a wonderful job and now I have peace of mind and no more sewer back up. They were quick and efficient and very helpful.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Fox River Grove"
-      ]
+      }
     },
     {
       "placeId": "ChIJ0fvv9JIOD4gRUMdMCv6Y1Dg",
@@ -4431,12 +5018,7 @@
         "priceSignal": "budget",
         "topQuote": "We contacted A&T Plumbing due to a leaking expansion tank on our water heater. Logan Mayer came out within the hour and promptly replaced it. The service was excellent and the price extremely fair.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Carpentersville",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJz0NU68YED4gRY2eho4iUmA4",
@@ -4536,11 +5118,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Not only was the company out within 24hrs to assess the situation but also in no way pressured us to replace our current unit, rather, they made us feel comfortable by letting us know we had 'some time' to decide what we wanted to do.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJb39xvnhxD4gREurqMRQBfhU",
@@ -4638,11 +5216,7 @@
         "priceSignal": "mid-range",
         "topQuote": "I had many plumbers come out and his plan was the best and for the best price. Will be using them for any other plumbing projects I need.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Crystal Lake",
-        "McHenry"
-      ]
+      }
     },
     {
       "placeId": "ChIJEbxSn5hzD4gRhdApmQAoU3E",
@@ -4742,12 +5316,7 @@
         "priceSignal": "mid-range",
         "topQuote": "I was in critical condition in the hospital when my ejector pump failed, and they talked with my father and were here for us the very next day. I will not give my business to anyone else.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake"
-      ]
+      }
     },
     {
       "placeId": "ChIJiyU7WhkND4gRAdlNFIe20wA",
@@ -4844,14 +5413,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Very responsive, knowledgeable, respectful. Great quality & he cleaned up everything before he left. We are so thrilled we finally found a trustworthy plumber!",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Carpentersville",
-        "Cary",
-        "Fox River Grove",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJi3rCP_zcoU4RpyAKLO13hwY",
@@ -4952,12 +5514,7 @@
         "priceSignal": "mid-range",
         "topQuote": "I called when our hot water heater sprung a leak around 11:30pm on a Saturday. Joey was at our door by midnight for a diagnosis, back with a replacement unit bright and early on Sunday morning, and completed the installation before noon.",
         "worstQuote": "Poor communication, unclear pricing, and the issue wasn't properly fixed. The whole experience felt unprofessional and frustrating."
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Fox River Grove"
-      ]
+      }
     },
     {
       "placeId": "ChIJGcqiLtEbD4gRw-sVTfMCnVk",
@@ -5058,10 +5615,7 @@
         "priceSignal": "unknown",
         "topQuote": "Joe inspected and found 4 gas leaks. Very lucky my house didn't blow up! Joe replaced gas lines, double checked everything and hot water is back on.",
         "worstQuote": "When i spoke to Bill he told me tough luck and he was rude and said he dosnt work for me so tough luck."
-      },
-      "serviceCities": [
-        "Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJKfSIw5xpD4gRnXtegsIRqjU",
@@ -5161,10 +5715,7 @@
         "priceSignal": "mid-range",
         "topQuote": "From calling to installing a new water heater was less than 3 hours. Efficiency and reliability! Thank you for making my day!!",
         "worstQuote": "However once they get their money they ignore you... That was over three months ago. No refund and they won't return our phone calls... Still waiting for my reimbursement.... Not people you can trust. Stole $700 from us."
-      },
-      "serviceCities": [
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJsRI2e05xD4gRb7-ZjKjhC9I",
@@ -5253,10 +5804,7 @@
         "priceSignal": "budget",
         "topQuote": "Had an emergency situation with a leaking water heater, showed up early, removed, repaired damaged flooring, replaced WH and added a shut off valve! Professional job, highly recommend!",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "McHenry"
-      ]
+      }
     },
     {
       "placeId": "ChIJI20gB1AFD4gR4VQwHRYBm40",
@@ -5353,11 +5901,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Had a problem with big problem with a drain backing up and overflowing gallons of water. Called Anchor. They came, unplugged our drain and were gone all within about 90 minutes.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJX5QHBzmwamUROfIchoylsrE",
@@ -5455,14 +5999,7 @@
         "priceSignal": "unknown",
         "topQuote": "Kyle agreed to come out after hours to look at the issue, it turned out that I had a sewer back up which he routed on the spot and also informed us that the water heater did not need to be replaced. There are really no words to express the relief of not only having the issue fixed in a timely manner but the honestly and helpfulness we experienced.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Carpentersville",
-        "Cary",
-        "Fox River Grove",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJjXBqF6nhwokRJd-KYudmXlo",
@@ -5559,11 +6096,7 @@
         "priceSignal": "unknown",
         "topQuote": "Early one morning I discovered my toilet was overflowing and it felt like a small crisis. Their plumber arrived very quickly, located the issue, and cleared the blockage completely. They even cleaned the area afterward, leaving everything spotless.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Carpentersville",
-        "Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJw4OTVRQfD4gRHH2zVw4jCLY",
@@ -5661,10 +6194,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Best customer service I've ever received. I called Complete Plumbing needing an evaluation and possible repair of two whirlpool tubs at my house and time was of the essence. Tina, one of the owners who answered the phone listened to my problem, looked at pictures I sent and agreed to help me.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Marengo"
-      ]
+      }
     },
     {
       "placeId": "ChIJ9S3VzXcZD4gRuwvU-ORanX4",
@@ -5762,10 +6292,7 @@
         "priceSignal": "mid-range",
         "topQuote": "We've been using Schambach Plumbing and Heating for over 20 years and have always been happy with their fees and quality of service.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin"
-      ]
+      }
     },
     {
       "placeId": "ChIJIWTJB31CD4gRHEYBaKy12wk",
@@ -5857,10 +6384,7 @@
         "priceSignal": "unknown",
         "topQuote": "Matt was at our house the next day to properly diagnose the issue and explore repair options. Unlike the other company, he took the time to map the issue and do the necessary leg work to find the best repair solution.",
         "worstQuote": "While doing so he admittedly cut through electrical wires. I now have multiple outlets that are not working and he is refusing to repair the damages he caused."
-      },
-      "serviceCities": [
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJ15ANcPZtlggRD-c2Bhf_33M",
@@ -5957,12 +6481,7 @@
         "priceSignal": "budget",
         "topQuote": "Called on thanksgiving spoke with Akash and he got his tech Jimmy out and fixed a broken valve on thanksgiving they were great will definitely call again! Great pricing too!",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Elgin",
-        "South Elgin",
-        "Streamwood"
-      ]
+      }
     },
     {
       "placeId": "ChIJKaNTeg0uCaYRvHgez2MnXp8",
@@ -6059,10 +6578,7 @@
         "priceSignal": "mid-range",
         "topQuote": "While we've been having our basement finished our Carpenter found that our Utility area was flooding and contacted Jimmy who was there within 45 minutes and was prepared right then and there to drain, clean the area and fix the problem immediately all while we were at work.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJBxW0I5BHD4gR-tUeSz8Bfbw",
@@ -6154,10 +6670,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Called Matt about an issue I was having with my basement drain over flowing. He immediately knew what the issue was without coming to look. He explained to me how to fix it and was very responsive.",
         "worstQuote": "So what does he do yesterday when he was SCHEDULED to do the work? Doesnt show! Doesnt call! Doesnt return my texts or my calls asking if he got hung up some where and when he might show up."
-      },
-      "serviceCities": [
-        "Marengo"
-      ]
+      }
     },
     {
       "placeId": "ChIJVVWlXJIFD4gRfhED693_uyU",
@@ -6255,10 +6768,7 @@
         "priceSignal": "mid-range",
         "topQuote": "I had a pipe spewing water into my bathroom Monday night, they helped me turn everything off over the phone, then they were in first thing Tuesday morning to make the repair.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Marengo"
-      ]
+      }
     },
     {
       "placeId": "ChIJAwWkSdtsD4gRxiAwTYtp7EY",
@@ -6355,11 +6865,7 @@
         "priceSignal": "mid-range",
         "topQuote": "After calling Dave from D&D plumbing he assured me he could take care of my problem and FAST. Dave showed up asap and took care of a bad situation.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Crystal Lake",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJWWbuBCIND4gRAC13gIu8vGE",
@@ -6457,13 +6963,7 @@
         "priceSignal": "mid-range",
         "topQuote": "Matt is always great to work with. He's an expert in the field of plumbing, and we've never been disappointed in the work we've hired him to do.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Cary",
-        "Crystal Lake",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJmc1IkGJpD4gRhX45J5-cFOc",
@@ -6561,11 +7061,7 @@
         "priceSignal": "mid-range",
         "topQuote": "I received a call back early this morning in less than 20 minutes and someone came to the house immediately. Matt was professional, fair, NEAT, and an amazingly friendly guy with sparkling conversational skills!",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Marengo",
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJmzz_32ATD4gRcSV5dtwelgk",
@@ -6664,13 +7160,7 @@
         "priceSignal": "unknown",
         "topQuote": "My boyfriend and I were so thankful that Todd made it out on one of the coldest days of the year! Our main water pipe froze in our garage and we didn't catch it until it had started to split... he was out way sooner than I expected. He worked quickly and we were able to have the city turn the water back on before the workers were done for the day.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Crystal Lake",
-        "Huntley",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJf7pMKo0TD4gRHfz1M1iAjWY",
@@ -6768,13 +7258,7 @@
         "priceSignal": "mid-range",
         "topQuote": "From the moment Dave and Elite Plumbing and Piping showed up, a real sense of professionalism showed up at my door... Each issue was explained to me at length with a price quote for each project, so I could address what I could afford. Reasonable and thorough all projects were completed meticulously and accurately in one day.",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Algonquin",
-        "Crystal Lake",
-        "Huntley",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJH8579_JaD4gR6Ii_pBPl2rQ",
@@ -6872,10 +7356,107 @@
         "priceSignal": "budget",
         "topQuote": "The tech was on time with a smile on his face. The work was excellent and informative. The prices were very reasonable.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJbwMm-1MDD4gRdQPbMzK6ZAA",
+      "name": "Dorr Plumbing & Heating LLC",
+      "slug": "dorr-plumbing-heating-llc",
+      "phone": "(630) 377-0796",
+      "website": "https://www.dorrplumb.com/",
+      "address": "824 W Main St Suite 2, St. Charles, IL 60174, USA",
+      "city": "St. Charles",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.9131585,
+        "lng": -88.3236119
       },
-      "serviceCities": [
-        "Harvard"
-      ]
+      "googleRating": 5,
+      "googleReviewCount": 5,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "home_goods_store",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Jacob Samuel",
+          "rating": 5,
+          "text": "Cameron did an excellent job addressing a problem we had in our shower and he installed the new handle with no issues. Very knowledgeable and friendly. Highly recommend this company for your plumbing needs.",
+          "time": "2025-11-13T18:43:51.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "raymond kredell",
+          "rating": 5,
+          "text": "Cameron was super helpful! He quickly solved our plumbing problem at a good price and took the time to make sure we knew the right way to flush the system when he was done. Good service!",
+          "time": "2024-04-12T19:37:08.000Z",
+          "relativeTime": "a year ago"
+        },
+        {
+          "author": "Alex Fritz",
+          "rating": 5,
+          "text": "THESE GUYS ARE HONEST AND A GREAT COMPANY. These guys saved me thousands of dollars on unnecessary work other companies wanted to do. THESE ARE GUYS YOU CAN TRUST. I will never use another plumbing company again and will recommend Dorr to anyone.",
+          "time": "2024-07-23T17:25:05.000Z",
+          "relativeTime": "a year ago"
+        },
+        {
+          "author": "Sue Wade",
+          "rating": 5,
+          "text": "Dorr plumbing comes through again, this morning I woke up to water by our floor drain, call Dorr about 10 am and they were at my house around 12:30\nDid the rooting thing and cleaned out our trap.  Little over an hour we had our water running with no clogs.\nThey are the best.",
+          "time": "2023-09-19T19:06:02.000Z",
+          "relativeTime": "2 years ago"
+        },
+        {
+          "author": "Andrew Morris",
+          "rating": 5,
+          "text": "These folks are always very responsive, helpful, and efficient in performing repairs! They are all friendly on top of it!",
+          "time": "2024-09-26T13:57:19.000Z",
+          "relativeTime": "a year ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 8:00 AM – 4:30 PM",
+        "Tuesday: 8:00 AM – 4:30 PM",
+        "Wednesday: 8:00 AM – 4:30 PM",
+        "Thursday: 8:00 AM – 4:30 PM",
+        "Friday: 8:00 AM – 4:30 PM",
+        "Saturday: Closed",
+        "Sunday: Closed"
+      ],
+      "scrapedAt": "2026-04-02T11:50:32.821Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "Dorr Plumbing appears to be a highly reliable company with excellent customer service and honest practices. Their same-day emergency response and trustworthy approach make them a solid choice for urgent plumbing needs.",
+        "strengths": [
+          "Same-day emergency response",
+          "Honest pricing and recommendations",
+          "Knowledgeable and friendly technicians",
+          "Educational customer service"
+        ],
+        "weaknesses": [
+          "Very small sample size of reviews",
+          "No information about 24/7 availability"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "drain cleaning",
+          "fixture repairs"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "THESE GUYS ARE HONEST AND A GREAT COMPANY. These guys saved me thousands of dollars on unnecessary work other companies wanted to do. THESE ARE GUYS YOU CAN TRUST.",
+        "worstQuote": null
+      }
     },
     {
       "placeId": "ChIJi0ycYoNpD4gR500i9jPQYXs",
@@ -6964,10 +7545,7 @@
         "priceSignal": "budget",
         "topQuote": "Cool Plumbing in Woodstock team is fast, quality, correct and professional attitude on the part of the workers in this company. Their prices are one of the best in the industry.",
         "worstQuote": "never got an answering machine/voicemail and never a callback. I guess the owners of this place aren't interested in actually having anyone stay"
-      },
-      "serviceCities": [
-        "Woodstock"
-      ]
+      }
     },
     {
       "placeId": "ChIJ6cACv-gVD4gR4tx_JIL85UU",
@@ -7049,11 +7627,7 @@
         "priceSignal": "unknown",
         "topQuote": "Best of the best",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Huntley",
-        "Lake in the Hills"
-      ]
+      }
     },
     {
       "placeId": "ChIJY9OgrKWLBYgRsO2vqdpU_-U",
@@ -7112,10 +7686,7 @@
         "priceSignal": "unknown",
         "topQuote": "Quality work and a friendly, professional team!",
         "worstQuote": null
-      },
-      "serviceCities": [
-        "Harvard"
-      ]
+      }
     },
     {
       "placeId": "ChIJKQkWO6RHD4gRPuflQUtD7Z0",
@@ -7153,10 +7724,7 @@
         "Sunday: Closed"
       ],
       "scrapedAt": "2026-04-01T17:21:52.806Z",
-      "synthesis": null,
-      "serviceCities": [
-        "Marengo"
-      ]
+      "synthesis": null
     }
   ]
 }

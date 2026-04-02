@@ -1,16 +1,8 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 85,
+  "usedThisMonth": 95,
   "currentMonth": "2026-04",
   "queue": [
-    {
-      "city": "St. Charles",
-      "state": "IL",
-      "county": "Kane",
-      "region": "Fox Valley",
-      "status": "pending",
-      "estCalls": 18
-    },
     {
       "city": "Geneva",
       "state": "IL",
@@ -962,6 +954,16 @@
       "actualCalls": 15,
       "plumbersFound": 14,
       "completedAt": "2026-04-01"
+    },
+    {
+      "city": "St. Charles",
+      "state": "IL",
+      "county": "Kane",
+      "region": "Fox Valley",
+      "status": "done",
+      "actualCalls": 10,
+      "plumbersFound": 9,
+      "completedAt": "2026-04-02"
     }
   ]
 }
