@@ -33,11 +33,11 @@ export default function DirectoryFilters({ cities }: DirectoryFiltersProps) {
     (newCity: string, newTrust: string, newPrice: string) => {
       const cards = document.querySelectorAll<HTMLElement>("#plumber-list > div");
       cards.forEach((card) => {
-        const cardCity = card.dataset.city ?? "";
+        const cardCities = (card.dataset.cities ?? "").split(",");
         const cardTrust = card.dataset.trust ?? "";
         const cardPrice = card.dataset.price ?? "";
 
-        const matchCity = !newCity || cardCity === newCity;
+        const matchCity = !newCity || cardCities.includes(newCity);
         const matchTrust = !newTrust || cardTrust === newTrust;
         const matchPrice = !newPrice || cardPrice === newPrice;
 

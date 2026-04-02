@@ -44,6 +44,7 @@ export interface SynthesizedPlumber {
   workingHours: string[] | null;
   scrapedAt: string;
   synthesis: PlumberSynthesis | null;
+  serviceCities?: string[];
 }
 
 interface SynthesizedData {
@@ -90,7 +91,14 @@ export function getPlumbersRanked(): SynthesizedPlumber[] {
 }
 
 export function getUniqueCities(): string[] {
-  const cities = new Set(loadData().plumbers.map((p) => p.city));
+  const cities = new Set<string>();
+  for (const p of loadData().plumbers) {
+    if (p.serviceCities) {
+      for (const c of p.serviceCities) cities.add(c);
+    } else {
+      cities.add(p.city);
+    }
+  }
   return [...cities].sort();
 }
 

@@ -63,7 +63,7 @@ export default function PlumbersDirectoryPage() {
               key={plumber.placeId}
               className="rounded-xl p-4 relative"
               style={{ border: hasRedFlags ? "1.5px solid #F09595" : "0.5px solid #E5E7EB" }}
-              data-city={plumber.city}
+              data-cities={plumber.serviceCities ? plumber.serviceCities.join(",") : plumber.city}
               data-trust={s?.trustLevel ?? ""}
               data-price={s?.priceSignal ?? ""}
             >

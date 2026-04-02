@@ -54,10 +54,13 @@ const ZIP_MAP: Record<string, string> = {
   "60016": "Des Plaines", "60018": "Des Plaines",
 };
 
-// Cities that have plumber data
+// Cities that have plumber coverage (scraped + 5-mile service radius)
 const COVERED_CITIES = [
-  "Algonquin", "Cary", "Crystal Lake", "Elgin", "Fox River Grove",
-  "Harvard", "Huntley", "Lake in the Hills", "Marengo", "McHenry", "Woodstock",
+  "Algonquin", "Carpentersville", "Cary", "Crystal Lake", "Deerfield",
+  "Elgin", "Fox River Grove", "Glencoe", "Harvard", "Highland Park",
+  "Huntley", "Lake in the Hills", "Lake Zurich", "Marengo", "McHenry",
+  "Northbrook", "Round Lake", "South Elgin", "St. Charles", "Streamwood",
+  "Winnetka", "Woodstock",
 ];
 
 // All cities in our service area for suggestions
