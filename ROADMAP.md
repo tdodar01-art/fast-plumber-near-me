@@ -213,7 +213,7 @@ Start building our own quality data that doesn't depend on Google. Every user in
 
 **Technical SEO:** (MOSTLY DONE)
 - [x] XML sitemap auto-updates from cities-data (fixed broken plumber-data import)
-- [ ] Submit sitemap to Google Search Console (Tim to do manually)
+- [x] Submit sitemap to Google Search Console — 2,321 pages discovered (April 3, 2026)
 - [ ] Verify GA4 tracking is firing correctly (Tim to verify)
 - [x] Internal linking — every city page links to nearby cities
 - [x] Canonical URLs — metadataBase handles this for all pages
@@ -361,7 +361,7 @@ Phase 1 is ~90% complete. The code is built — remaining work is operational.
 5. **Update GitHub Actions workflow** — push `scripts/daily-scrape-workflow-v2.yml` to `.github/workflows/daily-scrape.yml` using a token with `workflow` scope
 
 ### Before Phase 2
-6. **Submit sitemap** to Google Search Console, verify GA4
+6. ~~Submit sitemap to Google Search Console~~ — DONE (2,321 pages). Verify GA4
 7. **Create favicon/icons** at /icon-192.png and /icon-512.png
 8. **Fill missing city coordinates** — 1600+ cities need lat/lng
 9. **Mobile QA pass**
