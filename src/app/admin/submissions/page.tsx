@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy, doc, deleteDoc, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, Check, X } from "lucide-react";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface Submission {
   id: string;
@@ -20,6 +21,7 @@ interface Submission {
 export default function AdminSubmissionsPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirm, setConfirm] = useState<{ action: "approve" | "reject"; sub: Submission } | null>(null);
 
   useEffect(() => {
     async function fetch() {
@@ -115,14 +117,14 @@ export default function AdminSubmissionsPage() {
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => approve(sub)}
+                    onClick={() => setConfirm({ action: "approve", sub })}
                     className="p-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors"
                     title="Approve"
                   >
                     <Check className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => reject(sub.id)}
+                    onClick={() => setConfirm({ action: "reject", sub })}
                     className="p-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors"
                     title="Reject"
                   >
@@ -134,6 +136,24 @@ export default function AdminSubmissionsPage() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirm !== null}
+        title={confirm?.action === "approve" ? "Approve Submission?" : "Reject Submission?"}
+        message={
+          confirm?.action === "approve"
+            ? `This will create a plumber listing for "${confirm.sub.businessName}" and delete the submission.`
+            : `This will permanently delete the submission from "${confirm?.sub.businessName}".`
+        }
+        confirmLabel={confirm?.action === "approve" ? "Approve" : "Reject"}
+        confirmVariant={confirm?.action === "approve" ? "success" : "danger"}
+        onConfirm={() => {
+          if (confirm?.action === "approve") approve(confirm.sub);
+          else if (confirm) reject(confirm.sub.id);
+          setConfirm(null);
+        }}
+        onCancel={() => setConfirm(null)}
+      />
     </>
   );
 }

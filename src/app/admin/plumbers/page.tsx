@@ -5,11 +5,13 @@ import { collection, getDocs, query, orderBy, doc, updateDoc } from "firebase/fi
 import { db } from "@/lib/firebase";
 import { Search, ToggleLeft, ToggleRight, Loader2, ExternalLink } from "lucide-react";
 import type { Plumber } from "@/lib/types";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function AdminPlumbersPage() {
   const [plumbers, setPlumbers] = useState<Plumber[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [confirm, setConfirm] = useState<{ id: string; name: string; isActive: boolean } | null>(null);
 
   useEffect(() => {
     async function fetch() {
@@ -97,7 +99,7 @@ export default function AdminPlumbersPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <button onClick={() => toggleActive(p.id, p.isActive)} className="text-gray-500 hover:text-primary">
+                    <button onClick={() => setConfirm({ id: p.id, name: p.businessName, isActive: p.isActive })} className="text-gray-500 hover:text-primary">
                       {p.isActive ? <ToggleRight className="w-6 h-6 text-green-600" /> : <ToggleLeft className="w-6 h-6 text-gray-400" />}
                     </button>
                   </td>
@@ -110,6 +112,23 @@ export default function AdminPlumbersPage() {
           <div className="text-center py-8 text-gray-500">No plumbers found</div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirm !== null}
+        title={confirm?.isActive ? "Deactivate Plumber?" : "Activate Plumber?"}
+        message={
+          confirm?.isActive
+            ? `"${confirm.name}" will be hidden from all city pages.`
+            : `"${confirm?.name}" will appear on city pages.`
+        }
+        confirmLabel={confirm?.isActive ? "Deactivate" : "Activate"}
+        confirmVariant={confirm?.isActive ? "danger" : "success"}
+        onConfirm={() => {
+          if (confirm) toggleActive(confirm.id, confirm.isActive);
+          setConfirm(null);
+        }}
+        onCancel={() => setConfirm(null)}
+      />
     </>
   );
 }

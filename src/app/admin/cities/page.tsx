@@ -5,11 +5,13 @@ import { collection, getDocs, query, orderBy, doc, updateDoc } from "firebase/fi
 import { db } from "@/lib/firebase";
 import { Loader2, ToggleLeft, ToggleRight, Search } from "lucide-react";
 import type { City } from "@/lib/types";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function AdminCitiesPage() {
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [confirm, setConfirm] = useState<{ id: string; name: string; isPublished: boolean } | null>(null);
 
   useEffect(() => {
     async function fetch() {
@@ -72,7 +74,7 @@ export default function AdminCitiesPage() {
                   <td className="px-4 py-3 text-gray-600">{city.county}</td>
                   <td className="px-4 py-3 text-gray-600">{city.plumberCount}</td>
                   <td className="px-4 py-3">
-                    <button onClick={() => togglePublished(city.id, city.isPublished)}>
+                    <button onClick={() => setConfirm({ id: city.id, name: city.name, isPublished: city.isPublished })}>
                       {city.isPublished ? <ToggleRight className="w-6 h-6 text-green-600" /> : <ToggleLeft className="w-6 h-6 text-gray-400" />}
                     </button>
                   </td>
@@ -85,6 +87,23 @@ export default function AdminCitiesPage() {
           <div className="text-center py-8 text-gray-500">No cities found</div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirm !== null}
+        title={confirm?.isPublished ? "Unpublish City?" : "Publish City?"}
+        message={
+          confirm?.isPublished
+            ? `"${confirm.name}" will be removed from the public directory.`
+            : `"${confirm?.name}" will appear in the public directory.`
+        }
+        confirmLabel={confirm?.isPublished ? "Unpublish" : "Publish"}
+        confirmVariant={confirm?.isPublished ? "danger" : "success"}
+        onConfirm={() => {
+          if (confirm) togglePublished(confirm.id, confirm.isPublished);
+          setConfirm(null);
+        }}
+        onCancel={() => setConfirm(null)}
+      />
     </>
   );
 }
