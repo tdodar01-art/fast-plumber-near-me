@@ -16,21 +16,43 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary via-primary-dark to-primary text-white py-16 sm:py-24">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight mb-4">
-            Find a Reliable Emergency Plumber
-            <span className="text-accent-light"> — Right Now</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-blue-200 max-w-2xl mx-auto mb-8">
-            We don&apos;t just list plumbers — we call them to verify they actually pick up
-            the phone and show up. Find 24/7 emergency plumbers you can trust.
-          </p>
-          <CitySearch />
-          <div className="flex items-center justify-center gap-1.5 mt-3">
-            <UseMyLocation cities={cityCoords} />
+      <section className="bg-gradient-to-br from-primary via-primary-dark to-primary text-white py-14 sm:py-24">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-8 sm:mb-10">
+            <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight mb-4">
+              Find a Reliable Emergency Plumber
+              <span className="text-accent-light"> — Right Now</span>
+            </h1>
+            <p className="text-lg sm:text-xl text-blue-200 max-w-2xl mx-auto">
+              We don&apos;t just list plumbers — we verify they actually pick up
+              the phone and show up. Real reviews, real ratings, real response times.
+            </p>
           </div>
-          <div className="flex items-center justify-center gap-6 mt-4 text-sm text-blue-300">
+
+          {/* Floating CTA card */}
+          <div className="max-w-lg mx-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 sm:p-8">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 text-center mb-1">
+              Find an Emergency Plumber Near You
+            </h2>
+            <p className="text-sm text-gray-500 text-center mb-5">
+              Enter your zip code or city to see rated plumbers in your area
+            </p>
+            <CitySearch />
+            <div className="mt-4 flex flex-col items-center gap-3">
+              <UseMyLocation cities={cityCoords} />
+              {process.env.NEXT_PUBLIC_BUSINESS_PHONE && (
+                <a
+                  href={`tel:${process.env.NEXT_PUBLIC_BUSINESS_PHONE}`}
+                  className="flex items-center gap-2 text-sm font-semibold text-accent hover:text-accent-dark transition-colors"
+                >
+                  <Phone className="w-4 h-4" />
+                  Call for Emergency Help Now
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-blue-300">
             <span className="flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
               {totalCities} cities

@@ -166,31 +166,30 @@ export default function CitySearch() {
 
   return (
     <div ref={wrapperRef} className="relative w-full max-w-md mx-auto">
-      <form onSubmit={handleSubmit}>
-        <div className="relative flex items-center">
-          <Search className="absolute left-4 w-5 h-5 text-gray-400 pointer-events-none" />
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
           <input
             type="text"
             inputMode="text"
-            placeholder="Zip code or city name..."
+            placeholder="Enter your zip code or city"
             value={query}
             onChange={(e) => search(e.target.value)}
             onFocus={() => results.length > 0 && setShowDropdown(true)}
-            className="w-full pl-12 pr-36 py-4 text-base rounded-2xl border-0 shadow-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/40"
+            className="w-full pl-12 pr-4 py-3.5 min-h-[48px] text-lg rounded-xl border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
-          <button
-            type="submit"
-            className="absolute right-2 flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-colors"
-            style={{ backgroundColor: "#0F6E56" }}
-          >
-            Find Plumbers
-            <ArrowRight className="w-4 h-4" />
-          </button>
         </div>
+        <button
+          type="submit"
+          className="flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] rounded-xl text-base font-bold text-white bg-accent hover:bg-accent-dark transition-colors shadow-lg shadow-accent/25 sm:w-auto"
+        >
+          Find Plumbers
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </form>
 
       {showDropdown && results.length > 0 && (
-        <ul className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <ul className="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
           {results.map((r) => (
             <li key={r.city + (r.via || "")}>
               <button
