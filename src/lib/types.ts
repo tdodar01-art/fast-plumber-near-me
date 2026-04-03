@@ -66,6 +66,10 @@ export interface Plumber {
   reviewSynthesis: ReviewSynthesis | null;
   cachedFromGoogle: boolean;
 
+  // Manual overrides (admin-editable, merged with synthesis)
+  manualRedFlags?: string[];
+  manualWeaknesses?: string[];
+
   // Meta
   isActive: boolean;
   createdAt: Timestamp;
@@ -94,6 +98,9 @@ export interface ReviewSynthesis {
 
   // Pricing tier derived from review analysis
   pricingTier: "budget" | "mid-range" | "premium" | "mixed" | "unknown";
+
+  // Sample size warning — when we have tiny fraction of total reviews
+  sampleSizeWarning?: string;
 }
 
 export interface VerificationCall {

@@ -143,6 +143,39 @@ export default async function PlumberProfilePage({
     if (s.strengths.some((st: string) => st.toLowerCase().includes("clean up") || st.toLowerCase().includes("tidy"))) allBadges.push("Respects Your Home");
   }
 
+  // --- SIGNAL DETECTION: scan review text for signals the old synthesis missed ---
+  const UPSELL_KEYWORDS = ["member", "membership", "diamond member", "prestige", "club", "annual plan", "service agreement", "maintenance plan", "subscription", "upsell", "upselling", "tried to sell", "pushed us to", "package deal"];
+  const reviewTexts = plumber.reviews.map((r) => r.text.toLowerCase());
+  const upsellMentions = reviewTexts.filter((t) => UPSELL_KEYWORDS.some((k) => t.includes(k))).length;
+
+  // Build effective red flags: synthesis + detected signals + sample size
+  const effectiveRedFlags: string[] = [...(s?.redFlags || [])];
+  const effectiveWeaknesses: string[] = [...(s?.weaknesses || [])];
+
+  if (upsellMentions > 0) {
+    if (!effectiveRedFlags.includes("upselling-concerns")) effectiveRedFlags.push("upselling-concerns");
+    effectiveWeaknesses.push(`${upsellMentions} review${upsellMentions > 1 ? "s" : ""} mention${upsellMentions === 1 ? "s" : ""} membership programs or upselling`);
+  }
+
+  // Sample size warning: if we have <1% of reviews, flag it
+  const samplePct = plumber.googleReviewCount > 0 ? plumber.reviews.length / plumber.googleReviewCount : 1;
+  let sampleSizeWarning: string | null = null;
+  if (plumber.googleReviewCount > 100 && plumber.reviews.length <= 5) {
+    sampleSizeWarning = `Analysis based on ${plumber.reviews.length} of ${plumber.googleReviewCount.toLocaleString()} total reviews`;
+    if (!effectiveRedFlags.includes("limited-data")) effectiveRedFlags.push("limited-data");
+    if (plumber.reviews.every((r) => r.rating === 5)) {
+      effectiveWeaknesses.push(`All ${plumber.reviews.length} sampled reviews are 5-star — not representative of ${plumber.googleReviewCount.toLocaleString()} total reviews`);
+    } else {
+      effectiveWeaknesses.push(`Only ${plumber.reviews.length} of ${plumber.googleReviewCount.toLocaleString()} reviews analyzed — limited data`);
+    }
+  }
+
+  // Remove "Fair Pricing" badge if upsell signals detected
+  if (upsellMentions > 0) {
+    const idx = allBadges.indexOf("Fair Pricing");
+    if (idx >= 0) allBadges.splice(idx, 1);
+  }
+
   const responseKPI = getResponseKPI(s, allBadges);
   const emergencyKPI = getEmergencyKPI(s, allBadges, plumber.is24Hour);
   const topReviews = plumber.reviews.slice(0, 5);
@@ -226,26 +259,33 @@ export default async function PlumberProfilePage({
           <KPICard
             icon={<DollarSign className="w-4 h-4" />}
             title="PRICING"
-            label={s?.priceSignal === "budget" ? "Budget-Friendly" : s?.priceSignal === "premium" ? "Premium" : s?.priceSignal === "mid-range" ? "Mid-Range" : "Unknown"}
-            subtitle={allBadges.includes("Fair Pricing") ? "Fair Pricing ✓" : s?.redFlags?.includes("pricing-complaints") ? "Some pricing concerns" : "Based on review analysis"}
-            color={allBadges.includes("Fair Pricing") ? "green" : s?.redFlags?.includes("pricing-complaints") ? "amber" : "gray"}
+            label={upsellMentions > 0 ? "Premium / Upsells" : s?.priceSignal === "budget" ? "Budget-Friendly" : s?.priceSignal === "premium" ? "Premium" : s?.priceSignal === "mid-range" ? "Mid-Range" : "Unknown"}
+            subtitle={upsellMentions > 0 ? "Membership programs detected in reviews" : allBadges.includes("Fair Pricing") ? "Fair Pricing ✓" : effectiveRedFlags.includes("pricing-complaints") ? "Pricing concerns in reviews" : "Based on review analysis"}
+            color={upsellMentions > 0 ? "amber" : allBadges.includes("Fair Pricing") ? "green" : effectiveRedFlags.includes("pricing-complaints") ? "amber" : "gray"}
           />
           {/* Red Flags */}
           <KPICard
             icon={<AlertTriangle className="w-4 h-4" />}
             title="RED FLAGS"
-            label={(s?.redFlags?.length ?? 0) === 0 ? "None Found ✓" : `${s!.redFlags.length} concern${s!.redFlags.length > 1 ? "s" : ""}`}
-            subtitle={(s?.redFlags?.length ?? 0) === 0 ? "No significant concerns in reviews" : s!.redFlags.map((f: string) => f.replace(/-/g, " ")).join(", ")}
-            color={(s?.redFlags?.length ?? 0) === 0 ? "green" : "red"}
+            label={effectiveRedFlags.length === 0 ? "None Found ✓" : `${effectiveRedFlags.length} concern${effectiveRedFlags.length > 1 ? "s" : ""}`}
+            subtitle={effectiveRedFlags.length === 0 ? "No significant concerns in reviews" : effectiveRedFlags.map((f) => f.replace(/-/g, " ")).join(", ")}
+            color={effectiveRedFlags.length === 0 ? "green" : "red"}
           />
         </div>
 
-        {/* Trust score — subtle */}
-        {s && (
-          <p className="text-xs text-gray-400 text-center mb-5">
-            Trust Score: {s.score}/100 · Based on {plumber.googleReviewCount} reviews
-          </p>
-        )}
+        {/* Trust score + sample warning */}
+        <div className="text-center mb-5">
+          {s && (
+            <p className="text-xs text-gray-400">
+              Trust Score: {s.score}/100 · Based on {plumber.googleReviewCount} reviews
+            </p>
+          )}
+          {sampleSizeWarning && (
+            <p className="text-xs text-amber-600 mt-1">
+              ⚠ {sampleSizeWarning}
+            </p>
+          )}
+        </div>
 
         {/* CTA BUTTONS */}
         <div className="grid grid-cols-2 gap-3 mb-6">
@@ -279,12 +319,12 @@ export default async function PlumberProfilePage({
             fallback="No reviewers specifically mention emergency response times"
           />
 
-          {/* Priority 2: Red Flags */}
+          {/* Priority 2: Red Flags — uses effective (merged) data */}
           <SynthesisSection
             icon={<AlertTriangle className="w-4 h-4" />}
             title="What To Watch Out For"
             positives={[]}
-            negatives={s ? [...s.weaknesses, ...(s.redFlags || []).map((f: string) => f.replace(/-/g, " ").replace(/^\w/, (c: string) => c.toUpperCase()))] : []}
+            negatives={[...effectiveWeaknesses, ...effectiveRedFlags.map((f) => f.replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase()))]}
             fallback="No significant concerns found in reviews ✓"
             fallbackColor="green"
           />

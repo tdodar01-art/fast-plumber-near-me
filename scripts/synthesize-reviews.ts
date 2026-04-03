@@ -70,6 +70,9 @@ const PUNCTUAL_NEGATIVE = ["late", "no-show", "didn't show", "stood me up", "hou
 const HOME_POSITIVE = ["clean up", "cleaned up", "tidy", "spotless", "protected", "shoe covers", "drop cloth", "careful with", "respectful of", "left it clean", "cleaner than before", "cleaned up after", "neat and tidy", "covered the floor", "protected our floors"];
 const HOME_NEGATIVE = ["mess", "left a mess", "didn't clean", "damaged", "stained", "dirty", "trashed", "left debris", "didn't clean up", "scratched"];
 
+// MEMBERSHIP / UPSELL signals — indicates premium pricing model
+const UPSELL_KEYWORDS = ["member", "membership", "diamond member", "prestige", "club", "plan", "annual plan", "service agreement", "maintenance plan", "subscription", "monthly plan", "upsell", "upselling", "tried to sell", "pushed us to", "recommended additional", "suggested we also", "package deal"];
+
 // HEDGED NEGATIVES — soft language that hides real complaints
 const HEDGED_NEGATIVES: Array<{ pattern: string; category: string; signal: string }> = [
   { pattern: "a bit expensive", category: "pricing", signal: "Pricing concerns (described as 'a bit expensive')" },
@@ -144,7 +147,7 @@ function categorizeComplaint(complaint: string): string | null {
   return null;
 }
 
-function synthesize(reviews: ReviewData[]) {
+function synthesize(reviews: ReviewData[], googleReviewCount: number = 0) {
   const total = reviews.length;
   if (total === 0) return null;
 
@@ -407,9 +410,44 @@ function synthesize(reviews: ReviewData[]) {
     }
   }
 
+  // --- MEMBERSHIP / UPSELL DETECTION (Option C) ---
+  const upsellCount = countMatches(texts, UPSELL_KEYWORDS);
+  if (upsellCount >= 2) {
+    const msg = `${upsellCount} of ${total} reviews mention membership programs or upselling`;
+    weaknesses.push(msg);
+    categories.pricing.weaknesses.push(msg);
+    redFlags.push("upselling-concerns");
+    if (pricingTier === "mid-range" || pricingTier === "unknown") pricingTier = "premium";
+  } else if (upsellCount > 0) {
+    const msg = `Membership or service plan program mentioned in reviews`;
+    categories.pricing.weaknesses.push(msg);
+    // Even 1 mention is a pricing signal — flag as amber
+    if (pricingTier === "unknown") pricingTier = "premium";
+  }
+
+  // --- SAMPLE SIZE WARNING (Option B) ---
+  // If we have <1% of total reviews, our analysis is unreliable
+  let sampleSizeWarning: string | undefined;
+  if (googleReviewCount > 100 && total <= 5) {
+    sampleSizeWarning = `Based on ${total} of ${googleReviewCount.toLocaleString()} total reviews — analysis may not reflect full customer experience`;
+    weaknesses.push(`Limited sample: only ${total} of ${googleReviewCount.toLocaleString()} reviews analyzed`);
+  } else if (googleReviewCount > 50 && total / googleReviewCount < 0.05) {
+    sampleSizeWarning = `Based on ${total} of ${googleReviewCount.toLocaleString()} reviews`;
+  }
+
+  // If high review count + all 5-star sample + premium pricing signals, flag as suspicious
+  if (googleReviewCount > 500 && total <= 5 && reviews.every((r) => r.rating === 5)) {
+    if (!redFlags.includes("upselling-concerns")) {
+      redFlags.push("limited-data");
+    }
+    if (!weaknesses.some((w) => w.includes("Limited sample"))) {
+      weaknesses.push(`All ${total} sampled reviews are 5-star — not representative of ${googleReviewCount.toLocaleString()} total reviews`);
+    }
+  }
+
   return {
     strengths: strengths.slice(0, 6),
-    weaknesses: weaknesses.slice(0, 6),
+    weaknesses: weaknesses.slice(0, 7),
     emergencySignals: emergencySignals.slice(0, 3),
     redFlags: [...new Set(redFlags)],
     badges: badges.slice(0, 6),
@@ -417,6 +455,7 @@ function synthesize(reviews: ReviewData[]) {
     synthesizedAt: Timestamp.now(),
     categories,
     pricingTier,
+    sampleSizeWarning,
   };
 }
 
@@ -458,7 +497,8 @@ async function main() {
       text: d.data().text || "",
     }));
 
-    const synthesis = synthesize(reviews);
+    const googleReviewCount = data.googleReviewCount || data.googleReviewCount || 0;
+    const synthesis = synthesize(reviews, googleReviewCount);
     if (!synthesis) continue;
 
     console.log(`📝 ${data.businessName}: ${synthesis.badges.join(", ") || "no badges"} | ${synthesis.redFlags.length} red flags | pricing: ${synthesis.pricingTier}`);
