@@ -21,6 +21,8 @@ import { QuoteCard, GoogleReviewCard } from "@/components/profile/ReviewCard";
 import StickyBottomBar from "@/components/profile/StickyBottomBar";
 import { CallButton, WebsiteButton, ProfileReportButton } from "@/components/profile/ProfileActions";
 import BounceTracker from "@/components/profile/BounceTracker";
+import { calculateDistance } from "@/lib/geo";
+import { getCityCoords } from "@/lib/city-coords";
 
 // ---------------------------------------------------------------------------
 // Static generation
@@ -417,6 +419,9 @@ export default async function PlumberProfilePage({
           </div>
         </section>
 
+        {/* SERVICE AREA */}
+        <ServiceArea plumberLocation={plumber.location} plumberCity={plumber.city} />
+
         <ProfileReportButton plumberId={slug} city={plumber.city} />
 
         <footer className="text-center text-xs text-gray-400 pt-2 pb-4">
@@ -523,5 +528,56 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
       <span className="text-xs text-gray-400 font-medium shrink-0 pt-0.5">{label}</span>
       <div className="text-sm text-gray-700 text-right">{value}</div>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Service Area — cities within 20 miles of plumber
+// ---------------------------------------------------------------------------
+
+function ServiceArea({ plumberLocation, plumberCity }: {
+  plumberLocation: { lat: number; lng: number } | null;
+  plumberCity: string;
+}) {
+  if (!plumberLocation || (!plumberLocation.lat && !plumberLocation.lng)) return null;
+
+  const allCityCoords = getCityCoords();
+  const nearbyCities = allCityCoords
+    .map((c) => ({
+      name: c.name,
+      state: c.state,
+      stateSlug: c.stateSlug,
+      citySlug: c.citySlug,
+      distance: calculateDistance(plumberLocation.lat, plumberLocation.lng, c.lat, c.lng),
+    }))
+    .filter((c) => c.distance <= 20)
+    .sort((a, b) => a.distance - b.distance);
+
+  if (nearbyCities.length === 0) return null;
+
+  const shown = nearbyCities.slice(0, 6);
+  const remaining = nearbyCities.length - shown.length;
+
+  return (
+    <section className="mb-6">
+      <h2 className="font-[family-name:var(--font-fraunces)] text-lg font-bold text-gray-900 mb-3">Service area</h2>
+      <p className="text-sm text-gray-600 mb-2">
+        Based in {plumberCity}. Serves {nearbyCities.length} nearby cities within 20 miles:
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {shown.map((c) => (
+          <a
+            key={`${c.stateSlug}-${c.citySlug}`}
+            href={`/emergency-plumbers/${c.stateSlug}/${c.citySlug}`}
+            className="text-xs bg-gray-100 hover:bg-blue-50 hover:text-primary text-gray-700 px-2.5 py-1 rounded-full transition-colors"
+          >
+            {c.name} ({Math.round(c.distance)} mi)
+          </a>
+        ))}
+        {remaining > 0 && (
+          <span className="text-xs text-gray-400 px-2.5 py-1">+{remaining} more</span>
+        )}
+      </div>
+    </section>
   );
 }

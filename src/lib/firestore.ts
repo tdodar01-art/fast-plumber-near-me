@@ -39,6 +39,17 @@ export async function getPlumberById(id: string): Promise<Plumber | null> {
   return { id: snapshot.id, ...snapshot.data() } as Plumber;
 }
 
+export async function getActivePlumbersByState(state: string): Promise<Plumber[]> {
+  if (!isConfigured || !db) return [];
+  const q = query(
+    collection(db, "plumbers"),
+    where("address.state", "==", state),
+    where("isActive", "==", true)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Plumber);
+}
+
 export async function getAllPlumbers(): Promise<Plumber[]> {
   if (!isConfigured || !db) return [];
   const q = query(collection(db, "plumbers"), orderBy("businessName"));

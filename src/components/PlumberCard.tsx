@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar, Flag, ChevronDown } from "lucide-react";
+import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar, Flag, ChevronDown, MapPin } from "lucide-react";
 import type { Plumber } from "@/lib/types";
 import ReliabilityBadge from "./ReliabilityBadge";
 import VerifiedBadge from "./VerifiedBadge";
+import { getDistanceLabel } from "@/lib/geo";
 
 function useViewTracking(plumberId: string, citySlug: string) {
   const ref = useRef<HTMLDivElement>(null);
@@ -79,9 +80,13 @@ function StarRating({ rating, count }: { rating: number; count: number }) {
 export default function PlumberCard({
   plumber,
   citySlug,
+  distanceMiles,
+  cityName,
 }: {
   plumber: Plumber;
   citySlug: string;
+  distanceMiles?: number;
+  cityName?: string;
 }) {
   const viewRef = useViewTracking(plumber.id, citySlug);
 
@@ -134,10 +139,20 @@ export default function PlumberCard({
             <StarRating rating={plumber.googleRating} count={plumber.googleReviewCount} />
           )}
         </div>
-        <p className="text-sm text-gray-600">
-          {plumber.address.city}, {plumber.address.state}
-          {plumber.yearsInBusiness && ` · ${plumber.yearsInBusiness} yrs`}
-        </p>
+        <div className="text-sm text-gray-600">
+          <p>
+            {plumber.address.city}, {plumber.address.state}
+            {plumber.yearsInBusiness && ` · ${plumber.yearsInBusiness} yrs`}
+          </p>
+          {distanceMiles != null && (
+            <p className={`flex items-center gap-1 text-xs mt-0.5 ${
+              getDistanceLabel(distanceMiles).color === "amber" ? "text-amber-600" : "text-gray-500"
+            }`}>
+              <MapPin className="w-3 h-3" />
+              {getDistanceLabel(distanceMiles, cityName).text}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Badges — horizontal scroll on mobile */}

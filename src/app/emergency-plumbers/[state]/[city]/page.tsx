@@ -6,8 +6,11 @@ import PlumberCard from "@/components/PlumberCard";
 import CallToAction from "@/components/CallToAction";
 import { getAllCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
-import { getPlumbersByCity } from "@/lib/firestore";
+import { getPlumbersByCity, getActivePlumbersByState } from "@/lib/firestore";
 import { calculateQualityScore } from "@/lib/scoring";
+import { getCityCoordBySlug } from "@/lib/city-coords";
+import { calculateDistance, getDistanceWeight } from "@/lib/geo";
+import type { Plumber } from "@/lib/types";
 
 export function generateStaticParams() {
   return getAllCityParams();
@@ -69,26 +72,57 @@ export default async function CityPage({
   const stateInfo = getStateBySlug(stateSlug);
   if (!stateInfo) notFound();
 
-  // Fetch plumbers from Firestore
-  const firestoreCitySlug = `${citySlug}-${city.state.toLowerCase()}`; // e.g. "naperville-il"
-  let plumbers: Awaited<ReturnType<typeof getPlumbersByCity>> = [];
+  // Fetch plumbers — combine serviceCities match + 20-mile radius
+  const firestoreCitySlug = `${citySlug}-${city.state.toLowerCase()}`;
+  let plumbers: (Plumber & { distanceMiles?: number })[] = [];
+  const cityCoord = getCityCoordBySlug(city.state, citySlug);
+
   try {
-    plumbers = await getPlumbersByCity(firestoreCitySlug);
-    // Also try just the city slug without state
-    if (plumbers.length === 0) {
-      plumbers = await getPlumbersByCity(citySlug);
+    // Start with direct serviceCities match
+    const directMatch = await getPlumbersByCity(firestoreCitySlug);
+    if (directMatch.length === 0) {
+      const fallback = await getPlumbersByCity(citySlug);
+      plumbers = fallback.map((p) => ({ ...p }));
+    } else {
+      plumbers = directMatch.map((p) => ({ ...p }));
+    }
+
+    // Add radius-based plumbers (20 miles) if we have city coordinates
+    if (cityCoord) {
+      const [cityLat, cityLng] = cityCoord;
+      const statePlumbers = await getActivePlumbersByState(city.state);
+      const existingIds = new Set(plumbers.map((p) => p.id));
+
+      for (const p of statePlumbers) {
+        if (existingIds.has(p.id)) continue;
+        if (!p.address?.lat || !p.address?.lng) continue;
+        const dist = calculateDistance(cityLat, cityLng, p.address.lat, p.address.lng);
+        if (dist <= 20) {
+          plumbers.push({ ...p, distanceMiles: dist });
+          existingIds.add(p.id);
+        }
+      }
+
+      // Attach distance to all plumbers (including direct matches)
+      for (const p of plumbers) {
+        if (p.distanceMiles == null && p.address?.lat && p.address?.lng) {
+          p.distanceMiles = calculateDistance(cityLat, cityLng, p.address.lat, p.address.lng);
+        }
+      }
     }
   } catch {
     // Firebase not configured
   }
 
-  // Sort: featured > premium > free, then by composite quality score
+  // Sort: featured > premium > free, then by quality × distance weight
   const maxReviewCount = Math.max(1, ...plumbers.map((p) => p.googleReviewCount || 0));
   plumbers.sort((a, b) => {
     const tierOrder = { featured: 0, premium: 1, free: 2 };
     const tierDiff = tierOrder[a.listingTier] - tierOrder[b.listingTier];
     if (tierDiff !== 0) return tierDiff;
-    return calculateQualityScore(b, maxReviewCount) - calculateQualityScore(a, maxReviewCount);
+    const aQuality = calculateQualityScore(a, maxReviewCount) * getDistanceWeight(a.distanceMiles ?? 0);
+    const bQuality = calculateQualityScore(b, maxReviewCount) * getDistanceWeight(b.distanceMiles ?? 0);
+    return bQuality - aQuality;
   });
 
   const faqs = getCityFaqs(city.name, city.state, city.county);
@@ -190,7 +224,7 @@ export default async function CityPage({
         {plumbers.length > 0 ? (
           <div className="space-y-4 mb-12">
             {plumbers.map((plumber) => (
-              <PlumberCard key={plumber.id} plumber={plumber} citySlug={citySlug} />
+              <PlumberCard key={plumber.id} plumber={plumber} citySlug={citySlug} distanceMiles={plumber.distanceMiles} cityName={city.name} />
             ))}
           </div>
         ) : (

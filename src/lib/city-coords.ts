@@ -351,6 +351,11 @@ export interface CityCoord {
   lng: number;
 }
 
+export function getCityCoordBySlug(stateAbbr: string, citySlug: string): [number, number] | null {
+  const key = `${stateAbbr}:${citySlug}`;
+  return COORDS[key] || null;
+}
+
 export function getCityCoords(): CityCoord[] {
   const result: CityCoord[] = [];
 
