@@ -18,6 +18,7 @@ import WarningBox from "@/components/profile/WarningBox";
 import { QuoteCard, GoogleReviewCard } from "@/components/profile/ReviewCard";
 import StickyBottomBar from "@/components/profile/StickyBottomBar";
 import { CallButton, WebsiteButton, ProfileReportButton } from "@/components/profile/ProfileActions";
+import BounceTracker from "@/components/profile/BounceTracker";
 
 // ---------------------------------------------------------------------------
 // Static generation
@@ -155,6 +156,7 @@ export default async function PlumberProfilePage({
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }} />
+      <BounceTracker plumberId={slug} city={plumber.city} />
 
       <div className="max-w-[480px] mx-auto px-4 pt-4 pb-28 sm:pb-12 font-[family-name:var(--font-dm-sans)]">
         {/* Back link */}

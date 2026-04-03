@@ -39,6 +39,12 @@ service cloud.firestore {
       allow read: if request.auth != null;
     }
 
+    // Engagement tracking — write from anyone, read admin only
+    match /plumberEngagement/{doc} {
+      allow create: if true;
+      allow read: if request.auth != null;
+    }
+
     // API usage and rating snapshots — admin only
     match /apiUsage/{doc} {
       allow read, write: if request.auth != null;

@@ -1,10 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar, Flag, ChevronDown } from "lucide-react";
 import type { Plumber } from "@/lib/types";
 import ReliabilityBadge from "./ReliabilityBadge";
 import VerifiedBadge from "./VerifiedBadge";
+
+function useViewTracking(plumberId: string, citySlug: string) {
+  const ref = useRef<HTMLDivElement>(null);
+  const tracked = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let startTime = 0;
+    let timer5: ReturnType<typeof setTimeout>;
+    let timer15: ReturnType<typeof setTimeout>;
+    let timer30: ReturnType<typeof setTimeout>;
+
+    function fire(type: string) {
+      if (tracked.current.has(type)) return;
+      tracked.current.add(type);
+      fetch("/api/track-engagement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plumberId, engagementType: type, city: citySlug }),
+      }).catch(() => {});
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          startTime = Date.now();
+          timer5 = setTimeout(() => fire("view-5s"), 5000);
+          timer15 = setTimeout(() => fire("view-15s"), 15000);
+          timer30 = setTimeout(() => fire("view-30s"), 30000);
+        } else {
+          clearTimeout(timer5);
+          clearTimeout(timer15);
+          clearTimeout(timer30);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => { observer.disconnect(); clearTimeout(timer5); clearTimeout(timer15); clearTimeout(timer30); };
+  }, [plumberId, citySlug]);
+
+  return ref;
+}
 
 function StarRating({ rating, count }: { rating: number; count: number }) {
   const fullStars = Math.floor(rating);
@@ -39,6 +83,8 @@ export default function PlumberCard({
   plumber: Plumber;
   citySlug: string;
 }) {
+  const viewRef = useViewTracking(plumber.id, citySlug);
+
   const handleCallClick = () => {
     // Track the lead
     fetch("/api/track-lead", {
@@ -61,6 +107,7 @@ export default function PlumberCard({
 
   return (
     <div
+      ref={viewRef}
       className={`rounded-xl border-2 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow ${
         tierStyles[plumber.listingTier]
       }`}
