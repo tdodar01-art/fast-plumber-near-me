@@ -81,6 +81,19 @@ export interface ReviewSynthesis {
   badges: string[];
   reviewCount: number;
   synthesizedAt: Timestamp;
+
+  // Categorized signals for display filtering
+  categories: {
+    emergency: { strengths: string[]; weaknesses: string[] };
+    pricing: { strengths: string[]; weaknesses: string[] };
+    quality: { strengths: string[]; weaknesses: string[] };
+    communication: { strengths: string[]; weaknesses: string[] };
+    homeRespect: { strengths: string[]; weaknesses: string[] };
+    punctuality: { strengths: string[]; weaknesses: string[] };
+  };
+
+  // Pricing tier derived from review analysis
+  pricingTier: "budget" | "mid-range" | "premium" | "mixed" | "unknown";
 }
 
 export interface VerificationCall {

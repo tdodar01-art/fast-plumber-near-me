@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-  CheckCircle2,
+  Zap,
+  ShieldCheck,
+  DollarSign,
+  AlertTriangle,
   MapPin,
   Clock,
-  ShieldCheck,
   ArrowLeft,
+  Star,
+  MessageCircle,
+  Home,
+  CheckCircle2,
 } from "lucide-react";
 import {
   getPlumberBySlug,
   getAllPlumberSlugs,
 } from "@/lib/plumber-data";
-import TrustScoreRing from "@/components/profile/TrustScoreRing";
-import PriceSignal from "@/components/profile/PriceSignal";
-import StarRating from "@/components/profile/StarRating";
-import WarningBox from "@/components/profile/WarningBox";
 import { QuoteCard, GoogleReviewCard } from "@/components/profile/ReviewCard";
 import StickyBottomBar from "@/components/profile/StickyBottomBar";
 import { CallButton, WebsiteButton, ProfileReportButton } from "@/components/profile/ProfileActions";
@@ -41,19 +43,15 @@ export async function generateMetadata({
   const plumber = getPlumberBySlug(slug);
   if (!plumber) return {};
 
-  const title = `${plumber.name} Reviews & Trust Score`;
+  const title = `${plumber.name} — Reviews & Emergency Response | ${plumber.city}, ${plumber.state}`;
   const description =
     plumber.synthesis?.summary ??
-    `See honest reviews and trust score for ${plumber.name} in ${plumber.city}, IL.`;
+    `See honest reviews, response times, and red flags for ${plumber.name} in ${plumber.city}, ${plumber.state}. Real data from ${plumber.googleReviewCount} Google reviews.`;
 
   return {
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: "website",
-    },
+    openGraph: { title, description, type: "website" },
   };
 }
 
@@ -71,35 +69,52 @@ function getInitials(name: string) {
 }
 
 function getInitialsBg(name: string) {
-  const colors = [
-    "#1a365d", "#0F6E56", "#854F0B", "#6B21A8",
-    "#0C447C", "#A32D2D", "#065F46", "#7C3AED",
-  ];
+  const colors = ["#1a365d", "#0F6E56", "#854F0B", "#6B21A8", "#0C447C", "#A32D2D", "#065F46", "#7C3AED"];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];
 }
 
-function getTrustPill(level: string) {
-  switch (level) {
-    case "high":
-      return { color: "#0F6E56", bg: "#E1F5EE", label: "High trust" };
-    case "moderate":
-      return { color: "#854F0B", bg: "#FAEEDA", label: "Moderate trust" };
-    case "low":
-      return { color: "#A32D2D", bg: "#FCEBEB", label: "Low trust" };
-    default:
-      return { color: "#6B7280", bg: "#F3F4F6", label: "Unrated" };
-  }
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+// Derive KPI data from synthesis
+function getResponseKPI(s: { strengths: string[]; emergencySignals?: string[]; redFlags?: string[] } | null, badges: string[]) {
+  if (!s) return { label: "Unknown", color: "gray", subtitle: "No response data yet" };
+  if (badges.includes("Fast Responder")) {
+    const mention = s.strengths.find((st) => st.includes("reviewers mention fast"));
+    return { label: "Fast Response", color: "green", subtitle: mention || "Reviewers confirm quick response" };
+  }
+  if (s.emergencySignals && s.emergencySignals.some((e) => e.includes("same day"))) {
+    return { label: "Same Day", color: "green", subtitle: "Same-day service mentioned in reviews" };
+  }
+  if (s.emergencySignals && s.emergencySignals.length > 0) {
+    return { label: "Available", color: "amber", subtitle: s.emergencySignals[0] };
+  }
+  return { label: "Unknown", color: "gray", subtitle: "No response data yet" };
 }
+
+function getEmergencyKPI(s: { emergencySignals?: string[] } | null, badges: string[], is24Hour: boolean) {
+  if (badges.includes("24/7 Verified by Reviews")) {
+    const mention = s?.emergencySignals?.find((e) => e.includes("reviews mention"));
+    return { label: "24/7 Verified", color: "green", subtitle: mention || "Confirmed by reviews" };
+  }
+  if (is24Hour && s?.emergencySignals && s.emergencySignals.length > 0) {
+    return { label: "After-Hours", color: "green", subtitle: "Emergency availability mentioned" };
+  }
+  if (is24Hour) {
+    return { label: "Claims 24/7", color: "amber", subtitle: "Self-reported — not confirmed by reviews" };
+  }
+  return { label: "Not Verified", color: "gray", subtitle: "No emergency data in reviews" };
+}
+
+const colorClasses = {
+  green: { bg: "bg-green-50", text: "text-green-700", border: "border-green-200" },
+  amber: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
+  red: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200" },
+  gray: { bg: "bg-gray-50", text: "text-gray-500", border: "border-gray-200" },
+};
 
 // ---------------------------------------------------------------------------
 // Page
@@ -115,15 +130,24 @@ export default async function PlumberProfilePage({
   if (!plumber) notFound();
 
   const s = plumber.synthesis;
-  const hasWarnings =
-    (s?.weaknesses?.length ?? 0) > 0 ||
-    (s?.redFlags?.length ?? 0) > 0 ||
-    s?.priceSignal === "premium";
+  const badges = s?.strengths ? [] as string[] : [];
+  // Extract badges from the plumber-data synthesis format
+  const allBadges: string[] = [];
+  if (s) {
+    // The plumber-data format doesn't have explicit badges — derive from strengths
+    if (s.strengths.some((st: string) => st.toLowerCase().includes("fast") || st.toLowerCase().includes("quick") || st.toLowerCase().includes("prompt"))) allBadges.push("Fast Responder");
+    if (s.strengths.some((st: string) => st.toLowerCase().includes("fair") || st.toLowerCase().includes("reasonable") || st.toLowerCase().includes("affordable"))) allBadges.push("Fair Pricing");
+    if (s.strengths.some((st: string) => st.toLowerCase().includes("professional") || st.toLowerCase().includes("courteous"))) allBadges.push("Clean & Professional");
+    if (s.strengths.some((st: string) => st.toLowerCase().includes("communicat") || st.toLowerCase().includes("explain"))) allBadges.push("Good Communicator");
+    if (s.bestFor?.some((b: string) => b.toLowerCase().includes("emergency") || b.toLowerCase().includes("24/"))) allBadges.push("24/7 Verified by Reviews");
+    if (s.strengths.some((st: string) => st.toLowerCase().includes("clean up") || st.toLowerCase().includes("tidy"))) allBadges.push("Respects Your Home");
+  }
 
-  const trustPill = getTrustPill(s?.trustLevel ?? "");
-  const topReviews = plumber.reviews.slice(0, 3);
+  const responseKPI = getResponseKPI(s, allBadges);
+  const emergencyKPI = getEmergencyKPI(s, allBadges, plumber.is24Hour);
+  const topReviews = plumber.reviews.slice(0, 5);
 
-  // JSON-LD schemas
+  // JSON-LD
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -158,20 +182,14 @@ export default async function PlumberProfilePage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }} />
       <BounceTracker plumberId={slug} city={plumber.city} />
 
-      <div className="max-w-[480px] mx-auto px-4 pt-4 pb-28 sm:pb-12 font-[family-name:var(--font-dm-sans)]">
+      <div className="max-w-[520px] mx-auto px-4 pt-4 pb-28 sm:pb-12 font-[family-name:var(--font-dm-sans)]">
         {/* Back link */}
-        <a
-          href="/plumbers"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          All plumbers
+        <a href="/plumbers" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4">
+          <ArrowLeft className="w-3.5 h-3.5" /> All plumbers
         </a>
 
-        {/* ============================================================= */}
         {/* HEADER */}
-        {/* ============================================================= */}
-        <div className="flex items-center gap-3 mb-5">
+        <div className="flex items-center gap-3 mb-4">
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-bold shrink-0"
             style={{ backgroundColor: getInitialsBg(plumber.name) }}
@@ -186,175 +204,163 @@ export default async function PlumberProfilePage({
               <MapPin className="w-3.5 h-3.5 shrink-0" />
               <span>{plumber.city}, {plumber.state}</span>
             </div>
-            <div className="flex items-center gap-1 mt-1">
-              <ShieldCheck className="w-3.5 h-3.5" style={{ color: "#0F6E56" }} />
-              <span className="text-xs font-medium" style={{ color: "#0F6E56" }}>
-                Google verified
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* ============================================================= */}
-        {/* SCORE ROW — 3 cards */}
-        {/* ============================================================= */}
-        {s && (
-          <div
-            className="grid grid-cols-3 gap-2 mb-5"
-          >
-            <div className="rounded-xl py-3 flex flex-col items-center" style={{ border: "0.5px solid #E5E7EB" }}>
-              <span className="text-[10px] text-gray-400 font-medium mb-1">Trust Score</span>
-              <TrustScoreRing score={s.score} size="md" />
-            </div>
-            <div className="rounded-xl py-3 flex flex-col items-center" style={{ border: "0.5px solid #E5E7EB" }}>
-              <span className="text-[10px] text-gray-400 font-medium mb-1">Google</span>
-              <StarRating
-                rating={plumber.googleRating ?? 0}
-                count={plumber.googleReviewCount}
-              />
-            </div>
-            <div className="rounded-xl py-3 flex flex-col items-center justify-between" style={{ border: "0.5px solid #E5E7EB" }}>
-              <span className="text-[10px] text-gray-400 font-medium mb-1">Pricing</span>
-              <PriceSignal signal={s.priceSignal} />
-            </div>
+        {/* GOOGLE RATING BAR */}
+        {plumber.googleRating && (
+          <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-white rounded-lg" style={{ border: "0.5px solid #E5E7EB" }}>
+            <Star className="w-5 h-5 text-yellow-500 fill-current" />
+            <span className="text-lg font-bold text-gray-900">{plumber.googleRating}</span>
+            <span className="text-sm text-gray-500">({plumber.googleReviewCount} reviews)</span>
           </div>
         )}
 
-        {/* ============================================================= */}
+        {/* KPI CARDS — 2x2 grid */}
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          {/* Response */}
+          <KPICard icon={<Zap className="w-4 h-4" />} title="RESPONSE" label={responseKPI.label} subtitle={responseKPI.subtitle} color={responseKPI.color as keyof typeof colorClasses} />
+          {/* Emergency Verified */}
+          <KPICard icon={<ShieldCheck className="w-4 h-4" />} title="EMERGENCY" label={emergencyKPI.label} subtitle={emergencyKPI.subtitle} color={emergencyKPI.color as keyof typeof colorClasses} />
+          {/* Pricing */}
+          <KPICard
+            icon={<DollarSign className="w-4 h-4" />}
+            title="PRICING"
+            label={s?.priceSignal === "budget" ? "Budget-Friendly" : s?.priceSignal === "premium" ? "Premium" : s?.priceSignal === "mid-range" ? "Mid-Range" : "Unknown"}
+            subtitle={allBadges.includes("Fair Pricing") ? "Fair Pricing ✓" : s?.redFlags?.includes("pricing-complaints") ? "Some pricing concerns" : "Based on review analysis"}
+            color={allBadges.includes("Fair Pricing") ? "green" : s?.redFlags?.includes("pricing-complaints") ? "amber" : "gray"}
+          />
+          {/* Red Flags */}
+          <KPICard
+            icon={<AlertTriangle className="w-4 h-4" />}
+            title="RED FLAGS"
+            label={(s?.redFlags?.length ?? 0) === 0 ? "None Found ✓" : `${s!.redFlags.length} concern${s!.redFlags.length > 1 ? "s" : ""}`}
+            subtitle={(s?.redFlags?.length ?? 0) === 0 ? "No significant concerns in reviews" : s!.redFlags.map((f: string) => f.replace(/-/g, " ")).join(", ")}
+            color={(s?.redFlags?.length ?? 0) === 0 ? "green" : "red"}
+          />
+        </div>
+
+        {/* Trust score — subtle */}
+        {s && (
+          <p className="text-xs text-gray-400 text-center mb-5">
+            Trust Score: {s.score}/100 · Based on {plumber.googleReviewCount} reviews
+          </p>
+        )}
+
         {/* CTA BUTTONS */}
-        {/* ============================================================= */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <CallButton phone={plumber.phone} plumberId={slug} city={plumber.city} />
           {plumber.website ? (
             <WebsiteButton url={plumber.website} plumberId={slug} city={plumber.city} />
           ) : (
-            <div
-              className="flex items-center justify-center py-3.5 rounded-xl text-sm text-gray-400 bg-gray-50"
-              style={{ border: "0.5px solid #E5E7EB" }}
-            >
+            <div className="flex items-center justify-center py-3.5 rounded-xl text-sm text-gray-400 bg-gray-50" style={{ border: "0.5px solid #E5E7EB" }}>
               No website
             </div>
           )}
         </div>
 
         {/* ============================================================= */}
-        {/* OUR ANALYSIS */}
+        {/* REVIEW SYNTHESIS — priority ordered */}
         {/* ============================================================= */}
-        {s && (
-          <section className="mb-6">
-            <h2 className="font-[family-name:var(--font-fraunces)] text-lg font-bold text-gray-900 mb-2">
-              Our analysis
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">{s.summary}</p>
+        <section className="mb-6">
+          <h2 className="font-[family-name:var(--font-fraunces)] text-lg font-bold text-gray-900 mb-4">
+            What {plumber.googleReviewCount} Reviews Tell Us
+          </h2>
 
-            {/* Best For tags */}
-            {s.bestFor.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                {s.bestFor.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs font-medium px-2.5 py-1 rounded-full"
-                    style={{ color: "#0C447C", backgroundColor: "#E6F1FB" }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
+          {/* Priority 1: Emergency & Response */}
+          <SynthesisSection
+            icon={<Zap className="w-4 h-4" />}
+            title="Emergency Response"
+            positives={s ? [
+              ...filterByKeywords(s.strengths, ["fast", "quick", "response", "arrived", "prompt", "same day"]),
+              ...(s.bestFor?.filter((b: string) => b.toLowerCase().includes("emergency") || b.toLowerCase().includes("after")) || []),
+            ] : []}
+            negatives={s ? filterByKeywords(s.weaknesses, ["slow", "delay", "wait", "emergency", "after-hours"]) : []}
+            fallback="No reviewers specifically mention emergency response times"
+          />
 
-        {/* ============================================================= */}
-        {/* WATCH OUT FOR — bad news first */}
-        {/* ============================================================= */}
-        {s && hasWarnings && (
-          <section className="mb-5">
-            <WarningBox
-              weaknesses={s.weaknesses}
-              redFlags={s.redFlags}
-              priceSignal={s.priceSignal}
+          {/* Priority 2: Red Flags */}
+          <SynthesisSection
+            icon={<AlertTriangle className="w-4 h-4" />}
+            title="What To Watch Out For"
+            positives={[]}
+            negatives={s ? [...s.weaknesses, ...(s.redFlags || []).map((f: string) => f.replace(/-/g, " ").replace(/^\w/, (c: string) => c.toUpperCase()))] : []}
+            fallback="No significant concerns found in reviews ✓"
+            fallbackColor="green"
+          />
+
+          {/* Priority 3: Quality & Professionalism */}
+          <SynthesisSection
+            icon={<Star className="w-4 h-4" />}
+            title="Quality & Professionalism"
+            positives={s ? filterByKeywords(s.strengths, ["professional", "quality", "knowledgeable", "expert", "thorough", "clean", "courteous", "excellent"]) : []}
+            negatives={s ? filterByKeywords(s.weaknesses, ["quality", "botched", "worse", "broken", "shoddy", "incompetent"]) : []}
+          />
+
+          {/* Priority 4: Communication */}
+          <SynthesisSection
+            icon={<MessageCircle className="w-4 h-4" />}
+            title="Communication"
+            positives={s ? filterByKeywords(s.strengths, ["communicat", "explain", "responsive", "call back", "reach", "text", "update"]) : []}
+            negatives={s ? filterByKeywords(s.weaknesses, ["reach", "call", "communicat", "ghost", "rude", "answer"]) : []}
+          />
+
+          {/* Priority 5: Home Respect — only show if data exists */}
+          {s && (filterByKeywords(s.strengths, ["clean up", "tidy", "protected", "careful", "respectful"]).length > 0 ||
+                 filterByKeywords(s.weaknesses, ["mess", "damage", "dirty"]).length > 0) && (
+            <SynthesisSection
+              icon={<Home className="w-4 h-4" />}
+              title="Respect for Your Home"
+              positives={filterByKeywords(s.strengths, ["clean up", "tidy", "protected", "careful", "respectful"])}
+              negatives={filterByKeywords(s.weaknesses, ["mess", "damage", "dirty"])}
             />
-          </section>
-        )}
+          )}
 
-        {/* ============================================================= */}
-        {/* STRENGTHS */}
-        {/* ============================================================= */}
-        {s && s.strengths.length > 0 && (
-          <section className="mb-6">
-            <h2 className="font-[family-name:var(--font-fraunces)] text-lg font-bold text-gray-900 mb-2">
-              Strengths
-            </h2>
-            <ul className="space-y-2">
-              {s.strengths.map((str) => (
-                <li key={str} className="flex items-start gap-2 text-sm text-gray-700">
-                  <CheckCircle2
-                    className="w-4 h-4 mt-0.5 shrink-0"
-                    style={{ color: "#0F6E56" }}
-                  />
-                  <span>{str}</span>
-                </li>
+          {/* Priority 6: Pricing */}
+          <SynthesisSection
+            icon={<DollarSign className="w-4 h-4" />}
+            title="Pricing"
+            positives={s ? filterByKeywords(s.strengths, ["price", "pric", "value", "afford", "fair", "reasonable"]) : []}
+            negatives={s ? filterByKeywords(s.weaknesses, ["price", "pric", "expens", "overcharge", "fee", "cost"]) : []}
+          />
+
+          {/* Badges row */}
+          {allBadges.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-4 pt-4 border-t border-gray-100">
+              {allBadges.map((badge) => (
+                <span key={badge} className="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 text-green-800">
+                  {badge}
+                </span>
               ))}
-            </ul>
-          </section>
-        )}
+            </div>
+          )}
+        </section>
 
-        {/* ============================================================= */}
         {/* CUSTOMER REVIEWS */}
-        {/* ============================================================= */}
         <section className="mb-6">
           <h2 className="font-[family-name:var(--font-fraunces)] text-lg font-bold text-gray-900 mb-3">
             Customer reviews
           </h2>
 
           <div className="space-y-3">
-            {s?.topQuote && (
-              <QuoteCard
-                quote={s.topQuote}
-                variant="positive"
-                label="Most helpful review"
-              />
-            )}
-
-            {s?.worstQuote && (
-              <QuoteCard
-                quote={s.worstQuote}
-                variant="negative"
-                label="Customers report this"
-              />
-            )}
+            {s?.topQuote && <QuoteCard quote={s.topQuote} variant="positive" label="Most helpful review" />}
+            {s?.worstQuote && <QuoteCard quote={s.worstQuote} variant="negative" label="Customers report this" />}
           </div>
 
-          {/* Raw Google reviews */}
           {topReviews.length > 0 && (
             <div className="space-y-3 mt-4">
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">
-                Recent Google reviews
-              </p>
+              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Recent Google reviews</p>
               {topReviews.map((review, i) => (
-                <GoogleReviewCard
-                  key={i}
-                  author={review.author}
-                  rating={review.rating}
-                  text={review.text}
-                  relativeTime={review.relativeTime}
-                />
+                <GoogleReviewCard key={i} author={review.author} rating={review.rating} text={review.text} relativeTime={review.relativeTime} />
               ))}
             </div>
           )}
         </section>
 
-        {/* ============================================================= */}
         {/* BUSINESS DETAILS */}
-        {/* ============================================================= */}
         <section className="mb-6">
-          <h2 className="font-[family-name:var(--font-fraunces)] text-lg font-bold text-gray-900 mb-3">
-            Business details
-          </h2>
-          <div
-            className="rounded-xl divide-y divide-gray-100"
-            style={{ border: "0.5px solid #E5E7EB" }}
-          >
+          <h2 className="font-[family-name:var(--font-fraunces)] text-lg font-bold text-gray-900 mb-3">Business details</h2>
+          <div className="rounded-xl divide-y divide-gray-100" style={{ border: "0.5px solid #E5E7EB" }}>
             <DetailRow label="Phone" value={plumber.phone} />
             <DetailRow label="Address" value={plumber.address} />
             <DetailRow
@@ -363,51 +369,21 @@ export default async function PlumberProfilePage({
                 plumber.is24Hour ? (
                   <span className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" style={{ color: "#0F6E56" }} />
-                    <span className="font-medium" style={{ color: "#0F6E56" }}>
-                      Open 24 hours
-                    </span>
+                    <span className="font-medium" style={{ color: "#0F6E56" }}>Open 24 hours</span>
                   </span>
-                ) : plumber.workingHours ? (
-                  <span className="text-gray-600 text-sm">Varies — check website</span>
-                ) : (
-                  "Not listed"
-                )
+                ) : plumber.workingHours ? "Varies — check website" : "Not listed"
               }
             />
-            {s && (
-              <>
-                <DetailRow
-                  label="Trust level"
-                  value={
-                    <span
-                      className="text-xs font-semibold px-2.5 py-0.5 rounded-full"
-                      style={{
-                        color: trustPill.color,
-                        backgroundColor: trustPill.bg,
-                      }}
-                    >
-                      {trustPill.label}
-                    </span>
-                  }
-                />
-              </>
-            )}
           </div>
         </section>
 
-        {/* Report button */}
         <ProfileReportButton plumberId={slug} city={plumber.city} />
 
-        {/* ============================================================= */}
-        {/* FOOTER */}
-        {/* ============================================================= */}
         <footer className="text-center text-xs text-gray-400 pt-2 pb-4">
-          Last updated {formatDate(plumber.scrapedAt)} &middot; Data from Google
-          Reviews + AI analysis
+          Last updated {formatDate(plumber.scrapedAt)} · Data from Google Reviews
         </footer>
       </div>
 
-      {/* Sticky bottom bar (mobile only) */}
       {s && (
         <StickyBottomBar
           name={plumber.name}
@@ -422,21 +398,89 @@ export default async function PlumberProfilePage({
 }
 
 // ---------------------------------------------------------------------------
+// KPI Card component
+// ---------------------------------------------------------------------------
+
+function KPICard({ icon, title, label, subtitle, color }: {
+  icon: React.ReactNode;
+  title: string;
+  label: string;
+  subtitle: string;
+  color: keyof typeof colorClasses;
+}) {
+  const c = colorClasses[color];
+  return (
+    <div className={`rounded-xl p-3 ${c.bg} border ${c.border}`}>
+      <div className="flex items-center gap-1.5 mb-1">
+        <span className={c.text}>{icon}</span>
+        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{title}</span>
+      </div>
+      <p className={`text-sm font-bold ${c.text}`}>{label}</p>
+      <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">{subtitle}</p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Synthesis Section component
+// ---------------------------------------------------------------------------
+
+function filterByKeywords(items: string[], keywords: string[]): string[] {
+  return items.filter((item) =>
+    keywords.some((k) => item.toLowerCase().includes(k))
+  );
+}
+
+function SynthesisSection({ icon, title, positives, negatives, fallback, fallbackColor }: {
+  icon: React.ReactNode;
+  title: string;
+  positives: string[];
+  negatives: string[];
+  fallback?: string;
+  fallbackColor?: "green" | "gray";
+}) {
+  const hasContent = positives.length > 0 || negatives.length > 0;
+  if (!hasContent && !fallback) return null;
+
+  return (
+    <div className="mb-4">
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className="text-gray-500">{icon}</span>
+        <h3 className="text-sm font-bold text-gray-900">{title}</h3>
+      </div>
+      {hasContent ? (
+        <div className="space-y-1.5 pl-6">
+          {/* Deduplicate */}
+          {[...new Set(positives)].map((item, i) => (
+            <p key={`p-${i}`} className="text-sm text-green-700 flex items-start gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+              <span>{item}</span>
+            </p>
+          ))}
+          {[...new Set(negatives)].map((item, i) => (
+            <p key={`n-${i}`} className="text-sm text-amber-700 flex items-start gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+              <span>{item}</span>
+            </p>
+          ))}
+        </div>
+      ) : fallback ? (
+        <p className={`text-sm pl-6 ${fallbackColor === "green" ? "text-green-600" : "text-gray-400"}`}>
+          {fallback}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Detail row helper
 // ---------------------------------------------------------------------------
 
-function DetailRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
+function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start justify-between gap-4 px-4 py-3">
-      <span className="text-xs text-gray-400 font-medium shrink-0 pt-0.5">
-        {label}
-      </span>
+      <span className="text-xs text-gray-400 font-medium shrink-0 pt-0.5">{label}</span>
       <div className="text-sm text-gray-700 text-right">{value}</div>
     </div>
   );
