@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { MapPin, DollarSign, Zap, Sparkles } from "lucide-react";
+import { DollarSign, Zap, Sparkles, Star } from "lucide-react";
 import type { Plumber } from "@/lib/types";
 import PlumberCard from "./PlumberCard";
 
-type SortMode = "best-match" | "closest" | "best-price" | "fastest-response";
+type SortMode = "best-match" | "fastest" | "top-rated" | "best-price";
 
 interface PlumberWithDistance extends Plumber {
   distanceMiles?: number;
@@ -61,11 +61,11 @@ function getResponseLabel(score: number): { text: string; color: string } | null
   return { text: "May be slow to respond", color: "text-amber-600" };
 }
 
-const SORT_OPTIONS: { mode: SortMode; label: string; icon: typeof MapPin }[] = [
+const SORT_OPTIONS: { mode: SortMode; label: string; icon: typeof Star }[] = [
   { mode: "best-match", label: "Best Match", icon: Sparkles },
-  { mode: "closest", label: "Closest", icon: MapPin },
+  { mode: "fastest", label: "Fastest", icon: Zap },
+  { mode: "top-rated", label: "Top Rated", icon: Star },
   { mode: "best-price", label: "Best Price", icon: DollarSign },
-  { mode: "fastest-response", label: "Fastest", icon: Zap },
 ];
 
 export default function PlumberListWithSort({ plumbers, citySlug, cityName }: Props) {
@@ -76,14 +76,15 @@ export default function PlumberListWithSort({ plumbers, citySlug, cityName }: Pr
 
     switch (sortMode) {
       case "best-match":
-        // Already sorted server-side — keep original order
         return arr;
 
-      case "closest":
+      case "fastest":
+        return arr.sort((a, b) => calculateResponseScore(b) - calculateResponseScore(a));
+
+      case "top-rated":
         return arr.sort((a, b) => {
-          const aDist = a.distanceMiles ?? 999;
-          const bDist = b.distanceMiles ?? 999;
-          return aDist - bDist;
+          if ((b.googleRating || 0) !== (a.googleRating || 0)) return (b.googleRating || 0) - (a.googleRating || 0);
+          return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
         });
 
       case "best-price":
@@ -91,13 +92,7 @@ export default function PlumberListWithSort({ plumbers, citySlug, cityName }: Pr
           const aTier = PRICE_ORDER[getPricingTier(a)] ?? 2;
           const bTier = PRICE_ORDER[getPricingTier(b)] ?? 2;
           if (aTier !== bTier) return aTier - bTier;
-          // Same tier — sort by quality (rating as proxy)
           return (b.googleRating || 0) - (a.googleRating || 0);
-        });
-
-      case "fastest-response":
-        return arr.sort((a, b) => {
-          return calculateResponseScore(b) - calculateResponseScore(a);
         });
 
       default:
@@ -138,7 +133,7 @@ export default function PlumberListWithSort({ plumbers, citySlug, cityName }: Pr
               cityName={cityName}
             />
             {/* Response estimate — only shown when Fastest sort is active */}
-            {sortMode === "fastest-response" && (
+            {sortMode === "fastest" && (
               <ResponseEstimate score={calculateResponseScore(plumber)} />
             )}
           </div>
