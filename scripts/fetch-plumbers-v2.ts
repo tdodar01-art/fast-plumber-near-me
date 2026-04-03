@@ -416,6 +416,49 @@ async function main() {
     const usage = await getMonthlyUsage(db);
     console.log(`  Monthly usage: $${usage.estimatedCost.toFixed(2)} / $${MONTHLY_BUDGET}`);
   }
+
+  return { newPlumbers, updatedPlumbers, cachedReviews, apiCalls: apiCallsThisRun.textSearch + apiCallsThisRun.placeDetails, cities: citiesToSearch };
 }
 
-main().catch(console.error);
+const startedAt = Timestamp.now();
+const startTime = Date.now();
+
+main()
+  .then(async (result) => {
+    if (!process.argv.includes("--dry-run")) {
+      try {
+        const db = initFirebase();
+        await addDoc(collection(db, "pipelineRuns"), {
+          script: "fetch-plumbers",
+          startedAt,
+          completedAt: Timestamp.now(),
+          durationSeconds: Math.round((Date.now() - startTime) / 1000),
+          status: "success",
+          summary: {
+            newPlumbers: result?.newPlumbers ?? 0,
+            updatedPlumbers: result?.updatedPlumbers ?? 0,
+            citiesSearched: result?.cities ?? [],
+            apiCalls: result?.apiCalls ?? 0,
+          },
+          triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+        });
+      } catch { /* logging failure shouldn't crash the script */ }
+    }
+  })
+  .catch(async (err) => {
+    console.error(err);
+    try {
+      const db = initFirebase();
+      await addDoc(collection(db, "pipelineRuns"), {
+        script: "fetch-plumbers",
+        startedAt,
+        completedAt: Timestamp.now(),
+        durationSeconds: Math.round((Date.now() - startTime) / 1000),
+        status: "error",
+        summary: {},
+        error: String(err),
+        triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+      });
+    } catch { /* */ }
+    process.exit(1);
+  });

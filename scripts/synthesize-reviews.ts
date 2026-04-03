@@ -10,7 +10,7 @@
 
 import { initializeApp, getApps } from "firebase/app";
 import {
-  getFirestore, collection, doc, getDocs, updateDoc, query, where, Timestamp,
+  getFirestore, collection, doc, getDocs, updateDoc, addDoc, query, where, Timestamp,
 } from "firebase/firestore";
 import * as fs from "fs";
 import * as path from "path";
@@ -472,6 +472,7 @@ async function main() {
   const plumbersSnap = await getDocs(collection(db, "plumbers"));
   let synthesized = 0;
   let warnings = 0;
+  let totalBadges = 0;
 
   for (const plumberDoc of plumbersSnap.docs) {
     const data = plumberDoc.data();
@@ -504,6 +505,7 @@ async function main() {
     console.log(`📝 ${data.businessName}: ${synthesis.badges.join(", ") || "no badges"} | ${synthesis.redFlags.length} red flags | pricing: ${synthesis.pricingTier}`);
 
     if (synthesis.redFlags.length > 0) warnings++;
+    totalBadges += synthesis.badges.length;
 
     if (!dryRun) {
       await updateDoc(doc(db, "plumbers", plumberDoc.id), {
@@ -517,6 +519,48 @@ async function main() {
   console.log("\n📊 Summary:");
   console.log(`  Synthesized: ${synthesized} plumbers`);
   console.log(`  With warnings/red flags: ${warnings}`);
+
+  return { synthesized, warnings, totalBadges };
 }
 
-main().catch(console.error);
+const startedAt = Timestamp.now();
+const startTime = Date.now();
+
+main()
+  .then(async (result) => {
+    if (!process.argv.includes("--dry-run")) {
+      try {
+        const db = initFirebase();
+        await addDoc(collection(db, "pipelineRuns"), {
+          script: "synthesize-reviews",
+          startedAt,
+          completedAt: Timestamp.now(),
+          durationSeconds: Math.round((Date.now() - startTime) / 1000),
+          status: "success",
+          summary: {
+            plumbersSynthesized: result?.synthesized ?? 0,
+            redFlagsFound: result?.warnings ?? 0,
+            badgesAwarded: result?.totalBadges ?? 0,
+          },
+          triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+        });
+      } catch { /* */ }
+    }
+  })
+  .catch(async (err) => {
+    console.error(err);
+    try {
+      const db = initFirebase();
+      await addDoc(collection(db, "pipelineRuns"), {
+        script: "synthesize-reviews",
+        startedAt,
+        completedAt: Timestamp.now(),
+        durationSeconds: Math.round((Date.now() - startTime) / 1000),
+        status: "error",
+        summary: {},
+        error: String(err),
+        triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+      });
+    } catch { /* */ }
+    process.exit(1);
+  });

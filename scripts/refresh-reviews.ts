@@ -354,6 +354,51 @@ async function main() {
   console.log(`  API calls: ${apiCalls} ($${(apiCalls * COST_PER_CALL).toFixed(2)})`);
   console.log(`  Monthly usage: $${usage.estimatedCost.toFixed(2)} / $${budgetLimit}`);
   console.log(`  Total review gap remaining: ${queue.reduce((sum, e) => sum + e.reviewGap, 0).toLocaleString()}`);
+
+  // Count total cached reviews
+  const totalCached = Object.values(cachedCounts).reduce((s, c) => s + c, 0) + newReviews;
+  return { refreshed, newReviews, apiCalls, totalCached };
 }
 
-main().catch(console.error);
+const startedAt = Timestamp.now();
+const startTime = Date.now();
+
+main()
+  .then(async (result) => {
+    if (!process.argv.includes("--dry-run")) {
+      try {
+        const db = initFirebase();
+        await addDoc(collection(db, "pipelineRuns"), {
+          script: "refresh-reviews",
+          startedAt,
+          completedAt: Timestamp.now(),
+          durationSeconds: Math.round((Date.now() - startTime) / 1000),
+          status: "success",
+          summary: {
+            plumbersRefreshed: result?.refreshed ?? 0,
+            newReviewsCached: result?.newReviews ?? 0,
+            totalReviewsNow: result?.totalCached ?? 0,
+            apiCalls: result?.apiCalls ?? 0,
+          },
+          triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+        });
+      } catch { /* */ }
+    }
+  })
+  .catch(async (err) => {
+    console.error(err);
+    try {
+      const db = initFirebase();
+      await addDoc(collection(db, "pipelineRuns"), {
+        script: "refresh-reviews",
+        startedAt,
+        completedAt: Timestamp.now(),
+        durationSeconds: Math.round((Date.now() - startTime) / 1000),
+        status: "error",
+        summary: {},
+        error: String(err),
+        triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+      });
+    } catch { /* */ }
+    process.exit(1);
+  });
