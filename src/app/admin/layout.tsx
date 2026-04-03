@@ -11,6 +11,7 @@ import {
   MapPin,
   MousePointerClick,
   ClipboardList,
+  Activity,
   LogOut,
   Loader2,
   Menu,
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/admin/cities", label: "Cities", icon: MapPin },
   { href: "/admin/leads", label: "Leads", icon: MousePointerClick },
   { href: "/admin/submissions", label: "Submissions", icon: ClipboardList },
+  { href: "/admin/activity", label: "Activity", icon: Activity },
 ];
 
 function LoginForm({ onLogin }: { onLogin: () => void }) {
