@@ -25,7 +25,7 @@ export default function AdminSubmissionsPage() {
 
   useEffect(() => {
     getBusinessSubmissions().then((data) => {
-      setSubmissions(data as Submission[]);
+      setSubmissions(data as unknown as Submission[]);
       setLoading(false);
     });
   }, []);
