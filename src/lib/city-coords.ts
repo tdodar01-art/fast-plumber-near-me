@@ -87,7 +87,7 @@ const COORDS: Record<string, [number, number]> = {
   "ID:idaho-falls": [43.49, -112.03], "ID:pocatello": [42.86, -112.45],
   "ID:coeur-dalene": [47.68, -116.78], "ID:twin-falls": [42.56, -114.46],
   // Illinois
-  "IL:chicago": [41.88, -87.63], "IL:aurora": [41.76, -88.32], "IL:naperville": [41.79, -88.15],
+  "IL:chicago": [41.88, -87.63], "IL:aurora": [41.76, -88.32], "IL:naperville": [41.75, -88.15],
   "IL:joliet": [41.53, -88.08], "IL:rockford": [42.27, -89.09], "IL:elgin": [42.04, -88.28],
   "IL:springfield": [39.78, -89.65], "IL:peoria": [40.69, -89.59], "IL:champaign": [40.12, -88.24],
   "IL:schaumburg": [42.03, -88.08], "IL:bolingbrook": [41.70, -88.07],
@@ -96,6 +96,23 @@ const COORDS: Record<string, [number, number]> = {
   "IL:downers-grove": [41.79, -88.01], "IL:plainfield": [41.63, -88.20],
   "IL:bloomington": [40.48, -88.99], "IL:normal": [40.51, -88.99],
   "IL:decatur": [39.84, -88.95], "IL:belleville": [38.52, -90.00],
+  // Seinfeld Plan priority cities (northern IL suburbs)
+  "IL:mchenry": [42.33, -88.27], "IL:algonquin": [42.17, -88.29], "IL:lake-in-the-hills": [42.18, -88.33],
+  "IL:huntley": [42.17, -88.43], "IL:woodstock": [42.31, -88.45], "IL:cary": [42.21, -88.24],
+  "IL:marengo": [42.25, -88.61], "IL:harvard": [42.42, -88.61], "IL:carpentersville": [42.12, -88.26],
+  "IL:south-elgin": [41.99, -88.29], "IL:st-charles": [41.91, -88.31], "IL:geneva": [41.89, -88.32],
+  "IL:batavia": [41.85, -88.31],
+  // Additional IL cities
+  "IL:des-plaines": [42.03, -87.88], "IL:orland-park": [41.63, -87.85], "IL:tinley-park": [41.57, -87.78],
+  "IL:oak-lawn": [41.71, -87.76], "IL:berwyn": [41.85, -87.79], "IL:mount-prospect": [42.07, -87.94],
+  "IL:hoffman-estates": [42.04, -88.12], "IL:oak-park": [41.89, -87.78], "IL:palatine": [42.11, -88.03],
+  "IL:waukegan": [42.36, -87.84], "IL:cicero": [41.85, -87.76], "IL:calumet-city": [41.62, -87.53],
+  "IL:buffalo-grove": [42.15, -87.96], "IL:glenview": [42.07, -87.79], "IL:lombard": [41.88, -88.01],
+  "IL:bartlett": [41.99, -88.19], "IL:hanover-park": [41.98, -88.15], "IL:streamwood": [42.03, -88.18],
+  "IL:carol-stream": [41.91, -88.13], "IL:addison": [41.93, -88.01], "IL:gurnee": [42.37, -87.90],
+  "IL:round-lake": [42.35, -88.10], "IL:mundelein": [42.27, -88.00], "IL:vernon-hills": [42.22, -87.97],
+  "IL:libertyville": [42.28, -87.95], "IL:lake-zurich": [42.20, -88.09], "IL:wauconda": [42.26, -88.14],
+  "IL:island-lake": [42.28, -88.19], "IL:fox-lake": [42.40, -88.18],
   // Indiana
   "IN:indianapolis": [39.77, -86.16], "IN:fort-wayne": [41.08, -85.14],
   "IN:evansville": [37.97, -87.56], "IN:south-bend": [41.68, -86.25],
