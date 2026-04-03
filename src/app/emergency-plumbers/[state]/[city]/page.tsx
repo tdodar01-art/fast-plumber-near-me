@@ -134,11 +134,29 @@ export default async function CityPage({
     })),
   };
 
+  // AggregateRating for the city page (aggregate of all plumber ratings)
+  const ratedPlumbers = plumbers.filter((p) => p.googleRating && p.googleReviewCount);
+  const aggregateRatingJsonLd = ratedPlumbers.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: `Emergency Plumbers in ${city.name}, ${city.state}`,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: (ratedPlumbers.reduce((sum, p) => sum + (p.googleRating || 0), 0) / ratedPlumbers.length).toFixed(1),
+      reviewCount: ratedPlumbers.reduce((sum, p) => sum + (p.googleReviewCount || 0), 0),
+      bestRating: 5,
+      worstRating: 1,
+    },
+  } : null;
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(plumberListJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      {aggregateRatingJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateRatingJsonLd) }} />
+      )}
 
       {/* Hero */}
       <section className="bg-primary text-white py-10 sm:py-14">

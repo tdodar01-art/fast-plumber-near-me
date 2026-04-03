@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/api/"],
       },
     ],
-    sitemap: "https://www.fastplumbernearme.com/sitemap.xml",
+    sitemap: "https://fastplumbernearme.com/sitemap.xml",
   };
 }
