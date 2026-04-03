@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { MapPin, Clock, AlertTriangle, ArrowRight, Phone, HelpCircle } from "lucide-react";
 import PlumberCard from "@/components/PlumberCard";
+import PlumberListWithSort from "@/components/PlumberListWithSort";
 import CallToAction from "@/components/CallToAction";
 import { getAllCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
@@ -222,11 +223,11 @@ export default async function CityPage({
       <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
         {/* Plumber listings */}
         {plumbers.length > 0 ? (
-          <div className="space-y-4 mb-12">
-            {plumbers.map((plumber) => (
-              <PlumberCard key={plumber.id} plumber={plumber} citySlug={citySlug} distanceMiles={plumber.distanceMiles} cityName={city.name} />
-            ))}
-          </div>
+          <PlumberListWithSort
+            plumbers={JSON.parse(JSON.stringify(plumbers))}
+            citySlug={citySlug}
+            cityName={city.name}
+          />
         ) : (
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 text-center mb-12">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Plumber Listings Coming Soon</h2>
