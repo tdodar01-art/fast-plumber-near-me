@@ -1,6 +1,7 @@
 "use client";
 
-import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar } from "lucide-react";
+import { useState } from "react";
+import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar, Flag, ChevronDown } from "lucide-react";
 import type { Plumber } from "@/lib/types";
 import ReliabilityBadge from "./ReliabilityBadge";
 import VerifiedBadge from "./VerifiedBadge";
@@ -143,6 +144,30 @@ export default function PlumberCard({
         ))}
       </div>
 
+      {/* Review synthesis */}
+      {plumber.reviewSynthesis && (
+        <div className="mt-2 space-y-1">
+          {/* Synthesis badges */}
+          {plumber.reviewSynthesis.badges.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {plumber.reviewSynthesis.badges.map((badge) => (
+                <span key={badge} className="text-xs font-medium bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                  {badge}
+                </span>
+              ))}
+            </div>
+          )}
+          {/* Top strengths */}
+          {plumber.reviewSynthesis.strengths.slice(0, 2).map((s, i) => (
+            <p key={i} className="text-xs text-green-700">+ {s}</p>
+          ))}
+          {/* Top weakness */}
+          {plumber.reviewSynthesis.weaknesses.length > 0 && (
+            <p className="text-xs text-amber-700">- {plumber.reviewSynthesis.weaknesses[0]}</p>
+          )}
+        </div>
+      )}
+
       {/* Reliability bar */}
       {plumber.reliabilityScore > 0 && plumber.totalCallAttempts >= 3 && (
         <div className="mt-2">
@@ -215,6 +240,61 @@ export default function PlumberCard({
           </div>
         )}
       </div>
+
+      {/* Report button */}
+      <ReportButton plumberId={plumber.id} citySlug={citySlug} />
+    </div>
+  );
+}
+
+function ReportButton({ plumberId, citySlug }: { plumberId: string; citySlug: string }) {
+  const [open, setOpen] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const options = [
+    { type: "answered-fast", label: "They answered right away!", positive: true },
+    { type: "no-answer", label: "They didn't answer my call", positive: false },
+    { type: "bad-number", label: "This number doesn't work", positive: false },
+    { type: "seems-closed", label: "This business seems closed", positive: false },
+  ] as const;
+
+  async function report(type: string) {
+    fetch("/api/report-plumber", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plumberId, reportType: type, city: citySlug }),
+    }).catch(() => {});
+    setSent(true);
+    setTimeout(() => { setOpen(false); setSent(false); }, 2000);
+  }
+
+  return (
+    <div className="mt-2 relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
+      >
+        <Flag className="w-3 h-3" />
+        Report an issue
+        <ChevronDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute bottom-full left-0 mb-1 bg-white border border-gray-200 rounded-lg shadow-lg p-1 z-10 min-w-[220px]">
+          {sent ? (
+            <p className="text-xs text-green-600 p-2">Thanks for the feedback!</p>
+          ) : (
+            options.map((opt) => (
+              <button
+                key={opt.type}
+                onClick={() => report(opt.type)}
+                className={`block w-full text-left text-xs px-3 py-1.5 rounded hover:bg-gray-50 ${opt.positive ? "text-green-700" : "text-gray-700"}`}
+              >
+                {opt.label}
+              </button>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }
