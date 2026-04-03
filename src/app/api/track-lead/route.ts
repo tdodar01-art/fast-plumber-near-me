@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { trackLead } from "@/lib/firestore";
+import { Timestamp } from "firebase/firestore";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,21 +11,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // In production, this will write to Firestore:
-    // import { trackLead } from "@/lib/firestore";
-    // import { Timestamp } from "firebase/firestore";
-    // await trackLead({
-    //   plumberId,
-    //   city,
-    //   clickType,
-    //   source,
-    //   createdAt: Timestamp.now(),
-    //   userAgent: request.headers.get("user-agent") || "",
-    //   billed: false,
-    //   billedAmount: null,
-    // });
-
-    console.log("Lead tracked:", { plumberId, city, clickType, source });
+    await trackLead({
+      plumberId,
+      city,
+      clickType,
+      source: source || "",
+      createdAt: Timestamp.now(),
+      userAgent: request.headers.get("user-agent") || "",
+      billed: false,
+      billedAmount: null,
+    });
 
     return NextResponse.json({ success: true });
   } catch {
