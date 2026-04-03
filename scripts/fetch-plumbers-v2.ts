@@ -14,10 +14,26 @@ import {
   getFirestore, collection, doc, getDoc, setDoc, updateDoc, addDoc,
   getDocs, query, where, Timestamp, limit as firestoreLimit,
 } from "firebase/firestore";
-import * as dotenv from "dotenv";
+import * as fs from "fs";
 import * as path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config({ path: path.join(__dirname, "..", ".env.local") });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env.local manually (no dotenv dependency)
+const envPath = path.join(__dirname, "..", ".env.local");
+if (fs.existsSync(envPath)) {
+  for (const line of fs.readFileSync(envPath, "utf-8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const val = trimmed.slice(eqIdx + 1).trim();
+    if (!process.env[key]) process.env[key] = val;
+  }
+}
 
 // --- Config ---
 const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
