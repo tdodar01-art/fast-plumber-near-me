@@ -7,6 +7,7 @@ import CallToAction from "@/components/CallToAction";
 import { getAllCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
 import { getPlumbersByCity } from "@/lib/firestore";
+import { calculateQualityScore } from "@/lib/scoring";
 
 export function generateStaticParams() {
   return getAllCityParams();
@@ -81,14 +82,13 @@ export default async function CityPage({
     // Firebase not configured
   }
 
-  // Sort: featured > premium > free, then reliability, then rating, then reviews
+  // Sort: featured > premium > free, then by composite quality score
+  const maxReviewCount = Math.max(1, ...plumbers.map((p) => p.googleReviewCount || 0));
   plumbers.sort((a, b) => {
     const tierOrder = { featured: 0, premium: 1, free: 2 };
     const tierDiff = tierOrder[a.listingTier] - tierOrder[b.listingTier];
     if (tierDiff !== 0) return tierDiff;
-    if (b.reliabilityScore !== a.reliabilityScore) return b.reliabilityScore - a.reliabilityScore;
-    if ((b.googleRating || 0) !== (a.googleRating || 0)) return (b.googleRating || 0) - (a.googleRating || 0);
-    return (b.googleReviewCount || 0) - (a.googleReviewCount || 0);
+    return calculateQualityScore(b, maxReviewCount) - calculateQualityScore(a, maxReviewCount);
   });
 
   const faqs = getCityFaqs(city.name, city.state, city.county);

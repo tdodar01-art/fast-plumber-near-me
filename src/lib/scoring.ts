@@ -37,3 +37,35 @@ export function getScoreLabel(score: number): string {
   if (score >= 40) return "Fair";
   return "Needs Improvement";
 }
+
+/**
+ * Composite quality score for sorting plumbers on city pages.
+ * Blends Google rating, review volume, emergency signals, and badges.
+ * Returns 0-1 score (higher = better).
+ */
+export function calculateQualityScore(plumber: {
+  googleRating: number | null;
+  googleReviewCount: number | null;
+  reviewSynthesis?: {
+    emergencySignals?: string[];
+    badges?: string[];
+  } | null;
+  phone: string;
+}, maxReviewCount: number): number {
+  // No phone = bottom of the list
+  if (!plumber.phone) return -1;
+
+  const rating = plumber.googleRating ?? 0;
+  const reviewCount = plumber.googleReviewCount ?? 0;
+  const normalizedReviews = maxReviewCount > 0 ? reviewCount / maxReviewCount : 0;
+  const hasEmergencySignals = (plumber.reviewSynthesis?.emergencySignals?.length ?? 0) > 0 ? 1 : 0;
+  const badgeCount = plumber.reviewSynthesis?.badges?.length ?? 0;
+  const normalizedBadges = badgeCount / 5;
+
+  return (
+    (rating / 5) * 0.4 +
+    normalizedReviews * 0.3 +
+    hasEmergencySignals * 0.2 +
+    normalizedBadges * 0.1
+  );
+}
