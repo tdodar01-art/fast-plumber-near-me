@@ -66,6 +66,12 @@ export interface Plumber {
   reviewSynthesis: ReviewSynthesis | null;
   cachedFromGoogle: boolean;
 
+  // Review accumulation tracking
+  cachedReviewCount?: number;
+  lastRefreshNewCount?: number;
+  consecutiveZeroRefreshes?: number;
+  reviewGap?: number; // googleReviewCount - cachedReviewCount
+
   // Manual overrides (admin-editable, merged with synthesis)
   manualRedFlags?: string[];
   manualWeaknesses?: string[];
