@@ -78,6 +78,20 @@ export async function trackLead(lead: Omit<Lead, "id">): Promise<string> {
   return docRef.id;
 }
 
+// --- Contact submissions ---
+
+export async function submitContactForm(data: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  createdAt: Timestamp;
+}): Promise<string> {
+  if (!isConfigured || !db) return "";
+  const docRef = await addDoc(collection(db, "contactSubmissions"), data);
+  return docRef.id;
+}
+
 // --- Business submission ---
 
 export async function submitBusiness(data: {
