@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
-  Phone,
-  ExternalLink,
   CheckCircle2,
   MapPin,
   Clock,
   ShieldCheck,
   ArrowLeft,
-  Star,
 } from "lucide-react";
 import {
   getPlumberBySlug,
@@ -20,6 +17,7 @@ import StarRating from "@/components/profile/StarRating";
 import WarningBox from "@/components/profile/WarningBox";
 import { QuoteCard, GoogleReviewCard } from "@/components/profile/ReviewCard";
 import StickyBottomBar from "@/components/profile/StickyBottomBar";
+import { CallButton, WebsiteButton, ProfileReportButton } from "@/components/profile/ProfileActions";
 
 // ---------------------------------------------------------------------------
 // Static generation
@@ -124,8 +122,40 @@ export default async function PlumberProfilePage({
   const trustPill = getTrustPill(s?.trustLevel ?? "");
   const topReviews = plumber.reviews.slice(0, 3);
 
+  // JSON-LD schemas
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
+      { "@type": "ListItem", position: 2, name: "Plumbers", item: "https://fastplumbernearme.com/plumbers" },
+      { "@type": "ListItem", position: 3, name: plumber.name, item: `https://fastplumbernearme.com/plumber/${slug}` },
+    ],
+  };
+
+  const localBusinessJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Plumber",
+    name: plumber.name,
+    telephone: plumber.phone,
+    address: { "@type": "PostalAddress", addressLocality: plumber.city, addressRegion: plumber.state },
+    ...(plumber.website && { url: plumber.website }),
+    ...(plumber.googleRating && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: plumber.googleRating,
+        reviewCount: plumber.googleReviewCount,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    }),
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }} />
+
       <div className="max-w-[480px] mx-auto px-4 pt-4 pb-28 sm:pb-12 font-[family-name:var(--font-dm-sans)]">
         {/* Back link */}
         <a
@@ -192,25 +222,9 @@ export default async function PlumberProfilePage({
         {/* CTA BUTTONS */}
         {/* ============================================================= */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <a
-            href={`tel:${plumber.phone.replace(/\D/g, "")}`}
-            className="flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-white"
-            style={{ backgroundColor: "#0F6E56" }}
-          >
-            <Phone className="w-4 h-4" />
-            Call now
-          </a>
+          <CallButton phone={plumber.phone} plumberId={slug} city={plumber.city} />
           {plumber.website ? (
-            <a
-              href={plumber.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-bold text-gray-700 bg-white"
-              style={{ border: "1.5px solid #D1D5DB" }}
-            >
-              <ExternalLink className="w-4 h-4" />
-              Website
-            </a>
+            <WebsiteButton url={plumber.website} plumberId={slug} city={plumber.city} />
           ) : (
             <div
               className="flex items-center justify-center py-3.5 rounded-xl text-sm text-gray-400 bg-gray-50"
@@ -378,6 +392,9 @@ export default async function PlumberProfilePage({
             )}
           </div>
         </section>
+
+        {/* Report button */}
+        <ProfileReportButton plumberId={slug} city={plumber.city} />
 
         {/* ============================================================= */}
         {/* FOOTER */}
