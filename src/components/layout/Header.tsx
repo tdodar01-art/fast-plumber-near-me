@@ -6,6 +6,7 @@ import { Menu, X, Phone, Wrench } from "lucide-react";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const businessPhone = process.env.NEXT_PUBLIC_BUSINESS_PHONE;
 
   return (
     <header className="bg-primary text-white sticky top-0 z-50 shadow-md">
@@ -34,13 +35,15 @@ export default function Header() {
             <Link href="/about" className="hover:text-accent-light transition-colors">
               About
             </Link>
-            <a
-              href="tel:+18155555555"
-              className="flex items-center gap-1.5 bg-accent hover:bg-accent-dark px-4 py-2 rounded-lg font-semibold transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              Emergency?
-            </a>
+            {businessPhone && (
+              <a
+                href={`tel:${businessPhone}`}
+                className="flex items-center gap-1.5 bg-accent hover:bg-accent-dark px-4 py-2 rounded-lg font-semibold transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                Emergency?
+              </a>
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -100,13 +103,15 @@ export default function Header() {
             >
               Contact
             </Link>
-            <a
-              href="tel:+18155555555"
-              className="block bg-accent hover:bg-accent-dark text-center px-3 py-3 rounded-lg font-semibold transition-colors mt-2"
-            >
-              <Phone className="w-4 h-4 inline mr-2" />
-              Call for Emergency Help
-            </a>
+            {businessPhone && (
+              <a
+                href={`tel:${businessPhone}`}
+                className="block bg-accent hover:bg-accent-dark text-center px-3 py-3 rounded-lg font-semibold transition-colors mt-2"
+              >
+                <Phone className="w-4 h-4 inline mr-2" />
+                Call for Emergency Help
+              </a>
+            )}
           </div>
         </nav>
       )}

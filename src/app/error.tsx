@@ -41,12 +41,14 @@ export default function Error({
           Go Home
         </Link>
       </div>
-      <div className="mt-8 text-sm text-gray-500">
-        Having a plumbing emergency?{" "}
-        <a href="tel:+18155555555" className="text-accent font-semibold hover:text-accent-dark inline-flex items-center gap-1">
-          <Phone className="w-3 h-3" /> Call Now
-        </a>
-      </div>
+      {process.env.NEXT_PUBLIC_BUSINESS_PHONE && (
+        <div className="mt-8 text-sm text-gray-500">
+          Having a plumbing emergency?{" "}
+          <a href={`tel:${process.env.NEXT_PUBLIC_BUSINESS_PHONE}`} className="text-accent font-semibold hover:text-accent-dark inline-flex items-center gap-1">
+            <Phone className="w-3 h-3" /> Call Now
+          </a>
+        </div>
+      )}
     </div>
   );
 }
