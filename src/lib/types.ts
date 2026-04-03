@@ -61,11 +61,26 @@ export interface Plumber {
   // Legacy / other reviews
   yelpRating: number | null;
 
+  // Caching & synthesis
+  lastReviewRefreshAt: Timestamp | null;
+  reviewSynthesis: ReviewSynthesis | null;
+  cachedFromGoogle: boolean;
+
   // Meta
   isActive: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   notes: string;
+}
+
+export interface ReviewSynthesis {
+  strengths: string[];
+  weaknesses: string[];
+  emergencySignals: string[];
+  redFlags: string[];
+  badges: string[];
+  reviewCount: number;
+  synthesizedAt: Timestamp;
 }
 
 export interface VerificationCall {
@@ -93,6 +108,45 @@ export interface Lead {
   userAgent: string;
   billed: boolean;
   billedAmount: number | null;
+}
+
+export interface CachedReview {
+  id: string;
+  plumberId: string;
+  googleReviewId: string;
+  authorName: string;
+  rating: number;
+  text: string;
+  relativeTimeDescription: string;
+  publishedAt: string;
+  cachedAt: Timestamp;
+}
+
+export interface RatingSnapshot {
+  id: string;
+  plumberId: string;
+  googleRating: number;
+  googleReviewCount: number;
+  snapshotAt: Timestamp;
+}
+
+export interface ApiUsageRecord {
+  id: string;
+  month: string;
+  year: number;
+  textSearchCalls: number;
+  placeDetailsCalls: number;
+  totalCalls: number;
+  estimatedCost: number;
+  lastUpdatedAt: Timestamp;
+}
+
+export interface PlumberReport {
+  id: string;
+  plumberId: string;
+  reportType: "bad-number" | "seems-closed" | "answered-fast" | "no-answer";
+  city: string;
+  createdAt: Timestamp;
 }
 
 export interface City {

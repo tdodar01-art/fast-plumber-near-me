@@ -1,32 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, orderBy, doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { Search, ToggleLeft, ToggleRight, Loader2, ExternalLink } from "lucide-react";
+import { Search, ToggleLeft, ToggleRight, Loader2, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Plumber } from "@/lib/types";
+import { getAllPlumbers, updatePlumber } from "@/lib/firestore";
 import ConfirmDialog from "@/components/ConfirmDialog";
+
+const PAGE_SIZE = 25;
 
 export default function AdminPlumbersPage() {
   const [plumbers, setPlumbers] = useState<Plumber[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
   const [confirm, setConfirm] = useState<{ id: string; name: string; isActive: boolean } | null>(null);
 
   useEffect(() => {
-    async function fetch() {
-      if (!db) { setLoading(false); return; }
-      const q = query(collection(db, "plumbers"), orderBy("businessName"));
-      const snap = await getDocs(q);
-      setPlumbers(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Plumber));
+    getAllPlumbers().then((data) => {
+      setPlumbers(data);
       setLoading(false);
-    }
-    fetch();
+    });
   }, []);
 
   async function toggleActive(id: string, current: boolean) {
-    if (!db) return;
-    await updateDoc(doc(db, "plumbers", id), { isActive: !current });
+    await updatePlumber(id, { isActive: !current });
     setPlumbers((prev) => prev.map((p) => (p.id === id ? { ...p, isActive: !current } : p)));
   }
 
@@ -36,6 +33,11 @@ export default function AdminPlumbersPage() {
       p.phone.includes(search) ||
       p.address?.city?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  useEffect(() => { setPage(0); }, [search]);
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
 
@@ -70,7 +72,7 @@ export default function AdminPlumbersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filtered.map((p) => (
+              {paginated.map((p) => (
                 <tr key={p.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="font-medium text-gray-900">{p.businessName}</div>
@@ -112,6 +114,22 @@ export default function AdminPlumbersPage() {
           <div className="text-center py-8 text-gray-500">No plumbers found</div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-sm text-gray-500">
+            Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex gap-2">
+            <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} className="p-2 rounded-lg border border-gray-300 disabled:opacity-40">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="p-2 rounded-lg border border-gray-300 disabled:opacity-40">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       <ConfirmDialog
         open={confirm !== null}

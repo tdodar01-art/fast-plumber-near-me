@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CheckCircle, Loader2 } from "lucide-react";
+import { CITY_LIST } from "@/lib/city-list";
 
 const serviceOptions = [
   "emergency",
@@ -15,37 +16,6 @@ const serviceOptions = [
   "faucet-repair",
   "garbage-disposal",
 ];
-
-const cityOptions = [
-  "crystal-lake-il",
-  "mchenry-il",
-  "algonquin-il",
-  "lake-in-the-hills-il",
-  "huntley-il",
-  "woodstock-il",
-  "cary-il",
-  "elgin-il",
-  "south-elgin-il",
-  "st-charles-il",
-  "geneva-il",
-  "batavia-il",
-  "aurora-il",
-  "naperville-il",
-  "wheaton-il",
-  "schaumburg-il",
-  "arlington-heights-il",
-  "carpentersville-il",
-  "marengo-il",
-  "harvard-il",
-];
-
-function formatSlug(slug: string) {
-  return slug
-    .replace(/-il$/, ", IL")
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
 
 export default function AddYourBusinessPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -185,16 +155,16 @@ export default function AddYourBusinessPage() {
           {/* Service areas */}
           <div>
             <p className="block text-sm font-medium text-gray-700 mb-2">Service Areas *</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {cityOptions.map((city) => (
-                <label key={city} className="flex items-center gap-2 text-sm text-gray-700">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto border border-gray-200 rounded-xl p-3">
+              {CITY_LIST.map((city) => (
+                <label key={`${city.citySlug}-${city.state}`} className="flex items-center gap-2 text-sm text-gray-700">
                   <input
                     type="checkbox"
                     name="serviceCities"
-                    value={city}
+                    value={`${city.citySlug}-${city.state.toLowerCase()}`}
                     className="rounded border-gray-300 text-primary focus:ring-primary"
                   />
-                  {formatSlug(city)}
+                  {city.name}, {city.state}
                 </label>
               ))}
             </div>

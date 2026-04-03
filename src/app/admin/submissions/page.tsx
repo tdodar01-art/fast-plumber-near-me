@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, orderBy, doc, deleteDoc, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { Timestamp } from "firebase/firestore";
 import { Loader2, Check, X } from "lucide-react";
+import { getBusinessSubmissions, deleteSubmission, createPlumber } from "@/lib/firestore";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface Submission {
@@ -24,20 +24,14 @@ export default function AdminSubmissionsPage() {
   const [confirm, setConfirm] = useState<{ action: "approve" | "reject"; sub: Submission } | null>(null);
 
   useEffect(() => {
-    async function fetch() {
-      if (!db) { setLoading(false); return; }
-      const q = query(collection(db, "businessSubmissions"), orderBy("createdAt", "desc"));
-      const snap = await getDocs(q);
-      setSubmissions(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Submission));
+    getBusinessSubmissions().then((data) => {
+      setSubmissions(data as Submission[]);
       setLoading(false);
-    }
-    fetch();
+    });
   }, []);
 
   async function approve(sub: Submission) {
-    if (!db) return;
-    // Create plumber record
-    await addDoc(collection(db, "plumbers"), {
+    await createPlumber({
       businessName: sub.businessName,
       ownerName: "",
       phone: sub.phone,
@@ -74,18 +68,19 @@ export default function AdminSubmissionsPage() {
       social: { facebook: null, instagram: null },
       yelpRating: null,
       isActive: true,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
       notes: "Approved from submission",
+      lastReviewRefreshAt: null,
+      reviewSynthesis: null,
+      cachedFromGoogle: false,
     });
-    // Delete submission
-    await deleteDoc(doc(db, "businessSubmissions", sub.id));
+    await deleteSubmission(sub.id);
     setSubmissions((prev) => prev.filter((s) => s.id !== sub.id));
   }
 
   async function reject(id: string) {
-    if (!db) return;
-    await deleteDoc(doc(db, "businessSubmissions", id));
+    await deleteSubmission(id);
     setSubmissions((prev) => prev.filter((s) => s.id !== id));
   }
 

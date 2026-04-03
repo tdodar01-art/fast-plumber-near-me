@@ -1,32 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, orderBy, doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { Loader2, ToggleLeft, ToggleRight, Search } from "lucide-react";
+import { Loader2, ToggleLeft, ToggleRight, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import type { City } from "@/lib/types";
+import { getAllCities, updateCity } from "@/lib/firestore";
 import ConfirmDialog from "@/components/ConfirmDialog";
+
+const PAGE_SIZE = 25;
 
 export default function AdminCitiesPage() {
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
   const [confirm, setConfirm] = useState<{ id: string; name: string; isPublished: boolean } | null>(null);
 
   useEffect(() => {
-    async function fetch() {
-      if (!db) { setLoading(false); return; }
-      const q = query(collection(db, "cities"), orderBy("name"));
-      const snap = await getDocs(q);
-      setCities(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as City));
+    getAllCities().then((data) => {
+      setCities(data);
       setLoading(false);
-    }
-    fetch();
+    });
   }, []);
 
   async function togglePublished(id: string, current: boolean) {
-    if (!db) return;
-    await updateDoc(doc(db, "cities", id), { isPublished: !current });
+    await updateCity(id, { isPublished: !current });
     setCities((prev) => prev.map((c) => (c.id === id ? { ...c, isPublished: !current } : c)));
   }
 
@@ -36,6 +33,11 @@ export default function AdminCitiesPage() {
       c.state.toLowerCase().includes(search.toLowerCase()) ||
       c.county?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  useEffect(() => { setPage(0); }, [search]);
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
 
@@ -67,7 +69,7 @@ export default function AdminCitiesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filtered.map((city) => (
+              {paginated.map((city) => (
                 <tr key={city.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium text-gray-900">{city.name}</td>
                   <td className="px-4 py-3 text-gray-600">{city.state}</td>
@@ -87,6 +89,22 @@ export default function AdminCitiesPage() {
           <div className="text-center py-8 text-gray-500">No cities found</div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-sm text-gray-500">
+            Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {filtered.length}
+          </p>
+          <div className="flex gap-2">
+            <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} className="p-2 rounded-lg border border-gray-300 disabled:opacity-40">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="p-2 rounded-lg border border-gray-300 disabled:opacity-40">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       <ConfirmDialog
         open={confirm !== null}

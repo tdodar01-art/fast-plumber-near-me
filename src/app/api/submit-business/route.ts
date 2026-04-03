@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { checkRateLimit, checkOrigin } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
+  const rateLimited = checkRateLimit(request);
+  if (rateLimited) return rateLimited;
+  const originBlocked = checkOrigin(request);
+  if (originBlocked) return originBlocked;
+
   try {
     const data = await request.json();
 

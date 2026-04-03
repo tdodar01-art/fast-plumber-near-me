@@ -1,29 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { Loader2, Phone, Globe, MapPin } from "lucide-react";
+import { Loader2, Phone, Globe, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Lead } from "@/lib/types";
+import { getLeads } from "@/lib/firestore";
+
+const PAGE_SIZE = 25;
 
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
-    async function fetch() {
-      if (!db) { setLoading(false); return; }
-      const q = query(collection(db, "leads"), orderBy("createdAt", "desc"), limit(200));
-      const snap = await getDocs(q);
-      setLeads(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Lead));
+    getLeads(500).then((data) => {
+      setLeads(data);
       setLoading(false);
-    }
-    fetch();
+    });
   }, []);
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
 
   const clickTypeIcon = { call: Phone, website: Globe, directions: MapPin };
+  const totalPages = Math.ceil(leads.length / PAGE_SIZE);
+  const paginated = leads.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   return (
     <>
@@ -42,7 +42,7 @@ export default function AdminLeadsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {leads.map((lead) => {
+              {paginated.map((lead) => {
                 const Icon = clickTypeIcon[lead.clickType] || Phone;
                 return (
                   <tr key={lead.id} className="hover:bg-gray-50">
@@ -68,6 +68,22 @@ export default function AdminLeadsPage() {
           <div className="text-center py-8 text-gray-500">No leads yet</div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-sm text-gray-500">
+            Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, leads.length)} of {leads.length}
+          </p>
+          <div className="flex gap-2">
+            <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} className="p-2 rounded-lg border border-gray-300 disabled:opacity-40">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="p-2 rounded-lg border border-gray-300 disabled:opacity-40">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

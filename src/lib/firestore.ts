@@ -4,9 +4,13 @@ import {
   getDocs,
   getDoc,
   addDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
   query,
   where,
   orderBy,
+  limit as firestoreLimit,
   Timestamp,
 } from "firebase/firestore";
 import { db, isConfigured } from "./firebase";
@@ -70,12 +74,68 @@ export async function getAllCities(): Promise<City[]> {
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as City);
 }
 
+export async function createPlumber(data: Omit<Plumber, "id">): Promise<string> {
+  if (!isConfigured || !db) return "";
+  const docRef = await addDoc(collection(db, "plumbers"), data);
+  return docRef.id;
+}
+
+export async function updatePlumber(id: string, data: Partial<Plumber>): Promise<void> {
+  if (!isConfigured || !db) return;
+  const { id: _id, ...fields } = data as Plumber;
+  await updateDoc(doc(db, "plumbers", id), fields);
+}
+
+export async function deletePlumber(id: string): Promise<void> {
+  if (!isConfigured || !db) return;
+  await deleteDoc(doc(db, "plumbers", id));
+}
+
+// --- City helpers (write) ---
+
+export async function createCity(id: string, data: Omit<City, "id">): Promise<void> {
+  if (!isConfigured || !db) return;
+  await setDoc(doc(db, "cities", id), data);
+}
+
+export async function updateCity(id: string, data: Partial<City>): Promise<void> {
+  if (!isConfigured || !db) return;
+  const { id: _id, ...fields } = data as City;
+  await updateDoc(doc(db, "cities", id), fields);
+}
+
+export async function deleteCity(id: string): Promise<void> {
+  if (!isConfigured || !db) return;
+  await deleteDoc(doc(db, "cities", id));
+}
+
 // --- Lead helpers ---
 
 export async function trackLead(lead: Omit<Lead, "id">): Promise<string> {
   if (!isConfigured || !db) return "";
   const docRef = await addDoc(collection(db, "leads"), lead);
   return docRef.id;
+}
+
+export async function getLeads(max: number = 200): Promise<Lead[]> {
+  if (!isConfigured || !db) return [];
+  const q = query(collection(db, "leads"), orderBy("createdAt", "desc"), firestoreLimit(max));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Lead);
+}
+
+// --- Business submissions ---
+
+export async function getBusinessSubmissions(): Promise<Array<{ id: string; [key: string]: unknown }>> {
+  if (!isConfigured || !db) return [];
+  const q = query(collection(db, "businessSubmissions"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function deleteSubmission(id: string): Promise<void> {
+  if (!isConfigured || !db) return;
+  await deleteDoc(doc(db, "businessSubmissions", id));
 }
 
 // --- Contact submissions ---
