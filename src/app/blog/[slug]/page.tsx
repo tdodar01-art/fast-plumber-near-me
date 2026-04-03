@@ -31,8 +31,16 @@ export async function generateMetadata({
   };
 }
 
+function stripHtmlTags(text: string): string {
+  return text.replace(/<[^>]*>/g, "");
+}
+
 function renderContent(content: string) {
-  const lines = content.split("\n");
+  // Strip HTML tags as defense-in-depth — React JSX already escapes text
+  // content, but this protects against future changes (e.g. CMS integration,
+  // dangerouslySetInnerHTML refactors) where raw HTML could slip through.
+  const sanitized = stripHtmlTags(content);
+  const lines = sanitized.split("\n");
   const elements: React.ReactNode[] = [];
   let inTable = false;
   let tableRows: string[][] = [];
