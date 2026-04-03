@@ -1,16 +1,8 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 95,
+  "usedThisMonth": 107,
   "currentMonth": "2026-04",
   "queue": [
-    {
-      "city": "Geneva",
-      "state": "IL",
-      "county": "Kane",
-      "region": "Fox Valley",
-      "status": "pending",
-      "estCalls": 16
-    },
     {
       "city": "Batavia",
       "state": "IL",
@@ -964,6 +956,16 @@
       "actualCalls": 10,
       "plumbersFound": 9,
       "completedAt": "2026-04-02"
+    },
+    {
+      "city": "Geneva",
+      "state": "IL",
+      "county": "Kane",
+      "region": "Fox Valley",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-04-03"
     }
   ]
 }
