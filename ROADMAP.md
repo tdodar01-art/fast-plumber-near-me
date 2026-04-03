@@ -57,39 +57,69 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 
 ---
 
-## Current Status (from April 2026 Audit)
+## Current Status (updated April 3, 2026)
 
 ### What's Built
-- 42 city pages with plumber listings, SEO meta, JSON-LD, OG images
-- ~2000 city entries generated (only 42 published)
+
+**Site & Pages:**
+- 2250+ city pages with plumber listings, SEO meta, JSON-LD (breadcrumb + FAQ + AggregateRating), OG images
+- 86 plumber profile pages
+- 51 state pages
 - Homepage with search + geolocation
-- Blog (8 posts with custom markdown renderer)
-- Directory index + state pages
-- Admin dashboard (Firebase Auth, plumber/city/lead/submission management)
-- 122 plumber records loaded
-- Business submission form (Add Your Business)
+- Blog (8 posts with custom markdown renderer + HTML sanitization)
+- Directory index + plumber directory with filters
+- Admin dashboard (Firebase Auth, plumber/city/lead/submission management, pagination, confirmation dialogs)
+- Business submission form (dynamic CITY_LIST, all available cities)
+- Contact form (writes to Firestore, success/error states)
 - OG image generation (edge runtime)
-- Google Places API fetch script (scripts/fetch-plumbers.ts)
-- GitHub Actions daily scrape (daily-scrape.yml, runs 6am CT)
-- Seed scripts for CSV import
-- PageSpeed: 99/96/100/100
+- PWA manifest
+- Firestore security rules (firestore.rules)
+
+**Data Pipeline:**
+- `scripts/fetch-plumbers-v2.ts` — Google Places API (New) v1, Firestore caching, budget guard, deduplication
+- `scripts/refresh-reviews.ts` — 30-day review refresh cycle, priority by lead count, hash dedup
+- `scripts/synthesize-reviews.ts` — keyword-based synthesis engine, badges, strengths/weaknesses
+- GitHub Actions daily pipeline (fetch → refresh → synthesize, split budget)
+- API usage tracking in Firestore `apiUsage` collection
+
+**Review Synthesis:**
+- Keyword analysis engine: fast response, pricing, professionalism, communication, emergency signals
+- Badges earned from review data: Fast Responder, Fair Pricing, 24/7 Verified, Clean & Professional, Good Communicator
+- Strengths/weaknesses displayed on PlumberCard (green/amber text)
+- Red flags tracked: pricing complaints, slow response, communication issues, quality concerns
+
+**First-Party Signals:**
+- Click-to-call lead tracking (persists to Firestore leads collection)
+- User report button on every PlumberCard: "answered fast", "didn't answer", "bad number", "seems closed"
+- Reports saved to plumberReports collection
+
+**Infrastructure:**
+- Rate limiting (10 req/min/IP) + origin checking on all public API routes
+- Shared Firestore CRUD helpers — admin pages use shared functions
+- Vercel build passing (2250+ pages, typescript.ignoreBuildErrors for @types/react-dom bug)
 - Security headers configured
+- NEXT_PUBLIC_BUSINESS_PHONE env var for emergency CTA (hidden if unset)
 
-### Critical Issues — RESOLVED (April 2, 2026)
-- [x] **Lead tracking fixed** — Firestore write uncommented, clicks persist to leads collection
-- [x] **Contact form fixed** — Added onSubmit handler, writes to contactSubmissions, shows success/error
-- [x] **Phone number fixed** — Replaced +18155555555 with NEXT_PUBLIC_BUSINESS_PHONE env var, hidden if unset
-- [x] **Blog renderer sanitized** — HTML tags stripped before markdown parsing (defense-in-depth)
-- [x] **Admin confirmation dialogs** — All destructive actions now require "Are you sure?" confirmation
+### Resolved Issues
+- [x] Lead tracking — Firestore write wired up, clicks persist to leads collection
+- [x] Contact form — onSubmit handler, writes to contactSubmissions, success/error states
+- [x] Phone number — env var NEXT_PUBLIC_BUSINESS_PHONE, hidden if unset
+- [x] Blog renderer — HTML tags stripped before markdown parsing
+- [x] Admin confirmation dialogs — all destructive actions require confirmation
+- [x] Admin pagination — 25 per page on plumbers, cities, leads
+- [x] City dropdown — dynamic CITY_LIST import (all available cities)
+- [x] Firestore helpers — full CRUD, admin pages use shared functions
+- [x] Rate limiting — 10 req/min/IP + origin checking on all public APIs
+- [x] Vercel build — passing (typescript.ignoreBuildErrors for @types/react-dom@19.2.3 bug)
+
+### Open Issues
 - [ ] **EXPOSED API KEYS** — Tim to revoke and regenerate manually
-
-### Medium Issues — MOSTLY RESOLVED (April 2, 2026)
-- [x] Admin has confirmation dialogs on all destructive actions
-- [x] Pagination on admin plumbers, cities, and leads pages (25 per page)
-- [x] add-your-business uses dynamic CITY_LIST (scrollable checkbox grid)
-- [x] firestore.ts has full CRUD helpers — admin pages use shared functions
-- [x] API routes have rate limiting (10 req/min/IP) and origin checking
-- [ ] city-coords.ts only has ~400 cities, 1600+ have no coordinates (TODO)
+- [ ] city-coords.ts only has ~400 cities, 1600+ have no coordinates
+- [ ] Mobile QA pass not done
+- [ ] Favicon/icons not created yet (/icon-192.png, /icon-512.png)
+- [ ] Firestore rules not deployed (`firebase deploy --only firestore:rules`)
+- [ ] GSC sitemap not submitted, GA4 not verified
+- [ ] GitHub Actions workflow needs `workflow` scope token to update
 
 ---
 
@@ -321,17 +351,24 @@ Cron Job (scheduled) → Twilio Outbound Call → Plumber's Phone
 
 ## What's Next
 
-Phase 1 is ~85% complete. Remaining items before moving to Phase 2:
-1. **Rotate exposed API keys** (manual — Tim)
-2. **Run the pipeline** — `npx ts-node scripts/fetch-plumbers-v2.ts --state IL --cities "Crystal Lake,McHenry,Algonquin"` to populate Firestore with real data
-3. **Submit sitemap to GSC** and verify GA4 is firing
-4. **Fill missing city coordinates** (scripts/fill-city-coords.ts)
-5. **Mobile QA pass**
-6. **Create favicon/icons** at /icon-192.png and /icon-512.png
-7. **Deploy Firestore rules** — `firebase deploy --only firestore:rules`
+Phase 1 is ~90% complete. The code is built — remaining work is operational.
+
+### Immediate (this week)
+1. **Rotate exposed API keys** — revoke Google Places + Anthropic keys, regenerate, update .env.local and GitHub Secrets
+2. **Run the pipeline for real** — `npx ts-node scripts/fetch-plumbers-v2.ts --state IL --cities "Crystal Lake,McHenry,Algonquin"` (remove --dry-run)
+3. **Run synthesis** — `npx ts-node scripts/synthesize-reviews.ts` after pipeline populates reviews
+4. **Deploy Firestore rules** — `firebase deploy --only firestore:rules`
+5. **Update GitHub Actions workflow** — push `scripts/daily-scrape-workflow-v2.yml` to `.github/workflows/daily-scrape.yml` using a token with `workflow` scope
+
+### Before Phase 2
+6. **Submit sitemap** to Google Search Console, verify GA4
+7. **Create favicon/icons** at /icon-192.png and /icon-512.png
+8. **Fill missing city coordinates** — 1600+ cities need lat/lng
+9. **Mobile QA pass**
+10. **Sort plumbers by composite quality score** (review signals, not just tier)
 
 ---
 
-*Last updated: April 2, 2026*
+*Last updated: April 3, 2026*
 *Owner: Tim Dodaro*
 *Contact: fastplumbernearme@gmail.com*
