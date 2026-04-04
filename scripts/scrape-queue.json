@@ -1,16 +1,8 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 115,
+  "usedThisMonth": 132,
   "currentMonth": "2026-04",
   "queue": [
-    {
-      "city": "Aurora",
-      "state": "IL",
-      "county": "Kane",
-      "region": "Fox Valley",
-      "status": "pending",
-      "estCalls": 22
-    },
     {
       "city": "South Elgin",
       "state": "IL",
@@ -967,6 +959,16 @@
       "status": "done",
       "actualCalls": 8,
       "plumbersFound": 7,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Aurora",
+      "state": "IL",
+      "county": "Kane",
+      "region": "Fox Valley",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 16,
       "completedAt": "2026-04-04"
     }
   ]

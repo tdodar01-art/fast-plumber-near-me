@@ -1,10 +1,10 @@
 {
   "meta": {
-    "scrapedAt": "2026-04-04T11:33:35.882Z",
-    "totalPlumbers": 98,
-    "citiesScraped": 14,
-    "synthesizedAt": "2026-04-04T11:34:19.017Z",
-    "totalSynthesized": 97,
+    "scrapedAt": "2026-04-04T17:54:57.222Z",
+    "totalPlumbers": 114,
+    "citiesScraped": 15,
+    "synthesizedAt": "2026-04-04T17:56:38.500Z",
+    "totalSynthesized": 113,
     "model": "claude-sonnet-4-20250514"
   },
   "plumbers": [
@@ -503,6 +503,105 @@
       }
     },
     {
+      "placeId": "ChIJgdOSovpZDogRIntqK6aBTvA",
+      "name": "Roto-Rooter Plumbing & Water Cleanup",
+      "slug": "roto-rooter-plumbing-water-cleanup",
+      "phone": "(630) 463-9168",
+      "website": "https://www.rotorooter.com/aurorail/?utm_source=Google&utm_medium=organic&utm_campaign=gmb&utm_content=website",
+      "address": "1691 Town Center St Ste 104, Aurora, IL 60504, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7399667,
+        "lng": -88.2774045
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 2071,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "nancy anderson",
+          "rating": 5,
+          "text": "Our old (and only) toilet had not been working right for a couple months (partial flushes, tank running, etc). It finally got completely stopped up and started overflowing and we couldn't plunge it out! Roto- Rooter to the rescue!\n\nOur Technician, Marc, was great! He arrived within 3-4 hours of my call, diagnosed the problem quickly, and gave me possible solutions and estimates for the work before starting.\n\nMarc augered toilet and replaced some old parts in a timely fashion. He got our old potty working better than it had before. Plus, he left the bathroom clean and tidy too -- Hooray!\n\nIt was expensive but worth it for the quick, friendly service.",
+          "time": "2026-03-05T02:14:14.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Chuck Damore",
+          "rating": 5,
+          "text": "We had a catastrophic failure of the cast iron sewer pipe exiting the house on a late Friday night.  None of the toilets or sinks would drain.  The salesperson from Roto Rooter came quickly after I phoned them on Saturday to assess the problem and give me a repair price.  The issue was a broken cast iron sewer line exiting the house at the foundation.  It sheared in two pieces and became clogged.  Monday morning, Roto Rooter arrived on site.  They needed to dig an 8 foot deep X 4 foot wide X 8 foot long hole under the porch to access the failed cast iron pipe.  They had to cut out concrete stoop as well.  They removed the failed pipe and replaced it with a new PVC pipe.  They pulled all permits and arranged for a city inspection.  We were able to use our water Monday afternoon.  Tuesday morning, they filled in the hole and cleaned up.  The cleanup was fantastic.  If you didn't know what happened the day before, you would have never known they were there.  It was a big job that required a large backhoe and many service techs to make the repair.  The supervisor Brandon M. did a fantastic job along with the sales associate Kyle and the rest of the crew.  The finished site was professionally cleaned.  My neighbors commented on how well the guys cleaned up.",
+          "time": "2025-09-17T18:47:53.000Z",
+          "relativeTime": "6 months ago"
+        },
+        {
+          "author": "Day",
+          "rating": 5,
+          "text": "We had a great experience with Roto-Rooter thanks to Leonard and Levi. Leonard was the plumber who completed the work, and he was extremely professional, knowledgeable, and thorough. He took the time to make sure everything was done right and left the area clean afterward.\n\nLevi, the supervisor, was also fantastic — he clearly explained what was going on, walked us through the issue, and helped us understand the best options to resolve it. Having someone explain things in a straightforward way really made the whole situation less stressful.\n\nOverall, excellent service, great communication, and a team that truly cares about helping their customers. I would definitely recommend them and wouldn’t hesitate to call again if needed.",
+          "time": "2026-02-09T18:11:41.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Diana Caputo",
+          "rating": 5,
+          "text": "I had water and sewage backup comimg from my shower. Mitchell was great. He came to my house twice. Both times in a timely manner, super friendly and respectful. He explained the whole process. He spent a lot of time getting to the root of the problem and didn't leave until he made sure everything was good. He was able to get my house running again until repairs can be done. I would highly recommend.",
+          "time": "2026-02-09T21:58:53.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Brent VanLanduyt",
+          "rating": 5,
+          "text": "I had an excellent experience with Roto-Rooter. Nertil came out to fix the water supply stop valves under the sink, and from start to finish the service was top-notch. The work was done efficiently, professionally, and he answered all my questions before leaving.  I would highly recommend.",
+          "time": "2026-02-11T20:51:29.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:51.726Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "Roto-Rooter Aurora demonstrates excellent emergency response capabilities with professional technicians who arrive quickly and handle complex plumbing disasters effectively. Based on these reviews, they're a reliable choice for urgent plumbing needs, though expect premium pricing for their comprehensive service.",
+        "strengths": [
+          "Fast emergency response (3-4 hours)",
+          "Professional cleanup and site restoration",
+          "Handles complex major repairs with permits",
+          "Clear communication and problem explanation"
+        ],
+        "weaknesses": [
+          "Expensive pricing",
+          "Limited sample of review types"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "sewer line replacement",
+          "major plumbing disasters"
+        ],
+        "redFlags": [],
+        "priceSignal": "premium",
+        "topQuote": "The cleanup was fantastic. If you didn't know what happened the day before, you would have never known they were there.",
+        "worstQuote": "It was expensive but worth it for the quick, friendly service."
+      }
+    },
+    {
       "placeId": "ChIJcVhjR_LkDogRqX0eZAnO2Tw",
       "name": "Andersen Plumbing, Heating and AC Repair",
       "slug": "andersen-plumbing-heating-and-ac-repair",
@@ -696,6 +795,109 @@
         "priceSignal": "mid-range",
         "topQuote": "Not only did Dex and his team show up AFTER HOURS in the SNOW, they were warm, kind and jumped right into action to save my kitchen. They knew exactly what to do, explained it all to me, told me the costs right up front and stuck to it.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJJaOnqUOtD4gRJqINFSTbQtg",
+      "name": "Roto-Rooter Plumbing & Water Cleanup",
+      "slug": "roto-rooter-plumbing-water-cleanup",
+      "phone": "(630) 463-9182",
+      "website": "https://www.rotorooter.com/napervilleil/?utm_source=Google&utm_medium=organic&utm_campaign=gmb&utm_content=website",
+      "address": "24W500 Maple Ave # 209, Naperville, IL 60540, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7813619,
+        "lng": -88.1029815
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 1523,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Fresh",
+          "rating": 5,
+          "text": "Erlin was fantastic!  He actually took the time required to diagnose the issue (where previous plumbers did not) and address the true problem.  He was professional, respectful, and effectively communicated the details surrounding the problem and provided tips for future plumbing health.  I highly recommend Erlin and will definitely be using him again in the future!",
+          "time": "2026-03-01T19:05:17.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Joseph Morisco",
+          "rating": 1,
+          "text": "I scheduled a plumber to come out and had a few questions after booking the appointment. I called back simply to understand what the technician planned to do since I had already had the line rodded a few months ago and didn’t want to just repeat the same service without understanding the approach.\n\nUnfortunately, whoever answered the phone was extremely dismissive. She repeatedly cut me off while I was speaking and had a noticeable attitude. I wasn’t trying to be difficult — I was just asking basic questions about the service.\n\nInstead of listening, she kept saying they couldn’t tell me anything over the phone and wouldn’t even let me finish my sentences. Because of that interaction, I immediately canceled my appointment.\n\nGood customer service starts with listening to the customer. Losing business simply because someone won’t take a moment to hear a question is disappointing.",
+          "time": "2026-03-08T18:44:45.000Z",
+          "relativeTime": "3 weeks ago"
+        },
+        {
+          "author": "Burst Flames Entertainment",
+          "rating": 5,
+          "text": "Kemal with Roto-Rooter was great! He explained everything that was recommended to be serviced and didn't try to upsale me on a service that wasn't needed. I highly recommend Kemal and I'll definitely be reaching out to him again when I need any plumbing service.",
+          "time": "2026-03-02T17:47:01.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Charia Johnson",
+          "rating": 1,
+          "text": "Roto rooter is a scam... they dont do any work... Im the president of a condo association... called them for a boiler issue the man didnt do a thing... looked at the hot water heater and told me it was old and probably out of warranty and it would be 15k to replace... I even asked like you didnt even look at it.. you arent telling me whats broken just that it old and broke... well I can see that... he made a call to the company about warranty... wrote his paper for the 75 dollar fee and left... did nothing for 75 bucks Nothing",
+          "time": "2026-03-05T22:22:56.000Z",
+          "relativeTime": "4 weeks ago"
+        },
+        {
+          "author": "Andrea Gomez",
+          "rating": 1,
+          "text": "First service a few months ago left me happy, issue got taken care of right away. Appt was made and tech was there within the estimated time frame. The work was done quick and efficiently. Recently i had some plumbing issues and immediately thought to call them. Scheduled an appointment same day within the hour, the tech was dispatched- i waited 2 1/2 hours before calling for an update and being told there is issues with travel and they cant make it in, thats fine, i reschedule for next day, wait over an hour and a half before calling for an update, was told to hold on a bit more. An hour later they call to reschedule that the tech cannot come, made for next day in the AM this time instead of PM. Got a call this morning at 7am-(3 hours before my appointment time) to ask if my appointment can be moved up, the tech can be there in the next 30 minutes, i agree, wait, over an hour later, nothing- i call for an update, am told the technician is supposed to be on the way still but nothing. I cancelled the appointment. Ive had to rearange my schedule for 3 days now and ive been able to try things at home to help my plumbing issues. Crying in the club- send help",
+          "time": "2025-12-06T14:50:12.000Z",
+          "relativeTime": "3 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:53.624Z",
+      "synthesis": {
+        "score": 65,
+        "trustLevel": "moderate",
+        "summary": "Roto-Rooter Aurora has skilled technicians who provide thorough diagnostics and honest service when they show up. However, significant scheduling reliability issues and poor customer service interactions create frustration for customers needing timely plumbing repairs.",
+        "strengths": [
+          "Thorough problem diagnosis by experienced technicians",
+          "Honest pricing without unnecessary upselling",
+          "24-hour emergency service availability",
+          "Professional and knowledgeable field staff"
+        ],
+        "weaknesses": [
+          "Frequent appointment delays and rescheduling",
+          "Poor customer service and communication",
+          "Unreliable scheduling coordination"
+        ],
+        "bestFor": [
+          "complex diagnostic work",
+          "non-urgent plumbing repairs"
+        ],
+        "redFlags": [
+          "Multiple appointment cancellations and delays spanning days",
+          "Dismissive customer service that hangs up on customers",
+          "Charges service fees without performing actual repairs"
+        ],
+        "priceSignal": "unknown",
+        "topQuote": "Erlin was fantastic! He actually took the time required to diagnose the issue (where previous plumbers did not) and address the true problem. He was professional, respectful, and effectively communicated the details surrounding the problem and provided tips for future plumbing health.",
+        "worstQuote": "Ive had to rearange my schedule for 3 days now and ive been able to try things at home to help my plumbing issues. Crying in the club- send help"
       }
     },
     {
@@ -1087,6 +1289,106 @@
         "redFlags": [],
         "priceSignal": "mid-range",
         "topQuote": "We called after hours for immediate repair and the job was done within 2 hours of making the call. Couldn't recommend Sebastian more!",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJC-HxmEjvDogROl3wfeWJ2QI",
+      "name": "Andersen Plumbing, Heating and AC Repair",
+      "slug": "andersen-plumbing-heating-and-ac-repair",
+      "phone": "(630) 528-1343",
+      "website": "https://andersenph.com/montgomery-heating-services/?utm_source=google&utm_medium=organic&utm_campaign=gbp_montgomery",
+      "address": "1554 Crescent Lake Dr, Montgomery, IL 60538, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7292871,
+        "lng": -88.3555404
+      },
+      "googleRating": 5,
+      "googleReviewCount": 753,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "home_goods_store",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Anabelita G Merck",
+          "rating": 5,
+          "text": "He did a excellent job. He was very polite and answered all our questions. This is the kind of company you want to come to fix and maintenance your equipment. But will not be possible if you don't have people like Austin Ramirez he deserves a big compensation or bonus. We really like him and thanks again for the service he did an our home. Definitely we will continue working with Andersen Plumbing and Heating an the future.  The Merck's.",
+          "time": "2026-02-11T23:40:43.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "David Podjasek",
+          "rating": 5,
+          "text": "David and his team were incredibly efficient and friendly. They installed a brand new furnace and air conditioning system. The process throughout the day was easy and the result is EXCELLENT! Would definitely recommend... I had two toilets replaced with them a week ago and that experience was just as good!",
+          "time": "2026-01-31T20:31:24.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Frank Rivera",
+          "rating": 5,
+          "text": "We have nothing but great things to say about Anderson. We have had them do yearly maintenance on our HVAC and its always been a great experience. Their techs are professional, super knowledgeable and recommend other optional services that help ensure your system is at optimal level.\n\nFor example, we had them install a UV light in our HVAC system & boy what a difference!! The house smells alot more fresh & its a peace of mind to know that there are no viruses or bacteria growth in your unit!! Thank you Anderson for your superior service.",
+          "time": "2026-02-17T19:55:55.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Dave Lach",
+          "rating": 5,
+          "text": "Jon was extremely personable and very friendly. This guy loves his job! The quote we got from him was reasonable considering we needed two furnaces replaced. We’ve used Anderson’s for plumbing in the past and never had any issues, so we decided to try them for 2 complete furnace replacements after the heat exchangers were defective. They always have been honest and upfront with no gimmicks. No upselling, just give you exactly what you need for your house. Kyle came by to inspect the old units initially, and then again a day after the installers left to make some minor adjustments to the new units. He is simply fantastic at what he does and just a wonderful person to talk with. The installers, Sam, Richard, & Kris were fast and efficient and got the job done in less than 8 hrs for 2 units. These guys made sure everything was left cleaner than when they found it and left to our satisfaction. The Anderson H&P experience has always been top notch!",
+          "time": "2026-02-22T01:09:04.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Charm",
+          "rating": 5,
+          "text": "We called Andersen Heating because we needed to replace our old furnace. From the 1st call to the completed installation of a new Lennox furnace, the Andersen team did a great job! I was kept informed, the installers worked hard, and everyone involved was great! Thank you to Cory, Jon, Sam, Ron, Erin. Thank you to Chad Andersen for offering a quality product. I didn't realize how loud my old furnace was or the different temperatures from room to room until this morning! I woke up to a comfortable home! The new furnace is quiet and every room is comfortable with a consistent temperature. Thank you to the Andersen Team!",
+          "time": "2026-02-16T22:44:33.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:56.292Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Andersen Plumbing appears to be an exceptionally reliable company with consistently professional technicians and quality work. With 753 five-star reviews and specific praise for their honest, no-gimmick approach, they seem like an excellent choice for emergency plumbing needs.",
+        "strengths": [
+          "Highly professional and knowledgeable technicians",
+          "Honest pricing with no upselling or gimmicks",
+          "Efficient installation and clean work practices",
+          "Excellent customer service and communication"
+        ],
+        "weaknesses": [
+          "Limited sample of actual plumbing emergency reviews",
+          "Most reviews focus on HVAC rather than plumbing"
+        ],
+        "bestFor": [
+          "HVAC system repairs and replacement",
+          "Routine plumbing maintenance",
+          "Multi-system home service needs"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "They always have been honest and upfront with no gimmicks. No upselling, just give you exactly what you need for your house.",
         "worstQuote": null
       }
     },
@@ -1872,6 +2174,106 @@
       }
     },
     {
+      "placeId": "ChIJ4_ehrLtPDogRcqMzjEfPn_4",
+      "name": "LaCassa Plumbing | Plumber, Drain Cleaning, Sewer Repair and Tankless Water Heater Installation Naperville, IL",
+      "slug": "lacassa-plumbing-plumber-drain-cleaning-sewer-repair-and-tankless-water-heater-installation-naperville-il",
+      "phone": "(630) 349-7067",
+      "website": "https://lacassaplumbing.com/?utm_source=google&utm_medium=search_engine&utm_campaign=gmb",
+      "address": "50 S Main St Suit 200, Naperville, IL 60540, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7746357,
+        "lng": -88.14930509999999
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 516,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "home_goods_store",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Susan Angus",
+          "rating": 5,
+          "text": "Carmen and his entire staff were awesome. We had an emergency and they came out right away. We have never used LaCassa before and we are extremely happy with the work. Carmen was very detailed in explaining the work he was going to do. He was very patient with all of our questions. They finished the job in one day and cleaned up everything. Nicole was super helpful with the process with permits and a payment plan. I would recommend LaCassa 100%.",
+          "time": "2026-01-31T23:56:52.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Tim K",
+          "rating": 5,
+          "text": "Mike and Carmen did an amazing job! They were reasonably priced and very thorough. My basement drain was backing up from the sewer and they got everything cleared out of the main sewer line. They ran into some issues that they thought may cause problems in the future and they spent hours more than they needed to making sure everything was able to flow properly. 10 stars!",
+          "time": "2026-01-16T21:04:11.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Jonathan La Berg",
+          "rating": 5,
+          "text": "Mike and Carmen were both incredibly helpful in solving my issues with two toilets that needed repair. They walked me through my options after assessment and provided recommended solutions. Additionally, they completed the repairs quickly and effectively. I will definitely continue to use them going forward.",
+          "time": "2026-01-22T16:45:26.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Carlie Martin",
+          "rating": 5,
+          "text": "Carmen and Nick were very helpful in repairing our toilets. We had a leak in the toilets due to a faulty flap. They were detailed oriented and informative in their recommendations. They gave us recommendations on how to proceed and what next steps would be in terms of our faucet and water pressure issues. This was our second time using LaCassa (previously for a water disposal replacement) and we have been very happy with their service both times. I highly recommend LaCassa Plumbing to anyone in the area!",
+          "time": "2026-02-04T01:31:15.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Lou Cassara",
+          "rating": 5,
+          "text": "Carmen always does a very complete, thorough, and professional job. We’ve worked together for years, and I wouldn’t use anyone else for my plumbing needs. You get what you\nPay for.",
+          "time": "2025-10-03T18:01:46.000Z",
+          "relativeTime": "6 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:55.462Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "LaCassa Plumbing demonstrates exceptional reliability for emergencies with same-day response, thorough work, and detailed customer communication. Multiple reviews highlight their willingness to go above and beyond, spending extra time to prevent future issues.",
+        "strengths": [
+          "Emergency response availability",
+          "Thorough and detailed work",
+          "Excellent customer communication",
+          "Goes above and beyond expectations"
+        ],
+        "weaknesses": [
+          "Limited sample size of reviews",
+          "No mention of pricing transparency"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "sewer and drain cleaning",
+          "toilet repairs"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "We had an emergency and they came out right away... Carmen was very detailed in explaining the work he was going to do. He was very patient with all of our questions. They finished the job in one day and cleaned up everything.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJLxrQhiZxD4gRCW2qayh1twM",
       "name": "J. Blanton Plumbing, Sewer & Drain",
       "slug": "j-blanton-plumbing-sewer-drain",
@@ -2456,6 +2858,111 @@
       }
     },
     {
+      "placeId": "ChIJgcw7zV5XDogRl2leW2hWW80",
+      "name": "J. Blanton Plumbing, Sewer & Drain",
+      "slug": "j-blanton-plumbing-sewer-drain",
+      "phone": "(331) 330-7403",
+      "website": "https://jblantonplumbing.com/naperville",
+      "address": "200 S Main St Suite 3, Naperville, IL 60540, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.772807,
+        "lng": -88.1493811
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 428,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "home_goods_store",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Steve Johnson",
+          "rating": 5,
+          "text": "We opened up our finished basement to do some remodeling, and found the main gas line on the floor, badly corroded, as a result of continuous water intrusion. (You can see the corroded gas line in the first photo-basically a ticking time bomb!)\n\nShane from J Blanton came out, worked with us on the quote, and Edwin and Peter were scheduled within two days. It was a tricky route for the new pipe - tying into an offset T, moving the new pipe up higher (obviously), avoiding PVC drains, sump pump discharges, and electrical conduit.  They were friendly, efficient, and did great work - photos of the finished product below.",
+          "time": "2025-08-26T14:36:20.000Z",
+          "relativeTime": "7 months ago"
+        },
+        {
+          "author": "Laxman Jitarwal",
+          "rating": 5,
+          "text": "Alex Cruz from J. Blanton Plumbing did an excellent job i specifically requested an early appointment and he arrived right on time around 8:30 AM, which I really appreciated he worked very hard for almost 4 to 5 hours straight and handled everything professionally. My water wasn’t running at all, and Alex stayed focused until he fully fixed the issue and got the water running again in my house he was knowledgeable, and clearly cared about doing the job right. You can tell he puts real effort into his work. I’m very satisfied with the service and would definitely recommend Alex Cruz and J. Blanton Plumbing to anyone",
+          "time": "2026-02-03T08:53:17.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Joan Ralph",
+          "rating": 1,
+          "text": "If I could have given this company ZERO stars or negative stars that would have been my rating.  NEVER do business with this company!!!!!!!!!  They lie repeatedly about their service calls and are EXTREMELY expensive for what they do!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  I have NEVER dealt with a worse company in my life!!!!!!\nI just needed a valve replacement under my sink for a new dishwasher to be installed.  I talked to J. Blanton Plumbing and scheduled the work to be done the following week on a Tuesday.  The dishwasher was being installed the next day.  On Tuesday, a plumber wearing a \"pretty\" J. Blanton sweatshirt shows up NOT to do the work but to upsell me on having more plumbing work done!!!!  I told him he just needs to get the valve replaced as I was promised and he responds that he just drives a shell of a truck and has no repair equipment!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  And that they would send a plumber out the next day which is when the dishwasher is coming!!!!!!!!!!!  After I pointed that out, I was promised a plumber at 8:00 a.m. Wednesday morning and got my delivery pushed back as much as they could on Wednesday.  The pretty sweatshirt knew that the work requirements were and I was promised the plumber would be here.  I even called 3x later on Tuesday to ensure they would stand behind their commitment.  Well, it's now Wednesday and no plumber showed at 8.  I called again at 8:50 and was told they would send someone over right away.  I called at 9:30 as no plumber yet and was told I was someone's next stop but they couldn't tell me when that would be!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  My dishwasher delivery window is 10 - 2!!!!!  And this worthless, lying company knew this.\nBOTTOM LINE:  Do not do business with them as it will be greater headaches that your current plumbing issues.  There are many good, reliable plumbers out there - J. Blanton is NOT ONE OF THEM!!!!!!!",
+          "time": "2026-02-04T15:49:44.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "irish",
+          "rating": 5,
+          "text": "Cameron our plumber was just Awesome!! He worked like a machine and was very organized in how he went about the repairs.(I’m a Union Carpenter so I can relate!)He also KNEW HIS STUFF! And he was very personable and polite! I’d use him again for sure!👍👍",
+          "time": "2026-02-03T22:31:40.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Charlie Benson",
+          "rating": 5,
+          "text": "Ronnie came to take a detailed look and give me estimates on preventative maintenance. He was polite and thorough, shared his observations, explained options, and answered questions. They have great service tech, and the whole process was quick and seamless.",
+          "time": "2026-02-02T18:59:19.000Z",
+          "relativeTime": "2 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:53.149Z",
+      "synthesis": {
+        "score": 75,
+        "trustLevel": "moderate",
+        "summary": "J. Blanton Plumbing has skilled technicians who do quality work, but there are concerning reliability issues with scheduling and service commitments. While they offer 24-hour service and have experienced plumbers, communication problems and potential dishonesty make them risky for time-sensitive emergencies.",
+        "strengths": [
+          "Skilled and knowledgeable technicians",
+          "Quality workmanship on complex jobs",
+          "Professional and polite service staff",
+          "Offers 24-hour emergency service"
+        ],
+        "weaknesses": [
+          "Serious scheduling and reliability issues",
+          "Poor communication and broken promises",
+          "Expensive pricing"
+        ],
+        "bestFor": [
+          "complex plumbing projects",
+          "gas line work",
+          "preventative maintenance"
+        ],
+        "redFlags": [
+          "History of lying about service calls and commitments",
+          "Sending upsell representatives instead of actual repair technicians",
+          "Multiple broken scheduling promises during time-sensitive situations"
+        ],
+        "priceSignal": "premium",
+        "topQuote": "Alex Cruz from J. Blanton Plumbing did an excellent job i specifically requested an early appointment and he arrived right on time around 8:30 AM, which I really appreciated he worked very hard for almost 4 to 5 hours straight and handled everything professionally.",
+        "worstQuote": "They lie repeatedly about their service calls and are EXTREMELY expensive for what they do!!! The pretty sweatshirt knew that the work requirements were and I was promised the plumber would be here. I even called 3x later on Tuesday to ensure they would stand behind their commitment. Well, it's now Wednesday and no plumber showed at 8."
+      }
+    },
+    {
       "placeId": "ChIJmc9k3dAND4gRuhnuvnSryCI",
       "name": "1-Tom-Plumber",
       "slug": "1-tom-plumber",
@@ -2839,6 +3346,104 @@
         "redFlags": [],
         "priceSignal": "unknown",
         "topQuote": "They were so professional, friendly and personable. We just bought our townhouse and only rented prior so I guess you could say this was my first rodeo 'Adulting'. I didn't know what to expect and they made the whole process feel so seamless.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJ0co-O_3W3UwRgNsrihy2P9I",
+      "name": "Journeymen Plumbing and Sewer LLC",
+      "slug": "journeymen-plumbing-and-sewer-llc",
+      "phone": "(630) 791-4031",
+      "website": "https://journeymenplumbing.com/?utm_source=google&utm_medium=organic&utm_campaign=GMBListing-Warrenville-IL",
+      "address": "30W270 Butterfield Rd Unit 117, Warrenville, IL 60555, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.821891,
+        "lng": -88.21135000000001
+      },
+      "googleRating": 5,
+      "googleReviewCount": 296,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Michael Snyder",
+          "rating": 5,
+          "text": "I called Journeymen plumbing out for some dishwasher and tub leaking issues, both of which they were able to accurately diagnose and troubleshoot, resulting in both issues being fixed. Over the phone I talked with Caleb who was very pleasant and professional to talk with, and then Noah was the technician that arrived to the house. Noah was also very pleasant, communicative, and easy to talk with. He walked through all the steps of the repair with us before doing it, and very nicely showed us the problems and what needed to be fixed. Overall, I was very happy with our experience with the company!",
+          "time": "2026-02-04T04:49:20.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Barone's",
+          "rating": 5,
+          "text": "The plumber we have had servicing us for years recently retired.  Journeyman Plumbing was suggested to us, and we have had them out several times within the last month to help with a few plumbing issues.  Caleb the owner has been wonderful to work with. We have received call backs promptly and the work they have done has been clean and efficient.  Happy we have found another great plumber to call for our needs.  Highly recommended.",
+          "time": "2026-02-09T00:35:49.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Lilah Rabe",
+          "rating": 5,
+          "text": "Our sewer had backed up. Caleb came out quickly, cleared the problem, and provided us with a great video of our pipes all the way to the connection with the city sewer. Great service at a very reasonable price. We have our new plumber for any future plumbing work!",
+          "time": "2026-02-25T19:35:19.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "K M",
+          "rating": 5,
+          "text": "We contacted Journeymen Plumbing and received a call back from Caleb the same day.  He was very professional and friendly and booked an appointment for the following day. Kyle unclogged the kitchen sink drain and fixed a low pressure faucet. He was very knowledgeable, professional and listened. He covered the floor before setting his equipment down, which I really appreciated. His work was high quality at a very fair price. I will definitely use their service again.",
+          "time": "2025-10-05T22:37:37.000Z",
+          "relativeTime": "6 months ago"
+        },
+        {
+          "author": "Lisa Miller",
+          "rating": 5,
+          "text": "Excellent service!  Noah was very knowledgeable.  He not only explained what was wrong but how it would be fixed.  He also gave me some very important information on our water heater pipes (we have 2 water heaters) that could affect our health due to new EPA changes.  He was here for over 2 hrs. the cost was $650.\nWe will definitely call to have him come again & will also use them for plumbing issues at our business.\n\nThankyou for the prompt, informative, & reasonable cost to resolve to our issues.\n\nLisa M.",
+          "time": "2025-11-14T17:48:17.000Z",
+          "relativeTime": "4 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:54.092Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "Journeymen Plumbing shows excellent reliability with consistent 5-star reviews highlighting professional communication, prompt response times, and quality workmanship. Owner Caleb appears highly responsive with same-day callbacks, and technicians like Noah demonstrate strong technical knowledge while explaining repairs clearly to customers.",
+        "strengths": [
+          "Same-day response and prompt callbacks",
+          "Clear communication and explanation of repairs",
+          "Professional technicians who protect customer property",
+          "Owner-operated with direct customer engagement"
+        ],
+        "weaknesses": [
+          "Limited sample of review scenarios",
+          "All reviews are perfect 5-star ratings"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "sewer and drain issues",
+          "diagnostic services"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "Our sewer had backed up. Caleb came out quickly, cleared the problem, and provided us with a great video of our pipes all the way to the connection with the city sewer. Great service at a very reasonable price.",
         "worstQuote": null
       }
     },
@@ -3639,6 +4244,106 @@
       }
     },
     {
+      "placeId": "ChIJ6YXZC6DlDogR-SOsEoeg4yI",
+      "name": "Plumb It Best, LLC",
+      "slug": "plumb-it-best-llc",
+      "phone": "(630) 544-7162",
+      "website": "https://www.plumbitbest.com/",
+      "address": "83 Hankes Ave, Aurora, IL 60505, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.77619019999999,
+        "lng": -88.3067923
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 200,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "home_goods_store",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Andrew M",
+          "rating": 5,
+          "text": "We had two toilets replaced on our second floor one included a bidet. They were actually able to come the day after I requested the service which was fantastic! Both toilets were installed with precision and look great. The guys cleaned up everything and even carried our old toilets outside for us. This is the second job we’ve had Plumb-It do and we’ve continued to have a wonderful experience. Highly recommend!",
+          "time": "2026-02-07T15:59:00.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "June McHale",
+          "rating": 5,
+          "text": "James and Alex did a great job installing 3 bathroom faucets and new shower fixture.  They were very respectful of our home. They patiently answered our questions.  They did the job in a timely manner and cleaned up after themselves.  We would definitely call them again.",
+          "time": "2026-01-13T00:11:56.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Christopher Yarborough",
+          "rating": 5,
+          "text": "I've done business with Plumb It several times over the past 12+ years. Always customer focused, quick, direct, and with fair pricing. Support Scott and his team of trademen. A local small business that you can trust. I wish I could say that about any of the other smaller outfits I use for other needs.",
+          "time": "2026-03-04T16:54:01.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Jody Bruce",
+          "rating": 5,
+          "text": "Plumb It  Best did a great job at my house. I needed 2 new faucets installed. They showed up on time and had it fixed very quickly. If you need plumbing work, you have to call Plumb It Best!",
+          "time": "2026-02-14T15:02:10.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Tory Tribuzio",
+          "rating": 5,
+          "text": "They are the  BEST! My old waterheater was removed and a New Highest Quality Bradford- White 40 gallon waterheater was installed PROFESSIONALLY in 2 hours! Thank You PLUMB-IT BEST!",
+          "time": "2026-02-24T23:12:20.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:30 AM – 4:00 PM",
+        "Tuesday: 7:30 AM – 4:00 PM",
+        "Wednesday: 7:30 AM – 4:00 PM",
+        "Thursday: 7:30 AM – 4:00 PM",
+        "Friday: 7:30 AM – 4:00 PM",
+        "Saturday: 7:30 AM – 12:00 PM",
+        "Sunday: Closed"
+      ],
+      "scrapedAt": "2026-04-04T17:54:55.047Z",
+      "synthesis": {
+        "score": 85,
+        "trustLevel": "high",
+        "summary": "Plumb It Best appears to be a reliable, customer-focused plumbing company with strong installation skills and professional service. They have excellent customer satisfaction and a long track record, though emergency response time is unclear from these reviews.",
+        "strengths": [
+          "Professional installation quality",
+          "Excellent cleanup and respect for homes",
+          "Long-term customer relationships",
+          "Timely service delivery"
+        ],
+        "weaknesses": [
+          "No clear emergency response capability mentioned",
+          "Limited sample of review types"
+        ],
+        "bestFor": [
+          "bathroom remodels",
+          "water heater replacement",
+          "fixture installations"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "I've done business with Plumb It several times over the past 12+ years. Always customer focused, quick, direct, and with fair pricing. Support Scott and his team of trademen. A local small business that you can trust.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJTUJoPUzjDogRfFueyqqSdoE",
       "name": "Restoration Plumbing Inc.",
       "slug": "restoration-plumbing-inc",
@@ -4124,6 +4829,200 @@
       }
     },
     {
+      "placeId": "ChIJ-V-TE-_vDogR6ih0KXzfX6Y",
+      "name": "Tony's Drain & Sewer Cleaning",
+      "slug": "tony-s-drain-sewer-cleaning",
+      "phone": "(630) 596-7712",
+      "website": "https://www.tonysdrain.com/?utm_source=omg-gbp&utm_medium=webclick",
+      "address": "302 S Lake St, Aurora, IL 60506, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7549275,
+        "lng": -88.3249158
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 172,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Jason DeLancey",
+          "rating": 5,
+          "text": "We used Tony's to do annual rodding of our sewer line for roots in the pipe. Mike came out, was very professional and friendly. He took time to explain the work he did and why he did it and explain everything he found and the condition of our sewer line. He asked if we had questions and took the time to answer and explain. The price was better than many places we called and the work was thorough. We will use Tony's again and would recommend.",
+          "time": "2026-03-02T18:29:52.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "frank matthew",
+          "rating": 5,
+          "text": "My nephew referred me toTony's Drain & Sewer Cleaning after his extremely positive experience with them a couple of years back.\nFrom my first contact, the service and professionalism was outstanding. It is so difficult to find people to trust these days and I would have zero hesitation recommending Tony's to family and friends alike. My email was responded to very quickly and the appointment was set with an extremely competitive quote up front before they even came out. We had a very difficult tree root issue invading our pipes and we dealt with Mike, Noah and George, three fantastic guys that were friendly, honest and unbelievably hard working. They employed their Hydro Jet service to clean out our drainage pipe and spent a lot of extra time to make sure things were done right. Mike explained everything and always involved us in every step of the process.\nWe are planning to have them back to put in an outside clean out\nin the near future. This is a first rate company with wonderful, conscientious and knowledgable employees. Amazing experience.",
+          "time": "2026-02-26T21:47:06.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Jesus Perez",
+          "rating": 5,
+          "text": "Outstanding service and price!  I have annual maintenance service for my sewer line to get rid of roots.  The staff person was on time, kept the service within the estimated reasonable price range, and made several good suggestions.  Will definitely call Tony's again for future services.",
+          "time": "2026-02-02T22:31:24.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Heather Roskopf",
+          "rating": 5,
+          "text": "We had a major clog in our main drain line and couldn’t use any water without it backing up — very stressful situation. We called Tony’s Drain & Sewer, and Mike came out to help.\nMike was professional, knowledgeable, and explained everything clearly from the start. He cleared our main drain and then performed a camera inspection to make sure the line was fully open and to check for any additional issues. Unfortunately we have some more issues we need to address, but we have draining water for now. I really appreciated that he took the time to show us what was going on inside the pipe — it gave us real peace of mind knowing the problem and how to resolve it fully. The whole experience was smooth and efficient.\nHighly recommend Tony’s Drain & Sewer — and definitely ask for Mike!",
+          "time": "2026-03-02T22:51:17.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Tara Quade",
+          "rating": 5,
+          "text": "My sewer lines back up every couple of years with my 100+ year old home due to tree roots in the lines. I have used Tony’s on numerous occasions and they always come quickly and are very efficient at resolving the issue! They also provide a warranty on their service. I would definitely recommend them.",
+          "time": "2026-02-12T21:15:42.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:55.911Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Tony's Drain & Sewer Cleaning appears to be a highly reliable plumber with excellent customer service and technical expertise. Multiple reviews highlight their professionalism, thorough explanations, and quality work, with several customers being repeat clients who trust them for ongoing maintenance.",
+        "strengths": [
+          "Highly professional and knowledgeable technicians",
+          "Thorough work with detailed explanations",
+          "Competitive pricing with upfront quotes",
+          "Strong repeat customer base and referrals"
+        ],
+        "weaknesses": [
+          "Limited sample size of reviews",
+          "Most reviews focus on drain/sewer work specifically"
+        ],
+        "bestFor": [
+          "drain and sewer cleaning",
+          "root removal services",
+          "annual maintenance"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "It is so difficult to find people to trust these days and I would have zero hesitation recommending Tony's to family and friends alike. My email was responded to very quickly and the appointment was set with an extremely competitive quote up front before they even came out.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJKXRV1XJPDogRzxT-LGn_n7Q",
+      "name": "Bee Quick Plumbing & Sewer - Naperville",
+      "slug": "bee-quick-plumbing-sewer-naperville",
+      "phone": "(630) 923-1942",
+      "website": "https://beequickplumbingsewersinc.com/",
+      "address": "1133 Elizabeth Ave, Naperville, IL 60540, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7710799,
+        "lng": -88.12656129999999
+      },
+      "googleRating": 5,
+      "googleReviewCount": 164,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Cori Southwood",
+          "rating": 5,
+          "text": "We had issues with our main sewer line. We received other quotes. Elias's insight, knowledge, expertise, and professionalism was in a class of his own. He also provided a great explanation as to what was going on, the concerns and also the options we had available. We didn't think we had options until we met with Elias and Bee Quick. With his expertise in the field he fixed the issue (efficiently, thoroughly and effectively) and saved us a significant expense and undertaking that wasn't necessary but deemed necessary by others. We are grateful to Elias and Bee Quick. He is the epitome of a class act and professional. I highly recommend and would encourage you to get a quote from Bee Quick before making final decisions elsewhere.",
+          "time": "2025-12-19T21:47:37.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Brett Sather",
+          "rating": 5,
+          "text": "I had a main drain line issue and Bee Quick was one of three plumbers I contacted.  His technical expertise, knowledge, and love of his trade are unparalleled.  He diagnosed the problem, provided a quick turn-around schedule date to complete the work, and the work was completed professionally, cleanly, and quickly.  I will never be contacting any other plumber ever again as a result.  The quantity of 5 star reviews is very indicative of the service provided.",
+          "time": "2025-12-10T16:30:15.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Vicente Meissner",
+          "rating": 5,
+          "text": "I had a really awesome experience with Bee Quick Plumbing for my underground plumbing repair. The technicians were super skilled and efficient, and they made sure to clean up everything afterwards. I would definitely choose their services again without any hesitation for any future needs.",
+          "time": "2025-10-17T06:08:33.000Z",
+          "relativeTime": "5 months ago"
+        },
+        {
+          "author": "Nicolette Gleespen",
+          "rating": 5,
+          "text": "Elias and his team were able to find an issue that 4 other plumbing companies could not identify in our condo building. He got to the root of the problem and my neighbor and myself finally have peace of mind. I will absolutely recommend him and his team. They were also very polite and thorough.\n\nThank you guys so much!",
+          "time": "2025-10-11T22:52:01.000Z",
+          "relativeTime": "5 months ago"
+        },
+        {
+          "author": "Randall Nelson",
+          "rating": 5,
+          "text": "We needed the drain pipes replaced for about 1/2 the house. 90 year old pipes. First quote ( from another plumber ) was eye watering. Bee Quick did the job for less than 1/2 the other quote.\nThey listened to my concerns and we quickly agreed on what they were going to do. The only thing I wanted, that they would not do would have been a code violation. ( politely explained )\nTotal pros and a pleasure to work with.\nIf there was an option for 6 stars I would have given it to them.",
+          "time": "2025-12-12T19:12:56.000Z",
+          "relativeTime": "3 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:52.681Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Bee Quick Plumbing consistently delivers exceptional expertise and diagnostic skills, with multiple customers praising their ability to solve complex problems other plumbers couldn't identify. Their combination of technical knowledge, fair pricing, and professional service makes them a reliable choice for emergency plumbing needs.",
+        "strengths": [
+          "Superior diagnostic skills - finds problems others miss",
+          "Significantly more affordable than competitors",
+          "Exceptional technical expertise and knowledge",
+          "Professional, clean, and efficient work"
+        ],
+        "weaknesses": [
+          "Limited number of reviews for full assessment",
+          "All reviews are perfect 5-star (unusually consistent)"
+        ],
+        "bestFor": [
+          "complex diagnostic problems",
+          "main sewer line issues",
+          "underground plumbing repairs"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "Elias and his team were able to find an issue that 4 other plumbing companies could not identify in our condo building. He got to the root of the problem and my neighbor and myself finally have peace of mind.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJZVfuE8vkDogRL69KU63-FsU",
       "name": "Prestige Plumbing, Heating & Cooling",
       "slug": "prestige-plumbing-heating-cooling",
@@ -4519,6 +5418,103 @@
       }
     },
     {
+      "placeId": "ChIJa6nA4eTwDogRChCJC704rKE",
+      "name": "Aquaduct Plumbing, Heating & Air",
+      "slug": "aquaduct-plumbing-heating-air",
+      "phone": "(630) 504-9594",
+      "website": "http://aquaductplumbingheatingair.com/",
+      "address": "74C Stone Hill Rd, Oswego, IL 60543, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.6737261,
+        "lng": -88.33609659999999
+      },
+      "googleRating": 4.7,
+      "googleReviewCount": 135,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Mark W",
+          "rating": 5,
+          "text": "Jason and team were outstanding in every capacity, from start to finish. Highly professional, excellent customer service. Took the time to provide thorough explanations and answer any questions we had.\n\nFor our new home, we had them install a new furnace, replace and upgrade our water filtration system, install new sun pump, and replace a toilet. Everything done to perfection with the highest quality products. Highly recommend Aquaduct Plumbing, Heating & Air.",
+          "time": "2025-04-17T16:08:15.000Z",
+          "relativeTime": "11 months ago"
+        },
+        {
+          "author": "Kelly Wake",
+          "rating": 5,
+          "text": "We had our water heater go out on Thanksgiving Day. We had a contract with another provider in the area who didn’t have our size water heater in stock and with the storm, no one was available until Monday. I called Aquaduct’s emergency line and received a call back within 5 minutes on a Saturday. After waiting almost two days, they were able to come out within 2 hours and provide a honest quote with breakdown that was easy to understand. We are canceling our contract with the other provider. Very professional and friendly! Highly recommend!!",
+          "time": "2025-11-30T03:42:58.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Michelle Masciola",
+          "rating": 5,
+          "text": "I have been using Aquaduct plumbing for years now. Jason the Owner is Amazing! Jason always takes the time to answer any questions and always thoroughly explains the work he will be doing. The customer service is also top notch; from the first phone call I make to the office speaking to either Vanessa or Britanny to when Jason and Mike show up at my front door. They all go above and beyond to make calling a plumber less stressful. I highly recommend using this company.",
+          "time": "2025-11-10T19:16:54.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Vickie Friedrich",
+          "rating": 5,
+          "text": "Friendly, efficient and professional. Appreciate the rapid response despite being a busy season. Had my problem diagnosed and repaired quickly without extra charges or unneeded work. Gave recommendations for potential future needs. Would certainly call them again.",
+          "time": "2025-11-28T18:35:56.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Patricia Nuter",
+          "rating": 5,
+          "text": "Our entire extended family uses Aquaduct plumbing. They’ve installed water filtration systems at three of our family homes and most recently installed a tankless water heater. Always professional and courteous! Fair pricing, and financing available too!",
+          "time": "2024-04-18T02:42:57.000Z",
+          "relativeTime": "a year ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:57.221Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Aquaduct Plumbing demonstrates exceptional emergency responsiveness and reliability, with customers praising their rapid response times and honest pricing. The owner-operated business consistently delivers professional service with thorough explanations and quality workmanship across both emergency repairs and major installations.",
+        "strengths": [
+          "Excellent emergency response times",
+          "Owner-involved professional service",
+          "Honest pricing with clear explanations",
+          "Multi-generational customer loyalty"
+        ],
+        "weaknesses": [
+          "Limited sample size of reviews"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "water heater replacement",
+          "water filtration systems"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "I called Aquaduct's emergency line and received a call back within 5 minutes on a Saturday. After waiting almost two days, they were able to come out within 2 hours and provide a honest quote with breakdown that was easy to understand.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJawNwQs4AUyURuTXyeTA3aQo",
       "name": "Northern Lakes Plumbing and Sewer",
       "slug": "northern-lakes-plumbing-and-sewer",
@@ -4807,6 +5803,103 @@
         "redFlags": [],
         "priceSignal": "unknown",
         "topQuote": "Pete was the only one who caught a pinched copper pipe under kitchen sink. He assured that it was the only problem and dishwasher will run fine after the fix, that's exactly what happened. Easy appointment, free estimate, honest diagnosis and quick fix.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJAZg8SyXpDogRtX7qbBphFVY",
+      "name": "Aurora Sewer Cleaning Corp",
+      "slug": "aurora-sewer-cleaning-corp",
+      "phone": "(630) 853-2780",
+      "website": "http://www.aurorasewercleaning.com/",
+      "address": "3185 Longview Dr, Yorkville, IL 60560, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.6861008,
+        "lng": -88.4574106
+      },
+      "googleRating": 5,
+      "googleReviewCount": 118,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "David Shin",
+          "rating": 5,
+          "text": "He's a truly professional technician. I was so happy he arrived promptly, fully equipped with all the necessary equipment. He diligently cleaned the drain for two hours, which was truly admirable. Furthermore, he successfully completed the entire job and paid me a very satisfactory fee. I recommend this company to everyone I know.",
+          "time": "2026-03-06T20:12:03.000Z",
+          "relativeTime": "4 weeks ago"
+        },
+        {
+          "author": "B Lehnen",
+          "rating": 5,
+          "text": "Rafael did an amazing job. He really took his time and explained everything he was doing\nI had another company prior who told me it would cost thousands to fix.\nHe was very professional and honest. His recommendation was yearly cleaning.\nPrice was very affordable.\nI would highly recommend Aurora Sewer Cleaning Corp.",
+          "time": "2026-02-09T01:02:13.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Tyler Quintana",
+          "rating": 5,
+          "text": "Called them in need of a quick turnaround to help me rod out my main line. They were able to send a technician, Jose, out to me in less than 2 hours. Jose was very professional and cleared out roots that were backing up my line. Prices were exactly as quoted for me. At no point was pushed to try to buy more services. I will for sure be using Aurora Sewer Cleaning Corp again in the future if needed.",
+          "time": "2026-02-03T03:55:49.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Jeanette Ortiz",
+          "rating": 5,
+          "text": "We had a sewer backup emergency and received exceptional service. Rafael was on time. identified the issue right away, and worked efficiently to resolve the problem. He was professional, knowledgeable, and kept me informed throughout the entire process. We truly appreciated the fast response and quality work during a very stressful situation. Highly recommend their service!",
+          "time": "2026-02-11T18:34:36.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Jacklyn BB",
+          "rating": 5,
+          "text": "I highly recommend Aurora Sewer Cleaning Corp. I have been dealing with an issue for 2 years now. Everytime I washed, water would drain back to my tub making it impossible to wash on a weekly basis. Once they came out, they listened to my issue and made sure they took their time resolving it. He put in a camera, and saw many roots. He went over it about 4 times making sure he cleaned it out as much as possible. I was shocked at how much he was able to remove. Very professional and he drove about 35 minutes from his home. I will continue having them over and keep up the maintenance every year. They offer a great price as well.",
+          "time": "2026-01-11T00:05:53.000Z",
+          "relativeTime": "2 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:50.292Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Aurora Sewer Cleaning Corp demonstrates exceptional reliability for emergency plumbing situations, with multiple customers praising their rapid response times and professional service. Their technicians are consistently described as knowledgeable, honest, and thorough, making them a strong choice for urgent sewer and drain issues.",
+        "strengths": [
+          "Fast emergency response (under 2 hours)",
+          "Honest pricing with no upselling",
+          "Thorough work and proper equipment",
+          "Professional and knowledgeable technicians"
+        ],
+        "weaknesses": [
+          "Limited review sample size",
+          "Specializes mainly in sewer/drain cleaning"
+        ],
+        "bestFor": [
+          "Emergency sewer backups",
+          "Drain cleaning and rodding",
+          "Root removal from main lines"
+        ],
+        "redFlags": [],
+        "priceSignal": "budget",
+        "topQuote": "We had a sewer backup emergency and received exceptional service. Rafael was on time, identified the issue right away, and worked efficiently to resolve the problem. He was professional, knowledgeable, and kept me informed throughout the entire process.",
         "worstQuote": null
       }
     },
@@ -5600,6 +6693,103 @@
         "redFlags": [],
         "priceSignal": "mid-range",
         "topQuote": "Good Call got us on the schedule ASAP. The plumbers are smart polite friendly and took the time to explain everything. They cleaned everything up and we are completely happy with their high standard of work.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJvbgxu6xvK6cRLgUTOZi-75s",
+      "name": "Doctor Drain & Sewer Cleaning",
+      "slug": "doctor-drain-sewer-cleaning",
+      "phone": "(331) 278-8974",
+      "website": "https://doctor-drains.com/",
+      "address": "127 Ridgeway Ave, Aurora, IL 60506, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7483996,
+        "lng": -88.334471
+      },
+      "googleRating": 5,
+      "googleReviewCount": 75,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Sonia Agudo",
+          "rating": 5,
+          "text": "I had a great experience with Dr. Drain and Sewer Cleaning Company. They were very punctual, professional, and provided excellent service from start to finish. They cleaned the sewer lines thoroughly and took the time to explain what was going on and share their expertise. I really appreciated their honesty and attention to detail. If you’re looking for a reliable company to handle drain or sewer issues, I highly recommend them!",
+          "time": "2026-03-07T00:46:14.000Z",
+          "relativeTime": "4 weeks ago"
+        },
+        {
+          "author": "Orbelin Martinez",
+          "rating": 5,
+          "text": "Great service, friendly staff very fast and efficient took care of our problem. I highly recommend them use them for any small or big job. They will definitely take care of you. Prices are very good. Not like other companies that charge an arm and a leg.",
+          "time": "2026-02-28T22:58:09.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Anita Martinez",
+          "rating": 5,
+          "text": "Today we encountered a serious problem at our home. The drain was clogged in all our toilets and main drain system in the home, as I called the drain doctor, he came out quickly within the hour, took care of the problem and discovered that there was roots in our sewer system. I highly recommend this company to anyone in the area. Their prices are very friendly and the team works fast and efficient.",
+          "time": "2026-02-28T22:54:35.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Keith R.",
+          "rating": 5,
+          "text": "Called them on a Friday night for a recurrent issue we’ve had with our sewer backing up, which hasn’t happened in 5 years, nevertheless it needs to be taken care of fairly urgently. Javier spent a good amount of time explaining our options and what we can expect from the service tech coming out. Ended up going with Doctor Drain over the other companies that I called for bids on based on the amount of time they spent on the phone with me, and they were out here within 36 hours of my request. He took extra time working on everything and our drain flow better than it did even before the blockage stopped things up, and showed me where the sludge was collecting in our pipes. Don’t hesitate to call Doctor Drain out for your drain and sewer needs! Reasonably priced, great service in home, great customer service over the phone, and quick to respond, what more can you ask for?",
+          "time": "2026-02-22T18:38:54.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Eric Barrera",
+          "rating": 5,
+          "text": "I couldn’t be more happier with  having Dr. Drain and sewer coming out and unclogging my basement drain. The pricing he charged me was unbeatable compared to any other companies I’ve called. He’s very reasonable, very professional and knowledgeable when it comes to his work I highly recommend him!",
+          "time": "2026-02-27T00:31:04.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:56.777Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "Doctor Drain & Sewer Cleaning shows excellent reliability with fast emergency response (within 1-36 hours), professional service, and competitive pricing. All reviewers praise their expertise, thoroughness, and honest communication, making them a solid choice for drain and sewer emergencies.",
+        "strengths": [
+          "Fast emergency response times",
+          "Competitive and reasonable pricing",
+          "Thorough explanations and expertise",
+          "Professional and honest service"
+        ],
+        "weaknesses": [
+          "Limited review sample size",
+          "Only sewer/drain specialization mentioned"
+        ],
+        "bestFor": [
+          "emergency drain/sewer repairs",
+          "sewer line cleaning",
+          "root removal from pipes"
+        ],
+        "redFlags": [],
+        "priceSignal": "budget",
+        "topQuote": "Ended up going with Doctor Drain over the other companies that I called for bids on based on the amount of time they spent on the phone with me, and they were out here within 36 hours of my request. He took extra time working on everything and our drain flow better than it did even before the blockage stopped things up",
         "worstQuote": null
       }
     },
@@ -6497,6 +7687,103 @@
       }
     },
     {
+      "placeId": "ChIJeVzrtDGhVogR71FwVz07E2M",
+      "name": "Plumbing Aurora & Drain Clean Expert",
+      "slug": "plumbing-aurora-drain-clean-expert",
+      "phone": "(719) 483-1079",
+      "website": null,
+      "address": "508 Olathe St j, Aurora, CO 80011, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 39.7239727,
+        "lng": -104.792662
+      },
+      "googleRating": 4.9,
+      "googleReviewCount": 38,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Zoe Cornelius",
+          "rating": 5,
+          "text": "The bathroom shower head sprayed unevenly and weakly. I called their plumbing experts for assistance. They inspected the fixture and found mineral deposits inside. Once cleaned, water sprayed evenly again. Very pleased with the fix.",
+          "time": "2026-02-16T23:01:04.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Karlee Cailyn",
+          "rating": 5,
+          "text": "Their plumbing crew impressed me with how they fixed recurring toilet clogs caused by internal buildup. After contacting the team, the plumber performed a detailed inspection. The blockage was fully cleared. The toilet now flushes smoothly every time.",
+          "time": "2026-02-12T00:09:23.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Nolan Finley",
+          "rating": 5,
+          "text": "A pipe behind the bathroom wall burst suddenly. I called this plumbing service without delay. They replaced the damaged section and secured all connections. Their fast and professional repair prevented serious damage.",
+          "time": "2026-03-01T12:01:23.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Conrad Bradley",
+          "rating": 5,
+          "text": "A rattling noise began coming from a pipe inside the wall whenever we used the upstairs sink. The plumber opened a small access panel, secured the loose pipe, added proper brackets and tested the flow. The noise vanished completely. The repair was neat and minimally invasive.",
+          "time": "2025-12-06T20:54:48.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Christian Wood",
+          "rating": 5,
+          "text": "The bathroom tap leaked constantly and caused stains around the sink. Worn fixtures were replaced to fix the leak. The faucet now shuts off properly. The area was left clean.",
+          "time": "2026-02-07T20:41:32.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:52.176Z",
+      "synthesis": {
+        "score": 82,
+        "trustLevel": "high",
+        "summary": "This plumbing company demonstrates strong technical skills and professional service across various repair types. While the review sample is limited, customers consistently report effective problem-solving and clean work, making them a solid choice for emergency plumbing needs.",
+        "strengths": [
+          "Fast emergency response",
+          "Thorough diagnostic approach",
+          "Clean and professional work",
+          "Effective problem resolution"
+        ],
+        "weaknesses": [
+          "Limited review history",
+          "No pricing feedback available"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "bathroom fixture repairs",
+          "pipe repairs"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "A pipe behind the bathroom wall burst suddenly. I called this plumbing service without delay. They replaced the damaged section and secured all connections. Their fast and professional repair prevented serious damage.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJq6pqKmoLD4gRRC0wP-8pT9I",
       "name": "All Family Plumbing And Remodeling",
       "slug": "all-family-plumbing-and-remodeling",
@@ -6592,6 +7879,108 @@
         "priceSignal": "mid-range",
         "topQuote": "John came the next day to help me out. He did a wonderful job and now I have peace of mind and no more sewer back up. They were quick and efficient and very helpful.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJazxlP6X7DogR_9RvGKPpE7k",
+      "name": "Affordable Plumbing Solutions, Inc.",
+      "slug": "affordable-plumbing-solutions-inc",
+      "phone": "(331) 254-0679",
+      "website": null,
+      "address": "1576 McClure Rd, Aurora, IL 60505, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7882075,
+        "lng": -88.2775139
+      },
+      "googleRating": 3.3,
+      "googleReviewCount": 35,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Cheryl Kmetz",
+          "rating": 1,
+          "text": "Called Affordable to fix leaky faucet in Master Bath.  Was given a 7am appt for Friday which was confirmed with a text.  Got up early to be ready for plumber.  By 7:30 no one had shown up.  Called to find out where plumber was.  Got a call back claiming there was confusion on the appt time with the plumber.  Not sure where confusion came in when I had written confirmation.  Plumber wanted to come later or another day.  My schedule was packed and I would not trust their work after this instance.  Cancelled work with them",
+          "time": "2025-04-25T12:46:46.000Z",
+          "relativeTime": "11 months ago"
+        },
+        {
+          "author": "Amy",
+          "rating": 5,
+          "text": "Will use again! Reached out to multiple plumbers and many were too busy to help or charged outrageous amounts. Affordable Plumbing had fair pricing and provided fast, professional service.",
+          "time": "2019-09-27T23:35:17.000Z",
+          "relativeTime": "6 years ago"
+        },
+        {
+          "author": "Jitendra Shah",
+          "rating": 1,
+          "text": "Affordable plumbing provided service to us about 10 days ago in. replacing Kitchen faucet that was leaking. We had purchased Delta premium faucet and asked them to install. The replacement was inaccurate and the associates did not test the faucet after installation. They rushed out with our new faucet box with tools and accessories. We contacted them many times and many text messages were sent. Everyday promises were made to deliver the box. The new faucet was leaking from the hub as it was not tightened. Follow-up with this company is impossible and not respectable at all. Very bad experience. Do NOT Recommend this vendor for any plumbing. Absolutely disappointing and work was not completed. Incompetent and rude owner and staff.",
+          "time": "2022-06-11T14:53:47.000Z",
+          "relativeTime": "3 years ago"
+        },
+        {
+          "author": "Joe Schmoe",
+          "rating": 5,
+          "text": "These guys are great!  On a Friday late in the day, I calling multiple places and waited for a response.  While waiting I search for another plumber and found out it was my lucky day!   Bobbie from Affordable Plumbing Solutions calls me back in less than 5 minutes!  He and Chris arrive in about 30 minutes.  Both were knowledgeable and a pleasure to do business with.  I know we will be using them in the future and will recommend them to our friends as well. Bobbie and Chris your were awesome!",
+          "time": "2019-04-20T03:27:51.000Z",
+          "relativeTime": "6 years ago"
+        },
+        {
+          "author": "Mike Brennan",
+          "rating": 5,
+          "text": "Least expensive water heater of the 3 quotes I got. I recently used them for a sump pump and boy was I lucky - rained heavy the next day, but their product worked great, and there's a huge difference between their pump and my old one - theirs doesn't make much noise at all. Very hush.\n\nI especially like their responsiveness and that they communicate well with pictures and emails. I also liked they didn't charge me a rush fee even though they came over within the hour. Lastly, they were very professional, especially with Covid.\n\nI think these guys are trustworthy, they do great quality work for the least expensive price, and they do it fast. What else could you want? I tried two others near me over the years, but I like Robert and his pal a lot. Can't go wrong.",
+          "time": "2020-05-24T20:12:11.000Z",
+          "relativeTime": "5 years ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:00 AM – 9:00 PM",
+        "Tuesday: 7:00 AM – 9:00 PM",
+        "Wednesday: 7:00 AM – 9:00 PM",
+        "Thursday: 7:00 AM – 9:00 PM",
+        "Friday: 7:00 AM – 9:00 PM",
+        "Saturday: 7:00 AM – 9:00 PM",
+        "Sunday: 7:00 AM – 9:00 PM"
+      ],
+      "scrapedAt": "2026-04-04T17:54:54.565Z",
+      "synthesis": {
+        "score": 65,
+        "trustLevel": "moderate",
+        "summary": "Affordable Plumbing Solutions shows potential with competitive pricing and some customers reporting excellent emergency response times. However, reliability concerns including missed appointments and poor follow-up service create significant risk for emergency situations.",
+        "strengths": [
+          "Competitive pricing",
+          "Fast emergency response when available",
+          "Good communication with some customers",
+          "Professional COVID protocols"
+        ],
+        "weaknesses": [
+          "Unreliable scheduling",
+          "Poor follow-up service",
+          "Incomplete work quality"
+        ],
+        "bestFor": [
+          "water heater replacement",
+          "sump pump installation",
+          "budget-conscious repairs"
+        ],
+        "redFlags": [
+          "Missed confirmed appointments",
+          "Left customer's faucet box with tools at job site",
+          "Poor follow-up despite repeated contact attempts"
+        ],
+        "priceSignal": "budget",
+        "topQuote": "On a Friday late in the day, I calling multiple places and waited for a response... Bobbie from Affordable Plumbing Solutions calls me back in less than 5 minutes! He and Chris arrive in about 30 minutes.",
+        "worstQuote": "Follow-up with this company is impossible and not respectable at all. Very bad experience. Do NOT Recommend this vendor for any plumbing. Absolutely disappointing and work was not completed."
       }
     },
     {
@@ -6986,6 +8375,104 @@
         "redFlags": [],
         "priceSignal": "mid-range",
         "topQuote": "I had many plumbers come out and his plan was the best and for the best price. Will be using them for any other plumbing projects I need.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJtdJGGmTxDogRxOQc4qohWP4",
+      "name": "Aurora Plumber & Drainage Clean",
+      "slug": "aurora-plumber-drainage-clean",
+      "phone": "(331) 293-5976",
+      "website": null,
+      "address": "1245 Bangs St, Aurora, IL 60505, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7314618,
+        "lng": -88.30457059999999
+      },
+      "googleRating": 4.9,
+      "googleReviewCount": 30,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Logan Powell",
+          "rating": 5,
+          "text": "Our water pressure dropped drastically throughout the house, making showers and washing dishes difficult. Their plumbing team came out and inspected the pipes. They cleaned buildup in the main lines, tested all faucets and restored the water pressure. It feels like we have a completely new system and using water in the house is much easier now. The technician was very friendly and professional.",
+          "time": "2026-02-22T01:41:33.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Anthony Murphy",
+          "rating": 5,
+          "text": "I noticed a small leak under the bathroom sink and the surrounding area was getting damp. The damaged pipe section was replaced, all connections were secured and the area was dried thoroughly. The leak is completely gone and I feel confident it won’t come back.",
+          "time": "2026-02-17T16:24:57.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Jordan Johnson",
+          "rating": 5,
+          "text": "A faucet handle had become stiff and difficult to operate. Aurora Plumbing serviced the internal mechanism and restored smooth movement. The technician ensured no leaks remained. The faucet now functions properly.",
+          "time": "2026-02-02T18:38:25.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Lily Turner",
+          "rating": 5,
+          "text": "My bathroom sink trap was leaking at the joint. Their crew replaced and sealed it properly. The repair was quick and solid. I’m very satisfied.",
+          "time": "2026-02-24T06:44:46.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "William Taylor",
+          "rating": 5,
+          "text": "Shower head had uneven water pressure. A technician cleaned mineral buildup and replaced worn connectors. Flow is now consistent and steady. The system was tested carefully. I would rely on them for future work.",
+          "time": "2026-02-07T16:38:02.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:51.237Z",
+      "synthesis": {
+        "score": 78,
+        "trustLevel": "moderate",
+        "summary": "Aurora Plumber & Drainage Clean shows consistent quality workmanship with all positive reviews and offers 24-hour service for emergencies. However, with only 30 reviews and all being 5-star ratings, there's limited insight into how they handle complex problems or difficult situations.",
+        "strengths": [
+          "Professional and friendly technicians",
+          "Thorough testing after repairs",
+          "Handles various plumbing issues effectively",
+          "24-hour emergency availability"
+        ],
+        "weaknesses": [
+          "Very limited review sample size",
+          "No insight into pricing or cost transparency",
+          "All reviews are for relatively simple repairs"
+        ],
+        "bestFor": [
+          "Water pressure issues",
+          "Small leak repairs",
+          "Faucet and fixture maintenance"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "It feels like we have a completely new system and using water in the house is much easier now. The technician was very friendly and professional.",
         "worstQuote": null
       }
     },
@@ -8538,6 +10025,106 @@
         "redFlags": [],
         "priceSignal": "mid-range",
         "topQuote": "I had a pipe spewing water into my bathroom Monday night, they helped me turn everything off over the phone, then they were in first thing Tuesday morning to make the repair.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJBcrQQgH7DogRl0-b4yeJ0Oo",
+      "name": "Trusted Aurora Plumbers",
+      "slug": "trusted-aurora-plumbers",
+      "phone": "(331) 255-0043",
+      "website": "http://trustedauroraplumbers.us/",
+      "address": "237 W Galena Blvd, Aurora, IL 60506, USA",
+      "city": "Aurora",
+      "state": "IL",
+      "region": "Fox Valley",
+      "location": {
+        "lat": 41.7603965,
+        "lng": -88.3195157
+      },
+      "googleRating": 5,
+      "googleReviewCount": 15,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Gina Brian",
+          "rating": 5,
+          "text": "Our water heater stopped working suddenly and they came out the next day. The evaluation was thorough and they discussed repair versus installation options. Ended up replacing it and the process was handled professionally. Hot water has been consistent since.",
+          "time": "2026-02-23T19:02:27.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Arund Brewster",
+          "rating": 5,
+          "text": "I reached out for drain cleaning after dealing with recurring clogs in the kitchen sink. They used professional equipment and took the time to inspect the line thoroughly. The service was efficient but not rushed. It’s been a few weeks now and the drainage has noticeably improved.",
+          "time": "2026-03-06T10:54:55.000Z",
+          "relativeTime": "4 weeks ago"
+        },
+        {
+          "author": "Collin Emelia",
+          "rating": 5,
+          "text": "I contacted them for a tap repair that had been dripping for months. The service was quick, and the plumber checked all the connections to ensure there were no hidden leaks. The attention to detail gave me confidence in their work.",
+          "time": "2026-01-19T03:37:45.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Ray Jase",
+          "rating": 5,
+          "text": "Our water heater stopped producing hot water, so we booked a consultation with Precision Plumbing. They tested the unit and confirmed replacement was the best option. Installation was handled the same day and done cleanly. Hot water’s been consistent since, with no odd noises.",
+          "time": "2026-02-14T07:34:31.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Braeden Yareli",
+          "rating": 5,
+          "text": "After scheduling a toilet repair, I was impressed with how quickly they responded. The plumber walked me through the issue, explained why it was happening, and fixed it efficiently. No unnecessary replacements, just honest, reliable work.",
+          "time": "2026-02-04T03:41:20.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-04T17:54:50.766Z",
+      "synthesis": {
+        "score": 78,
+        "trustLevel": "moderate",
+        "summary": "Trusted Aurora Plumbers shows consistent quality work with thorough evaluations and professional service across water heater, drain, and repair jobs. However, with only 15 reviews and limited evidence of true emergency response times, their reliability for urgent situations remains somewhat unproven.",
+        "strengths": [
+          "Thorough diagnostics and evaluations",
+          "Professional equipment and clean installations",
+          "Honest recommendations without overselling",
+          "Educational approach explaining issues to customers"
+        ],
+        "weaknesses": [
+          "Limited review history (only 15 reviews)",
+          "Inconsistent business name mention in reviews",
+          "No clear evidence of same-day emergency response"
+        ],
+        "bestFor": [
+          "water heater replacement",
+          "drain cleaning",
+          "diagnostic evaluations"
+        ],
+        "redFlags": [
+          "One review mentions 'Precision Plumbing' instead of 'Trusted Aurora Plumbers' suggesting possible review confusion or business name inconsistency"
+        ],
+        "priceSignal": "unknown",
+        "topQuote": "The plumber walked me through the issue, explained why it was happening, and fixed it efficiently. No unnecessary replacements, just honest, reliable work.",
         "worstQuote": null
       }
     },
