@@ -24,7 +24,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install firebase firebase-admin typescript ts-node
+        run: npm install firebase firebase-admin typescript tsx
 
       - name: Check Firebase config
         id: firebase
@@ -68,7 +68,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-        run: npx ts-node --esm scripts/refresh-reviews.ts --max 20
+        run: npx tsx scripts/refresh-reviews.ts --max 20
         continue-on-error: true
 
       # Phase 3: AI synthesis -- analyze reviews for plumbers with new data
@@ -82,7 +82,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-        run: npx ts-node --esm scripts/synthesize-reviews.ts
+        run: npx tsx scripts/synthesize-reviews.ts
         continue-on-error: true
 
       - name: Cleanup service account
