@@ -82,13 +82,14 @@ function formatDate(iso: string) {
 }
 
 // Derive KPI data from synthesis
-function getResponseKPI(s: { strengths: string[]; emergencySignals?: string[]; redFlags?: string[] } | null, badges: string[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getResponseKPI(s: any, badges: string[]) {
   if (!s) return { label: "Unknown", color: "gray", subtitle: "No response data yet" };
   if (badges.includes("Fast Responder")) {
-    const mention = s.strengths.find((st) => st.includes("reviewers mention fast"));
+    const mention = s.strengths.find((st: string) => st.includes("reviewers mention fast"));
     return { label: "Fast Response", color: "green", subtitle: mention || "Reviewers confirm quick response" };
   }
-  if (s.emergencySignals && s.emergencySignals.some((e) => e.includes("same day"))) {
+  if (s.emergencySignals && s.emergencySignals.some((e: string) => e.includes("same day"))) {
     return { label: "Same Day", color: "green", subtitle: "Same-day service mentioned in reviews" };
   }
   if (s.emergencySignals && s.emergencySignals.length > 0) {
@@ -97,9 +98,10 @@ function getResponseKPI(s: { strengths: string[]; emergencySignals?: string[]; r
   return { label: "Unknown", color: "gray", subtitle: "No response data yet" };
 }
 
-function getEmergencyKPI(s: { emergencySignals?: string[] } | null, badges: string[], is24Hour: boolean) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getEmergencyKPI(s: any, badges: string[], is24Hour: boolean) {
   if (badges.includes("24/7 Verified by Reviews")) {
-    const mention = s?.emergencySignals?.find((e) => e.includes("reviews mention"));
+    const mention = s?.emergencySignals?.find((e: string) => e.includes("reviews mention"));
     return { label: "24/7 Verified", color: "green", subtitle: mention || "Confirmed by reviews" };
   }
   if (is24Hour && s?.emergencySignals && s.emergencySignals.length > 0) {

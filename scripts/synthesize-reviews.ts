@@ -1,11 +1,15 @@
 #!/usr/bin/env npx ts-node --esm
 /**
- * Analyze cached reviews and generate categorized synthesis.
- * Aggressive negative signal detection — treats hedged language, "but" clauses,
- * and low-star reviews as real complaints. Emergency red flags are disqualifying.
+ * AI-powered review synthesis using Claude Haiku.
+ * Analyzes cached Google reviews and generates structured quality signals.
+ * Falls back to keyword analysis for plumbers with fewer than 3 cached reviews.
  *
  * Usage:
  *   npx ts-node scripts/synthesize-reviews.ts [--dry-run] [--force]
+ *
+ * Flags:
+ *   --dry-run   Log prompts and plumber names without making API calls or writes
+ *   --force     Re-synthesize all plumbers regardless of existing AI synthesis
  */
 
 import { initializeApp, getApps } from "firebase/app";
@@ -18,6 +22,10 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// ---------------------------------------------------------------------------
+// Env
+// ---------------------------------------------------------------------------
 
 const envPath = path.join(__dirname, "..", ".env.local");
 if (fs.existsSync(envPath)) {
@@ -32,6 +40,10 @@ if (fs.existsSync(envPath)) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Firebase
+// ---------------------------------------------------------------------------
+
 function initFirebase() {
   if (getApps().length) return getFirestore();
   const app = initializeApp({
@@ -45,483 +57,324 @@ function initFirebase() {
   return getFirestore(app);
 }
 
-// ==========================================================================
-// KEYWORD DICTIONARIES
-// ==========================================================================
+// ---------------------------------------------------------------------------
+// Claude API
+// ---------------------------------------------------------------------------
 
-const FAST_RESPONSE = ["fast", "quick", "rapid", "arrived within", "same day", "came right", "prompt", "timely", "responsive", "right away", "within an hour", "within 30 minutes", "dropped everything"];
-const SLOW_RESPONSE = ["slow", "took forever", "waited", "delayed", "hours later", "next day", "books out", "days out", "weeks out", "long wait"];
-const EMERGENCY_AVAIL = ["emergency", "urgent", "burst", "flood", "leak", "after hours", "weekend", "night", "2am", "3am", "middle of the night", "sunday", "holiday", "christmas", "thanksgiving", "midnight", "late night", "early morning", "24 hour", "24/7"];
+const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+const RATE_LIMIT_MS = 500;
 
-const PRICE_POSITIVE = ["fair price", "reasonable", "good value", "affordable", "great price", "honest price", "no surprise", "competitive", "upfront pricing", "transparent pricing", "good deal", "worth every penny", "fair and honest"];
-const PRICE_NEGATIVE = ["expensive", "overcharged", "overpriced", "surprise fee", "hidden fee", "price gouging", "rip off", "ripoff", "too much", "highway robbery", "cost more than", "double the quote", "bait and switch", "unexpected charge"];
-const PRICE_BUDGET = ["cheapest", "lowest price", "best price", "saved us money", "budget friendly"];
-const PRICE_PREMIUM = ["expensive but worth", "not cheap", "premium service", "you get what you pay for", "higher end"];
+function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
 
-const QUALITY_POSITIVE = ["professional", "courteous", "polite", "respectful", "friendly", "thorough", "knowledgeable", "knew exactly", "diagnosed quickly", "expert", "experienced", "figured it out", "knew what", "professional opinion", "top notch", "excellent work", "quality work", "did a great job", "above and beyond"];
-const QUALITY_NEGATIVE = ["botched", "made it worse", "had to call someone else", "came back", "still broken", "shoddy", "poor quality", "didn't know", "misdiagnosed", "couldn't fix", "incompetent", "unprofessional", "half-assed", "careless"];
+interface ReviewData { rating: number; text: string; date?: string; }
 
-const COMM_POSITIVE = ["great communication", "kept me updated", "called ahead", "texted", "easy to reach", "responsive", "returned my call", "explained everything", "walked me through", "communicated", "kept us informed", "answered the phone", "clear explanation", "patient", "took the time to explain"];
-const COMM_NEGATIVE = ["hard to reach", "never called back", "no communication", "didn't update", "ghosted", "ignored my calls", "rude", "couldn't reach", "unreachable", "no callback", "didn't return", "wouldn't answer"];
+function buildPrompt(
+  name: string,
+  rating: number | null,
+  reviewCount: number,
+  cachedReviewCount: number,
+  reviews: ReviewData[]
+): string {
+  const reviewBlock = reviews
+    .map((r) => `[${r.rating}/5${r.date ? ` — ${r.date}` : ""}] ${r.text}`)
+    .join("\n\n");
 
-const PUNCTUAL_POSITIVE = ["on time", "arrived early", "punctual", "showed up when", "right on schedule", "ahead of schedule", "arrived on time", "prompt arrival"];
-const PUNCTUAL_NEGATIVE = ["late", "no-show", "didn't show", "stood me up", "hours late", "kept waiting", "never showed", "missed appointment", "way late"];
+  return `You are analyzing Google reviews for a plumber to help homeowners in an emergency.
 
-const HOME_POSITIVE = ["clean up", "cleaned up", "tidy", "spotless", "protected", "shoe covers", "drop cloth", "careful with", "respectful of", "left it clean", "cleaner than before", "cleaned up after", "neat and tidy", "covered the floor", "protected our floors"];
-const HOME_NEGATIVE = ["mess", "left a mess", "didn't clean", "damaged", "stained", "dirty", "trashed", "left debris", "didn't clean up", "scratched"];
+Plumber: ${name}
+Google Rating: ${rating ?? "N/A"}/5 (${reviewCount} reviews)
+We have ${cachedReviewCount} cached reviews.
 
-// MEMBERSHIP / UPSELL signals — indicates premium pricing model
-const UPSELL_KEYWORDS = ["member", "membership", "diamond member", "prestige", "club", "plan", "annual plan", "service agreement", "maintenance plan", "subscription", "monthly plan", "upsell", "upselling", "tried to sell", "pushed us to", "recommended additional", "suggested we also", "package deal"];
+Reviews:
+${reviewBlock}
 
-// HEDGED NEGATIVES — soft language that hides real complaints
-const HEDGED_NEGATIVES: Array<{ pattern: string; category: string; signal: string }> = [
-  { pattern: "a bit expensive", category: "pricing", signal: "Pricing concerns (described as 'a bit expensive')" },
-  { pattern: "not the cheapest", category: "pricing", signal: "Pricing concerns (described as 'not the cheapest')" },
-  { pattern: "took a while", category: "emergency", signal: "Slow response (described as 'took a while')" },
-  { pattern: "took longer than expected", category: "emergency", signal: "Slower than expected response time" },
-  { pattern: "wasn't the fastest", category: "emergency", signal: "Response time concerns" },
-  { pattern: "had to wait", category: "emergency", signal: "Required waiting for service" },
-  { pattern: "a little messy", category: "homeRespect", signal: "Minor cleanliness concerns" },
-  { pattern: "bit of a runaround", category: "communication", signal: "Communication difficulties reported" },
-  { pattern: "hard to get ahold of", category: "communication", signal: "Difficult to reach by phone" },
-  { pattern: "could have been better", category: "quality", signal: "Quality described as 'could have been better'" },
-  { pattern: "could have communicated better", category: "communication", signal: "Communication could be improved" },
-  { pattern: "wish they had", category: "quality", signal: "Unmet expectations noted" },
-  { pattern: "would have been nice if", category: "quality", signal: "Unmet expectations noted" },
-];
-
-// EMERGENCY DISQUALIFIERS — even 1 mention is a red flag for an emergency directory
-const EMERGENCY_DISQUALIFIERS = [
-  "didn't answer", "went to voicemail", "no answer", "never answered",
-  "next day", "couldn't come today", "had to wait until tomorrow",
-  "9 to 5", "business hours only", "not available on weekends", "closed on weekends",
-  "had to call someone else", "called back the next day", "didn't pick up",
-  "not 24", "not available after", "morning only", "weekdays only",
-];
-
-// "BUT" SIGNAL WORDS — everything after these words is likely a complaint
-const BUT_SIGNALS = ["but ", "however ", "although ", "except ", "only issue", "only complaint", "only problem", "my only", "one downside", "one thing"];
-
-// ==========================================================================
-// ANALYSIS FUNCTIONS
-// ==========================================================================
-
-function countMatches(texts: string[], keywords: string[]): number {
-  return texts.filter((t) => keywords.some((k) => t.includes(k))).length;
+Respond in JSON only. No markdown, no preamble, no backticks.
+{
+  "summary": "One specific sentence a friend would say. Never say 'reliable and professional'. Reference actual patterns from the reviews.",
+  "strengths": ["2-3 specific strengths with evidence. e.g. '3 of 8 reviewers mention arriving within an hour'"],
+  "weaknesses": ["1-2 specific weaknesses. e.g. 'Two reviews mention charges exceeding the initial quote'. Say 'Not enough data to identify weaknesses' if none are clear."],
+  "emergencyReadiness": "high|medium|low|unknown",
+  "emergencyNotes": "One sentence about emergency signals — after-hours mentions, response time, weekend availability.",
+  "badges": ["Only from: 'Fast Responder', 'Fair Pricing', '24/7 Available', 'Clean & Professional', 'Great Communicator'. Only include if reviews clearly support it."],
+  "redFlags": ["Concerning patterns. Empty array if none."],
+  "pricingTier": "budget|mid-range|premium|unknown"
+}`;
 }
 
-interface ReviewData { rating: number; text: string; }
+async function callClaude(prompt: string): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
 
-/**
- * Extract complaints from "but" clauses.
- * "Great work but a bit pricey" → extracts "a bit pricey"
- */
-function extractButComplaints(text: string): string[] {
-  const complaints: string[] = [];
-  const lower = text.toLowerCase();
-  for (const signal of BUT_SIGNALS) {
-    const idx = lower.indexOf(signal);
-    if (idx >= 0) {
-      const after = text.slice(idx + signal.length).trim();
-      // Take the clause after "but" — up to period/end
-      const clause = after.split(/[.!]/)[0].trim();
-      if (clause.length > 5 && clause.length < 200) {
-        complaints.push(clause);
-      }
-    }
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: 1024,
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const body = await resp.text();
+    throw new Error(`Claude API ${resp.status}: ${body}`);
   }
-  return complaints;
+
+  const data = await resp.json();
+  return data.content?.[0]?.text || "";
 }
 
-/**
- * Categorize a "but" complaint by matching against keyword dictionaries.
- */
-function categorizeComplaint(complaint: string): string | null {
-  const lower = complaint.toLowerCase();
-  if (PRICE_NEGATIVE.some((k) => lower.includes(k)) || lower.includes("expens") || lower.includes("pric") || lower.includes("cost")) return "pricing";
-  if (SLOW_RESPONSE.some((k) => lower.includes(k)) || lower.includes("wait") || lower.includes("slow") || lower.includes("took")) return "emergency";
-  if (COMM_NEGATIVE.some((k) => lower.includes(k)) || lower.includes("communicat") || lower.includes("reach") || lower.includes("rude")) return "communication";
-  if (HOME_NEGATIVE.some((k) => lower.includes(k)) || lower.includes("mess") || lower.includes("clean") || lower.includes("dirty")) return "homeRespect";
-  if (PUNCTUAL_NEGATIVE.some((k) => lower.includes(k)) || lower.includes("late") || lower.includes("time")) return "punctuality";
-  if (QUALITY_NEGATIVE.some((k) => lower.includes(k)) || lower.includes("quality") || lower.includes("work")) return "quality";
-  return null;
+interface AISynthesisResult {
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
+  emergencyReadiness: string;
+  emergencyNotes: string;
+  badges: string[];
+  redFlags: string[];
+  pricingTier: string;
 }
 
-function synthesize(reviews: ReviewData[], googleReviewCount: number = 0) {
+function parseAIResponse(text: string): AISynthesisResult {
+  // Strip markdown code fences if present
+  const cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+  const parsed = JSON.parse(cleaned);
+
+  return {
+    summary: parsed.summary || "",
+    strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+    weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [],
+    emergencyReadiness: parsed.emergencyReadiness || "unknown",
+    emergencyNotes: parsed.emergencyNotes || "",
+    badges: Array.isArray(parsed.badges) ? parsed.badges : [],
+    redFlags: Array.isArray(parsed.redFlags) ? parsed.redFlags : [],
+    pricingTier: parsed.pricingTier || "unknown",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Keyword fallback for plumbers with < 3 reviews
+// ---------------------------------------------------------------------------
+
+const FAST_RESPONSE = ["fast", "quick", "rapid", "same day", "prompt", "responsive", "right away", "within an hour"];
+const EMERGENCY_AVAIL = ["emergency", "burst", "after hours", "weekend", "24 hour", "24/7", "middle of the night"];
+const PRICE_POSITIVE = ["fair price", "reasonable", "affordable", "upfront pricing", "transparent"];
+const PRICE_NEGATIVE = ["expensive", "overcharged", "overpriced", "surprise fee", "hidden fee"];
+const QUALITY_POSITIVE = ["professional", "knowledgeable", "thorough", "expert", "excellent work"];
+
+function keywordFallback(reviews: ReviewData[], googleReviewCount: number) {
   const total = reviews.length;
-  if (total === 0) return null;
+  const texts = reviews.map((r) => r.text.toLowerCase());
+  const countMatches = (kws: string[]) => texts.filter((t) => kws.some((k) => t.includes(k))).length;
 
   const strengths: string[] = [];
   const weaknesses: string[] = [];
-  const emergencySignals: string[] = [];
-  const redFlags: string[] = [];
   const badges: string[] = [];
+  const emergencySignals: string[] = [];
 
-  const categories = {
-    emergency: { strengths: [] as string[], weaknesses: [] as string[] },
-    pricing: { strengths: [] as string[], weaknesses: [] as string[] },
-    quality: { strengths: [] as string[], weaknesses: [] as string[] },
-    communication: { strengths: [] as string[], weaknesses: [] as string[] },
-    homeRespect: { strengths: [] as string[], weaknesses: [] as string[] },
-    punctuality: { strengths: [] as string[], weaknesses: [] as string[] },
-  };
-
-  // Track negative signal counts across reviews for frequency thresholds
-  const negativeCounts: Record<string, number> = {};
-  function trackNegative(key: string) {
-    negativeCounts[key] = (negativeCounts[key] || 0) + 1;
+  const fastCount = countMatches(FAST_RESPONSE);
+  if (fastCount > 0) {
+    strengths.push(`Quick response mentioned in reviews`);
+    if (fastCount / total >= 0.3) badges.push("Fast Responder");
   }
+  const qualCount = countMatches(QUALITY_POSITIVE);
+  if (qualCount > 0) strengths.push(`Professional service noted by reviewers`);
+  const priceGood = countMatches(PRICE_POSITIVE);
+  if (priceGood > 0) { strengths.push(`Fair pricing mentioned`); badges.push("Fair Pricing"); }
 
-  // Emergency disqualifier flag
-  let hasEmergencyDisqualifier = false;
+  const priceBad = countMatches(PRICE_NEGATIVE);
+  if (priceBad > 0) weaknesses.push(`Pricing concerns noted`);
+  if (total < 3) weaknesses.push(`Only ${total} review${total === 1 ? "" : "s"} — limited data`);
 
-  // Process each review individually (star-weighted)
-  for (const review of reviews) {
-    const text = review.text.toLowerCase();
-    const isLowStar = review.rating <= 2;
-    const isMidStar = review.rating === 3;
-    const isHighStar = review.rating >= 4;
-    const isPerfect = review.rating === 5;
+  const emergCount = countMatches(EMERGENCY_AVAIL);
+  if (emergCount > 0) emergencySignals.push(`Emergency/after-hours work mentioned`);
 
-    // --- Check emergency disqualifiers (immediate red flag, even 1 mention) ---
-    for (const disqualifier of EMERGENCY_DISQUALIFIERS) {
-      if (text.includes(disqualifier)) {
-        hasEmergencyDisqualifier = true;
-        trackNegative(`emergency:${disqualifier}`);
-      }
-    }
-
-    // --- "But" extraction ---
-    const butComplaints = extractButComplaints(review.text);
-    for (const complaint of butComplaints) {
-      const cat = categorizeComplaint(complaint);
-      if (cat) {
-        trackNegative(`but:${cat}`);
-        if (cat in categories) {
-          const catKey = cat as keyof typeof categories;
-          if (!categories[catKey].weaknesses.includes(complaint)) {
-            categories[catKey].weaknesses.push(complaint);
-          }
-        }
-      }
-    }
-
-    // --- Hedged negatives ---
-    for (const hedge of HEDGED_NEGATIVES) {
-      if (text.includes(hedge.pattern)) {
-        trackNegative(`hedge:${hedge.category}`);
-        const catKey = hedge.category as keyof typeof categories;
-        if (catKey in categories && !categories[catKey].weaknesses.includes(hedge.signal)) {
-          categories[catKey].weaknesses.push(hedge.signal);
-        }
-      }
-    }
-
-    // --- Low-star reviews: extract ALL negatives ---
-    if (isLowStar || isMidStar) {
-      // Check every negative category
-      for (const kw of SLOW_RESPONSE) { if (text.includes(kw)) trackNegative("slow"); }
-      for (const kw of PRICE_NEGATIVE) { if (text.includes(kw)) trackNegative("price-negative"); }
-      for (const kw of QUALITY_NEGATIVE) { if (text.includes(kw)) trackNegative("quality-negative"); }
-      for (const kw of COMM_NEGATIVE) { if (text.includes(kw)) trackNegative("comm-negative"); }
-      for (const kw of PUNCTUAL_NEGATIVE) { if (text.includes(kw)) trackNegative("punctual-negative"); }
-      for (const kw of HOME_NEGATIVE) { if (text.includes(kw)) trackNegative("home-negative"); }
-    }
-
-    // --- 4-star with negatives: still flag ---
-    if (isHighStar && !isPerfect) {
-      for (const kw of PRICE_NEGATIVE) { if (text.includes(kw)) trackNegative("price-negative"); }
-      for (const kw of COMM_NEGATIVE) { if (text.includes(kw)) trackNegative("comm-negative"); }
-      for (const kw of SLOW_RESPONSE) { if (text.includes(kw)) trackNegative("slow"); }
-    }
-  }
-
-  // Now do standard keyword analysis across all texts
-  const texts = reviews.map((r) => r.text.toLowerCase());
-
-  // --- EMERGENCY & RESPONSE ---
-  const fastCount = countMatches(texts, FAST_RESPONSE);
-  // Only award Fast Responder if NO emergency disqualifiers
-  if (!hasEmergencyDisqualifier && fastCount / total >= 0.3) {
-    const msg = `${fastCount} of ${total} reviewers mention fast response times`;
-    strengths.push(msg);
-    categories.emergency.strengths.push(msg);
-    badges.push("Fast Responder");
-  } else if (!hasEmergencyDisqualifier && fastCount > 0) {
-    const msg = `Some reviewers note quick arrival times`;
-    strengths.push(msg);
-    categories.emergency.strengths.push(msg);
-  }
-
-  if (hasEmergencyDisqualifier) {
-    const disqualifierMentions = Object.entries(negativeCounts)
-      .filter(([k]) => k.startsWith("emergency:"))
-      .reduce((sum, [, v]) => sum + v, 0);
-    const msg = `${disqualifierMentions} review${disqualifierMentions > 1 ? "s" : ""} mention${disqualifierMentions === 1 ? "s" : ""} not answering or unavailability`;
-    weaknesses.push(msg);
-    categories.emergency.weaknesses.push(msg);
-    redFlags.push("emergency-unavailable");
-  }
-
-  const slowCount = countMatches(texts, SLOW_RESPONSE);
-  const hedgedSlowCount = (negativeCounts["hedge:emergency"] || 0) + (negativeCounts["slow"] || 0);
-  const totalSlowSignals = slowCount + hedgedSlowCount;
-  if (totalSlowSignals >= 2) {
-    const msg = `Multiple reviewers mention slow response times`;
-    weaknesses.push(msg);
-    categories.emergency.weaknesses.push(msg);
-    redFlags.push("slow-response");
-  } else if (totalSlowSignals > 0) {
-    const msg = `Response time concerns noted in reviews`;
-    weaknesses.push(msg);
-    categories.emergency.weaknesses.push(msg);
-  }
-
-  const emergencyCount = countMatches(texts, EMERGENCY_AVAIL);
-  if (!hasEmergencyDisqualifier && emergencyCount / total >= 0.2) {
-    const msg = `${emergencyCount} of ${total} reviews mention emergency or after-hours work`;
-    emergencySignals.push(msg);
-    categories.emergency.strengths.push(msg);
-    badges.push("24/7 Verified by Reviews");
-  } else if (emergencyCount > 0) {
-    emergencySignals.push(`Some reviews mention emergency situations`);
-  } else {
-    weaknesses.push(`No reviews mention after-hours or emergency work`);
-    categories.emergency.weaknesses.push(`No reviews mention after-hours or emergency work`);
-  }
-
-  // --- PRICING ---
-  const priceGoodCount = countMatches(texts, PRICE_POSITIVE);
-  const priceBadCount = countMatches(texts, PRICE_NEGATIVE);
-  const hedgedPriceCount = negativeCounts["hedge:pricing"] || 0;
-  const totalPriceNeg = priceBadCount + hedgedPriceCount + (negativeCounts["price-negative"] || 0);
-
-  if (totalPriceNeg >= 2) {
-    const msg = `Multiple reviewers mention pricing concerns`;
-    weaknesses.push(msg);
-    categories.pricing.weaknesses.push(msg);
-    redFlags.push("pricing-complaints");
-  } else if (totalPriceNeg > 0) {
-    const msg = `Pricing concerns noted in reviews`;
-    weaknesses.push(msg);
-    categories.pricing.weaknesses.push(msg);
-  }
-
-  if (priceGoodCount / total >= 0.2 && totalPriceNeg === 0) {
-    strengths.push(`Reviewers frequently praise fair and transparent pricing`);
-    categories.pricing.strengths.push(`Reviewers frequently praise fair and transparent pricing`);
-    badges.push("Fair Pricing");
-  }
-
-  let pricingTier: "budget" | "mid-range" | "premium" | "mixed" | "unknown" = "unknown";
-  const budgetCount = countMatches(texts, PRICE_BUDGET);
-  const premiumCount = countMatches(texts, PRICE_PREMIUM);
-  if (budgetCount > premiumCount && budgetCount > 0) pricingTier = "budget";
-  else if (premiumCount > budgetCount && premiumCount > 0) pricingTier = "premium";
-  else if (priceGoodCount > totalPriceNeg && priceGoodCount > 0) pricingTier = "mid-range";
-  else if (totalPriceNeg > 0 && priceGoodCount > 0) pricingTier = "mixed";
-
-  // --- QUALITY ---
-  const qualGoodCount = countMatches(texts, QUALITY_POSITIVE);
-  const qualBadTotal = countMatches(texts, QUALITY_NEGATIVE) + (negativeCounts["quality-negative"] || 0) + (negativeCounts["hedge:quality"] || 0);
-
-  if (qualGoodCount / total >= 0.3 && qualBadTotal === 0) {
-    strengths.push(`Consistently described as professional and knowledgeable`);
-    categories.quality.strengths.push(`Consistently described as professional and knowledgeable`);
-    badges.push("Clean & Professional");
-  } else if (qualGoodCount > 0) {
-    categories.quality.strengths.push(`Some reviewers praise their expertise`);
-  }
-  if (qualBadTotal >= 2) {
-    weaknesses.push(`Multiple reviewers report quality issues`);
-    categories.quality.weaknesses.push(`Multiple reviewers report quality issues`);
-    redFlags.push("quality-concerns");
-  }
-
-  // --- COMMUNICATION ---
-  const commGoodCount = countMatches(texts, COMM_POSITIVE);
-  const commBadTotal = countMatches(texts, COMM_NEGATIVE) + (negativeCounts["comm-negative"] || 0) + (negativeCounts["hedge:communication"] || 0);
-
-  if (commGoodCount / total >= 0.2 && commBadTotal === 0) {
-    strengths.push(`Good communication — explains work and returns calls`);
-    categories.communication.strengths.push(`Good communication — explains work and returns calls`);
-    badges.push("Good Communicator");
-  }
-  if (commBadTotal >= 2) {
-    weaknesses.push(`Multiple reviewers report communication difficulties`);
-    categories.communication.weaknesses.push(`Multiple reviewers report communication difficulties`);
-    redFlags.push("communication-issues");
-  } else if (commBadTotal > 0) {
-    categories.communication.weaknesses.push(`Communication concerns noted`);
-  }
-
-  // --- PUNCTUALITY ---
-  const punctGoodCount = countMatches(texts, PUNCTUAL_POSITIVE);
-  const punctBadTotal = countMatches(texts, PUNCTUAL_NEGATIVE) + (negativeCounts["punctual-negative"] || 0);
-
-  if (punctGoodCount / total >= 0.2 && punctBadTotal === 0) {
-    strengths.push(`${punctGoodCount} of ${total} reviewers say they arrived on time or early`);
-    categories.punctuality.strengths.push(`Arrives on time — confirmed by reviewers`);
-  }
-  if (punctBadTotal >= 2) {
-    weaknesses.push(`Multiple reviewers mention late arrivals or no-shows`);
-    categories.punctuality.weaknesses.push(`Late arrivals or no-shows reported`);
-    redFlags.push("punctuality-issues");
-  }
-
-  // --- HOME RESPECT ---
-  const homeGoodCount = countMatches(texts, HOME_POSITIVE);
-  const homeBadTotal = countMatches(texts, HOME_NEGATIVE) + (negativeCounts["home-negative"] || 0) + (negativeCounts["hedge:homeRespect"] || 0);
-
-  if (homeGoodCount / total >= 0.15 && homeBadTotal === 0) {
-    strengths.push(`Reviewers note they clean up after the job`);
-    categories.homeRespect.strengths.push(`Cleans up after the job — confirmed by reviewers`);
-    badges.push("Respects Your Home");
-  }
-  if (homeBadTotal >= 2) {
-    weaknesses.push(`Property/cleanliness concerns reported`);
-    categories.homeRespect.weaknesses.push(`Property/cleanliness concerns reported`);
-    redFlags.push("property-concerns");
-  }
-
-  // --- RATING-BASED ---
-  const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / total;
-  if (avgRating >= 4.5 && total >= 10) {
-    strengths.push(`Consistently high ratings across ${total} reviews`);
-  } else if (avgRating < 3.5 && total >= 5) {
-    weaknesses.push(`Below-average ratings — review details for specifics`);
-  }
-  if (total < 5) {
-    weaknesses.push(`Only ${total} reviews — limited data to assess reliability`);
-  }
-
-  // --- "But" extracted complaints → add to weaknesses if 2+ mentions ---
-  const butCategoryCounts: Record<string, number> = {};
-  for (const [key, count] of Object.entries(negativeCounts)) {
-    if (key.startsWith("but:")) {
-      const cat = key.replace("but:", "");
-      butCategoryCounts[cat] = (butCategoryCounts[cat] || 0) + count;
-    }
-  }
-  for (const [cat, count] of Object.entries(butCategoryCounts)) {
-    if (count >= 2) {
-      const msg = `Recurring concern in "${cat}" — mentioned in "but" clauses by ${count} reviewers`;
-      if (!weaknesses.includes(msg)) weaknesses.push(msg);
-    }
-  }
-
-  // --- MEMBERSHIP / UPSELL DETECTION (Option C) ---
-  const upsellCount = countMatches(texts, UPSELL_KEYWORDS);
-  if (upsellCount >= 2) {
-    const msg = `${upsellCount} of ${total} reviews mention membership programs or upselling`;
-    weaknesses.push(msg);
-    categories.pricing.weaknesses.push(msg);
-    redFlags.push("upselling-concerns");
-    if (pricingTier === "mid-range" || pricingTier === "unknown") pricingTier = "premium";
-  } else if (upsellCount > 0) {
-    const msg = `Membership or service plan program mentioned in reviews`;
-    categories.pricing.weaknesses.push(msg);
-    // Even 1 mention is a pricing signal — flag as amber
-    if (pricingTier === "unknown") pricingTier = "premium";
-  }
-
-  // --- SAMPLE SIZE WARNING (Option B) ---
-  // If we have <1% of total reviews, our analysis is unreliable
-  let sampleSizeWarning: string | undefined;
-  if (googleReviewCount > 100 && total <= 5) {
-    sampleSizeWarning = `Based on ${total} of ${googleReviewCount.toLocaleString()} total reviews — analysis may not reflect full customer experience`;
-    weaknesses.push(`Limited sample: only ${total} of ${googleReviewCount.toLocaleString()} reviews analyzed`);
-  } else if (googleReviewCount > 50 && total / googleReviewCount < 0.05) {
-    sampleSizeWarning = `Based on ${total} of ${googleReviewCount.toLocaleString()} reviews`;
-  }
-
-  // If high review count + all 5-star sample + premium pricing signals, flag as suspicious
-  if (googleReviewCount > 500 && total <= 5 && reviews.every((r) => r.rating === 5)) {
-    if (!redFlags.includes("upselling-concerns")) {
-      redFlags.push("limited-data");
-    }
-    if (!weaknesses.some((w) => w.includes("Limited sample"))) {
-      weaknesses.push(`All ${total} sampled reviews are 5-star — not representative of ${googleReviewCount.toLocaleString()} total reviews`);
-    }
-  }
+  let pricingTier: string = "unknown";
+  if (priceBad > priceGood) pricingTier = "premium";
+  else if (priceGood > 0) pricingTier = "mid-range";
 
   return {
-    strengths: strengths.slice(0, 6),
-    weaknesses: weaknesses.slice(0, 7),
-    emergencySignals: emergencySignals.slice(0, 3),
-    redFlags: [...new Set(redFlags)],
-    badges: badges.slice(0, 6),
+    strengths: strengths.slice(0, 3),
+    weaknesses: weaknesses.slice(0, 3),
+    emergencySignals: emergencySignals.slice(0, 2),
+    redFlags: [] as string[],
+    badges: badges.slice(0, 3),
     reviewCount: total,
     synthesizedAt: Timestamp.now(),
-    categories,
+    categories: {
+      emergency: { strengths: emergencySignals, weaknesses: [] as string[] },
+      pricing: { strengths: priceGood > 0 ? ["Fair pricing noted"] : [], weaknesses: priceBad > 0 ? ["Pricing concerns"] : [] },
+      quality: { strengths: qualCount > 0 ? ["Professional service"] : [], weaknesses: [] as string[] },
+      communication: { strengths: [] as string[], weaknesses: [] as string[] },
+      homeRespect: { strengths: [] as string[], weaknesses: [] as string[] },
+      punctuality: { strengths: [] as string[], weaknesses: [] as string[] },
+    },
     pricingTier,
-    sampleSizeWarning,
+    sampleSizeWarning: googleReviewCount > 50 ? `Based on ${total} of ${googleReviewCount} reviews` : undefined,
+    synthesisVersion: "keyword-fallback",
   };
 }
 
-// ==========================================================================
-// MAIN
-// ==========================================================================
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
 
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
   const force = args.includes("--force");
 
+  if (dryRun) console.log("🔍 DRY RUN — no API calls or Firestore writes\n");
+
   const db = initFirebase();
   const plumbersSnap = await getDocs(collection(db, "plumbers"));
   let synthesized = 0;
-  let warnings = 0;
+  let skipped = 0;
+  let keywordCount = 0;
+  let aiCount = 0;
+  let failed = 0;
+  let totalRedFlags = 0;
   let totalBadges = 0;
 
   for (const plumberDoc of plumbersSnap.docs) {
     const data = plumberDoc.data();
 
-    if (!force && data.reviewSynthesis?.synthesizedAt) {
-      const latestReviewSnap = await getDocs(query(
-        collection(db, "reviews"),
-        where("plumberId", "==", plumberDoc.id),
-      ));
-      if (latestReviewSnap.size <= (data.reviewSynthesis.reviewCount || 0)) {
+    // Skip if already has AI synthesis and no new reviews (unless --force)
+    if (!force && data.reviewSynthesis?.aiSynthesizedAt) {
+      const lastSynth = data.reviewSynthesis.aiSynthesizedAt?.toDate?.() || new Date(0);
+      const lastRefresh = data.lastReviewRefreshAt?.toDate?.() || new Date(0);
+      if (lastRefresh <= lastSynth) {
+        skipped++;
         continue;
       }
     }
 
+    // Fetch cached reviews
     const reviewsSnap = await getDocs(query(
       collection(db, "reviews"),
       where("plumberId", "==", plumberDoc.id),
     ));
-    if (reviewsSnap.empty) continue;
+    if (reviewsSnap.empty) { skipped++; continue; }
 
     const reviews: ReviewData[] = reviewsSnap.docs.map((d) => ({
       rating: d.data().rating || 0,
       text: d.data().text || "",
+      date: d.data().publishedAt || "",
     }));
 
-    const googleReviewCount = data.googleReviewCount || data.googleReviewCount || 0;
-    const synthesis = synthesize(reviews, googleReviewCount);
-    if (!synthesis) continue;
+    const googleReviewCount = data.googleReviewCount || 0;
 
-    console.log(`📝 ${data.businessName}: ${synthesis.badges.join(", ") || "no badges"} | ${synthesis.redFlags.length} red flags | pricing: ${synthesis.pricingTier}`);
+    // < 3 reviews: use keyword fallback
+    if (reviews.length < 3) {
+      const synthesis = keywordFallback(reviews, googleReviewCount);
+      console.log(`📝 ${data.businessName}: KEYWORD fallback (${reviews.length} reviews) | ${synthesis.badges.join(", ") || "no badges"}`);
 
-    if (synthesis.redFlags.length > 0) warnings++;
-    totalBadges += synthesis.badges.length;
+      if (!dryRun) {
+        await updateDoc(doc(db, "plumbers", plumberDoc.id), {
+          reviewSynthesis: synthesis,
+          updatedAt: Timestamp.now(),
+        });
+      }
+      keywordCount++;
+      synthesized++;
+      totalBadges += synthesis.badges.length;
+      continue;
+    }
 
-    if (!dryRun) {
+    // 3+ reviews: use Claude AI
+    const prompt = buildPrompt(
+      data.businessName,
+      data.googleRating,
+      googleReviewCount,
+      reviews.length,
+      reviews
+    );
+
+    if (dryRun) {
+      console.log(`🤖 ${data.businessName}: Would send ${reviews.length} reviews to Claude`);
+      console.log(`   Prompt length: ${prompt.length} chars\n`);
+      synthesized++;
+      aiCount++;
+      continue;
+    }
+
+    try {
+      await sleep(RATE_LIMIT_MS);
+      const response = await callClaude(prompt);
+      const aiResult = parseAIResponse(response);
+
+      // Map AI result to the reviewSynthesis schema the frontend expects
+      const synthesis = {
+        // Existing fields (compatible with keyword system)
+        strengths: aiResult.strengths,
+        weaknesses: aiResult.weaknesses,
+        emergencySignals: aiResult.emergencyReadiness !== "unknown"
+          ? [aiResult.emergencyNotes].filter(Boolean)
+          : [],
+        redFlags: aiResult.redFlags,
+        badges: aiResult.badges,
+        reviewCount: reviews.length,
+        synthesizedAt: Timestamp.now(),
+        pricingTier: aiResult.pricingTier,
+        categories: {
+          emergency: {
+            strengths: aiResult.emergencyReadiness === "high" ? [aiResult.emergencyNotes] : [],
+            weaknesses: aiResult.emergencyReadiness === "low" ? [aiResult.emergencyNotes] : [],
+          },
+          pricing: { strengths: [] as string[], weaknesses: [] as string[] },
+          quality: { strengths: [] as string[], weaknesses: [] as string[] },
+          communication: { strengths: [] as string[], weaknesses: [] as string[] },
+          homeRespect: { strengths: [] as string[], weaknesses: [] as string[] },
+          punctuality: { strengths: [] as string[], weaknesses: [] as string[] },
+        },
+        sampleSizeWarning: googleReviewCount > 50 && reviews.length / googleReviewCount < 0.05
+          ? `Based on ${reviews.length} of ${googleReviewCount} reviews`
+          : undefined,
+        // New AI-specific fields
+        summary: aiResult.summary,
+        emergencyReadiness: aiResult.emergencyReadiness,
+        emergencyNotes: aiResult.emergencyNotes,
+        aiSynthesizedAt: Timestamp.now(),
+        synthesisVersion: "ai-v1",
+      };
+
+      console.log(`🤖 ${data.businessName}: ${aiResult.badges.join(", ") || "no badges"} | ${aiResult.redFlags.length} red flags | emergency: ${aiResult.emergencyReadiness} | pricing: ${aiResult.pricingTier}`);
+
       await updateDoc(doc(db, "plumbers", plumberDoc.id), {
         reviewSynthesis: synthesis,
         updatedAt: Timestamp.now(),
       });
+
+      aiCount++;
+      synthesized++;
+      totalRedFlags += aiResult.redFlags.length;
+      totalBadges += aiResult.badges.length;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`❌ ${data.businessName}: ${msg}`);
+      failed++;
     }
-    synthesized++;
   }
 
   console.log("\n📊 Summary:");
   console.log(`  Synthesized: ${synthesized} plumbers`);
-  console.log(`  With warnings/red flags: ${warnings}`);
+  console.log(`    AI (Claude): ${aiCount}`);
+  console.log(`    Keyword fallback: ${keywordCount}`);
+  console.log(`  Skipped (up-to-date): ${skipped}`);
+  console.log(`  Failed: ${failed}`);
+  console.log(`  Total badges: ${totalBadges}`);
+  console.log(`  Total red flags: ${totalRedFlags}`);
 
-  return { synthesized, warnings, totalBadges };
+  return { synthesized, aiCount, keywordCount, skipped, failed, totalBadges, totalRedFlags };
 }
+
+// ---------------------------------------------------------------------------
+// Run + log pipeline
+// ---------------------------------------------------------------------------
 
 const startedAt = Timestamp.now();
 const startTime = Date.now();
@@ -536,11 +389,15 @@ main()
           startedAt,
           completedAt: Timestamp.now(),
           durationSeconds: Math.round((Date.now() - startTime) / 1000),
-          status: "success",
+          status: result.failed > 0 ? "partial" : "success",
           summary: {
-            plumbersSynthesized: result?.synthesized ?? 0,
-            redFlagsFound: result?.warnings ?? 0,
-            badgesAwarded: result?.totalBadges ?? 0,
+            plumbersSynthesized: result.synthesized,
+            aiSynthesized: result.aiCount,
+            keywordFallback: result.keywordCount,
+            skipped: result.skipped,
+            failed: result.failed,
+            badgesAwarded: result.totalBadges,
+            redFlagsFound: result.totalRedFlags,
           },
           triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
         });

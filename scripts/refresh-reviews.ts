@@ -257,7 +257,7 @@ async function main() {
     const res = await fetch(`https://places.googleapis.com/v1/places/${entry.googlePlaceId}`, {
       headers: {
         "X-Goog-Api-Key": GOOGLE_API_KEY!,
-        "X-Goog-FieldMask": "reviews,rating,userRatingCount",
+        "X-Goog-FieldMask": "reviews,rating,userRatingCount,businessStatus",
       },
     });
     apiCalls++;
@@ -309,16 +309,75 @@ async function main() {
     // Update plumber accumulation tracking
     const newCachedCount = entry.cachedReviewCount + newForThis;
     const newConsecutiveZeros = newForThis === 0 ? entry.consecutiveZeros + 1 : 0;
+    const updatedGoogleRating = details.rating || entry.data.googleRating;
+    const updatedReviewCount = details.userRatingCount || entry.googleReviewCount;
 
-    await updateDoc(doc(db, "plumbers", entry.docId), {
+    const updateData: Record<string, unknown> = {
       lastReviewRefreshAt: Timestamp.now(),
-      googleRating: details.rating || entry.data.googleRating,
-      googleReviewCount: details.userRatingCount || entry.googleReviewCount,
+      googleRating: updatedGoogleRating,
+      googleReviewCount: updatedReviewCount,
       cachedReviewCount: newCachedCount,
       lastRefreshNewCount: newForThis,
       consecutiveZeroRefreshes: newConsecutiveZeros,
-      reviewGap: (details.userRatingCount || entry.googleReviewCount) - newCachedCount,
+      reviewGap: updatedReviewCount - newCachedCount,
+    };
+
+    // --- CLOSURE DETECTION ---
+    const businessStatus = details.businessStatus as string | undefined;
+    if (businessStatus === "CLOSED_PERMANENTLY" || businessStatus === "CLOSED_TEMPORARILY") {
+      updateData.status = "inactive";
+      updateData.closedAt = Timestamp.now();
+      updateData.closureSource = "google";
+      updateData.isActive = false;
+      console.log(`  ⛔ CLOSED (${businessStatus}) — marked inactive`);
+    }
+
+    // --- AUTO-FLAG FROM USER REPORTS ---
+    const reportsSnap = await getDocs(query(
+      collection(db, "plumberReports"),
+      where("plumberId", "==", entry.docId),
+    ));
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const recentNegReports = reportsSnap.docs.filter((d) => {
+      const data = d.data();
+      const type = data.reportType as string;
+      const createdAt = data.createdAt?.toDate?.() || new Date(0);
+      return (type === "bad-number" || type === "seems-closed") && createdAt > ninetyDaysAgo;
     });
+    if (recentNegReports.length >= 3 && (entry.data.status as string) !== "inactive") {
+      updateData.status = "flagged";
+      console.log(`  ⚠️  Auto-flagged: ${recentNegReports.length} negative reports in last 90 days`);
+    }
+
+    // --- RELIABILITY SCORE ---
+    const hasPhone = !!(entry.data.phone as string);
+    const hasWebsite = !!(entry.data.website as string);
+    const redFlagCount = ((entry.data.reviewSynthesis as Record<string, unknown>)?.redFlags as string[])?.length || 0;
+    const refreshedInLast60Days = true; // we just refreshed
+
+    let reliabilityScore = 0;
+    if (hasPhone) reliabilityScore += 20;
+    if (hasWebsite) reliabilityScore += 10;
+    if ((updatedGoogleRating as number) >= 4.0) reliabilityScore += 20;
+    else if ((updatedGoogleRating as number) >= 3.0) reliabilityScore += 10;
+    if (newCachedCount >= 10) reliabilityScore += 20;
+    else if (newCachedCount >= 5) reliabilityScore += 10;
+    if (redFlagCount === 0) reliabilityScore += 15;
+    if (refreshedInLast60Days) reliabilityScore += 15;
+    reliabilityScore = Math.min(100, Math.max(0, reliabilityScore));
+
+    updateData.reliabilityScore = reliabilityScore;
+
+    // Verification status
+    if (reliabilityScore >= 70 && refreshedInLast60Days) {
+      updateData.verificationStatus = "verified";
+    } else if (reliabilityScore >= 40) {
+      updateData.verificationStatus = "partially_verified";
+    } else {
+      updateData.verificationStatus = "unverified";
+    }
+
+    await updateDoc(doc(db, "plumbers", entry.docId), updateData);
 
     // Rating snapshot
     if (details.rating) {

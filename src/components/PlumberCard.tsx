@@ -206,9 +206,33 @@ export default function PlumberCard({
         ))}
       </div>
 
+      {/* Flagged plumber warning */}
+      {plumber.status === "flagged" && (
+        <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5 text-xs text-amber-700 font-medium">
+          Unverified — this listing may have issues
+        </div>
+      )}
+
       {/* Review synthesis */}
       {plumber.reviewSynthesis && (
         <div className="mt-2 space-y-1">
+          {/* AI summary */}
+          {plumber.reviewSynthesis.summary && (
+            <p className="text-sm text-gray-700 italic">&ldquo;{plumber.reviewSynthesis.summary}&rdquo;</p>
+          )}
+          {/* Emergency readiness indicator */}
+          {plumber.reviewSynthesis.emergencyReadiness && plumber.reviewSynthesis.emergencyReadiness !== "unknown" && (
+            <div className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${
+              plumber.reviewSynthesis.emergencyReadiness === "high"
+                ? "bg-green-100 text-green-800"
+                : plumber.reviewSynthesis.emergencyReadiness === "medium"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-red-100 text-red-800"
+            }`}>
+              <Clock className="w-3 h-3" />
+              Emergency: {plumber.reviewSynthesis.emergencyReadiness}
+            </div>
+          )}
           {/* Synthesis badges */}
           {plumber.reviewSynthesis.badges.length > 0 && (
             <div className="flex flex-wrap gap-1">

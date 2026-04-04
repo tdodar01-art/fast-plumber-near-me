@@ -25,8 +25,11 @@ export interface Plumber {
   insured: boolean;
   yearsInBusiness: number | null;
 
-  // Verification & Scoring (Phase 2 — AI calls)
-  verificationStatus: "unverified" | "verified" | "failed";
+  // Status & Verification
+  status?: "active" | "inactive" | "flagged";
+  closedAt?: Timestamp | null;
+  closureSource?: "google" | "user-reports" | "manual" | null;
+  verificationStatus: "unverified" | "verified" | "partially_verified" | "failed";
   reliabilityScore: number;
   lastVerifiedAt: Timestamp | null;
   totalCallAttempts: number;
@@ -107,6 +110,13 @@ export interface ReviewSynthesis {
 
   // Sample size warning — when we have tiny fraction of total reviews
   sampleSizeWarning?: string;
+
+  // AI synthesis fields (ai-v1)
+  summary?: string;
+  emergencyReadiness?: "high" | "medium" | "low" | "unknown";
+  emergencyNotes?: string;
+  aiSynthesizedAt?: Timestamp;
+  synthesisVersion?: "ai-v1" | "keyword-fallback";
 }
 
 export interface VerificationCall {
