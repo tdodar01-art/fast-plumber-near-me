@@ -403,6 +403,30 @@ Before expanding aggressively or adding new review sources, we need to make sure
 
 4. Outscraper or SerpAPI for additional reviews = Phase 2 (after pipeline is proven and generating revenue)
 
+### Next Up: GSC-Driven Expansion (after pipeline is proven)
+
+Google Search Console shows we're already getting impressions on city pages — including out-of-state cities (Aiken SC, Yukon OK, Nashville TN, Acworth GA) where we have zero plumber data. Google is testing our pages and we need to fill them before it moves on.
+
+**Strategy:** Don't replace the daily IL expansion. Layer GSC intelligence on top of it:
+- Weekly GSC pull: scrape impressions/clicks/position for all /emergency-plumbers/ pages
+- Track every city in Firestore: status (empty/scraped/has_plumbers), plumber count, GSC signals
+- Cities with impressions but no plumber data = highest scrape priority, jump the queue
+- Daily scrape handles GSC-priority cities FIRST, then continues normal geographic expansion with remaining budget
+- Admin dashboard shows city tracking table: impressions, clicks, position, plumber count, status
+
+**Prerequisites (before building):**
+- [ ] Pipeline running autonomously for 2+ weeks with no issues
+- [ ] GSC API enabled on GCP project
+- [ ] Service account added as user in GSC for fastplumbernearme.com
+- [ ] Confirm GSC API works with existing service-account.json
+
+**Build tasks:**
+- [ ] scripts/gsc-pull.ts — weekly GSC data pull to Firestore
+- [ ] Firestore `cityTracking` collection — one doc per city with status + GSC signals
+- [ ] Daily scrape prepends GSC-priority cities before normal queue
+- [ ] Admin dashboard city tracking table with color-coded status
+- [ ] Weekly GitHub Actions workflow for GSC pull (separate from daily scrape)
+
 ### Operational TODO (Tim manual)
 - [ ] Run `npx tsx scripts/seed-expansion-queue.ts` to seed expansion queue
 - [x] Add Firebase secrets to GitHub Actions — DONE (9 secrets: 3 API keys + 6 Firebase config)
@@ -416,6 +440,6 @@ Before expanding aggressively or adding new review sources, we need to make sure
 
 ---
 
-*Last updated: April 4, 2026 (evening)*
+*Last updated: April 4, 2026*
 *Owner: Tim Dodaro*
 *Contact: fastplumbernearme@gmail.com*
