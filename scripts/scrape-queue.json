@@ -1,24 +1,8 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 143,
+  "usedThisMonth": 158,
   "currentMonth": "2026-04",
   "queue": [
-    {
-      "city": "Montgomery",
-      "state": "IL",
-      "county": "Kane",
-      "region": "Fox Valley",
-      "status": "pending",
-      "estCalls": 14
-    },
-    {
-      "city": "Carpentersville",
-      "state": "IL",
-      "county": "Kane",
-      "region": "Fox Valley",
-      "status": "pending",
-      "estCalls": 14
-    },
     {
       "city": "Libertyville",
       "state": "IL",
@@ -973,6 +957,26 @@
       "status": "done",
       "actualCalls": 5,
       "plumbersFound": 4,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Montgomery",
+      "state": "IL",
+      "county": "Kane",
+      "region": "Fox Valley",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 10,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Carpentersville",
+      "state": "IL",
+      "county": "Kane",
+      "region": "Fox Valley",
+      "status": "done",
+      "actualCalls": 3,
+      "plumbersFound": 2,
       "completedAt": "2026-04-04"
     }
   ]
