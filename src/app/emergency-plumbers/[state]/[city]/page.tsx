@@ -111,6 +111,11 @@ export default async function CityPage({
           p.distanceMiles = calculateDistance(cityLat, cityLng, p.address.lat, p.address.lng);
         }
       }
+
+      // Filter out plumbers beyond 20-mile radius (serviceCities matches may be outside radius)
+      plumbers = plumbers.filter(
+        (p) => p.distanceMiles == null || p.distanceMiles <= 20
+      );
     }
   } catch {
     // Firebase not configured — will fall through to static fallback
