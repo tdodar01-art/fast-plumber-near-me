@@ -77,7 +77,7 @@ const COORDS: Record<string, [number, number]> = {
   // Georgia
   "GA:atlanta": [33.75, -84.39], "GA:columbus": [32.46, -84.99], "GA:augusta": [33.47, -81.97],
   "GA:savannah": [32.08, -81.09], "GA:athens": [33.95, -83.38], "GA:sandy-springs": [33.93, -84.37],
-  "GA:roswell": [34.02, -84.36], "GA:macon": [32.84, -83.63], "GA:marietta": [33.95, -84.55],
+  "GA:roswell": [34.02, -84.36], "GA:acworth": [34.07, -84.68], "GA:macon": [32.84, -83.63], "GA:marietta": [33.95, -84.55],
   "GA:alpharetta": [34.08, -84.29], "GA:valdosta": [30.83, -83.28],
   // Hawaii
   "HI:honolulu": [21.31, -157.86], "HI:pearl-city": [21.40, -157.97], "HI:hilo": [19.72, -155.08],
@@ -237,7 +237,7 @@ const COORDS: Record<string, [number, number]> = {
   // Oklahoma
   "OK:oklahoma-city": [35.47, -97.52], "OK:tulsa": [36.15, -95.99],
   "OK:norman": [35.22, -97.44], "OK:broken-arrow": [36.06, -95.79],
-  "OK:edmond": [35.65, -97.48], "OK:lawton": [34.61, -98.39],
+  "OK:edmond": [35.65, -97.48], "OK:yukon": [35.51, -97.76], "OK:lawton": [34.61, -98.39],
   "OK:moore": [35.34, -97.49], "OK:enid": [36.40, -97.88],
   "OK:stillwater": [36.12, -97.06],
   // Oregon
@@ -261,7 +261,7 @@ const COORDS: Record<string, [number, number]> = {
   // South Carolina
   "SC:charleston": [32.78, -79.93], "SC:columbia": [34.00, -81.03],
   "SC:north-charleston": [32.85, -80.00], "SC:mount-pleasant": [32.79, -79.86],
-  "SC:rock-hill": [34.93, -81.03], "SC:greenville": [34.85, -82.40],
+  "SC:rock-hill": [34.93, -81.03], "SC:aiken": [33.56, -81.72], "SC:greenville": [34.85, -82.40],
   "SC:summerville": [33.02, -80.18], "SC:myrtle-beach": [33.69, -78.89],
   "SC:spartanburg": [34.95, -81.93], "SC:florence": [34.20, -79.76],
   // South Dakota

@@ -1,16 +1,8 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 173,
+  "usedThisMonth": 254,
   "currentMonth": "2026-04",
   "queue": [
-    {
-      "city": "Mundelein",
-      "state": "IL",
-      "county": "Lake",
-      "region": "Lake County",
-      "status": "pending",
-      "estCalls": 16
-    },
     {
       "city": "Gurnee",
       "state": "IL",
@@ -979,6 +971,66 @@
       "status": "done",
       "actualCalls": 15,
       "plumbersFound": 14,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Aiken",
+      "state": "SC",
+      "county": "Aiken",
+      "region": "Aiken County",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 12,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Yukon",
+      "state": "OK",
+      "county": "Canadian",
+      "region": "Canadian County",
+      "status": "done",
+      "actualCalls": 18,
+      "plumbersFound": 17,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Nashville",
+      "state": "TN",
+      "county": "Davidson",
+      "region": "Davidson County",
+      "status": "done",
+      "actualCalls": 21,
+      "plumbersFound": 19,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Acworth",
+      "state": "GA",
+      "county": "Cobb",
+      "region": "Cobb County",
+      "status": "done",
+      "actualCalls": 21,
+      "plumbersFound": 19,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Mundelein",
+      "state": "IL",
+      "county": "Lake",
+      "region": "Lake County",
+      "status": "done",
+      "actualCalls": 10,
+      "plumbersFound": 9,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Aiken",
+      "state": "SC",
+      "county": "Aiken",
+      "region": "Aiken County",
+      "status": "done",
+      "actualCalls": 11,
+      "plumbersFound": 10,
       "completedAt": "2026-04-04"
     }
   ]

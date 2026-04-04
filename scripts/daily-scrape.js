@@ -162,7 +162,7 @@ async function getPlaceDetails(placeId) {
 // Transform place result
 // ---------------------------------------------------------------------------
 
-function transformPlace(place, city, region) {
+function transformPlace(place, city, state, region) {
   const name = place.name || "Unknown";
   const phone = place.formatted_phone_number || place.international_phone_number || "";
   const hours = place.opening_hours?.weekday_text || null;
@@ -175,7 +175,7 @@ function transformPlace(place, city, region) {
     website: place.website || null,
     address: place.formatted_address || "",
     city,
-    state: "IL",
+    state: state || "IL",
     region,
     location: place.geometry?.location
       ? { lat: place.geometry.location.lat, lng: place.geometry.location.lng }
@@ -376,16 +376,21 @@ async function main() {
   let totalDeduped = 0;
   const citiesProcessed = [];
 
+  // State abbreviation to full name for search queries
+  const STATE_NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",DC:"District of Columbia"};
+
   for (const cityEntry of todayCities) {
     const callsBefore = apiCallsMade;
     const cityName = cityEntry.city;
+    const cityState = cityEntry.state || "IL";
+    const stateName = STATE_NAMES[cityState] || cityState;
     const region = cityEntry.region;
 
-    log(`\nScraping: ${cityName}, IL (${region})`);
+    log(`\nScraping: ${cityName}, ${cityState} (${region})`);
 
     try {
       await sleep(RATE_LIMIT_MS);
-      const searchResults = await textSearch(`emergency plumber in ${cityName}, Illinois`);
+      const searchResults = await textSearch(`emergency plumber in ${cityName}, ${stateName}`);
       log(`  Found ${searchResults.length} search results`);
 
       let cityNew = 0;
@@ -411,7 +416,7 @@ async function main() {
         const details = await getPlaceDetails(placeId);
         if (!details) continue;
 
-        const plumber = transformPlace(details, cityName, region);
+        const plumber = transformPlace(details, cityName, cityState, region);
         if (!plumber.phone) {
           log(`  Skipping ${plumber.name} — no phone`);
           continue;
