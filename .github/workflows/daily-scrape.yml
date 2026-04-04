@@ -24,15 +24,26 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install firebase-admin typescript ts-node @anthropic-ai/sdk
+        run: npm install firebase firebase-admin typescript ts-node
+
+      - name: Check Firebase config
+        id: firebase
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
       - name: Setup service account
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        if: steps.firebase.outputs.configured == 'true'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
 
-      # Phase 1: Expansion — scrape new cities (60% of budget)
+      # Phase 1: Expansion -- scrape new cities (60% of budget)
       - name: Run daily scrape (expansion)
         env:
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
@@ -42,13 +53,13 @@ jobs:
 
       # Upload scraped data to Firestore
       - name: Upload to Firestore
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        if: steps.firebase.outputs.configured == 'true'
         run: node scripts/upload-to-firestore.js
         continue-on-error: true
 
-      # Phase 2: Review refresh — accumulate reviews for existing plumbers (30% of budget)
+      # Phase 2: Review refresh -- accumulate reviews for existing plumbers (30% of budget)
       - name: Refresh reviews
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        if: steps.firebase.outputs.configured == 'true'
         env:
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
@@ -60,9 +71,9 @@ jobs:
         run: npx ts-node --esm scripts/refresh-reviews.ts --max 20
         continue-on-error: true
 
-      # Phase 3: AI synthesis — analyze reviews for plumbers with new data
+      # Phase 3: AI synthesis -- analyze reviews for plumbers with new data
       - name: Synthesize reviews
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        if: steps.firebase.outputs.configured == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
