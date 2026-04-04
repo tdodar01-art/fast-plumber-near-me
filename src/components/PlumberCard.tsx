@@ -1,11 +1,20 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar, Flag, ChevronDown, MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar, Flag, ChevronDown, MapPin, AlertTriangle } from "lucide-react";
 import type { Plumber } from "@/lib/types";
 import ReliabilityBadge from "./ReliabilityBadge";
 import VerifiedBadge from "./VerifiedBadge";
 import { getDistanceLabel } from "@/lib/geo";
+
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/\./g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 function useViewTracking(plumberId: string, citySlug: string) {
   const ref = useRef<HTMLDivElement>(null);
@@ -89,6 +98,12 @@ export default function PlumberCard({
   cityName?: string;
 }) {
   const viewRef = useViewTracking(plumber.id, citySlug);
+  const router = useRouter();
+  const slug = slugify(plumber.businessName);
+
+  const handleCardClick = () => {
+    router.push(`/plumber/${slug}`);
+  };
 
   const handleCallClick = () => {
     // Track the lead
@@ -113,7 +128,8 @@ export default function PlumberCard({
   return (
     <div
       ref={viewRef}
-      className={`rounded-xl border-2 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow ${
+      onClick={handleCardClick}
+      className={`rounded-xl border-2 p-4 sm:p-6 shadow-sm hover:shadow-md active:shadow-inner transition-shadow cursor-pointer ${
         tierStyles[plumber.listingTier]
       }`}
     >
@@ -251,6 +267,17 @@ export default function PlumberCard({
           {plumber.reviewSynthesis.weaknesses.length > 0 && (
             <p className="text-xs text-amber-700">- {plumber.reviewSynthesis.weaknesses[0]}</p>
           )}
+          {/* Red flags */}
+          {plumber.reviewSynthesis.redFlags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1">
+              {plumber.reviewSynthesis.redFlags.map((flag, i) => (
+                <span key={i} className="inline-flex items-center gap-0.5 text-xs font-medium bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
+                  <AlertTriangle className="w-3 h-3" />
+                  {flag.replace(/-/g, " ")}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -280,7 +307,7 @@ export default function PlumberCard({
       <div className="mt-3 flex flex-col sm:flex-row gap-2">
         <a
           href={`tel:${plumber.phone}`}
-          onClick={handleCallClick}
+          onClick={(e) => { e.stopPropagation(); handleCallClick(); }}
           className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-accent/25 cta-pulse"
         >
           <Phone className="w-5 h-5 flex-shrink-0" />
@@ -294,7 +321,8 @@ export default function PlumberCard({
                 href={plumber.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   fetch("/api/track-lead", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -317,6 +345,7 @@ export default function PlumberCard({
                 href={plumber.bookingLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
                 className="flex-1 flex items-center justify-center gap-2 border-2 border-success text-success hover:bg-success hover:text-white font-semibold py-2.5 px-3 rounded-xl transition-colors text-sm"
               >
                 <Calendar className="w-4 h-4" />
@@ -357,7 +386,7 @@ function ReportButton({ plumberId, citySlug }: { plumberId: string; citySlug: st
   return (
     <div className="mt-2 relative">
       <button
-        onClick={() => setOpen(!open)}
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
         className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
       >
         <Flag className="w-3 h-3" />
@@ -372,7 +401,7 @@ function ReportButton({ plumberId, citySlug }: { plumberId: string; citySlug: st
             options.map((opt) => (
               <button
                 key={opt.type}
-                onClick={() => report(opt.type)}
+                onClick={(e) => { e.stopPropagation(); report(opt.type); }}
                 className={`block w-full text-left text-xs px-3 py-1.5 rounded hover:bg-gray-50 ${opt.positive ? "text-green-700" : "text-gray-700"}`}
               >
                 {opt.label}
