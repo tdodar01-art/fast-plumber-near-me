@@ -8,6 +8,7 @@ import CallToAction from "@/components/CallToAction";
 import { getAllCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
 import { getPlumbersByCity, getActivePlumbersByState } from "@/lib/firestore";
+import { getPlumbersNearCity } from "@/lib/plumber-data";
 import { calculateQualityScore } from "@/lib/scoring";
 import { getCityCoordBySlug } from "@/lib/city-coords";
 import { calculateDistance, getDistanceWeight } from "@/lib/geo";
@@ -79,7 +80,7 @@ export default async function CityPage({
   const cityCoord = getCityCoordBySlug(city.state, citySlug);
 
   try {
-    // Start with direct serviceCities match
+    // Start with direct serviceCities match from Firestore
     const directMatch = await getPlumbersByCity(firestoreCitySlug);
     if (directMatch.length === 0) {
       const fallback = await getPlumbersByCity(citySlug);
@@ -88,7 +89,7 @@ export default async function CityPage({
       plumbers = directMatch.map((p) => ({ ...p }));
     }
 
-    // Add radius-based plumbers (20 miles) if we have city coordinates
+    // Add radius-based plumbers (20 miles) from Firestore
     if (cityCoord) {
       const [cityLat, cityLng] = cityCoord;
       const statePlumbers = await getActivePlumbersByState(city.state);
@@ -112,7 +113,14 @@ export default async function CityPage({
       }
     }
   } catch {
-    // Firebase not configured
+    // Firebase not configured — will fall through to static fallback
+  }
+
+  // Fallback: if Firestore returned nothing (not configured or empty),
+  // use the static synthesized JSON with 20-mile radius matching.
+  // This ensures city pages always show nearby plumbers at build time.
+  if (plumbers.length === 0) {
+    plumbers = getPlumbersNearCity(city.state, citySlug);
   }
 
   // Sort: featured > premium > free, then by quality × distance weight
