@@ -1,21 +1,20 @@
-#!/usr/bin/env npx ts-node --esm
+#!/usr/bin/env npx tsx
 /**
  * AI-powered review synthesis using Claude Haiku.
  * Analyzes cached Google reviews and generates structured quality signals.
  * Falls back to keyword analysis for plumbers with fewer than 3 cached reviews.
  *
+ * Uses firebase-admin SDK with service-account.json (bypasses security rules).
+ *
  * Usage:
- *   npx ts-node scripts/synthesize-reviews.ts [--dry-run] [--force]
+ *   npx tsx scripts/synthesize-reviews.ts [--dry-run] [--force]
  *
  * Flags:
  *   --dry-run   Log prompts and plumber names without making API calls or writes
  *   --force     Re-synthesize all plumbers regardless of existing AI synthesis
  */
 
-import { initializeApp, getApps } from "firebase/app";
-import {
-  getFirestore, collection, doc, getDocs, updateDoc, addDoc, query, where, Timestamp,
-} from "firebase/firestore";
+import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -44,17 +43,20 @@ if (fs.existsSync(envPath)) {
 // Firebase
 // ---------------------------------------------------------------------------
 
-function initFirebase() {
-  if (getApps().length) return getFirestore();
-  const app = initializeApp({
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  });
-  return getFirestore(app);
+function initFirebase(): admin.firestore.Firestore {
+  if (admin.apps.length) return admin.firestore();
+
+  const saPath = path.join(__dirname, "..", "service-account.json");
+  if (fs.existsSync(saPath)) {
+    const sa = JSON.parse(fs.readFileSync(saPath, "utf-8"));
+    admin.initializeApp({ credential: admin.credential.cert(sa) });
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    admin.initializeApp({ credential: admin.credential.applicationDefault() });
+  } else {
+    console.error("ERROR: No service-account.json or GOOGLE_APPLICATION_CREDENTIALS found");
+    process.exit(1);
+  }
+  return admin.firestore();
 }
 
 // ---------------------------------------------------------------------------
@@ -204,7 +206,7 @@ function keywordFallback(reviews: ReviewData[], googleReviewCount: number) {
     redFlags: [] as string[],
     badges: badges.slice(0, 3),
     reviewCount: total,
-    synthesizedAt: Timestamp.now(),
+    synthesizedAt: admin.firestore.Timestamp.now(),
     categories: {
       emergency: { strengths: emergencySignals, weaknesses: [] as string[] },
       pricing: { strengths: priceGood > 0 ? ["Fair pricing noted"] : [], weaknesses: priceBad > 0 ? ["Pricing concerns"] : [] },
@@ -231,7 +233,7 @@ async function main() {
   if (dryRun) console.log("🔍 DRY RUN — no API calls or Firestore writes\n");
 
   const db = initFirebase();
-  const plumbersSnap = await getDocs(collection(db, "plumbers"));
+  const plumbersSnap = await db.collection("plumbers").get();
   let synthesized = 0;
   let skipped = 0;
   let keywordCount = 0;
@@ -254,10 +256,9 @@ async function main() {
     }
 
     // Fetch cached reviews
-    const reviewsSnap = await getDocs(query(
-      collection(db, "reviews"),
-      where("plumberId", "==", plumberDoc.id),
-    ));
+    const reviewsSnap = await db.collection("reviews")
+      .where("plumberId", "==", plumberDoc.id)
+      .get();
     if (reviewsSnap.empty) { skipped++; continue; }
 
     const reviews: ReviewData[] = reviewsSnap.docs.map((d) => ({
@@ -274,9 +275,9 @@ async function main() {
       console.log(`📝 ${data.businessName}: KEYWORD fallback (${reviews.length} reviews) | ${synthesis.badges.join(", ") || "no badges"}`);
 
       if (!dryRun) {
-        await updateDoc(doc(db, "plumbers", plumberDoc.id), {
+        await db.collection("plumbers").doc(plumberDoc.id).update({
           reviewSynthesis: synthesis,
-          updatedAt: Timestamp.now(),
+          updatedAt: admin.firestore.Timestamp.now(),
         });
       }
       keywordCount++;
@@ -318,7 +319,7 @@ async function main() {
         redFlags: aiResult.redFlags,
         badges: aiResult.badges,
         reviewCount: reviews.length,
-        synthesizedAt: Timestamp.now(),
+        synthesizedAt: admin.firestore.Timestamp.now(),
         pricingTier: aiResult.pricingTier,
         categories: {
           emergency: {
@@ -338,15 +339,15 @@ async function main() {
         summary: aiResult.summary,
         emergencyReadiness: aiResult.emergencyReadiness,
         emergencyNotes: aiResult.emergencyNotes,
-        aiSynthesizedAt: Timestamp.now(),
+        aiSynthesizedAt: admin.firestore.Timestamp.now(),
         synthesisVersion: "ai-v1",
       };
 
       console.log(`🤖 ${data.businessName}: ${aiResult.badges.join(", ") || "no badges"} | ${aiResult.redFlags.length} red flags | emergency: ${aiResult.emergencyReadiness} | pricing: ${aiResult.pricingTier}`);
 
-      await updateDoc(doc(db, "plumbers", plumberDoc.id), {
+      await db.collection("plumbers").doc(plumberDoc.id).update({
         reviewSynthesis: synthesis,
-        updatedAt: Timestamp.now(),
+        updatedAt: admin.firestore.Timestamp.now(),
       });
 
       aiCount++;
@@ -376,7 +377,7 @@ async function main() {
 // Run + log pipeline
 // ---------------------------------------------------------------------------
 
-const startedAt = Timestamp.now();
+const startedAt = admin.firestore.Timestamp.now();
 const startTime = Date.now();
 
 main()
@@ -384,10 +385,10 @@ main()
     if (!process.argv.includes("--dry-run")) {
       try {
         const db = initFirebase();
-        await addDoc(collection(db, "pipelineRuns"), {
+        await db.collection("pipelineRuns").add({
           script: "synthesize-reviews",
           startedAt,
-          completedAt: Timestamp.now(),
+          completedAt: admin.firestore.Timestamp.now(),
           durationSeconds: Math.round((Date.now() - startTime) / 1000),
           status: result.failed > 0 ? "partial" : "success",
           summary: {
@@ -408,10 +409,10 @@ main()
     console.error(err);
     try {
       const db = initFirebase();
-      await addDoc(collection(db, "pipelineRuns"), {
+      await db.collection("pipelineRuns").add({
         script: "synthesize-reviews",
         startedAt,
-        completedAt: Timestamp.now(),
+        completedAt: admin.firestore.Timestamp.now(),
         durationSeconds: Math.round((Date.now() - startTime) / 1000),
         status: "error",
         summary: {},

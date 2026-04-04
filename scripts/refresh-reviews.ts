@@ -1,4 +1,4 @@
-#!/usr/bin/env npx ts-node --esm
+#!/usr/bin/env npx tsx
 /**
  * Aggressive review accumulation — continuously caches unique reviews.
  *
@@ -9,15 +9,13 @@
  * Priority queue: highest review gap first, then staleness, then engagement.
  * Saturation detection: backs off after 5 consecutive zero-new refreshes.
  *
+ * Uses firebase-admin SDK with service-account.json (bypasses security rules).
+ *
  * Usage:
- *   npx ts-node scripts/refresh-reviews.ts [--budget 50] [--dry-run] [--max 50]
+ *   npx tsx scripts/refresh-reviews.ts [--budget 50] [--dry-run] [--max 50]
  */
 
-import { initializeApp, getApps } from "firebase/app";
-import {
-  getFirestore, collection, doc, getDoc, setDoc, updateDoc, addDoc,
-  getDocs, query, where, Timestamp, limit as firestoreLimit,
-} from "firebase/firestore";
+import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -45,17 +43,20 @@ const REFRESH_BUDGET_PCT = 0.4; // 40% of budget for refreshes
 const SATURATED_THRESHOLD = 5; // consecutive zero-new refreshes before deprioritize
 const SATURATED_MIN_INTERVAL_DAYS = 14; // still refresh saturated plumbers every 14 days
 
-function initFirebase() {
-  if (getApps().length) return getFirestore();
-  const app = initializeApp({
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  });
-  return getFirestore(app);
+function initFirebase(): admin.firestore.Firestore {
+  if (admin.apps.length) return admin.firestore();
+
+  const saPath = path.join(__dirname, "..", "service-account.json");
+  if (fs.existsSync(saPath)) {
+    const sa = JSON.parse(fs.readFileSync(saPath, "utf-8"));
+    admin.initializeApp({ credential: admin.credential.cert(sa) });
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    admin.initializeApp({ credential: admin.credential.applicationDefault() });
+  } else {
+    console.error("ERROR: No service-account.json or GOOGLE_APPLICATION_CREDENTIALS found");
+    process.exit(1);
+  }
+  return admin.firestore();
 }
 
 function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
@@ -75,35 +76,34 @@ function daysSince(timestamp: { toDate?: () => Date } | null): number {
   return (Date.now() - timestamp.toDate().getTime()) / (1000 * 60 * 60 * 24);
 }
 
-async function getMonthlyUsage(db: ReturnType<typeof getFirestore>) {
+async function getMonthlyUsage(db: admin.firestore.Firestore) {
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const docRef = doc(db, "apiUsage", monthKey);
-  const snapshot = await getDoc(docRef);
-  if (!snapshot.exists()) return { estimatedCost: 0 };
-  return { estimatedCost: snapshot.data().estimatedCost || 0 };
+  const snapshot = await db.collection("apiUsage").doc(monthKey).get();
+  if (!snapshot.exists) return { estimatedCost: 0 };
+  return { estimatedCost: snapshot.data()?.estimatedCost || 0 };
 }
 
-async function recordApiUsage(db: ReturnType<typeof getFirestore>, count: number) {
+async function recordApiUsage(db: admin.firestore.Firestore, count: number) {
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const docRef = doc(db, "apiUsage", monthKey);
+  const docRef = db.collection("apiUsage").doc(monthKey);
   const addedCost = count * COST_PER_CALL;
-  const existing = await getDoc(docRef);
-  if (existing.exists()) {
-    const data = existing.data();
-    await updateDoc(docRef, {
+  const existing = await docRef.get();
+  if (existing.exists) {
+    const data = existing.data()!;
+    await docRef.update({
       placeDetailsCalls: (data.placeDetailsCalls || 0) + count,
       totalCalls: (data.totalCalls || 0) + count,
       estimatedCost: (data.estimatedCost || 0) + addedCost,
-      lastUpdatedAt: Timestamp.now(),
+      lastUpdatedAt: admin.firestore.Timestamp.now(),
     });
   } else {
-    await setDoc(docRef, {
+    await docRef.set({
       month: monthKey, year: now.getFullYear(),
       textSearchCalls: 0, placeDetailsCalls: count,
       totalCalls: count, estimatedCost: addedCost,
-      lastUpdatedAt: Timestamp.now(),
+      lastUpdatedAt: admin.firestore.Timestamp.now(),
     });
   }
 }
@@ -128,7 +128,7 @@ interface PlumberQueueEntry {
 }
 
 function buildPriorityQueue(
-  plumberDocs: Array<{ id: string; data: () => Record<string, unknown> }>,
+  plumberDocs: admin.firestore.QueryDocumentSnapshot[],
   leadCounts: Record<string, number>,
   cachedCounts: Record<string, number>,
 ): PlumberQueueEntry[] {
@@ -151,12 +151,10 @@ function buildPriorityQueue(
     if (isSaturated && dsr < SATURATED_MIN_INTERVAL_DAYS) continue;
 
     // Priority score: higher = refresh sooner
-    // Primary: review gap (biggest data hole first)
-    // Secondary: staleness + engagement
-    let priority = reviewGap * 10; // gap dominates
-    priority += Math.min(dsr, 30) * 2; // staleness (capped at 30 days)
-    priority += Math.min(leadCount, 50); // engagement (capped)
-    if (isSaturated) priority *= 0.3; // heavy deprioritization
+    let priority = reviewGap * 10;
+    priority += Math.min(dsr, 30) * 2;
+    priority += Math.min(leadCount, 50);
+    if (isSaturated) priority *= 0.3;
 
     queue.push({
       docId: plumberDoc.id,
@@ -204,10 +202,10 @@ async function main() {
   console.log(`📊 Budget: $${budgetLimit}/mo | Refresh allocation: $${(dailyBudget).toFixed(2)}/day | Max refreshes: ${maxPlumbers}`);
 
   // Load all plumbers
-  const plumbersSnap = await getDocs(collection(db, "plumbers"));
+  const plumbersSnap = await db.collection("plumbers").get();
 
   // Count cached reviews per plumber
-  const reviewsSnap = await getDocs(collection(db, "reviews"));
+  const reviewsSnap = await db.collection("reviews").get();
   const cachedCounts: Record<string, number> = {};
   reviewsSnap.docs.forEach((d) => {
     const pid = d.data().plumberId as string;
@@ -215,7 +213,7 @@ async function main() {
   });
 
   // Count leads per plumber
-  const leadsSnap = await getDocs(collection(db, "leads"));
+  const leadsSnap = await db.collection("leads").get();
   const leadCounts: Record<string, number> = {};
   leadsSnap.docs.forEach((d) => {
     const pid = d.data().plumberId as string;
@@ -283,16 +281,14 @@ async function main() {
       if (!text) continue;
       const googleReviewId = hashReviewId(authorName, text);
 
-      const dupeCheck = query(
-        collection(db, "reviews"),
-        where("plumberId", "==", entry.docId),
-        where("googleReviewId", "==", googleReviewId),
-        firestoreLimit(1)
-      );
-      const existing = await getDocs(dupeCheck);
-      if (!existing.empty) continue;
+      const dupeCheck = await db.collection("reviews")
+        .where("plumberId", "==", entry.docId)
+        .where("googleReviewId", "==", googleReviewId)
+        .limit(1)
+        .get();
+      if (!dupeCheck.empty) continue;
 
-      await addDoc(collection(db, "reviews"), {
+      await db.collection("reviews").add({
         plumberId: entry.docId,
         googleReviewId,
         authorName,
@@ -300,7 +296,7 @@ async function main() {
         text,
         relativeTimeDescription: review.relativePublishTimeDescription || "",
         publishedAt: review.publishTime || "",
-        cachedAt: Timestamp.now(),
+        cachedAt: admin.firestore.Timestamp.now(),
       });
       newForThis++;
       newReviews++;
@@ -313,7 +309,7 @@ async function main() {
     const updatedReviewCount = details.userRatingCount || entry.googleReviewCount;
 
     const updateData: Record<string, unknown> = {
-      lastReviewRefreshAt: Timestamp.now(),
+      lastReviewRefreshAt: admin.firestore.Timestamp.now(),
       googleRating: updatedGoogleRating,
       googleReviewCount: updatedReviewCount,
       cachedReviewCount: newCachedCount,
@@ -326,17 +322,16 @@ async function main() {
     const businessStatus = details.businessStatus as string | undefined;
     if (businessStatus === "CLOSED_PERMANENTLY" || businessStatus === "CLOSED_TEMPORARILY") {
       updateData.status = "inactive";
-      updateData.closedAt = Timestamp.now();
+      updateData.closedAt = admin.firestore.Timestamp.now();
       updateData.closureSource = "google";
       updateData.isActive = false;
       console.log(`  ⛔ CLOSED (${businessStatus}) — marked inactive`);
     }
 
     // --- AUTO-FLAG FROM USER REPORTS ---
-    const reportsSnap = await getDocs(query(
-      collection(db, "plumberReports"),
-      where("plumberId", "==", entry.docId),
-    ));
+    const reportsSnap = await db.collection("plumberReports")
+      .where("plumberId", "==", entry.docId)
+      .get();
     const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
     const recentNegReports = reportsSnap.docs.filter((d) => {
       const data = d.data();
@@ -377,15 +372,15 @@ async function main() {
       updateData.verificationStatus = "unverified";
     }
 
-    await updateDoc(doc(db, "plumbers", entry.docId), updateData);
+    await db.collection("plumbers").doc(entry.docId).update(updateData);
 
     // Rating snapshot
     if (details.rating) {
-      await addDoc(collection(db, "ratingSnapshots"), {
+      await db.collection("ratingSnapshots").add({
         plumberId: entry.docId,
         googleRating: details.rating,
         googleReviewCount: details.userRatingCount || 0,
-        snapshotAt: Timestamp.now(),
+        snapshotAt: admin.firestore.Timestamp.now(),
       });
     }
 
@@ -419,7 +414,7 @@ async function main() {
   return { refreshed, newReviews, apiCalls, totalCached };
 }
 
-const startedAt = Timestamp.now();
+const startedAt = admin.firestore.Timestamp.now();
 const startTime = Date.now();
 
 main()
@@ -427,10 +422,10 @@ main()
     if (!process.argv.includes("--dry-run")) {
       try {
         const db = initFirebase();
-        await addDoc(collection(db, "pipelineRuns"), {
+        await db.collection("pipelineRuns").add({
           script: "refresh-reviews",
           startedAt,
-          completedAt: Timestamp.now(),
+          completedAt: admin.firestore.Timestamp.now(),
           durationSeconds: Math.round((Date.now() - startTime) / 1000),
           status: "success",
           summary: {
@@ -448,10 +443,10 @@ main()
     console.error(err);
     try {
       const db = initFirebase();
-      await addDoc(collection(db, "pipelineRuns"), {
+      await db.collection("pipelineRuns").add({
         script: "refresh-reviews",
         startedAt,
-        completedAt: Timestamp.now(),
+        completedAt: admin.firestore.Timestamp.now(),
         durationSeconds: Math.round((Date.now() - startTime) / 1000),
         status: "error",
         summary: {},
