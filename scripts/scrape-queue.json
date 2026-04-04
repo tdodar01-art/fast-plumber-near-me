@@ -1,16 +1,8 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 107,
+  "usedThisMonth": 115,
   "currentMonth": "2026-04",
   "queue": [
-    {
-      "city": "Batavia",
-      "state": "IL",
-      "county": "Kane",
-      "region": "Fox Valley",
-      "status": "pending",
-      "estCalls": 16
-    },
     {
       "city": "Aurora",
       "state": "IL",
@@ -966,6 +958,16 @@
       "actualCalls": 12,
       "plumbersFound": 11,
       "completedAt": "2026-04-03"
+    },
+    {
+      "city": "Batavia",
+      "state": "IL",
+      "county": "Kane",
+      "region": "Fox Valley",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-04-04"
     }
   ]
 }
