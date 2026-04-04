@@ -23,11 +23,23 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install firebase-admin
+        run: npm install firebase-admin
+
       - name: Run daily scrape
         env:
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/daily-scrape.js
+
+      - name: Upload to Firestore
+        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+          node scripts/upload-to-firestore.js
+          rm service-account.json
 
       - name: Check for changes
         id: changes

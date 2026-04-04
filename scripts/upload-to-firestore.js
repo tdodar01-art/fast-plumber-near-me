@@ -209,6 +209,45 @@ async function main() {
   console.log(`   Skipped: ${skipped}`);
   console.log(`   Failed: ${failed}`);
   console.log();
+
+  // Log pipeline run to Firestore for Activity page
+  try {
+    const resultPath = path.join(
+      __dirname,
+      "..",
+      "data",
+      "logs",
+      `daily-result-${new Date().toISOString().slice(0, 10)}.json`
+    );
+    let scrapeResult = {};
+    if (fs.existsSync(resultPath)) {
+      scrapeResult = JSON.parse(fs.readFileSync(resultPath, "utf-8"));
+    }
+
+    const endTime = new Date();
+    await db.collection("pipelineRuns").add({
+      script: "daily-scrape",
+      startedAt: admin.firestore.Timestamp.fromDate(
+        scrapeResult.startedAt ? new Date(scrapeResult.startedAt) : new Date(endTime.getTime() - 60000)
+      ),
+      completedAt: admin.firestore.Timestamp.fromDate(endTime),
+      durationSeconds: Math.round((scrapeResult.durationSeconds) || 60),
+      status: failed > 0 ? "partial" : "success",
+      triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+      summary: {
+        citiesSearched: (scrapeResult.citiesProcessed || []).map((c) => c.city),
+        newPlumbers: scrapeResult.newPlumbers || created,
+        updatedPlumbers: updated,
+        apiCalls: scrapeResult.apiCalls || 0,
+        totalPlumbers: plumbers.length,
+        firestoreCreated: created,
+        firestoreUpdated: updated,
+      },
+    });
+    console.log(`📝 Pipeline run logged to Firestore`);
+  } catch (logErr) {
+    console.error("Warning: failed to log pipeline run:", logErr.message);
+  }
 }
 
 main().catch((err) => {
