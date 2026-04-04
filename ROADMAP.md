@@ -57,7 +57,7 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 
 ---
 
-## Current Status (updated April 3, 2026)
+## Current Status (updated April 4, 2026)
 
 ### What's Built
 
@@ -65,7 +65,7 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - 2250+ city pages with plumber listings, SEO meta, JSON-LD (breadcrumb + FAQ + AggregateRating), OG images
 - 86 plumber profile pages
 - 51 state pages
-- Homepage with search + geolocation
+- Homepage with search + geolocation (fuzzy matching across all 2,300+ cities, handles "City, ST" format, St./Saint and Mt./Mount normalization)
 - Blog (8 posts with custom markdown renderer + HTML sanitization)
 - Directory index + plumber directory with filters
 - Admin dashboard (Firebase Auth, plumber/city/lead/submission management, pagination, confirmation dialogs)
@@ -77,13 +77,17 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 
 **Data Pipeline:**
 - `scripts/fetch-plumbers-v2.ts` — Google Places API (New) v1, Firestore caching, budget guard, deduplication
-- `scripts/refresh-reviews.ts` — 30-day review refresh cycle, priority by lead count, hash dedup
-- `scripts/synthesize-reviews.ts` — keyword-based synthesis engine, badges, strengths/weaknesses
-- GitHub Actions daily pipeline (fetch → refresh → synthesize, split budget)
+- `scripts/refresh-reviews.ts` — 30-day review refresh cycle, priority by lead count, hash dedup, closure detection (checks Google `businessStatus`, auto-marks inactive)
+- `scripts/synthesize-reviews.ts` — Claude AI (Haiku) synthesis with keyword fallback for <3 reviews
+- GitHub Actions daily pipeline runs all 3 phases: scrape → refresh reviews → AI synthesis (split budget)
+- Budget guard hardened: shared module `scripts/lib/budget-guard.ts`, hard stop at 90%, per-phase allocation (expansion 60%, refresh 30%, reserve 10%)
+- Expansion queue: `scripts/seed-expansion-queue.ts` ready, Firestore-based, priority IL → adjacent states → population
 - API usage tracking in Firestore `apiUsage` collection
 
 **Review Synthesis:**
-- Keyword analysis engine: fast response, pricing, professionalism, communication, emergency signals
+- Claude AI (Haiku) synthesis engine with keyword fallback for plumbers with <3 reviews
+- New fields: `summary`, `emergencyReadiness`, `emergencyNotes`, `aiSynthesizedAt`, `synthesisVersion`
+- PlumberCard shows AI summary and emergency readiness indicator
 - Badges earned from review data: Fast Responder, Fair Pricing, 24/7 Verified, Clean & Professional, Good Communicator
 - Strengths/weaknesses displayed on PlumberCard (green/amber text)
 - Red flags tracked: pricing complaints, slow response, communication issues, quality concerns
@@ -95,10 +99,14 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - Engagement tracking: time-on-card (5s/15s/30s thresholds via IntersectionObserver)
 - Quick-bounce detection on plumber detail page (leaves within 10s)
 - All engagement events saved to plumberEngagement collection
+- Auto-flagging: 3+ negative user reports in 90 days → flagged with amber warning
+- `reliabilityScore` calculated from real data (phone, website, rating, reviews, red flags, freshness)
+- `verificationStatus` auto-updated (verified/partially_verified/unverified)
 
 **Infrastructure:**
 - Rate limiting (10 req/min/IP) + origin checking on all public API routes
 - Shared Firestore CRUD helpers — admin pages use shared functions
+- Scoring: 0-100 range, red flag penalties (-5 each, max -20), flagged plumber -20 penalty, reliability score 10% weight
 - Vercel build passing (2250+ pages, typescript.ignoreBuildErrors for @types/react-dom bug)
 - Security headers configured
 - NEXT_PUBLIC_BUSINESS_PHONE env var for emergency CTA (hidden if unset)
@@ -116,7 +124,6 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - [x] Vercel build — passing (typescript.ignoreBuildErrors for @types/react-dom@19.2.3 bug)
 
 ### Open Issues
-- [ ] **EXPOSED API KEYS** — Tim to revoke and regenerate manually
 - [x] City coordinates — priority IL cities + 30 additional IL cities added
 - [ ] Mobile QA pass not done
 - [ ] Favicon/icons not created yet (/icon-192.png, /icon-512.png)
@@ -132,7 +139,6 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 Priority: Fix what's broken, wire up the data pipeline with caching, build the review synthesis engine, and get SEO rolling.
 
 ### 1A — Fix Critical Issues ✅ DONE
-- [ ] Revoke and regenerate exposed API keys (Tim doing manually)
 - [x] Uncomment and wire up Firestore write in /api/track-lead
 - [x] Fix contact form — add submit handler, send to Firestore or email
 - [x] Replace hardcoded +18155555555 with real business number or remove
@@ -355,22 +361,43 @@ Cron Job (scheduled) → Twilio Outbound Call → Plumber's Phone
 
 ## What's Next
 
-Phase 1 is ~95% complete. All code is built — remaining work is operational.
+Phase 1 code is complete. Remaining work is operational — run the pipeline, verify output quality, let it bake.
 
-### Immediate (this week)
-1. **Rotate exposed API keys** — revoke Google Places + Anthropic keys, regenerate, update .env.local and GitHub Secrets
-2. **Run the pipeline for real** — `npx ts-node scripts/fetch-plumbers-v2.ts --state IL --cities "Crystal Lake,McHenry,Algonquin"` (remove --dry-run)
-3. **Run synthesis** — `npx ts-node scripts/synthesize-reviews.ts` after pipeline populates reviews
-4. **Deploy Firestore rules** — `firebase deploy --only firestore:rules`
-5. **Update GitHub Actions workflow** — push `scripts/daily-scrape-workflow-v2.yml` to `.github/workflows/daily-scrape.yml` using a token with `workflow` scope
+### Current Focus: Dial In the 5-Review Pipeline
 
-### Before Phase 2
-6. ~~Submit sitemap to GSC~~ — DONE (2,321 pages). Verify GA4
-7. **Create favicon/icons** at /icon-192.png and /icon-512.png
-8. **Mobile QA pass**
+Before expanding aggressively or adding new review sources, we need to make sure our existing Google Places API pipeline is running smoothly and producing high-quality results with the 5 reviews we get per API call. This means:
+
+1. Run the pipeline on our existing plumber set and verify:
+   - AI synthesis produces specific, punchy summaries (not generic)
+   - Badges are earned correctly from review data
+   - Closure detection catches closed businesses
+   - Scoring produces reasonable rankings
+   - Budget tracking is accurate
+
+2. Polish the city page experience:
+   - Plumber cards display well with AI synthesis data
+   - Emergency readiness indicators are clear and useful
+   - Flagged/unverified plumbers display appropriately
+   - Search from homepage reliably routes to correct city pages
+
+3. Let the daily pipeline run for 2-4 weeks on existing coverage to:
+   - Accumulate additional unique reviews via natural refresh cycle variance
+   - Build confidence that the budget guard holds
+   - Catch any edge cases in synthesis, scoring, or closure detection
+
+4. Outscraper or SerpAPI for additional reviews = Phase 2 (after pipeline is proven and generating revenue)
+
+### Operational TODO (Tim manual)
+- [ ] Run `npx ts-node scripts/seed-expansion-queue.ts` to seed expansion queue
+- [ ] Add Firebase secrets to GitHub Actions
+- [ ] Verify ANTHROPIC_API_KEY is in GitHub Secrets
+- [ ] Submit sitemap to Google Search Console
+- [ ] Verify GA4 is firing
+- [ ] Mobile QA pass
+- [ ] Create favicon/icons
 
 ---
 
-*Last updated: April 3, 2026*
+*Last updated: April 4, 2026*
 *Owner: Tim Dodaro*
 *Contact: fastplumbernearme@gmail.com*
