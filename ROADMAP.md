@@ -63,7 +63,10 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 
 **Site & Pages:**
 - 2250+ city pages with plumber listings, SEO meta, JSON-LD (breadcrumb + FAQ + AggregateRating), OG images
-- 86 plumber profile pages
+- City pages use static JSON fallback with 20-mile Haversine radius matching — works at build time without Firestore
+- 135+ plumber profile pages with full AI synthesis, cached reviews, KPI cards, red flags, badges, JSON-LD
+- PlumberCard is tappable — links to plumber detail page at `/plumber/[slug]`
+- Red flags displayed on PlumberCard (red pills with warning icon) — same on mobile and desktop
 - 51 state pages
 - Homepage with search + geolocation (fuzzy matching across all 2,300+ cities, handles "City, ST" format, St./Saint and Mt./Mount normalization)
 - Blog (8 posts with custom markdown renderer + HTML sanitization)
@@ -76,10 +79,15 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - Firestore security rules (firestore.rules)
 
 **Data Pipeline:**
-- `scripts/fetch-plumbers-v2.ts` — Google Places API (New) v1, Firestore caching, budget guard, deduplication
-- `scripts/refresh-reviews.ts` — 30-day review refresh cycle, priority by lead count, hash dedup, closure detection (checks Google `businessStatus`, auto-marks inactive)
-- `scripts/synthesize-reviews.ts` — Claude AI (Haiku) synthesis with keyword fallback for <3 reviews
-- GitHub Actions daily pipeline runs all 3 phases: scrape → refresh reviews → AI synthesis (split budget)
+- `scripts/daily-scrape.js` — scrapes new cities, synthesizes with Claude Sonnet, commits JSON to git
+- `scripts/upload-to-firestore.js` — uploads synthesized JSON to Firestore plumbers collection (firebase-admin SDK)
+- `scripts/refresh-reviews.ts` — review accumulation, closure detection, auto-flagging, reliability scoring (firebase-admin SDK)
+- `scripts/synthesize-reviews.ts` — Claude AI (Haiku) synthesis with keyword fallback for <3 reviews (firebase-admin SDK)
+- GitHub Actions daily pipeline fully operational — all 4 phases: scrape → Firestore upload → review refresh → AI synthesis
+- All scripts use firebase-admin SDK with service-account.json (bypasses Firestore security rules)
+- 135+ plumbers scraped across 16+ IL cities, all uploaded to Firestore with AI synthesis
+- 100+ reviews cached in Firestore reviews collection via refresh cycle
+- Pipeline activity logged to `pipelineRuns` collection (viewable in admin Activity tab)
 - Budget guard hardened: shared module `scripts/lib/budget-guard.ts`, hard stop at 90%, per-phase allocation (expansion 60%, refresh 30%, reserve 10%)
 - Expansion queue: `scripts/seed-expansion-queue.ts` ready, Firestore-based, priority IL → adjacent states → population
 - API usage tracking in Firestore `apiUsage` collection
@@ -110,6 +118,10 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - Vercel build passing (2250+ pages, typescript.ignoreBuildErrors for @types/react-dom bug)
 - Security headers configured
 - NEXT_PUBLIC_BUSINESS_PHONE env var for emergency CTA (hidden if unset)
+- Firebase env vars configured on Vercel (all 6 NEXT_PUBLIC_FIREBASE_*)
+- GitHub Actions: 9 secrets configured (3 API keys + 6 Firebase config)
+- GitHub token has `workflow` scope — can push workflow file changes
+- GitHub Actions workflow fixed: step-output pattern for secret checks, tsx for TS execution
 
 ### Resolved Issues
 - [x] Lead tracking — Firestore write wired up, clicks persist to leads collection
@@ -130,7 +142,11 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - [ ] Firestore rules not deployed (`firebase deploy --only firestore:rules`)
 - [x] GSC sitemap submitted — 2,321 pages discovered (April 3, 2026)
 - [ ] GA4 not verified
-- [ ] GitHub Actions workflow needs `workflow` scope token to update
+- [x] GitHub Actions workflow — fixed (workflow scope token, secrets pattern, tsx, firebase-admin)
+- [x] City pages showing 0 plumbers — fixed (static JSON fallback with 20-mile radius matching)
+- [x] PlumberCard not tappable — fixed (links to /plumber/[slug], stopPropagation on action buttons)
+- [x] Red flags missing from PlumberCard — fixed (red pills with AlertTriangle icon)
+- [x] Pipeline Phases 2-3 failing — fixed (converted to firebase-admin SDK, PERMISSION_DENIED resolved)
 
 ---
 
@@ -388,16 +404,18 @@ Before expanding aggressively or adding new review sources, we need to make sure
 4. Outscraper or SerpAPI for additional reviews = Phase 2 (after pipeline is proven and generating revenue)
 
 ### Operational TODO (Tim manual)
-- [ ] Run `npx ts-node scripts/seed-expansion-queue.ts` to seed expansion queue
-- [ ] Add Firebase secrets to GitHub Actions
-- [ ] Verify ANTHROPIC_API_KEY is in GitHub Secrets
-- [ ] Submit sitemap to Google Search Console
+- [ ] Run `npx tsx scripts/seed-expansion-queue.ts` to seed expansion queue
+- [x] Add Firebase secrets to GitHub Actions — DONE (9 secrets: 3 API keys + 6 Firebase config)
+- [x] Verify ANTHROPIC_API_KEY is in GitHub Secrets — DONE
+- [x] Submit sitemap to Google Search Console — DONE (2,321 pages discovered)
 - [ ] Verify GA4 is firing
+- [ ] Enable Places API (New) on Firebase GCP project (needed for refresh-reviews to call Google directly)
 - [ ] Mobile QA pass
 - [ ] Create favicon/icons
+- [ ] Deploy Firestore rules (`firebase deploy --only firestore:rules`)
 
 ---
 
-*Last updated: April 4, 2026*
+*Last updated: April 4, 2026 (evening)*
 *Owner: Tim Dodaro*
 *Contact: fastplumbernearme@gmail.com*
