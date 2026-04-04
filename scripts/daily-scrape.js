@@ -576,23 +576,88 @@ async function main() {
 
   // Return summary for daily-publish
   return {
+    startedAt: scrapeStartTime,
     citiesProcessed,
     newPlumbers: totalNewPlumbers,
     totalPlumbers: allPlumbersList.length,
     apiCalls: apiCallsMade,
+    synthesized: synthSuccess,
+    synthFailed,
+    deduped: totalDeduped,
+    monthlyUsage: queue.usedThisMonth,
+    monthlyBudget: queue.monthlyBudget,
+    queueRemaining: queue.queue.length,
   };
 }
 
+// ---------------------------------------------------------------------------
+// Log pipeline run to Firestore for Activity dashboard
+// ---------------------------------------------------------------------------
+
+async function logPipelineRun(result, error) {
+  const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
+  if (!fs.existsSync(SERVICE_ACCOUNT_PATH)) return;
+
+  let admin;
+  try {
+    admin = require("firebase-admin");
+  } catch {
+    return; // firebase-admin not installed locally
+  }
+
+  if (!admin.apps.length) {
+    const serviceAccount = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"));
+    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+  }
+
+  const db = admin.firestore();
+  const endTime = new Date();
+
+  try {
+    await db.collection("pipelineRuns").add({
+      script: "daily-scrape",
+      startedAt: admin.firestore.Timestamp.fromDate(
+        result?.startedAt ? new Date(result.startedAt) : new Date(endTime.getTime() - 60000)
+      ),
+      completedAt: admin.firestore.Timestamp.fromDate(endTime),
+      durationSeconds: result?.startedAt
+        ? Math.round((endTime.getTime() - new Date(result.startedAt).getTime()) / 1000)
+        : 0,
+      status: error ? "error" : (result?.synthFailed > 0 ? "partial" : "success"),
+      triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+      error: error ? error.message : null,
+      summary: {
+        citiesSearched: (result?.citiesProcessed || []).map((c) => c.city),
+        newPlumbers: result?.newPlumbers || 0,
+        totalPlumbers: result?.totalPlumbers || 0,
+        apiCalls: result?.apiCalls || 0,
+        synthesized: result?.synthesized || 0,
+        synthFailed: result?.synthFailed || 0,
+        deduped: result?.deduped || 0,
+        monthlyUsage: `${result?.monthlyUsage || 0}/${result?.monthlyBudget || 0}`,
+        queueRemaining: result?.queueRemaining || 0,
+      },
+    });
+    console.log("Pipeline run logged to Firestore");
+  } catch (logErr) {
+    console.error("Warning: failed to log pipeline run:", logErr.message);
+  }
+}
+
 // Run and export result
+const scrapeStartTime = new Date().toISOString();
+
 main()
-  .then((result) => {
+  .then(async (result) => {
     // Write result for daily-publish to read
     const resultPath = path.join(LOG_DIR, `daily-result-${today}.json`);
     fs.writeFileSync(resultPath, JSON.stringify(result, null, 2));
+    await logPipelineRun(result, null);
     process.exit(0);
   })
-  .catch((err) => {
+  .catch(async (err) => {
     log(`FATAL: ${err.message}`);
     logStream.end();
+    await logPipelineRun(null, err);
     process.exit(1);
   });

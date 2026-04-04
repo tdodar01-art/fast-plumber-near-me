@@ -26,6 +26,12 @@ jobs:
       - name: Install firebase-admin
         run: npm install firebase-admin
 
+      - name: Setup service account
+        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
       - name: Run daily scrape
         env:
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
@@ -34,12 +40,11 @@ jobs:
 
       - name: Upload to Firestore
         if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
-          node scripts/upload-to-firestore.js
-          rm service-account.json
+        run: node scripts/upload-to-firestore.js
+
+      - name: Cleanup service account
+        if: always()
+        run: rm -f service-account.json
 
       - name: Check for changes
         id: changes

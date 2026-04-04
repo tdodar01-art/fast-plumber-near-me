@@ -210,38 +210,22 @@ async function main() {
   console.log(`   Failed: ${failed}`);
   console.log();
 
-  // Log pipeline run to Firestore for Activity page
+  // Log Firestore upload as its own pipeline run
   try {
-    const resultPath = path.join(
-      __dirname,
-      "..",
-      "data",
-      "logs",
-      `daily-result-${new Date().toISOString().slice(0, 10)}.json`
-    );
-    let scrapeResult = {};
-    if (fs.existsSync(resultPath)) {
-      scrapeResult = JSON.parse(fs.readFileSync(resultPath, "utf-8"));
-    }
-
     const endTime = new Date();
     await db.collection("pipelineRuns").add({
-      script: "daily-scrape",
-      startedAt: admin.firestore.Timestamp.fromDate(
-        scrapeResult.startedAt ? new Date(scrapeResult.startedAt) : new Date(endTime.getTime() - 60000)
-      ),
+      script: "upload-firestore",
+      startedAt: admin.firestore.Timestamp.fromDate(new Date(endTime.getTime() - 10000)),
       completedAt: admin.firestore.Timestamp.fromDate(endTime),
-      durationSeconds: Math.round((scrapeResult.durationSeconds) || 60),
+      durationSeconds: 10,
       status: failed > 0 ? "partial" : "success",
       triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
       summary: {
-        citiesSearched: (scrapeResult.citiesProcessed || []).map((c) => c.city),
-        newPlumbers: scrapeResult.newPlumbers || created,
-        updatedPlumbers: updated,
-        apiCalls: scrapeResult.apiCalls || 0,
+        created,
+        updated,
+        skipped,
+        failed,
         totalPlumbers: plumbers.length,
-        firestoreCreated: created,
-        firestoreUpdated: updated,
       },
     });
     console.log(`📝 Pipeline run logged to Firestore`);
