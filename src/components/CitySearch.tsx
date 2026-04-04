@@ -247,6 +247,7 @@ export default function CitySearch() {
           <input
             type="text"
             inputMode="text"
+            autoComplete="off"
             placeholder="Enter your zip code or city"
             value={query}
             onChange={(e) => search(e.target.value)}

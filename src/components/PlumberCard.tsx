@@ -278,6 +278,8 @@ export default function PlumberCard({
               ))}
             </div>
           )}
+          {/* Compact KPI row */}
+          <KPIRow synthesis={plumber.reviewSynthesis} is24Hour={plumber.is24Hour} />
         </div>
       )}
 
@@ -358,6 +360,40 @@ export default function PlumberCard({
 
       {/* Report button */}
       <ReportButton plumberId={plumber.id} citySlug={citySlug} />
+    </div>
+  );
+}
+
+function KPIRow({ synthesis, is24Hour }: { synthesis: Plumber["reviewSynthesis"]; is24Hour: boolean }) {
+  if (!synthesis) return null;
+
+  // Response
+  const hasFastBadge = synthesis.badges?.includes("Fast Responder");
+  const responseLabel = hasFastBadge ? "Fast" : "Unknown";
+  const responseColor = hasFastBadge ? "text-green-700" : "text-gray-400";
+
+  // Emergency
+  const er = synthesis.emergencyReadiness;
+  const has247Badge = synthesis.badges?.includes("24/7 Available") || synthesis.badges?.includes("24/7 Verified by Reviews");
+  const emergLabel = has247Badge ? "24/7" : er === "high" ? "High" : er === "medium" ? "Medium" : is24Hour ? "Claims 24/7" : "Unknown";
+  const emergColor = has247Badge || er === "high" ? "text-green-700" : er === "medium" || is24Hour ? "text-amber-600" : "text-gray-400";
+
+  // Pricing
+  const pt = synthesis.pricingTier;
+  const priceLabel = pt === "budget" ? "Budget" : pt === "mid-range" ? "Mid-Range" : pt === "premium" ? "Premium" : "Unknown";
+  const priceColor = pt === "budget" || pt === "mid-range" ? "text-green-700" : pt === "premium" ? "text-amber-600" : "text-gray-400";
+
+  // Red flags
+  const flagCount = synthesis.redFlags?.length || 0;
+  const flagLabel = flagCount === 0 ? "None" : `${flagCount}`;
+  const flagColor = flagCount === 0 ? "text-green-700" : "text-red-600";
+
+  return (
+    <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-[11px] font-medium">
+      <span className={responseColor}>⚡ Response: {responseLabel}</span>
+      <span className={emergColor}>🛡 Emergency: {emergLabel}</span>
+      <span className={priceColor}>💰 {priceLabel}</span>
+      <span className={flagColor}>⚠ Flags: {flagLabel}</span>
     </div>
   );
 }
