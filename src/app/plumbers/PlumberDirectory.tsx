@@ -77,9 +77,9 @@ export default function PlumberDirectory({ plumbers, cityCoords }: Props) {
   const filtered = useMemo(() => {
     if (!cityFilter) return plumbersWithDistance;
     return plumbersWithDistance.filter((p) => {
-      // Include if within 20 miles
-      if (p.distanceMiles != null && p.distanceMiles <= 20) return true;
-      // Also include if city matches directly
+      // If we have a calculated distance, enforce 20-mile radius
+      if (p.distanceMiles != null) return p.distanceMiles <= 20;
+      // No distance available (no coordinates) — include if city matches directly
       if (p.city === cityFilter) return true;
       if (p.serviceCities?.includes(cityFilter)) return true;
       return false;
