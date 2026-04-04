@@ -1,16 +1,8 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 158,
+  "usedThisMonth": 173,
   "currentMonth": "2026-04",
   "queue": [
-    {
-      "city": "Libertyville",
-      "state": "IL",
-      "county": "Lake",
-      "region": "Lake County",
-      "status": "pending",
-      "estCalls": 18
-    },
     {
       "city": "Mundelein",
       "state": "IL",
@@ -977,6 +969,16 @@
       "status": "done",
       "actualCalls": 3,
       "plumbersFound": 2,
+      "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Libertyville",
+      "state": "IL",
+      "county": "Lake",
+      "region": "Lake County",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
       "completedAt": "2026-04-04"
     }
   ]
