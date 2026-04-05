@@ -293,9 +293,9 @@ export default async function PlumberProfilePage({
 
         {/* CTA BUTTONS */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <CallButton phone={plumber.phone} plumberId={slug} city={plumber.city} />
+          <CallButton phone={plumber.phone} plumberId={slug} city={plumber.city} plumberName={plumber.businessName} state={plumber.state} />
           {plumber.website ? (
-            <WebsiteButton url={plumber.website} plumberId={slug} city={plumber.city} />
+            <WebsiteButton url={plumber.website} plumberId={slug} city={plumber.city} plumberName={plumber.businessName} state={plumber.state} />
           ) : (
             <div className="flex items-center justify-center py-3.5 rounded-xl text-sm text-gray-400 bg-gray-50" style={{ border: "0.5px solid #E5E7EB" }}>
               No website

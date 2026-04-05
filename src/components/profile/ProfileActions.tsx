@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { Phone, ExternalLink, Flag, ChevronDown } from "lucide-react";
 
-export function CallButton({ phone, plumberId, city }: { phone: string; plumberId: string; city: string }) {
+export function CallButton({ phone, plumberId, city, plumberName, state }: { phone: string; plumberId: string; city: string; plumberName?: string; state?: string }) {
   function handleClick() {
     fetch("/api/track-lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plumberId, city, clickType: "call", source: `/plumber/${plumberId}` }),
+      body: JSON.stringify({ plumberId, plumberName: plumberName || "", plumberPhone: phone, city, state: state || "", pageUrl: `/plumber/${plumberId}`, clickType: "call", source: `/plumber/${plumberId}` }),
     }).catch(() => {});
   }
 
@@ -25,12 +25,12 @@ export function CallButton({ phone, plumberId, city }: { phone: string; plumberI
   );
 }
 
-export function WebsiteButton({ url, plumberId, city }: { url: string; plumberId: string; city: string }) {
+export function WebsiteButton({ url, plumberId, city, plumberName, state }: { url: string; plumberId: string; city: string; plumberName?: string; state?: string }) {
   function handleClick() {
     fetch("/api/track-lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plumberId, city, clickType: "website", source: `/plumber/${plumberId}` }),
+      body: JSON.stringify({ plumberId, plumberName: plumberName || "", city, state: state || "", pageUrl: `/plumber/${plumberId}`, clickType: "website", source: `/plumber/${plumberId}` }),
     }).catch(() => {});
   }
 

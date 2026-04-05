@@ -106,13 +106,17 @@ export default function PlumberCard({
   };
 
   const handleCallClick = () => {
-    // Track the lead
     fetch("/api/track-lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         plumberId: plumber.id,
-        city: citySlug,
+        plumberName: plumber.businessName,
+        plumberPhone: plumber.phone,
+        city: cityName || citySlug,
+        state: plumber.address?.state || "",
+        citySlug,
+        pageUrl: `/emergency-plumbers/${citySlug}`,
         clickType: "call",
         source: `/emergency-plumbers/${citySlug}`,
       }),
@@ -330,7 +334,12 @@ export default function PlumberCard({
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                       plumberId: plumber.id,
-                      city: citySlug,
+                      plumberName: plumber.businessName,
+                      plumberPhone: plumber.phone,
+                      city: cityName || citySlug,
+                      state: plumber.address?.state || "",
+                      citySlug,
+                      pageUrl: `/emergency-plumbers/${citySlug}`,
                       clickType: "website",
                       source: `/emergency-plumbers/${citySlug}`,
                     }),

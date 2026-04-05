@@ -137,11 +137,17 @@ export interface VerificationCall {
 export interface Lead {
   id: string;
   plumberId: string;
+  plumberName: string;
+  plumberPhone: string;
   city: string;
+  state: string;
+  citySlug: string;
+  pageUrl: string;
   clickType: "call" | "website" | "directions";
   source: string;
   createdAt: Timestamp;
   userAgent: string;
+  referrer: string;
   billed: boolean;
   billedAmount: number | null;
 }

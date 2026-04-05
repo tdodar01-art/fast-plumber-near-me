@@ -12,18 +12,24 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    const { plumberId, city, clickType, source } = data;
+    const { plumberId, city, clickType, source, plumberName, plumberPhone, state, citySlug, pageUrl } = data;
     if (!plumberId || !city || !clickType) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     await trackLead({
       plumberId,
+      plumberName: plumberName || "",
+      plumberPhone: plumberPhone || "",
       city,
+      state: state || "",
+      citySlug: citySlug || "",
+      pageUrl: pageUrl || source || "",
       clickType,
       source: source || "",
       createdAt: Timestamp.now(),
       userAgent: request.headers.get("user-agent") || "",
+      referrer: request.headers.get("referer") || "",
       billed: false,
       billedAmount: null,
     });

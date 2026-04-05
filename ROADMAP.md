@@ -114,7 +114,7 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - Red flags tracked: pricing complaints, slow response, communication issues, quality concerns
 
 **First-Party Signals:**
-- Click-to-call lead tracking (persists to Firestore leads collection)
+- Click-to-call lead tracking (persists to Firestore leads collection with plumberName, plumberPhone, city, state, citySlug, pageUrl, referrer)
 - User report button on every PlumberCard + plumber detail page
 - Reports saved to plumberReports collection
 - Engagement tracking: time-on-card (5s/15s/30s thresholds via IntersectionObserver)
