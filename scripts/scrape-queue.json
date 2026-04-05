@@ -1,16 +1,8 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 254,
+  "usedThisMonth": 266,
   "currentMonth": "2026-04",
   "queue": [
-    {
-      "city": "Gurnee",
-      "state": "IL",
-      "county": "Lake",
-      "region": "Lake County",
-      "status": "pending",
-      "estCalls": 18
-    },
     {
       "city": "Waukegan",
       "state": "IL",
@@ -1032,6 +1024,16 @@
       "actualCalls": 11,
       "plumbersFound": 10,
       "completedAt": "2026-04-04"
+    },
+    {
+      "city": "Gurnee",
+      "state": "IL",
+      "county": "Lake",
+      "region": "Lake County",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-04-05"
     }
   ]
 }
