@@ -123,7 +123,7 @@ async function main() {
         full: plumber.address || "",
         street: "",
         city: plumber.city || "",
-        state: plumber.state || "IL",
+        state: plumber.state || "",
         zip: "",
         lat: plumber.location?.lat || 0,
         lng: plumber.location?.lng || 0,

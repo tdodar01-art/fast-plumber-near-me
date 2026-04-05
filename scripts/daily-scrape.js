@@ -175,7 +175,7 @@ function transformPlace(place, city, state, region) {
     website: place.website || null,
     address: place.formatted_address || "",
     city,
-    state: state || "IL",
+    state: state,
     region,
     location: place.geometry?.location
       ? { lat: place.geometry.location.lat, lng: place.geometry.location.lng }
@@ -235,7 +235,7 @@ function buildSynthesisPrompt(plumber) {
   return `You are analyzing Google reviews for a plumbing company to help homeowners decide who to hire for emergencies.
 
 BUSINESS: ${plumber.name}
-CITY: ${plumber.city}, ${plumber.state || "IL"}
+CITY: ${plumber.city}, ${plumber.state}
 GOOGLE RATING: ${plumber.googleRating || "N/A"}/5 (${plumber.googleReviewCount || 0} reviews)
 24-HOUR SERVICE: ${plumber.is24Hour ? "Yes" : "Unknown"}
 
@@ -382,7 +382,7 @@ async function main() {
   for (const cityEntry of todayCities) {
     const callsBefore = apiCallsMade;
     const cityName = cityEntry.city;
-    const cityState = cityEntry.state || "IL";
+    const cityState = cityEntry.state;
     const stateName = STATE_NAMES[cityState] || cityState;
     const region = cityEntry.region;
 

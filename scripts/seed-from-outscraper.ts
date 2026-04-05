@@ -339,7 +339,7 @@ async function main() {
     const placeId = (row.place_id || "").trim();
     const docId = placeId || slugify(row.name || "unknown");
     const cityName = (row.city || "").trim();
-    const stateStr = stateAbbrev(row.state || row.us_state || "IL");
+    const stateStr = stateAbbrev(row.state || row.us_state || "");
     const workingHours = parseWorkingHours(row.working_hours || "");
 
     plumberDocs.push({
