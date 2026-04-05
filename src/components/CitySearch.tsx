@@ -7,6 +7,7 @@ import { CITY_LIST, type CityListItem } from "@/lib/city-list";
 import { getCityCoordBySlug } from "@/lib/city-coords";
 import { calculateDistance } from "@/lib/geo";
 import { ZIP_PREFIX_COORDS } from "@/lib/zip-prefixes";
+import { CITY_COVERAGE } from "@/lib/city-coverage";
 
 // Zip-to-city mapping for our covered service area
 const ZIP_MAP: Record<string, string> = {
@@ -149,24 +150,36 @@ export default function CitySearch() {
           }
         }
       }
-      // Fallback: use 3-digit prefix → coordinates to find nearest cities
+      // Fallback: use 3-digit prefix → coordinates to find nearest cities WITH plumber data
       if (matches.length === 0 && clean.length >= 3) {
         const prefix = clean.slice(0, 3);
         const coord = ZIP_PREFIX_COORDS[prefix];
         if (coord) {
           const [zipLat, zipLng] = coord;
-          const nearby: { city: CityListItem; dist: number }[] = [];
+          const nearby: { city: CityListItem; dist: number; plumberCount: number }[] = [];
           for (const c of CITY_LIST) {
+            const coverageKey = `${c.state}:${c.citySlug}`;
+            const plumberCount = CITY_COVERAGE[coverageKey] || 0;
+            if (plumberCount === 0) continue; // Skip cities with no plumber data
             const cityCoord = getCityCoordBySlug(c.state, c.citySlug);
             if (!cityCoord) continue;
             const dist = calculateDistance(zipLat, zipLng, cityCoord[0], cityCoord[1]);
-            if (dist <= 50) {
-              nearby.push({ city: c, dist });
+            if (dist <= 100) {
+              nearby.push({ city: c, dist, plumberCount });
             }
           }
-          nearby.sort((a, b) => a.dist - b.dist);
+          // Sort by composite score: more plumbers + closer = higher priority
+          nearby.sort((a, b) => {
+            const scoreA = a.plumberCount / Math.max(a.dist, 1);
+            const scoreB = b.plumberCount / Math.max(b.dist, 1);
+            return scoreB - scoreA;
+          });
           for (const n of nearby.slice(0, 6)) {
-            matches.push({ city: n.city, via: `${Math.round(n.dist)} mi away`, distanceMiles: n.dist });
+            matches.push({
+              city: n.city,
+              via: `${n.plumberCount} plumbers · ${Math.round(n.dist)} mi`,
+              distanceMiles: n.dist,
+            });
           }
         }
       }
@@ -298,7 +311,7 @@ export default function CitySearch() {
         <ul className="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
           {noMatch && results.length === 0 && (
             <li className="px-4 py-3 text-sm text-gray-500">
-              We don&apos;t have coverage in &ldquo;{query.trim()}&rdquo; yet. Try a nearby city or zip code.
+              We&apos;re expanding to your area soon. Try searching by city name, or check back shortly.
             </li>
           )}
           {results.map((r) => (
@@ -316,9 +329,19 @@ export default function CitySearch() {
                     )}
                   </div>
                 </div>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0" style={{ color: "#0F6E56", backgroundColor: "#E1F5EE" }}>
-                  View plumbers
-                </span>
+                {(() => {
+                  const coverageKey = `${r.city.state}:${r.city.citySlug}`;
+                  const count = CITY_COVERAGE[coverageKey] || 0;
+                  return count > 0 ? (
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0" style={{ color: "#0F6E56", backgroundColor: "#E1F5EE" }}>
+                      {count} plumbers
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 text-gray-400 bg-gray-100">
+                      Coming soon
+                    </span>
+                  );
+                })()}
               </button>
             </li>
           ))}
