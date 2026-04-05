@@ -6,6 +6,7 @@ import { Search, ArrowRight, MapPin } from "lucide-react";
 import { CITY_LIST, type CityListItem } from "@/lib/city-list";
 import { getCityCoordBySlug } from "@/lib/city-coords";
 import { calculateDistance } from "@/lib/geo";
+import { ZIP_PREFIX_COORDS } from "@/lib/zip-prefixes";
 
 // Zip-to-city mapping for our covered service area
 const ZIP_MAP: Record<string, string> = {
@@ -127,6 +128,7 @@ export default function CitySearch() {
 
     // Check if it's a zip code
     if (/^\d{3,5}$/.test(clean)) {
+      // First try exact ZIP_MAP match
       const city = ZIP_MAP[clean];
       if (city) {
         const cityItem = CITY_LIST.find(
@@ -136,7 +138,7 @@ export default function CitySearch() {
           matches.push({ city: cityItem, via: `ZIP ${clean}` });
         }
       }
-      // Partial zip matches
+      // Partial zip matches from ZIP_MAP
       if (clean.length >= 3) {
         for (const [zip, cityName] of Object.entries(ZIP_MAP)) {
           if (zip.startsWith(clean) && !matches.find((m) => m.city.name === cityName)) {
@@ -144,6 +146,27 @@ export default function CitySearch() {
               (c) => c.name.toLowerCase() === cityName.toLowerCase()
             );
             if (cityItem) matches.push({ city: cityItem, via: `ZIP ${zip}` });
+          }
+        }
+      }
+      // Fallback: use 3-digit prefix → coordinates to find nearest cities
+      if (matches.length === 0 && clean.length >= 3) {
+        const prefix = clean.slice(0, 3);
+        const coord = ZIP_PREFIX_COORDS[prefix];
+        if (coord) {
+          const [zipLat, zipLng] = coord;
+          const nearby: { city: CityListItem; dist: number }[] = [];
+          for (const c of CITY_LIST) {
+            const cityCoord = getCityCoordBySlug(c.state, c.citySlug);
+            if (!cityCoord) continue;
+            const dist = calculateDistance(zipLat, zipLng, cityCoord[0], cityCoord[1]);
+            if (dist <= 50) {
+              nearby.push({ city: c, dist });
+            }
+          }
+          nearby.sort((a, b) => a.dist - b.dist);
+          for (const n of nearby.slice(0, 6)) {
+            matches.push({ city: n.city, via: `${Math.round(n.dist)} mi away`, distanceMiles: n.dist });
           }
         }
       }
