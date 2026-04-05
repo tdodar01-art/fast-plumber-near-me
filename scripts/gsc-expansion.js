@@ -196,6 +196,10 @@ async function main() {
     if (existing) {
       existing.impressions += row.impressions;
       existing.clicks += row.clicks;
+      // Weighted average for position/CTR when aggregating multiple rows
+      const totalImpr = existing.impressions;
+      existing.avgPosition = ((existing.avgPosition * (totalImpr - row.impressions)) + (row.position * row.impressions)) / totalImpr;
+      existing.ctr = totalImpr > 0 ? existing.clicks / totalImpr : 0;
     } else {
       gscCities.set(key, {
         city: parsed.cityName,
@@ -205,16 +209,71 @@ async function main() {
         impressions: row.impressions,
         clicks: row.clicks,
         avgPosition: row.position,
+        ctr: row.ctr,
       });
     }
   }
 
   console.log(`Parsed ${gscCities.size} unique city pages from GSC data\n`);
 
-  // Check Firestore cities collection
+  // =========================================================================
+  // Update GSC metrics on ALL cities in results (new and existing)
+  // =========================================================================
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  let metricsUpdated = 0;
+
+  function getTier(impressions) {
+    if (impressions >= 50) return "high";
+    if (impressions >= 10) return "medium";
+    if (impressions >= 1) return "low";
+    return "none";
+  }
+
+  for (const [, city] of gscCities) {
+    const docId = `${city.citySlug}-${city.state.toLowerCase()}`;
+    const roundedPos = Math.round(city.avgPosition * 10) / 10;
+    const roundedCtr = Math.round((city.ctr || 0) * 10000) / 10000;
+    const tier = getTier(city.impressions);
+
+    try {
+      // Upsert latest GSC snapshot + tier on the city doc
+      await db.collection("cities").doc(docId).set({
+        lastGSCImpressions: city.impressions,
+        lastGSCClicks: city.clicks,
+        lastGSCPosition: roundedPos,
+        lastGSCCTR: roundedCtr,
+        gscLastUpdated: todayStr,
+        gscTier: tier,
+      }, { merge: true });
+
+      // Write daily history to subcollection (date as doc ID = idempotent)
+      await db.collection("cities").doc(docId)
+        .collection("gscHistory")
+        .doc(todayStr)
+        .set({
+          date: todayStr,
+          impressions: city.impressions,
+          clicks: city.clicks,
+          position: roundedPos,
+          ctr: roundedCtr,
+        });
+
+      metricsUpdated++;
+    } catch (metricErr) {
+      console.error(`  Warning: failed to update GSC metrics for ${docId}: ${metricErr.message}`);
+    }
+  }
+
+  console.log(`Updated GSC metrics + history for ${metricsUpdated} cities\n`);
+
+  // =========================================================================
+  // Check Firestore cities collection for scrape status
+  // =========================================================================
+
   const citiesSnap = await db.collection("cities").get();
   const scrapedCities = new Set();
-  const knownCities = new Set(); // all cities in Firestore (scraped or not)
+  const knownCities = new Set();
   for (const doc of citiesSnap.docs) {
     const data = doc.data();
     const cityName = data.city || data.name || "";
@@ -241,12 +300,11 @@ async function main() {
     }
   }
 
-  // Create stub docs in cities collection for newly discovered cities
-  const todayStr = new Date().toISOString().slice(0, 10);
+  // Create stub docs for newly discovered cities (not yet in Firestore at all)
   let stubsCreated = 0;
   for (const city of needsScraping) {
     const key = `${city.state}:${city.citySlug}`;
-    if (knownCities.has(key)) continue; // already has a doc (just not scraped yet)
+    if (knownCities.has(key)) continue;
 
     const docId = `${city.citySlug}-${city.state.toLowerCase()}`;
     try {
@@ -273,11 +331,18 @@ async function main() {
   // Sort new cities by impressions (highest priority first)
   needsScraping.sort((a, b) => b.impressions - a.impressions);
 
+  // Tier breakdown
+  const allCities = [...gscCities.values()];
+  const tierCounts = { high: 0, medium: 0, low: 0 };
+  for (const c of allCities) tierCounts[getTier(c.impressions)]++;
+
   // Summary
   console.log("=== SUMMARY ===");
   console.log(`  Total city pages in GSC: ${gscCities.size}`);
   console.log(`  Already scraped:         ${alreadyScraped.length}`);
   console.log(`  NEW — needs scraping:    ${needsScraping.length}`);
+  console.log(`  GSC metrics updated:     ${metricsUpdated}`);
+  console.log(`  Tiers — high (50+): ${tierCounts.high}, medium (10-49): ${tierCounts.medium}, low (1-9): ${tierCounts.low}`);
   console.log("");
 
   if (needsScraping.length > 0) {
