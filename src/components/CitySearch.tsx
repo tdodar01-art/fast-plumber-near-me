@@ -219,13 +219,19 @@ export default function CitySearch() {
     }
 
     if (matches.length > 0) {
-      // Sort: exact matches first, then alphabetical
-      matches.sort((a, b) => {
-        const aExact = normalizeQuery(a.city.name) === normalizedSearch ? 0 : 1;
-        const bExact = normalizeQuery(b.city.name) === normalizedSearch ? 0 : 1;
-        if (aExact !== bExact) return aExact - bExact;
-        return a.city.name.localeCompare(b.city.name);
-      });
+      // Sort: if results have distance data (zip prefix lookup), sort by distance.
+      // Otherwise sort by exact match first, then alphabetical.
+      const hasDistance = matches.some((m) => m.distanceMiles != null);
+      if (hasDistance) {
+        matches.sort((a, b) => (a.distanceMiles ?? 999) - (b.distanceMiles ?? 999));
+      } else {
+        matches.sort((a, b) => {
+          const aExact = normalizeQuery(a.city.name) === normalizedSearch ? 0 : 1;
+          const bExact = normalizeQuery(b.city.name) === normalizedSearch ? 0 : 1;
+          if (aExact !== bExact) return aExact - bExact;
+          return a.city.name.localeCompare(b.city.name);
+        });
+      }
 
       setResults(matches.slice(0, 6));
       setShowDropdown(true);
