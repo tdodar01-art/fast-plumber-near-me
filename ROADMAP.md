@@ -93,15 +93,17 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - API usage tracking in Firestore `apiUsage` collection
 - All IL-only hardcoding removed from pipeline scripts (daily-scrape, upload-to-firestore, seed-from-outscraper)
 
-**GSC Expansion System (operational):**
+**GSC Expansion System (fully automated):**
 - GSC API access verified and working (service account has siteFullUser permission)
 - `scripts/gsc-pull-test.js` — test GSC API access, display 90-day page data
 - `scripts/gsc-expansion.js` — pull GSC data, find cities with impressions but no plumber data, create stub docs in cities collection, write `data/gsc-expansion-queue.json`
+- `scripts/gsc-prepend-queue.js` — geocode new cities (Google Maps Geocoding API), add coords to `city-coords.ts`, prepend to scrape queue
 - `scripts/seed-cities-collection.js` — seed Firestore `cities` collection from synthesized data (run once — done, 27 cities seeded)
 - `googleapis` npm package installed
 - `daily-scrape.js` auto-updates Firestore `cities` collection after each successful scrape (non-blocking)
 - Firestore `cities` collection: 2257 docs total, 28 scraped, single source of truth for city tracking
 - First GSC-driven scrape completed: Ardmore, OK (found via impressions, scraped, live)
+- **GitHub Actions automated:** daily workflow runs GSC expansion → prepend → scrape → upload → refresh → synthesize → commit (all GSC steps continue-on-error so normal scrape is never blocked)
 
 **Review Synthesis:**
 - Claude AI (Haiku) synthesis engine with keyword fallback for plumbers with <3 reviews
@@ -454,9 +456,9 @@ Google Search Console shows we're already getting impressions on city pages — 
 ```
 
 **Remaining build tasks:**
-- [ ] Daily scrape prepends GSC-priority cities before normal queue
+- [x] Daily scrape prepends GSC-priority cities before normal queue — DONE (gsc-prepend-queue.js runs in GitHub Actions before daily-scrape.js)
 - [ ] Admin dashboard city tracking table with color-coded status
-- [ ] Weekly GitHub Actions workflow for GSC pull (separate from daily scrape)
+- [x] GitHub Actions workflow for GSC pull — DONE (integrated into daily workflow, not separate — runs daily with continue-on-error)
 
 ### Operational TODO (Tim manual)
 - [ ] Run `npx tsx scripts/seed-expansion-queue.ts` to seed expansion queue

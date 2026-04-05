@@ -24,7 +24,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install firebase firebase-admin typescript tsx
+        run: npm install firebase firebase-admin typescript tsx googleapis
 
       - name: Check Firebase config
         id: firebase
@@ -42,6 +42,20 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
+      # Phase 0: GSC-driven expansion — find cities Google is testing
+      - name: GSC Expansion Check
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
+        run: node scripts/gsc-expansion.js
+
+      - name: Prepend GSC cities to scrape queue
+        continue-on-error: true
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+        run: node scripts/gsc-prepend-queue.js
 
       # Phase 1: Expansion -- scrape new cities (60% of budget)
       - name: Run daily scrape (expansion)
@@ -80,7 +94,8 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          if git diff --quiet data/ scripts/scrape-queue.json; then
+          git add -N data/gsc-expansion-queue.json 2>/dev/null || true
+          if git diff --quiet data/ scripts/scrape-queue.json src/lib/city-coords.ts; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -91,7 +106,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/raw/plumbers-latest.json data/synthesized/plumbers-synthesized.json data/synthesized/leaderboard.json scripts/scrape-queue.json
+          git add data/raw/plumbers-latest.json data/synthesized/plumbers-synthesized.json data/synthesized/leaderboard.json scripts/scrape-queue.json data/gsc-expansion-queue.json src/lib/city-coords.ts
           CITIES=$(node -e "const r=require('./data/logs/daily-result-$(date +%Y-%m-%d).json');console.log(r.citiesProcessed.map(c=>c.city).join(', '))" 2>/dev/null || echo "unknown")
           NEW=$(node -e "const r=require('./data/logs/daily-result-$(date +%Y-%m-%d).json');console.log(r.newPlumbers)" 2>/dev/null || echo "0")
           git commit -m "Daily scrape: +${NEW} plumbers from ${CITIES}"
