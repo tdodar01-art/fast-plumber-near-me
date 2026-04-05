@@ -25,7 +25,7 @@ const COORDS: Record<string, [number, number]> = {
   "AR:springdale": [36.19, -94.13], "AR:jonesboro": [35.84, -90.70], "AR:conway": [35.09, -92.44],
   "AR:rogers": [36.33, -94.12], "AR:bentonville": [36.37, -94.21], "AR:hot-springs": [34.50, -93.06],
   // California
-  "CA:los-angeles": [34.05, -118.24], "CA:san-diego": [32.72, -117.16], "CA:san-jose": [37.34, -121.89],
+  "CA:alameda": [37.77, -122.24], "CA:los-angeles": [34.05, -118.24], "CA:san-diego": [32.72, -117.16], "CA:san-jose": [37.34, -121.89],
   "CA:san-francisco": [37.77, -122.42], "CA:fresno": [36.74, -119.77], "CA:sacramento": [38.58, -121.49],
   "CA:long-beach": [33.77, -118.19], "CA:oakland": [37.80, -122.27], "CA:bakersfield": [35.37, -119.02],
   "CA:anaheim": [33.84, -117.91], "CA:santa-ana": [33.75, -117.87], "CA:riverside": [33.95, -117.40],

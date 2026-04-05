@@ -235,7 +235,7 @@ function buildSynthesisPrompt(plumber) {
   return `You are analyzing Google reviews for a plumbing company to help homeowners decide who to hire for emergencies.
 
 BUSINESS: ${plumber.name}
-CITY: ${plumber.city}, IL
+CITY: ${plumber.city}, ${plumber.state || "IL"}
 GOOGLE RATING: ${plumber.googleRating || "N/A"}/5 (${plumber.googleReviewCount || 0} reviews)
 24-HOUR SERVICE: ${plumber.is24Hour ? "Yes" : "Unknown"}
 
