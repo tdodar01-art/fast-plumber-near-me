@@ -1,0 +1,307 @@
+#!/usr/bin/env node
+
+/**
+ * GSC Expansion — find cities with Google impressions that need plumber data.
+ *
+ * Pulls page-level GSC data, extracts city/state from URLs, checks Firestore
+ * cities collection, and outputs a list of new cities needing scrapes.
+ *
+ * Usage:
+ *   node scripts/gsc-expansion.js
+ *
+ * Output: data/gsc-expansion-queue.json
+ */
+
+const fs = require("fs");
+const path = require("path");
+const { google } = require("googleapis");
+
+// ---------------------------------------------------------------------------
+// Paths & Config
+// ---------------------------------------------------------------------------
+
+const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
+const OUTPUT_PATH = path.join(__dirname, "..", "data", "gsc-expansion-queue.json");
+
+// US state slugs to abbreviations
+const STATE_SLUG_TO_ABBR = {
+  alabama: "AL", alaska: "AK", arizona: "AZ", arkansas: "AR", california: "CA",
+  colorado: "CO", connecticut: "CT", delaware: "DE", florida: "FL", georgia: "GA",
+  hawaii: "HI", idaho: "ID", illinois: "IL", indiana: "IN", iowa: "IA",
+  kansas: "KS", kentucky: "KY", louisiana: "LA", maine: "ME", maryland: "MD",
+  massachusetts: "MA", michigan: "MI", minnesota: "MN", mississippi: "MS",
+  missouri: "MO", montana: "MT", nebraska: "NE", nevada: "NV",
+  "new-hampshire": "NH", "new-jersey": "NJ", "new-mexico": "NM", "new-york": "NY",
+  "north-carolina": "NC", "north-dakota": "ND", ohio: "OH", oklahoma: "OK",
+  oregon: "OR", pennsylvania: "PA", "rhode-island": "RI", "south-carolina": "SC",
+  "south-dakota": "SD", tennessee: "TN", texas: "TX", utah: "UT", vermont: "VT",
+  virginia: "VA", washington: "WA", "west-virginia": "WV", wisconsin: "WI",
+  wyoming: "WY", "district-of-columbia": "DC",
+};
+
+// ---------------------------------------------------------------------------
+// Load env
+// ---------------------------------------------------------------------------
+
+function loadEnv() {
+  const envPath = path.join(__dirname, "..", ".env.local");
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, "utf-8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const val = trimmed.slice(eqIdx + 1).trim();
+    if (!process.env[key]) process.env[key] = val;
+  }
+}
+
+loadEnv();
+
+const SITE_URL = process.env.GSC_SITE_URL || "https://fastplumbernearme.com/";
+
+// ---------------------------------------------------------------------------
+// Check prerequisites
+// ---------------------------------------------------------------------------
+
+if (!fs.existsSync(SERVICE_ACCOUNT_PATH)) {
+  console.error("ERROR: service-account.json not found.");
+  process.exit(1);
+}
+
+// ---------------------------------------------------------------------------
+// Firebase Admin
+// ---------------------------------------------------------------------------
+
+let admin;
+try {
+  admin = require("firebase-admin");
+} catch {
+  console.error("ERROR: firebase-admin not installed. Run: npm install firebase-admin");
+  process.exit(1);
+}
+
+const serviceAccount = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"));
+if (!admin.apps.length) {
+  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+}
+const db = admin.firestore();
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function slugify(text) {
+  return text.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function deslugify(slug) {
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/**
+ * Parse a city page URL path into { stateSlug, stateAbbr, citySlug, cityName }.
+ * Returns null if the URL doesn't match the expected pattern.
+ */
+function parseCityUrl(url) {
+  // Handle both full URLs and paths
+  const pathStr = url.replace(/https?:\/\/[^/]+/, "").replace(/\/$/, "");
+  const match = pathStr.match(/^\/emergency-plumbers\/([^/]+)\/([^/]+)$/);
+  if (!match) return null;
+
+  const stateSlug = match[1];
+  const citySlug = match[2];
+  const stateAbbr = STATE_SLUG_TO_ABBR[stateSlug];
+  if (!stateAbbr) return null;
+
+  return {
+    stateSlug,
+    stateAbbr,
+    citySlug,
+    cityName: deslugify(citySlug),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+async function main() {
+  console.log("=== GSC Expansion Check ===\n");
+
+  // Authenticate with GSC
+  const keyFile = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"));
+  const auth = new google.auth.GoogleAuth({
+    credentials: keyFile,
+    scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
+  });
+
+  const searchconsole = google.searchconsole({ version: "v1", auth });
+
+  // Date range: last 90 days (GSC keeps 16 months; cast a wide net)
+  const endDate = new Date();
+  const startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 90);
+
+  const startStr = startDate.toISOString().slice(0, 10);
+  const endStr = endDate.toISOString().slice(0, 10);
+
+  console.log(`GSC date range: ${startStr} to ${endStr}`);
+  console.log("Fetching page data...\n");
+
+  const response = await searchconsole.searchanalytics.query({
+    siteUrl: SITE_URL,
+    requestBody: {
+      startDate: startStr,
+      endDate: endStr,
+      dimensions: ["page"],
+      dimensionFilterGroups: [
+        {
+          filters: [
+            {
+              dimension: "page",
+              operator: "contains",
+              expression: "/emergency-plumbers/",
+            },
+          ],
+        },
+      ],
+      rowLimit: 5000,
+      type: "web",
+    },
+  });
+
+  const rows = response.data.rows || [];
+  if (rows.length === 0) {
+    console.log("No GSC data returned for /emergency-plumbers/ pages.");
+    return;
+  }
+
+  console.log(`GSC returned ${rows.length} page URLs\n`);
+
+  // Parse city/state from each URL
+  const gscCities = new Map(); // key: "stateAbbr:citySlug"
+
+  for (const row of rows) {
+    const url = row.keys[0];
+    const parsed = parseCityUrl(url);
+    if (!parsed) continue; // state-level pages or unparseable
+
+    const key = `${parsed.stateAbbr}:${parsed.citySlug}`;
+    const existing = gscCities.get(key);
+    if (existing) {
+      existing.impressions += row.impressions;
+      existing.clicks += row.clicks;
+    } else {
+      gscCities.set(key, {
+        city: parsed.cityName,
+        state: parsed.stateAbbr,
+        citySlug: parsed.citySlug,
+        stateSlug: parsed.stateSlug,
+        impressions: row.impressions,
+        clicks: row.clicks,
+        avgPosition: row.position,
+      });
+    }
+  }
+
+  console.log(`Parsed ${gscCities.size} unique city pages from GSC data\n`);
+
+  // Check Firestore cities collection
+  const citiesSnap = await db.collection("cities").get();
+  const firestoreCities = new Set();
+  for (const doc of citiesSnap.docs) {
+    const data = doc.data();
+    if (data.scraped) {
+      firestoreCities.add(`${data.state}:${slugify(data.city)}`);
+    }
+  }
+
+  console.log(`Firestore cities collection: ${citiesSnap.size} docs (${firestoreCities.size} scraped)\n`);
+
+  // Categorize
+  const alreadyScraped = [];
+  const needsScraping = [];
+
+  for (const [key, data] of gscCities) {
+    if (firestoreCities.has(key)) {
+      alreadyScraped.push(data);
+    } else {
+      needsScraping.push(data);
+    }
+  }
+
+  // Sort new cities by impressions (highest priority first)
+  needsScraping.sort((a, b) => b.impressions - a.impressions);
+
+  // Summary
+  console.log("=== SUMMARY ===");
+  console.log(`  Total city pages in GSC: ${gscCities.size}`);
+  console.log(`  Already scraped:         ${alreadyScraped.length}`);
+  console.log(`  NEW — needs scraping:    ${needsScraping.length}`);
+  console.log("");
+
+  if (needsScraping.length > 0) {
+    console.log("Top cities needing scrapes (by impressions):");
+    console.log("");
+
+    const header = [
+      "City".padEnd(25),
+      "State".padEnd(6),
+      "Impr".padStart(6),
+      "Clicks".padStart(7),
+      "Pos".padStart(6),
+    ].join(" | ");
+    console.log(header);
+    console.log("-".repeat(header.length));
+
+    for (const city of needsScraping.slice(0, 30)) {
+      console.log([
+        city.city.padEnd(25),
+        city.state.padEnd(6),
+        String(city.impressions).padStart(6),
+        String(city.clicks).padStart(7),
+        city.avgPosition.toFixed(1).padStart(6),
+      ].join(" | "));
+    }
+
+    if (needsScraping.length > 30) {
+      console.log(`  ... and ${needsScraping.length - 30} more`);
+    }
+  }
+
+  // Write expansion queue
+  const output = {
+    generatedAt: new Date().toISOString(),
+    dateRange: { start: startStr, end: endStr },
+    totalGscPages: gscCities.size,
+    alreadyScraped: alreadyScraped.length,
+    needsScraping: needsScraping.length,
+    cities: needsScraping.map((c) => ({
+      city: c.city,
+      state: c.state,
+      citySlug: c.citySlug,
+      stateSlug: c.stateSlug,
+      impressions: c.impressions,
+      clicks: c.clicks,
+      avgPosition: parseFloat(c.avgPosition.toFixed(1)),
+      source: "gsc",
+      discoveredAt: new Date().toISOString(),
+    })),
+  };
+
+  fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
+  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(output, null, 2));
+  console.log(`\nExpansion queue written to: ${OUTPUT_PATH}`);
+  console.log(`${needsScraping.length} cities queued for scraping.`);
+}
+
+main().catch((err) => {
+  console.error("GSC Expansion Error:", err.message);
+  if (err.code) console.error("HTTP status:", err.code);
+  process.exit(1);
+});

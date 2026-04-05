@@ -57,7 +57,7 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 
 ---
 
-## Current Status (updated April 4, 2026)
+## Current Status (updated April 5, 2026)
 
 ### What's Built
 
@@ -85,12 +85,20 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - `scripts/synthesize-reviews.ts` — Claude AI (Haiku) synthesis with keyword fallback for <3 reviews (firebase-admin SDK)
 - GitHub Actions daily pipeline fully operational — all 4 phases: scrape → Firestore upload → review refresh → AI synthesis
 - All scripts use firebase-admin SDK with service-account.json (bypasses Firestore security rules)
-- 135+ plumbers scraped across 16+ IL cities, all uploaded to Firestore with AI synthesis
+- 246 plumbers scraped across 27 cities (21 IL + 6 out-of-state: Alameda CA, Nashville TN, Acworth GA, Yukon OK, Aiken SC, Mundelein IL)
 - 100+ reviews cached in Firestore reviews collection via refresh cycle
 - Pipeline activity logged to `pipelineRuns` collection (viewable in admin Activity tab)
 - Budget guard hardened: shared module `scripts/lib/budget-guard.ts`, hard stop at 90%, per-phase allocation (expansion 60%, refresh 30%, reserve 10%)
 - Expansion queue: `scripts/seed-expansion-queue.ts` ready, Firestore-based, priority IL → adjacent states → population
 - API usage tracking in Firestore `apiUsage` collection
+- All IL-only hardcoding removed from pipeline scripts (daily-scrape, upload-to-firestore, seed-from-outscraper)
+
+**GSC Expansion System (in progress):**
+- `scripts/gsc-pull-test.js` — test GSC API access, display 7-day page data
+- `scripts/gsc-expansion.js` — pull GSC data, find cities with impressions but no plumber data, write `data/gsc-expansion-queue.json`
+- `scripts/seed-cities-collection.js` — seed Firestore `cities` collection from synthesized data (run once)
+- `googleapis` npm package installed
+- Blocked on: GSC API enablement + service account GSC permissions (Tim manual steps)
 
 **Review Synthesis:**
 - Claude AI (Haiku) synthesis engine with keyword fallback for plumbers with <3 reviews
@@ -308,7 +316,7 @@ Expand beyond Illinois once revenue model is validated.
 
 ### Geographic Expansion
 - [ ] State by state — adjacent first: WI, IN, IA, MO
-- [ ] Remove all IL-only hardcoding from scripts and data maps
+- [x] Remove all IL-only hardcoding from scripts and data maps — DONE (removed 5 `|| "IL"` fallbacks across 3 scripts)
 - [ ] Automated pipeline: Google Places API → Firestore → city page generation at scale
 - [ ] Scale daily API budget as revenue supports it
 
@@ -403,26 +411,46 @@ Before expanding aggressively or adding new review sources, we need to make sure
 
 4. Outscraper or SerpAPI for additional reviews = Phase 2 (after pipeline is proven and generating revenue)
 
-### Next Up: GSC-Driven Expansion (after pipeline is proven)
+### IN PROGRESS: GSC-Driven Expansion
 
-Google Search Console shows we're already getting impressions on city pages — including out-of-state cities (Aiken SC, Yukon OK, Nashville TN, Acworth GA) where we have zero plumber data. Google is testing our pages and we need to fill them before it moves on.
+Google Search Console shows we're already getting impressions on city pages — including out-of-state cities (Aiken SC, Yukon OK, Nashville TN, Acworth GA, Alameda CA). Google is testing our pages and we need to fill them with real plumber data before it moves on.
 
 **Strategy:** Don't replace the daily IL expansion. Layer GSC intelligence on top of it:
-- Weekly GSC pull: scrape impressions/clicks/position for all /emergency-plumbers/ pages
-- Track every city in Firestore: status (empty/scraped/has_plumbers), plumber count, GSC signals
+- GSC pull: scrape impressions/clicks/position for all /emergency-plumbers/ pages
+- Track every city in Firestore `cities` collection: status (empty/scraped/has_plumbers), plumber count, GSC signals
 - Cities with impressions but no plumber data = highest scrape priority, jump the queue
 - Daily scrape handles GSC-priority cities FIRST, then continues normal geographic expansion with remaining budget
 - Admin dashboard shows city tracking table: impressions, clicks, position, plumber count, status
 
-**Prerequisites (before building):**
-- [ ] Pipeline running autonomously for 2+ weeks with no issues
-- [ ] GSC API enabled on GCP project
-- [ ] Service account added as user in GSC for fastplumbernearme.com
-- [ ] Confirm GSC API works with existing service-account.json
+**Prerequisites:**
+- [ ] GSC API enabled on GCP project (Tim manual — GCP console)
+- [ ] Service account added as user in GSC for fastplumbernearme.com (Tim manual — GSC UI)
+- [ ] Confirm GSC API works with existing service-account.json (run `node scripts/gsc-pull-test.js`)
+- [ ] service-account.json on local dev machine (download from Firebase console)
 
-**Build tasks:**
-- [ ] scripts/gsc-pull.ts — weekly GSC data pull to Firestore
-- [ ] Firestore `cityTracking` collection — one doc per city with status + GSC signals
+**Scripts built:**
+- [x] `scripts/gsc-pull-test.js` — test GSC API access, show 7 days of page data
+- [x] `scripts/gsc-expansion.js` — pull GSC data, find cities with impressions but no plumber data, write expansion queue
+- [x] `scripts/seed-cities-collection.js` — seed Firestore `cities` collection from plumbers-synthesized.json (run once)
+- [x] `googleapis` npm package installed
+
+**Firestore `cities` collection schema:**
+```json
+{
+  "slug": "alameda-ca",
+  "city": "Alameda",
+  "state": "CA",
+  "source": "gsc" | "cron" | "manual",
+  "firstSeenGSC": "2026-04-05" | null,
+  "impressionsAtDiscovery": 12 | null,
+  "scraped": true,
+  "scrapedAt": "2026-04-05T00:00:00Z",
+  "scrapeSource": "google-places",
+  "plumberCount": 12
+}
+```
+
+**Remaining build tasks:**
 - [ ] Daily scrape prepends GSC-priority cities before normal queue
 - [ ] Admin dashboard city tracking table with color-coded status
 - [ ] Weekly GitHub Actions workflow for GSC pull (separate from daily scrape)
@@ -437,9 +465,14 @@ Google Search Console shows we're already getting impressions on city pages — 
 - [ ] Mobile QA pass
 - [ ] Create favicon/icons
 - [ ] Deploy Firestore rules (`firebase deploy --only firestore:rules`)
+- [ ] Download service-account.json to local dev machine (Firebase Console > Project Settings > Service accounts)
+- [ ] Enable Search Console API in GCP (https://console.cloud.google.com/apis/library/searchconsole.googleapis.com?project=fast-plumber-near-me)
+- [ ] Add service account email as user in GSC with Restricted permission
+- [ ] Run `node scripts/gsc-pull-test.js` to verify GSC API access
+- [ ] Run `node scripts/seed-cities-collection.js` to seed Firestore cities collection
 
 ---
 
-*Last updated: April 4, 2026*
+*Last updated: April 5, 2026*
 *Owner: Tim Dodaro*
 *Contact: fastplumbernearme@gmail.com*
