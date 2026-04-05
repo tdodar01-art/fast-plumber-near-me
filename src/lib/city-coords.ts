@@ -235,7 +235,7 @@ const COORDS: Record<string, [number, number]> = {
   "OH:lorain": [41.45, -82.18], "OH:springfield": [39.92, -83.81],
   "OH:dublin": [40.10, -83.11], "OH:westerville": [40.13, -82.93],
   // Oklahoma
-  "OK:oklahoma-city": [35.47, -97.52], "OK:tulsa": [36.15, -95.99],
+  "OK:ardmore": [34.17, -97.13], "OK:oklahoma-city": [35.47, -97.52], "OK:tulsa": [36.15, -95.99],
   "OK:norman": [35.22, -97.44], "OK:broken-arrow": [36.06, -95.79],
   "OK:edmond": [35.65, -97.48], "OK:yukon": [35.51, -97.76], "OK:lawton": [34.61, -98.39],
   "OK:moore": [35.34, -97.49], "OK:enid": [36.40, -97.88],
