@@ -213,26 +213,61 @@ async function main() {
 
   // Check Firestore cities collection
   const citiesSnap = await db.collection("cities").get();
-  const firestoreCities = new Set();
+  const scrapedCities = new Set();
+  const knownCities = new Set(); // all cities in Firestore (scraped or not)
   for (const doc of citiesSnap.docs) {
     const data = doc.data();
+    const cityName = data.city || data.name || "";
+    const state = data.state || "";
+    if (!cityName || !state) continue;
+    const key = `${state}:${slugify(cityName)}`;
+    knownCities.add(key);
     if (data.scraped) {
-      firestoreCities.add(`${data.state}:${slugify(data.city)}`);
+      scrapedCities.add(key);
     }
   }
 
-  console.log(`Firestore cities collection: ${citiesSnap.size} docs (${firestoreCities.size} scraped)\n`);
+  console.log(`Firestore cities collection: ${citiesSnap.size} docs (${scrapedCities.size} scraped)\n`);
 
   // Categorize
   const alreadyScraped = [];
   const needsScraping = [];
 
   for (const [key, data] of gscCities) {
-    if (firestoreCities.has(key)) {
+    if (scrapedCities.has(key)) {
       alreadyScraped.push(data);
     } else {
       needsScraping.push(data);
     }
+  }
+
+  // Create stub docs in cities collection for newly discovered cities
+  const todayStr = new Date().toISOString().slice(0, 10);
+  let stubsCreated = 0;
+  for (const city of needsScraping) {
+    const key = `${city.state}:${city.citySlug}`;
+    if (knownCities.has(key)) continue; // already has a doc (just not scraped yet)
+
+    const docId = `${city.citySlug}-${city.state.toLowerCase()}`;
+    try {
+      await db.collection("cities").doc(docId).set({
+        slug: docId,
+        city: city.city,
+        state: city.state,
+        source: "gsc",
+        firstSeenGSC: todayStr,
+        impressionsAtDiscovery: city.impressions,
+        scraped: false,
+        plumberCount: 0,
+      }, { merge: true });
+      stubsCreated++;
+    } catch (stubErr) {
+      console.error(`  Warning: failed to create stub for ${docId}: ${stubErr.message}`);
+    }
+  }
+
+  if (stubsCreated > 0) {
+    console.log(`Created ${stubsCreated} stub docs in cities collection\n`);
   }
 
   // Sort new cities by impressions (highest priority first)

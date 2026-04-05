@@ -93,12 +93,15 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - API usage tracking in Firestore `apiUsage` collection
 - All IL-only hardcoding removed from pipeline scripts (daily-scrape, upload-to-firestore, seed-from-outscraper)
 
-**GSC Expansion System (in progress):**
-- `scripts/gsc-pull-test.js` — test GSC API access, display 7-day page data
-- `scripts/gsc-expansion.js` — pull GSC data, find cities with impressions but no plumber data, write `data/gsc-expansion-queue.json`
-- `scripts/seed-cities-collection.js` — seed Firestore `cities` collection from synthesized data (run once)
+**GSC Expansion System (operational):**
+- GSC API access verified and working (service account has siteFullUser permission)
+- `scripts/gsc-pull-test.js` — test GSC API access, display 90-day page data
+- `scripts/gsc-expansion.js` — pull GSC data, find cities with impressions but no plumber data, create stub docs in cities collection, write `data/gsc-expansion-queue.json`
+- `scripts/seed-cities-collection.js` — seed Firestore `cities` collection from synthesized data (run once — done, 27 cities seeded)
 - `googleapis` npm package installed
-- Blocked on: GSC API enablement + service account GSC permissions (Tim manual steps)
+- `daily-scrape.js` auto-updates Firestore `cities` collection after each successful scrape (non-blocking)
+- Firestore `cities` collection: 2257 docs total, 28 scraped, single source of truth for city tracking
+- First GSC-driven scrape completed: Ardmore, OK (found via impressions, scraped, live)
 
 **Review Synthesis:**
 - Claude AI (Haiku) synthesis engine with keyword fallback for plumbers with <3 reviews

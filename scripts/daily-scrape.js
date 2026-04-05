@@ -97,6 +97,23 @@ function slugify(text) {
   return text.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+// Lazy Firestore access — returns db or null if unavailable
+let _firestoreDb = null;
+function getFirestoreDb() {
+  if (_firestoreDb) return _firestoreDb;
+  const saPath = path.join(__dirname, "..", "service-account.json");
+  if (!fs.existsSync(saPath)) return null;
+  try {
+    const admin = require("firebase-admin");
+    if (!admin.apps.length) {
+      const sa = JSON.parse(fs.readFileSync(saPath, "utf-8"));
+      admin.initializeApp({ credential: admin.credential.cert(sa) });
+    }
+    _firestoreDb = admin.firestore();
+    return _firestoreDb;
+  } catch { return null; }
+}
+
 function formatPhone(raw) {
   if (!raw) return "";
   const digits = raw.replace(/\D/g, "");
@@ -447,6 +464,28 @@ async function main() {
       });
 
       citiesProcessed.push({ city: cityName, newPlumbers: cityNew, calls: callsUsed });
+
+      // Update cities collection (non-blocking)
+      try {
+        const db = getFirestoreDb();
+        if (db) {
+          const citySlug = `${slugify(cityName)}-${cityState.toLowerCase()}`;
+          const source = cityEntry.source === "gsc" ? "gsc" : (cityState === "IL" ? "cron" : "manual");
+          await db.collection("cities").doc(citySlug).set({
+            slug: citySlug,
+            city: cityName,
+            state: cityState,
+            source,
+            scraped: true,
+            scrapedAt: new Date().toISOString(),
+            scrapeSource: "google-places",
+            plumberCount: cityNew,
+          }, { merge: true });
+          log(`  Updated cities/${citySlug} in Firestore`);
+        }
+      } catch (cityErr) {
+        log(`  Warning: failed to update cities collection: ${cityErr.message}`);
+      }
     } catch (err) {
       log(`  FAILED: ${err.message}`);
       const queueEntry = queue.queue.find((c) => c.city === cityName && c.status === "pending");
@@ -600,22 +639,10 @@ async function main() {
 // ---------------------------------------------------------------------------
 
 async function logPipelineRun(result, error) {
-  const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
-  if (!fs.existsSync(SERVICE_ACCOUNT_PATH)) return;
+  const db = getFirestoreDb();
+  if (!db) return;
 
-  let admin;
-  try {
-    admin = require("firebase-admin");
-  } catch {
-    return; // firebase-admin not installed locally
-  }
-
-  if (!admin.apps.length) {
-    const serviceAccount = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"));
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-  }
-
-  const db = admin.firestore();
+  const admin = require("firebase-admin");
   const endTime = new Date();
 
   try {
