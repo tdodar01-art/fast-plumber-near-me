@@ -259,14 +259,31 @@ function generateRedFlagsPost(city, state, plumbers) {
 }
 
 // ---------------------------------------------------------------------------
+// Firebase (optional — for pipelineRuns logging)
+// ---------------------------------------------------------------------------
+
+const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
+
+function getDb() {
+  try {
+    if (!fs.existsSync(SERVICE_ACCOUNT_PATH)) return null;
+    const admin = require("firebase-admin");
+    const sa = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"));
+    if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.cert(sa) });
+    return admin.firestore();
+  } catch { return null; }
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
   const cityFilter = args.includes("--city") ? args[args.indexOf("--city") + 1] : null;
   const minPlumbers = args.includes("--min-plumbers") ? parseInt(args[args.indexOf("--min-plumbers") + 1]) : 3;
+  const startedAt = new Date();
 
   console.log("=== Blog Post Generator ===\n");
   if (dryRun) console.log("[DRY RUN]\n");
@@ -292,6 +309,7 @@ function main() {
   let totalPosts = 0;
   let totalCities = 0;
   const postsByType = { rankings: 0, service: 0, "red-flags": 0 };
+  const postSlugs = [];
 
   for (const [key, plumbers] of cityMap) {
     const [city, state] = key.split("|");
@@ -336,7 +354,10 @@ function main() {
 
     if (cityPosts.length > 0) {
       console.log(`${city}, ${state}: ${cityPosts.length} posts`);
-      cityPosts.forEach((p) => console.log(`  - ${p.type}: ${p.slug}`));
+      cityPosts.forEach((p) => {
+        console.log(`  - ${p.type}: ${p.slug}`);
+        postSlugs.push(p.slug);
+      });
     }
 
     // Write posts
@@ -348,6 +369,8 @@ function main() {
     }
   }
 
+  const elapsed = Math.round((Date.now() - startedAt.getTime()) / 1000);
+
   console.log(`\n${"=".repeat(50)}`);
   console.log(`📊 Summary:`);
   console.log(`  Cities: ${totalCities}`);
@@ -355,10 +378,40 @@ function main() {
   console.log(`    Rankings: ${postsByType.rankings}`);
   console.log(`    Service-specific: ${postsByType.service}`);
   console.log(`    Red flags: ${postsByType["red-flags"]}`);
+  console.log(`  Duration: ${elapsed}s`);
 
   if (!dryRun && totalPosts > 0) {
     console.log(`\nPosts written to: ${OUTPUT_DIR}`);
   }
+
+  // Log to pipelineRuns
+  if (!dryRun) {
+    try {
+      const db = getDb();
+      if (db) {
+        const admin = require("firebase-admin");
+        await db.collection("pipelineRuns").add({
+          script: "generate-blog",
+          startedAt: admin.firestore.Timestamp.fromDate(startedAt),
+          completedAt: admin.firestore.Timestamp.now(),
+          durationSeconds: elapsed,
+          status: "success",
+          summary: {
+            totalPosts,
+            cities: totalCities,
+            rankings: postsByType.rankings,
+            service: postsByType.service,
+            redFlags: postsByType["red-flags"],
+            postSlugs: postSlugs.slice(0, 50), // cap to avoid huge docs
+          },
+          triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+        });
+      }
+    } catch { /* non-fatal */ }
+  }
 }
 
-main();
+main().catch((err) => {
+  console.error("Fatal error:", err);
+  process.exit(1);
+});

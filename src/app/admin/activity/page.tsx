@@ -56,6 +56,8 @@ const scriptLabels: Record<string, { label: string; color: string }> = {
   "outscraper-reviews": { label: "outscraper-reviews", color: "bg-pink-100 text-pink-700" },
   "bbb-lookup": { label: "bbb-lookup", color: "bg-yellow-100 text-yellow-700" },
   "export-json": { label: "export-json", color: "bg-teal-100 text-teal-700" },
+  "generate-blog": { label: "generate-blog", color: "bg-indigo-100 text-indigo-700" },
+  "resynthesize-emergency": { label: "resynthesize", color: "bg-lime-100 text-lime-700" },
 };
 
 function getRunSummaryLine(run: PipelineRun): string {
@@ -109,6 +111,20 @@ function getRunSummaryLine(run: PipelineRun): string {
     if (s.plumbersAdded != null && (s.plumbersAdded as number) > 0) parts.push(`Added: ${s.plumbersAdded}`);
     if (s.pushed != null) parts.push(s.pushed ? "Pushed" : "Local only");
     if (s.citiesAffected) parts.push(`${(s.citiesAffected as string[]).length} cities`);
+  } else if (run.script === "generate-blog") {
+    if (s.totalPosts != null) parts.push(`Posts: ${s.totalPosts}`);
+    if (s.rankings != null) parts.push(`Rankings: ${s.rankings}`);
+    if (s.service != null) parts.push(`Service: ${s.service}`);
+    if (s.redFlags != null) parts.push(`Red flags: ${s.redFlags}`);
+    if (s.cities != null) parts.push(`Cities: ${s.cities}`);
+  } else if (run.script === "resynthesize-emergency") {
+    if (s.synthesized != null) parts.push(`Synthesized: ${s.synthesized}`);
+    if (s.before) parts.push(`Before: ${(s.before as Record<string, number>).unknown || 0} unknown`);
+    if (s.after) {
+      const a = s.after as Record<string, number>;
+      parts.push(`After: ${a.high || 0} high, ${a.medium || 0} med, ${a.unknown || 0} unk`);
+    }
+    if (s.failed != null && (s.failed as number) > 0) parts.push(`Failed: ${s.failed}`);
   }
 
   return parts.join(" · ") || "No details";
