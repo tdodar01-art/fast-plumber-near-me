@@ -1,8 +1,53 @@
 {
   "monthlyBudget": 1000,
-  "usedThisMonth": 289,
+  "usedThisMonth": 305,
   "currentMonth": "2026-04",
   "queue": [
+    {
+      "city": "Edmond",
+      "state": "OK",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Duncan",
+      "state": "OK",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Worcester",
+      "state": "MA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Abilene",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Aberdeen",
+      "state": "MD",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
     {
       "city": "Waukegan",
       "state": "IL",
@@ -1054,6 +1099,16 @@
       "actualCalls": 10,
       "plumbersFound": 9,
       "completedAt": "2026-04-05"
+    },
+    {
+      "city": "Bethesda",
+      "state": "MD",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 16,
+      "plumbersFound": 15,
+      "completedAt": "2026-04-06"
     }
   ]
 }

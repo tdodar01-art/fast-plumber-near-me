@@ -1,11 +1,78 @@
 {
-  "generatedAt": "2026-04-05T19:27:50.323Z",
+  "generatedAt": "2026-04-06T11:50:30.366Z",
   "dateRange": {
-    "start": "2026-01-05",
-    "end": "2026-04-05"
+    "start": "2026-01-06",
+    "end": "2026-04-06"
   },
-  "totalGscPages": 5,
-  "alreadyScraped": 5,
-  "needsScraping": 0,
-  "cities": []
+  "totalGscPages": 12,
+  "alreadyScraped": 6,
+  "needsScraping": 6,
+  "cities": [
+    {
+      "city": "Aberdeen",
+      "state": "MD",
+      "citySlug": "aberdeen",
+      "stateSlug": "maryland",
+      "impressions": 23,
+      "clicks": 0,
+      "avgPosition": 10.5,
+      "source": "gsc",
+      "discoveredAt": "2026-04-06T11:50:30.366Z"
+    },
+    {
+      "city": "Abilene",
+      "state": "TX",
+      "citySlug": "abilene",
+      "stateSlug": "texas",
+      "impressions": 12,
+      "clicks": 0,
+      "avgPosition": 44.8,
+      "source": "gsc",
+      "discoveredAt": "2026-04-06T11:50:30.366Z"
+    },
+    {
+      "city": "Worcester",
+      "state": "MA",
+      "citySlug": "worcester",
+      "stateSlug": "massachusetts",
+      "impressions": 3,
+      "clicks": 0,
+      "avgPosition": 13,
+      "source": "gsc",
+      "discoveredAt": "2026-04-06T11:50:30.366Z"
+    },
+    {
+      "city": "Duncan",
+      "state": "OK",
+      "citySlug": "duncan",
+      "stateSlug": "oklahoma",
+      "impressions": 2,
+      "clicks": 0,
+      "avgPosition": 20.5,
+      "source": "gsc",
+      "discoveredAt": "2026-04-06T11:50:30.366Z"
+    },
+    {
+      "city": "Edmond",
+      "state": "OK",
+      "citySlug": "edmond",
+      "stateSlug": "oklahoma",
+      "impressions": 2,
+      "clicks": 0,
+      "avgPosition": 16,
+      "source": "gsc",
+      "discoveredAt": "2026-04-06T11:50:30.366Z"
+    },
+    {
+      "city": "Bethesda",
+      "state": "MD",
+      "citySlug": "bethesda",
+      "stateSlug": "maryland",
+      "impressions": 1,
+      "clicks": 0,
+      "avgPosition": 86,
+      "source": "gsc",
+      "discoveredAt": "2026-04-06T11:50:30.366Z"
+    }
+  ]
 }

@@ -1,10 +1,10 @@
 {
   "meta": {
-    "scrapedAt": "2026-04-05T19:15:50.958Z",
-    "totalPlumbers": 255,
-    "citiesScraped": 29,
-    "synthesizedAt": "2026-04-05T19:16:37.825Z",
-    "totalSynthesized": 253,
+    "scrapedAt": "2026-04-06T11:50:39.532Z",
+    "totalPlumbers": 270,
+    "citiesScraped": 30,
+    "synthesizedAt": "2026-04-06T11:52:18.218Z",
+    "totalSynthesized": 268,
     "model": "claude-sonnet-4-20250514"
   },
   "plumbers": [
@@ -203,6 +203,103 @@
         "redFlags": [],
         "priceSignal": "mid-range",
         "topQuote": "The customer service reps, available by phone or text, are polite and effective. They even called back to offer us earlier availability so we could get our AC on faster.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJD0WcYlDPt4kRMjKs9E0TmwM",
+      "name": "Len The Plumber Heating & Air, LLC",
+      "slug": "len-the-plumber-heating-air-llc",
+      "phone": "(704) 275-5185",
+      "website": "https://lentheplumber.com/washington-dc-area/?utm_source=google&utm_medium=organic&utm_campaign=GMBListing-Silver-Spring-MD",
+      "address": "550 Forest Glen Rd, Four Corners, MD 20901, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.0163995,
+        "lng": -77.0190197
+      },
+      "googleRating": 4.6,
+      "googleReviewCount": 8349,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Isbel Alba",
+          "rating": 5,
+          "text": "Last Saturday, I finally contacted Len the Plumber because my thermostat needed checking. They immediately dispatched a technician, Mr. H. He diligently identified the root of the problem and fixed it. Before leaving, he answered all my questions and explained the options I had for protecting my HVAC system. I'm so glad I can count on this amazing company whenever I need help. They never disappoint.",
+          "time": "2026-03-02T01:32:20.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Nicole McFarland",
+          "rating": 5,
+          "text": "I had a great experience with Len the Plumber and Sadou Aboubakar. My first time using them as I had an emergency on the weekend. Got my water heater replaced in only 2 days (it could have been 1, but the one I needed wasn’t in stock). The second day it snowed 4 inches and they still came to do all the work, and pushed the hot water heater through 4 inches of snow into the house. Mr. Aboubakar was honest, personable, knowledgeable, and offered me a first responder discount.",
+          "time": "2026-02-27T17:08:11.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "DJ Gino Wilson",
+          "rating": 5,
+          "text": "Aaron, Len The Plumber technician arrived on time and gave my HVAC system a thorough inspection. Aaron demonstrated his superior skills in checking out my HVAC system and even corrected some issues which were left by a different company. Aaron discussed ways to keep the system functioning efficiently and explained that if I added power surge protectors I could prevent damage to the unit’s electrical components. I felt very confident in the expertise demonstrated by Aaron and consider him to be an asset to the Len The Plumber company.",
+          "time": "2026-02-27T21:05:09.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "M Cole",
+          "rating": 5,
+          "text": "Kemar Lewis, the dispatcher technician, led with professionalism. He explained the solution in detail and he even saved me some money and time by finding an alternate route to access the plumbing pipes without having to tear apart my bathroom\ntile. His service, mannerisms, and workmanship were excellent.",
+          "time": "2026-03-04T19:02:24.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Manuella Hancock",
+          "rating": 5,
+          "text": "We have had a couple plumbing issues, and both were handled by some great guys at Len the Plumber. Shout out to Manual for replacing our hot water heater promptly and professionally and responding to insurance adjuster calls as well.\nWe had another water issue - an unknown leak. Yves came out and figured out the problem in about 1 minute. He was so cordial and professional. He fixed the pipe, taking pictures and keeping us in the loop the entire time. He was tidy, quick and the fix looks and works well. We are so happy with his service and we would ask for him by name whenever we need a plumber again.",
+          "time": "2025-12-11T21:01:15.000Z",
+          "relativeTime": "3 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:35.361Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "Len The Plumber consistently delivers professional emergency service with knowledgeable technicians who explain problems clearly and work in all weather conditions. Multiple customers praise their quick response times, honest pricing, and thorough workmanship for both plumbing and HVAC issues.",
+        "strengths": [
+          "Excellent emergency weekend response",
+          "Knowledgeable technicians who explain issues clearly",
+          "Work in adverse weather conditions",
+          "Honest pricing with money-saving alternatives"
+        ],
+        "weaknesses": [
+          "Occasional equipment availability delays"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "water heater replacement",
+          "HVAC system repairs"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "Got my water heater replaced in only 2 days (it could have been 1, but the one I needed wasn't in stock). The second day it snowed 4 inches and they still came to do all the work, and pushed the hot water heater through 4 inches of snow into the house.",
         "worstQuote": null
       }
     },
@@ -1389,6 +1486,109 @@
       }
     },
     {
+      "placeId": "ChIJvdTBkQe2t4kRDRiVTLVfazA",
+      "name": "Roto-Rooter Plumbing & Water Cleanup",
+      "slug": "roto-rooter-plumbing-water-cleanup",
+      "phone": "(202) 921-9873",
+      "website": "https://www.rotorooter.com/washingtondc/?utm_source=Google&utm_medium=organic&utm_campaign=gmb&utm_content=website",
+      "address": "5125 MacArthur Blvd NW Ste 13, Washington, DC 20016, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 38.92565039999999,
+        "lng": -77.1017414
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 2754,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Joan Knight",
+          "rating": 5,
+          "text": "My mother experienced sudden flooding in her lower level bathroom. We were able to shut off the main water valve. We contacted Roto-Rooter and within an hour, Oleg B, field supervisor was on  site To inspect the issue. He was able to quickly make an assessment, contact a plumber, who arrived within the hour. In the meantime, he was reassuring professional, and answered all of our questions and filing a claim with our insurance company for the remediation as it was determined, the backup was from the main water/sewer line. Both Oleg and the Plumber were very professional, courteous and knowledgeable. Within a couple of hours, the initial job was complete completed, and water was restored. Oleg also said he would work with us providing pertinent and technical information to the insurance company claim. He provided his contact information and followed up with us through out the afternoon and evening.",
+          "time": "2025-12-13T22:07:18.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Mwende Simms",
+          "rating": 5,
+          "text": "The plumber, Aung, came out for an emergency repair and was able to get a temporary fix completed while awaiting a needed part. He came back the following morning to complete the repair. He identified an issue with the outside pipe and quickly fixed that as well. Both times he came out he clearly communicated the issues, needed repairs, and cost and completed them swiftly. I don't often choose to go with franchise companies because their quality of work may vary and costs may be inflated, however I was extremely pleased with the responsiveness, affordability, and quality of the work that was completed. I would not hesitate from contacting the Roto Rooter again for any plumbing needs based on our experience.",
+          "time": "2026-02-16T23:10:45.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Denise Thomson",
+          "rating": 4,
+          "text": "Jerry was great. He gave us excellent customer service and made sure everything was done right.\n\nMarc and Tyrell were both awesome. They spent so much time triaging and trying to confirm where the problem stemmed from.\n\nOne thing I learned about Roto-Rooter is that they will over charge you for everything. It stinks because most of the time plumbing issues don't lend themselves to price shopping.",
+          "time": "2026-03-04T01:19:36.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "bianca washington",
+          "rating": 5,
+          "text": "Viente was absolutely wonderful! From the moment he arrived, his patience and professionalism were evident, making the entire process seamless and stress-free. He took the time to explain every step of the plumbing repairs he was undertaking, ensuring I understood the issues and the solutions. I was thoroughly impressed with the quality of his work; he not only fixed the clog but also provided valuable advice on how to maintain the system moving forward. His attention to detail and commitment to customer satisfaction truly set him apart. Without a doubt, he is one of the best plumbers we have ever had.",
+          "time": "2025-11-08T03:12:15.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Antwon Cooper",
+          "rating": 1,
+          "text": "My experience with Roto‑Rooter was extremely disappointing. I expected a professional, efficient service, but instead I encountered poor communication and a lack of follow‑through. Despite multiple assurances, no work was completed, and I was left with the same unresolved issue and no clear guidance on next steps. The technician, Israel, repeatedly came up with excuses not to perform the job. He claimed my bathroom space was too small, his equipment was too large, and then quoted an outrageous price that didn’t match the situation. On top of that, he tried to convince me that the storm drain in the street was actually my plumbing line and that I needed to call DC Water to fix the issue — something that was completely inaccurate and unhelpful. What made the situation even more frustrating was the lack of accountability afterward. Follow‑up support was minimal, and I felt dismissed rather than assisted. Based on my experience, I cannot recommend Roto‑Rooter and would encourage others to explore more reliable options.",
+          "time": "2026-01-28T05:32:33.000Z",
+          "relativeTime": "2 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:37.705Z",
+      "synthesis": {
+        "score": 78,
+        "trustLevel": "moderate",
+        "summary": "Roto-Rooter Bethesda shows strong emergency response capabilities with professional technicians who communicate well and provide detailed explanations. However, pricing concerns and occasional service failures suggest getting quotes upfront and ensuring clear agreements before work begins.",
+        "strengths": [
+          "Excellent emergency response time (within 1 hour)",
+          "Professional, knowledgeable technicians",
+          "Clear communication and detailed explanations",
+          "Insurance claim assistance available"
+        ],
+        "weaknesses": [
+          "Higher pricing than competitors",
+          "Inconsistent service quality between technicians",
+          "Potential for incomplete work or excuses"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "flood cleanup",
+          "drain clearing"
+        ],
+        "redFlags": [
+          "One technician provided completely inaccurate information about municipal vs private plumbing responsibility",
+          "Customer reported no work completed despite multiple visits and assurances"
+        ],
+        "priceSignal": "premium",
+        "topQuote": "Within an hour, Oleg B, field supervisor was on site To inspect the issue. He was able to quickly make an assessment, contact a plumber, who arrived within the hour. In the meantime, he was reassuring professional, and answered all of our questions and filing a claim with our insurance company for the remediation",
+        "worstQuote": "Despite multiple assurances, no work was completed, and I was left with the same unresolved issue and no clear guidance on next steps. The technician, Israel, repeatedly came up with excuses not to perform the job."
+      }
+    },
+    {
       "placeId": "ChIJzflJx16Bj4AR33nAw7qGBLo",
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "slug": "roto-rooter-plumbing-water-cleanup",
@@ -1678,6 +1878,103 @@
         "redFlags": [],
         "priceSignal": "mid-range",
         "topQuote": "Even more impressive, during a historic weather outage — when many companies add 'emergency' surcharges — their pricing was fair and honest, coming in almost a third lower than another major bid.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJ6wsImW7Tt4kRk2JWcswV7KY",
+      "name": "Mallick Plumbing & Heating, Inc.",
+      "slug": "mallick-plumbing-heating-inc",
+      "phone": "(301) 804-6759",
+      "website": "https://www.mallickplumbing.com/?utm_source=google&utm_medium=GMB&utm_campaign=gaithersburg",
+      "address": "7620 Rickenbacker Dr Suite L, Gaithersburg, MD 20879, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.1733268,
+        "lng": -77.1592783
+      },
+      "googleRating": 4.9,
+      "googleReviewCount": 2143,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Andy Rayno",
+          "rating": 5,
+          "text": "We were very fortunate to discover Mallick Plumbing and Heating when it came time to replace our 75‑gallon water heater. They immediately answered the phone and addressed all of our questions about the replacement.\n\nRob promptly came to our home, treated our space with respect, and thoroughly discussed the options for our unit replacement. When Rob and his assistant arrived with the new equipment, they were extremely careful with our surroundings during both removal and installation. They used new white floor tarps to protect our home and performed an exceptionally precise and neat installation.\n\nRob even added a drip pan and plumbed everything flawlessly. We are looking forward to continued service over the years with Mallick Plumbing and Heating!",
+          "time": "2025-12-06T16:06:07.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Annette Pataki",
+          "rating": 5,
+          "text": "Abbas.. and Koli came to hookup the gas for my new cooktop.  Both very friendly and professional. They both knew what they were doing. I greatly appreciated they took the initiative to reach out to the ApplianceLand installer asking exactly what was needed to hookup the cooktop because the wall oven needed to be reinstalled under the cooktop. They kept me informed of the steps that they would be performing for the hookup.   I will definitely call Mallick for future work.  Thank you for an excellent job done.  Annette P.",
+          "time": "2026-02-16T15:41:08.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "O",
+          "rating": 5,
+          "text": "Eric (The Big E) and Mark (Mighty Mark)  both did an excellent job between the both of them replacing about 20 ft of pipe and fittings.  They fixed a pin hole leak and heavily corroded pipes.  Very thorough, professional, trustworthy and personable.   We were blessed to have Eric show up early and his cohort show up to help out as well.",
+          "time": "2025-12-17T19:53:57.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Francisco",
+          "rating": 5,
+          "text": "Roberto Buendia from Mallick Plumbing & Heating were phenomenal. Truly, a pleasure to see the passion Roberto has for the trade of plumbing. Very thorough, passionate, and professional. Extremely professional. Do not hesitate to call and ask for Roberto. He came in and fixed everything within the hour they originally quoted me. I will gladly work with them in the future if I ever need their help again. He also did the complementary check of my water heater and pressure.",
+          "time": "2026-03-05T18:55:08.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Amad Jones",
+          "rating": 5,
+          "text": "EXTREMELY SATISFIED WITH MY WATER SOFTENER SYSTEM\n\nOn 10/6/25, Mallick Plumbing & Heating, Inc. installed our new water softener, and we couldn’t be happier with the entire experience. From start to finish, their team was professional, punctual, and extremely knowledgeable. They took the time to explain everything clearly and made sure the installation was done cleanly and efficiently.\n\nOur plumber, Frederick Mason, was absolutely excellent. He was professional, courteous, and clearly takes pride in his work. He answered all of our questions, made sure everything was set up perfectly, and left the area spotless when he was finished.\n\nThe results have been amazing. My wife absolutely loves the difference in our water; she immediately noticed how much better it smells and tastes. Even better, she says her hair feels noticeably softer, and both of us have seen a big improvement in how soft and smooth our skin feels. It’s honestly been a game-changer for our home.\n\nNow, five months later, we are still extremely satisfied with our purchase. The system has been working flawlessly, and it has truly been money well spent. If you’re considering a water softener, I highly recommend Mallick Plumbing & Heating, Inc. Outstanding service, quality work, and real results. Five stars all the way!\n\nA. Jones",
+          "time": "2026-02-14T21:44:59.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:00 AM – 5:00 PM",
+        "Tuesday: 7:00 AM – 5:00 PM",
+        "Wednesday: 7:00 AM – 5:00 PM",
+        "Thursday: 7:00 AM – 5:00 PM",
+        "Friday: 7:00 AM – 5:00 PM",
+        "Saturday: Closed",
+        "Sunday: Closed"
+      ],
+      "scrapedAt": "2026-04-06T11:50:33.445Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Mallick Plumbing & Heating demonstrates exceptional professionalism and craftsmanship with immediate phone response and meticulous work quality. Their technicians are highly skilled, respectful of customers' homes, and provide thorough explanations of their work.",
+        "strengths": [
+          "Immediate phone response and excellent communication",
+          "Highly professional and knowledgeable technicians",
+          "Meticulous work quality with attention to protecting customer property",
+          "Strong follow-up service and customer satisfaction"
+        ],
+        "weaknesses": [
+          "Unknown 24-hour emergency availability",
+          "Limited sample of emergency response scenarios"
+        ],
+        "bestFor": [
+          "water heater replacement",
+          "gas line work",
+          "pipe repairs and replacements"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "They immediately answered the phone and addressed all of our questions about the replacement. Rob promptly came to our home, treated our space with respect, and thoroughly discussed the options for our unit replacement.",
         "worstQuote": null
       }
     },
@@ -2473,6 +2770,103 @@
       }
     },
     {
+      "placeId": "ChIJAQAwq3PHt4kRSRt7ceUQIkk",
+      "name": "Brian B. Quick Plumbing",
+      "slug": "brian-b-quick-plumbing",
+      "phone": "(240) 414-4687",
+      "website": "https://brianbquick.com/?utm_source=google&utm_medium=gbp-bel",
+      "address": "10739 Tucker St Suite 100-B, Beltsville, MD 20705, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.02599840000001,
+        "lng": -76.9083121
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 1497,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Kia Banks",
+          "rating": 5,
+          "text": "I ordered a new washer and dryer but couldn’t have them installed because the existing shut-off valves were corroded. Pierre came out to assess the situation and provided several options with clear pricing. He arrived on time, was professional, and extremely knowledgeable. He took the time to explain everything in detail—what he was doing, the updated plumbing codes, why larger commercial companies often charge much more, and why emergency services are usually scheduled on weekends.\n\nBy the time he left, I felt completely confident in the work and the service provided. Pierre installed new shut-off valves so the water to the entire home no longer needs to be turned off, and he properly secured the drainage pipe to the wall, including fixing issues hidden behind the drywall that hadn’t been secured by the previous homeowner.\n\nHe was also able to install both my washer and dryer, and they are running perfectly. He even followed up the next day to make sure everything was working smoothly. Sorry it took me so long to write this review—but the service was absolutely worth it.",
+          "time": "2026-01-03T00:36:08.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Damien Begley",
+          "rating": 5,
+          "text": "We could not be happier or more impressed with Brian B Quick and in particular their technician/plumber Jimmy Stewart. We were in a real jam on a Saturday. We called Brian B. Quick and much to our amazement they were able to provide service that day. When their technician Jimmy arrived, he gave us the news as to what needed to be done, and an estimate. He wasnt able to get to us until around 3 p.m. because he was at another job. As it turned out he had to a larger job and the thoughts were he would have to come back the following week especially because it was Labor Day weekend. But no he said I can start now. We followed him over to the home depot picked out the shower hardware with his guidance and he went to work not finishing until around 9:00. He had to work in really tight quarters to do the job and minimize later repairs. He was able to do it and while it would have been perfectly understandable for him to call it a day at any point and return later to finish the job; he stuck to it doing a fantastic job, demonstrating the work showing us all the details and providing follow up information should we need it. Could not be more pleased or impressed with the experience.",
+          "time": "2025-09-02T15:43:38.000Z",
+          "relativeTime": "7 months ago"
+        },
+        {
+          "author": "Gloria C",
+          "rating": 5,
+          "text": "This is our second time calling on Brian B. Quick Plumbing for repairs in our home. In both instances, the service far exceeded expectations - prompt, courteous, professional, experienced, efficient. Today, Dan was the technician sent to our home to install a faucet in our backyard. Everything about the experience was exceptional. Dan quickly assessed the layout and condition of our piping, and offered several recommendations for installation. A very reasonable price estimate was provided, to which we agreed in the same visit. After a quick trip to obtain the needed supplies, Dan returned and completed the work in very short order.  Dan explained exactly what he did and the steps we should take to maintain the faucet in cold weather. We are very satisfied with the service and results we have received from Brian B. Quick Plumbing and will continue to call on them for any future needs.",
+          "time": "2025-10-07T20:56:29.000Z",
+          "relativeTime": "6 months ago"
+        },
+        {
+          "author": "Dina Nawas",
+          "rating": 5,
+          "text": "I had a great experience with Dion from Brian B Quick Plumbing. His communication was excellent—he gave a 40-minute heads-up before arriving and provided clear, regular text updates throughout the job since I wasn’t onsite. He quickly diagnosed an issue with the garbage disposal, clearly walked me through my options, and was very honest—after unjamming it, he did not push an unnecessary drain cleaning. He even sent a video confirming everything was fixed. Dion also investigated a suspected leak affecting the unit below, coordinated thoughtfully with all parties, and once he confirmed the issue was isolated to the lower unit, he promptly sourced materials and completed the repair. Professional, transparent, and thorough. I highly recommend Brian B Quick Plumbing—and especially Dion.",
+          "time": "2026-01-19T17:50:14.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Charmeda McCready",
+          "rating": 5,
+          "text": "This company was great. My tech Patrick came in and knocked it out in less than 30 minutes. Professional, polite, and knowledgeable. It’s hard to find qualified, trustworthy, experienced people. I’m grateful and thankful for the help.\n\nMy drain was blocked and now it works! I also appreciate not being taken advantage of as a female!\n\nThank you. I highly recommend this company and technician.",
+          "time": "2026-02-16T15:06:17.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:38.624Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Brian B Quick Plumbing demonstrates exceptional reliability and professionalism, with technicians consistently going above and beyond for customers, including weekend and emergency service. Multiple reviews highlight their honest pricing, thorough explanations, and willingness to work long hours to complete jobs the same day.",
+        "strengths": [
+          "Excellent weekend/emergency availability",
+          "Honest pricing without unnecessary upselling",
+          "Technicians work until job completion",
+          "Clear communication and follow-up"
+        ],
+        "weaknesses": [
+          "May arrive later in day due to other jobs"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "weekend service calls",
+          "complex installations"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "he stuck to it doing a fantastic job, demonstrating the work showing us all the details and providing follow-up information should we need it. Could not be more pleased or impressed with the experience.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJ3awIQ1U_ZIgRsG85BlMaL20",
       "name": "Busy Bee Plumbing, Heating, & Air Conditioning",
       "slug": "busy-bee-plumbing-heating-air-conditioning",
@@ -2768,6 +3162,105 @@
         "priceSignal": "premium",
         "topQuote": "You will not be ripped off, scammed, or taken to the bank. I've used Matt multiple times to fix other plumbers expensive, mess. Don't think twice.",
         "worstQuote": "It was pricy but in line with other quotes we received"
+      }
+    },
+    {
+      "placeId": "ChIJca6VBIPJt4kRMhbwaobwKbM",
+      "name": "Roto-Rooter Plumbing & Water Cleanup",
+      "slug": "roto-rooter-plumbing-water-cleanup",
+      "phone": "(301) 235-9817",
+      "website": "https://www.rotorooter.com/bethesdamd/?utm_source=Google&utm_medium=organic&utm_campaign=gmb&utm_content=website",
+      "address": "4641 Montgomery Ave Ste 518, Bethesda, MD 20814, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 38.9840879,
+        "lng": -77.0932256
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 1258,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest",
+        "store"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Benito Gomez",
+          "rating": 5,
+          "text": "Hosea was the plumber that replaced my water heater. He was really professional, transparent and honest about the work that needed to be done.\nHe was really generous with the pricing of the service that he performed and communicated everything with me clearly. Hosea definitely went above and beyond with his service in a timely manner.\nExcellent service that far surpassed my expectations Roto Rooter plumbing will be my go-to shop now going forward for all my plumbing needs.Thank you for your expertise and service Hosea and Roto Rooter🔧 😁",
+          "time": "2026-01-05T01:26:49.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Gene McCloskey",
+          "rating": 5,
+          "text": "They were very quick to respond and assess the situation.  When a part needed to be special ordered Eric was very communicative and explained why and what costs would be involved.  The work was done quickly and done well.  I will definitely insist on having Eric do future work on my house.",
+          "time": "2026-02-27T21:00:38.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Tam Nonea",
+          "rating": 5,
+          "text": "Roto-Rooter was able to assist in a timely manner with an unfortunate plumbing issue I had as a new homeowner. The folks that helped resolve the issue(s) are very informative and weren’t pressuring to make a quick decision/sale. I was always informed of what was happening prior to and no actions were done without my agreeance. Special shout out to Raven, she did her thang replacing a cracked drainage pipe that was nearly 7ft long!!",
+          "time": "2026-03-05T03:11:12.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Tim Furbee",
+          "rating": 5,
+          "text": "Thank you to Roto-Rooter and their plumber Raven. They were fast, polite and got completed the replacement of our main water shutoff did valve in a total of 4 hours. That include the initial call, dispatching a tech and completing the job. 5/5 will recommend in the future. Raven was also a 5/5 I will for sure request her again.",
+          "time": "2026-03-07T20:40:20.000Z",
+          "relativeTime": "4 weeks ago"
+        },
+        {
+          "author": "Cecile Djoumessi",
+          "rating": 5,
+          "text": "I would like to sincerely thank Kyle Wesley, Williams and Hannah from Roto-Rooter Restoration Services for their outstanding support during my water damage restoration process.\nFrom the very beginning, they were professional, responsive, and extremely helpful. They promptly removed the wet drywall, handled the necessary water mitigation work, and carefully moved items during the pack-out process to prevent further damage.\nWhat truly stood out was their guidance beyond the basic restoration work. They:\n\nHelped coordinate a professional company for the specialty pack-out of valuable items\n\nAssisted me through the insurance claim process with clarity and patience\n\nProvided advice on how to find qualified contractors for flooring, drywall installation, and other repairs\n\nAnswered my questions thoroughly and kept me informed throughout the process\n\nDealing with water damage can be overwhelming, but Kyle and Hannah made the experience much more manageable. Their professionalism, communication, and genuine concern for doing the job correctly gave me confidence during a very stressful situation.\n\nI highly recommend Roto-Rooter Restoration Services, and especially Kyle, Williams and Hannah, to anyone in need of water restoration services.",
+          "time": "2026-02-17T00:59:14.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:32.480Z",
+      "synthesis": {
+        "score": 87,
+        "trustLevel": "high",
+        "summary": "Roto-Rooter Bethesda demonstrates excellent emergency responsiveness with multiple customers praising 4-hour completion times and immediate dispatch. Their technicians are consistently described as professional, transparent with pricing, and skilled at both routine plumbing and complex water restoration work.",
+        "strengths": [
+          "Exceptional speed - complete jobs in 4 hours from initial call",
+          "Transparent pricing and honest communication",
+          "Skilled technicians for complex repairs and water damage",
+          "Professional customer service without sales pressure"
+        ],
+        "weaknesses": [
+          "Limited sample size of recent reviews",
+          "All reviews are 5-star, may indicate review filtering"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "water heater replacement",
+          "water damage restoration"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "They were fast, polite and got completed the replacement of our main water shutoff did valve in a total of 4 hours. That include the initial call, dispatching a tech and completing the job.",
+        "worstQuote": null
       }
     },
     {
@@ -3449,6 +3942,104 @@
         "redFlags": [],
         "priceSignal": "unknown",
         "topQuote": "I had a back up in my basement on a Sunday evening. I was able to easily reach them and set up a next day appointment (they had offered same day service, but the water had gone down). Adrian and Ben came out and addressed the issue. They were communicative, knowledgeable, kind and attentive.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJMQ1hPrXNt4kRN7XhF_j1yZ0",
+      "name": "Heil Plumbing & HVAC",
+      "slug": "heil-plumbing-hvac",
+      "phone": "(240) 451-1083",
+      "website": "https://heilplumbing.com/montgomery-county/?utm_source=google&utm_medium=gmb",
+      "address": "1162 Taft St, Rockville, MD 20850, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.0938177,
+        "lng": -77.1347418
+      },
+      "googleRating": 5,
+      "googleReviewCount": 997,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Troy Wheeler",
+          "rating": 5,
+          "text": "Otto and his crew were very professional, respectful, timely, and efficient. Otto explained the entire main waterline replacement before they started and stuck to that process. Their process was very minimally invasive with only needing to dig a single hole to replace 30 feet plus of copper water line. It took them a single day for the entire process and the following day was the City of Rockville's inspection. These guys are great!",
+          "time": "2025-10-27T13:56:39.000Z",
+          "relativeTime": "5 months ago"
+        },
+        {
+          "author": "Mr. Wang",
+          "rating": 5,
+          "text": "As a GC building my own house, I’ve worked with many contractors, and the technicians from Heil Plumbing are among the best I’ve seen. The lead technician, John, demonstrated extensive knowledge and was very patient in answering all of my questions. I will definitely use Heil Plumbing again in the future and highly recommend them to anyone needing plumbing services.",
+          "time": "2026-03-10T00:45:10.000Z",
+          "relativeTime": "3 weeks ago"
+        },
+        {
+          "author": "Phil Sandick",
+          "rating": 5,
+          "text": "Erik Young did an expert job at replacing our water heater. The job was done carefully and quickly, and he went through our options and answered all of our questions prior to purchase and install. Same-day service, and the new water heater has been working perfectly for the last few months. Highly recommend Erik and would definitely call Heil Plumbing again.",
+          "time": "2026-03-02T16:37:56.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Eugene Kovin",
+          "rating": 5,
+          "text": "We had great experience with Heil Plumbing . We were dealing with a major sewage backup that other plumbers simply couldn’t fix. Damontae Tuck from Heil Plumbing diagnosed the issue perfectly. He went above and beyond, cleaning pipes in areas the previous companies completely overlooked. The problem is finally solved! After finishing the job, Damontae took the time to explain which maintenance chemicals to use to prevent this from happening again. We definitely recommend Heil Plumbing for their expertise and thoroughness.",
+          "time": "2026-02-27T17:36:59.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Yashar Norhashemi",
+          "rating": 5,
+          "text": "I was smelling gas under my stove and my water heater was not working. Israel answered my call and helped get a technician out right away all while being polite and professional. Jeffrey showed up first thing in the morning of the scheduled service day with a smile and eagerness to fix the issues. He took the time to explain the issues I was having while pointing out some other possible issues I might have in the future and to keep an eye on them. He was professional, courteous, knowledgeable, and genuinely nice person. I appreciate Heil Plumbing & HVAC dedication and expertise all the way from the initial phone call through the service with the tech. I highly recommend this company and their hardworking team.",
+          "time": "2026-02-09T15:14:47.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:30 AM – 5:00 PM",
+        "Tuesday: 7:30 AM – 5:00 PM",
+        "Wednesday: 7:30 AM – 5:00 PM",
+        "Thursday: 7:30 AM – 5:00 PM",
+        "Friday: 7:30 AM – 5:00 PM",
+        "Saturday: Closed",
+        "Sunday: Closed"
+      ],
+      "scrapedAt": "2026-04-06T11:50:34.416Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Heil Plumbing & HVAC demonstrates exceptional expertise and professionalism across major plumbing issues, with customers consistently praising their thorough diagnostics and ability to solve complex problems other plumbers couldn't fix. Their technicians are highly knowledgeable, take time to explain issues and solutions, and provide same-day service when needed.",
+        "strengths": [
+          "Solves complex problems other plumbers couldn't fix",
+          "Highly knowledgeable and professional technicians",
+          "Same-day service availability",
+          "Thorough explanations and customer education"
+        ],
+        "weaknesses": [
+          "24-hour emergency availability unclear",
+          "No price information mentioned in reviews"
+        ],
+        "bestFor": [
+          "complex plumbing problems",
+          "water heater replacement",
+          "main water line issues"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "We were dealing with a major sewage backup that other plumbers simply couldn't fix. Damontae Tuck from Heil Plumbing diagnosed the issue perfectly. He went above and beyond, cleaning pipes in areas the previous companies completely overlooked. The problem is finally solved!",
         "worstQuote": null
       }
     },
@@ -4933,6 +5524,103 @@
       }
     },
     {
+      "placeId": "ChIJLZs5hHPNt4kRg6u6OUzh7r8",
+      "name": "Service Force Plumbing",
+      "slug": "service-force-plumbing",
+      "phone": "(301) 255-1821",
+      "website": "https://serviceforceplumbing.com/rockville-md",
+      "address": "706B E Gude Dr #3, Rockville, MD 20850, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.1036148,
+        "lng": -77.1424226
+      },
+      "googleRating": 4.9,
+      "googleReviewCount": 674,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Joanna Deutsch",
+          "rating": 5,
+          "text": "Had an unexpected gushing leak in my garage. Tyler from Service Force responded quickly. He did the necessary repairs and my water usage was restored. Tyler has done another complicated repair at my home and although late didn’t leave until the work was completed.\nGreat company with knowledgeable service people.\nWouldn’t use another plumbing company!!",
+          "time": "2026-02-04T17:54:55.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Suzanne Maggi",
+          "rating": 5,
+          "text": "I can’t say enough good things about the service I received from this company. They were attentive, accessible, knowledgeable and completely understood our situation with a very old house, and geared their remedy to our needs. Many thanks to Andrew, Tanner and Hendrick and to Roy for setting up a quick appointment.",
+          "time": "2026-02-04T15:52:24.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "dani",
+          "rating": 5,
+          "text": "Roy was helpful and informative on the phone when I reached out to schedule my first ever annual maintenance on a tankless water heater as a new homeowner. He was thorough with explanations and rationale and he was able to schedule my appointment quickly. Ethan completed the service and answered all of my questions thoroughly and explained everything he was doing. Overall great experience!",
+          "time": "2025-09-30T20:28:51.000Z",
+          "relativeTime": "6 months ago"
+        },
+        {
+          "author": "Aravindan Kolandaivelu",
+          "rating": 5,
+          "text": "We had an overall great experience.  We noticed our hot water availability had been tapering off over a week or so and the Service Force team was able to fix the problem the next day which was unexpected.  Ethan and Cameron did a great job of explaining the likely cause better than others we had contacted, going over options to fix, and working with us to select a replacement water heater that seemed to best fit our needs.  The install was clean and whole experience was very professional.  As a side note they also managed to cleanly haul out our old 75G water heater which was weighed down by 18 years of sediment.  Thanks again for the help of your great team!",
+          "time": "2025-11-19T18:01:01.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Priscilla F.",
+          "rating": 5,
+          "text": "Tyler was very informative. Solved the problem quickly and answered questions about other issues I might have in the future. I highly recommend service force. My emergency occurred fairly late last night and they were able to get out here this morning.",
+          "time": "2026-02-09T17:57:26.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:00 AM – 9:00 PM",
+        "Tuesday: 7:00 AM – 9:00 PM",
+        "Wednesday: 7:00 AM – 9:00 PM",
+        "Thursday: 7:00 AM – 9:00 PM",
+        "Friday: 7:00 AM – 5:00 PM",
+        "Saturday: 9:00 AM – 5:00 PM",
+        "Sunday: 9:00 AM – 5:00 PM"
+      ],
+      "scrapedAt": "2026-04-06T11:50:33.897Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "Service Force Plumbing demonstrates excellent emergency response with same-day service and knowledgeable technicians who complete jobs thoroughly. Multiple reviews highlight their ability to handle urgent situations quickly, with technicians who explain problems clearly and don't leave until work is finished.",
+        "strengths": [
+          "Rapid emergency response - same day service",
+          "Knowledgeable technicians who explain problems clearly",
+          "Complete jobs thoroughly without leaving early",
+          "Professional installation and cleanup"
+        ],
+        "weaknesses": [
+          "24-hour availability unclear",
+          "Limited sample of emergency situations"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "water heater replacement",
+          "complex plumbing diagnostics"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "My emergency occurred fairly late last night and they were able to get out here this morning.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJq6qqqnpjZIgRVl_X5DseIss",
       "name": "Holt Plumbing Company",
       "slug": "holt-plumbing-company",
@@ -6400,6 +7088,103 @@
       }
     },
     {
+      "placeId": "ChIJQ4gF8oe1t4kRH1yjG393zHo",
+      "name": "Cherry Blossom Plumbing",
+      "slug": "cherry-blossom-plumbing",
+      "phone": "(703) 215-2523",
+      "website": "https://cherryblossomplumbing.com/?utm_source=google&utm_medium=gbp&utm_campaign=google+organic&utm_location=12218",
+      "address": "2219B N Columbus St #304, Arlington, VA 22207, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 38.89697700000001,
+        "lng": -77.12637409999999
+      },
+      "googleRating": 4.9,
+      "googleReviewCount": 494,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Alan Robertson",
+          "rating": 5,
+          "text": "I highly recommend Cherry Blossom Plumbing.  I had a minor plumbing issue, and I called them in lieu of one of the larger firms.  What I got was personalized service; a highly trained and licensed technician; and customer service that was off the charts. Scheduling was a breeze – I talked to Courtney who was professional and eager to match their schedule to my needs. She even sent me a picture of the technician, Val, when they texted me he was on the way.  Val showed up on time and was super professional.  He made sure he understood what I needed and then presented me with several options on how to proceed.  We had a very informative discussion and then he presented me the estimate, and we came to an agreement on the work to be done.  He then the completed the repairs and the results were outstanding.  He’s a true professional.   From beginning to end Cherry Blossom Plumbing made this experience wonderful.  Call them the next time you need a plumber.",
+          "time": "2026-03-09T21:16:37.000Z",
+          "relativeTime": "3 weeks ago"
+        },
+        {
+          "author": "Cory Jurentkuff",
+          "rating": 5,
+          "text": "I recently had an urgent plumbing issue in my bathroom that could have turned into a major problem. The plumber, Matt from Cherry Blossom Plumbing, responded quickly to my call and arrived promptly at my home. He was incredibly friendly and made sure to explain everything clearly, which really put me at ease. Throughout the process, Matt was responsive to all my questions and handled the job with great professionalism. I highly recommend Cherry Blossom Plumbing services for anyone in need of reliable, timely plumbing assistance!",
+          "time": "2026-02-18T23:20:09.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Olivia Wilmarth",
+          "rating": 5,
+          "text": "I had a great experience with this company and the tech, Matt! I called for a water heater issue and they came the same day to check it out. They matched the price for water heater replacement given to me by another company and added $100 off from the coupon I received in the mail, and they completed the replacement the next day. Matt was honest and professional. Very impressed with the service!",
+          "time": "2026-02-24T16:34:42.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Janet Phillips",
+          "rating": 5,
+          "text": "Johnny with Cherry Blossom Plumbing was fantastic.  He clearly explained the problem and my options for repair.  He took his time explaining the job and the finished work.  I appreciate them getting out to me so quickly for an emergency repair.  I would highly recommend recommend them to anyone needing plumbing work.",
+          "time": "2026-01-28T20:49:23.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Kasia",
+          "rating": 5,
+          "text": "I had a great experience with Val earlier this week. First and foremost, he showed up quickly after I first contacted the company. He was competent, professional, efficient, had all the necessary parts with him that needed replacement, and quickly fixed the issue.  He was also friendly, and explained the process step by step, answering all my questions.  10/10 recommend!",
+          "time": "2026-02-15T19:47:36.000Z",
+          "relativeTime": "a month ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:37.240Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Cherry Blossom Plumbing consistently delivers excellent emergency service with same-day response, professional technicians, and transparent pricing. Multiple customers praise their quick response times, clear explanations, and quality workmanship across various plumbing issues.",
+        "strengths": [
+          "Same-day emergency response",
+          "Professional and knowledgeable technicians",
+          "Clear communication and explanations",
+          "Competitive pricing with matching policies"
+        ],
+        "weaknesses": [
+          "Limited review sample size",
+          "All reviews are 5-star which may indicate filtering"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "water heater replacement",
+          "urgent plumbing issues"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "I recently had an urgent plumbing issue in my bathroom that could have turned into a major problem. The plumber, Matt from Cherry Blossom Plumbing, responded quickly to my call and arrived promptly at my home.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJh23c9k0OD4gRijQ0QUxwOOk",
       "name": "Amy Home Services",
       "slug": "amy-home-services",
@@ -7474,6 +8259,103 @@
       }
     },
     {
+      "placeId": "ChIJg644BcTPt4kRVm6C3tBhb5E",
+      "name": "Service Force Plumbing",
+      "slug": "service-force-plumbing",
+      "phone": "(301) 760-2257",
+      "website": "https://serviceforceplumbing.com/?utm_campaign=ss_gbp",
+      "address": "9300 Colesville Rd, Silver Spring, MD 20901, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.0082196,
+        "lng": -77.0197915
+      },
+      "googleRating": 4.9,
+      "googleReviewCount": 397,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Ryan Rosenfeld",
+          "rating": 5,
+          "text": "Service Force replaced my boiler and hot water heater and we couldn’t be happier.  It was a tricky job with our older house and awkward setup, but they performed the install and an initial repair quickly and efficiently.",
+          "time": "2026-02-04T18:42:34.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Liz Hutter",
+          "rating": 3,
+          "text": ".. We experienced several issues related to timing, and the scope of work shifted significantly from the beginning to the end of the project. Overall, this was not the level of experience we have typically had with your company.\n\nWe have had many positive experiences working with you in the past, so I am hopeful this was an isolated situation. That said, I would appreciate the opportunity to speak with someone directly to review the specifics, as I believe there is some important feedback to share",
+          "time": "2026-02-18T03:08:36.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Ian Bates",
+          "rating": 5,
+          "text": "Joe and Tyler were fantastic. Called them for a pre-purchase inspection for our home. I’m incredibly happy I did! They were fast, professional, and, at the risk of being cliche, professional. I would highly recommend!",
+          "time": "2026-02-18T19:32:03.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Jeff Davis",
+          "rating": 5,
+          "text": "Excellent Service. Tyler showed up on time(was even early) and diagnosed and resolved the issue in less then 30 minutes. Highly recommended and they are my go to for any plumbing issues.",
+          "time": "2026-02-16T12:53:14.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Edward Tanner",
+          "rating": 5,
+          "text": "Tyler did a great job identifying the problem quickly and finding a solution. The whole process was very simple and easy. Hopefully I don’t need their services again anytime soon, but if I did, I would definitely use service force plumbing in the future.",
+          "time": "2026-01-22T16:14:53.000Z",
+          "relativeTime": "2 months ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:00 AM – 9:00 PM",
+        "Tuesday: 7:00 AM – 9:00 PM",
+        "Wednesday: 7:00 AM – 9:00 PM",
+        "Thursday: 7:00 AM – 9:00 PM",
+        "Friday: 7:00 AM – 5:00 PM",
+        "Saturday: 9:00 AM – 5:00 PM",
+        "Sunday: 9:00 AM – 5:00 PM"
+      ],
+      "scrapedAt": "2026-04-06T11:50:34.882Z",
+      "synthesis": {
+        "score": 82,
+        "trustLevel": "high",
+        "summary": "Service Force Plumbing appears to be a reliable company with skilled technicians like Tyler who respond quickly and diagnose problems efficiently. While they have a strong track record, one recent project management issue suggests verifying scope and timeline expectations upfront.",
+        "strengths": [
+          "Quick diagnosis and repairs",
+          "Professional and punctual service",
+          "Experienced with complex installations",
+          "Strong customer loyalty"
+        ],
+        "weaknesses": [
+          "Occasional project management issues",
+          "Scope creep on larger projects"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "water heater replacement",
+          "pre-purchase inspections"
+        ],
+        "redFlags": [],
+        "priceSignal": "unknown",
+        "topQuote": "Tyler showed up on time(was even early) and diagnosed and resolved the issue in less then 30 minutes. Highly recommended and they are my go to for any plumbing issues.",
+        "worstQuote": "We experienced several issues related to timing, and the scope of work shifted significantly from the beginning to the end of the project."
+      }
+    },
+    {
       "placeId": "ChIJ5VWyE9cHsocR8sYke51EQ_Y",
       "name": "Mr McGee Plumbing",
       "slug": "mr-mcgee-plumbing",
@@ -7958,6 +8840,103 @@
       }
     },
     {
+      "placeId": "ChIJ11e0otTIt4kRrofHx67GaiM",
+      "name": "Thomas E Clark Inc",
+      "slug": "thomas-e-clark-inc",
+      "phone": "(301) 608-0550",
+      "website": "http://www.thomaseclark.com/",
+      "address": "2412 Linden Ln, Silver Spring, MD 20910, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.00929199999999,
+        "lng": -77.051452
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 306,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Parker Goodfellow",
+          "rating": 5,
+          "text": "Thank you Thomas E Clark and DCDOE and their Lead Pipe Replacement Assistance Program (LPRAP).\n\nWith funding through DDOE LPRAP program we were finally able to get the last piece of lead out of our incoming water system.\n\nThomas E Clark answered our request for service promptly, sent out a project manager to confirm that we were in fact eligible for the LPRAP, received approval from DDOE to perform the work, applied for and received all permits, and performed the water line replacement all within the span of 3 weeks. From initial call to the water line being replaced.\n\nTheir crew was on time, courteous, and explain the process in exacting detail, giving us milestones for when we could expect the water to be turned off and turn back on as the line was replaced. Their house call Pro scheduling app made it very easy to communicate with the project manager as well as the technicians, and provided real-time tracking of their location and eta through the house call Pro app.\n\nI'm very thankful to Thomas E Clark and the LPRAP program for providing this service to the District of Columbia residents.\n\nI remember a time in DC when Department of Health came to houses that had young children and tested them for lead, I was one of those kids.\n\nThe water may taste a little less sweet after today! But at least my kids won't have to deal with this lead problem in the future. What a wonderful program.",
+          "time": "2026-02-19T16:32:54.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Danial Mcghie",
+          "rating": 5,
+          "text": "Thomas Clark did a fantastic job on site. They were respectful, quick, cleaned up after their work, amd talked me through both the problem and the solution. They completed a lead service line replacement flawlessly, and changed a long section of galvanized pipe. They were affordable and quick.\n\nIll definitely be returning to this team with any future plumbing issues.\n\nBest",
+          "time": "2025-11-13T13:51:08.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Helen Epps",
+          "rating": 4,
+          "text": "I was very pleased with almost all of my interactions with Thomas E. Clark. They were personable and prompt ., and thorough in return contacts and on the day of the service, kept me well apprised of their arrival time which was right in the middle of the range that had been set.\nThe service lead, Timothy, diagnosed the problem near the shower headand then fixed it. He also suggested another possible fix for the other faucet and gave me two alternatives: the super one for $250 and the McIyver for free. I took the second and am very happy with it.\nI will likely turn to this company first with plumbing issues in the future.",
+          "time": "2025-11-29T13:33:41.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Verna Clayborne",
+          "rating": 5,
+          "text": "On November 18 & 19, 2025 workers David, Ezekiel and IBrahim with Thomas E. Clark replaced the lead pipe from the city line to inside my home with a copper pipe. The work was grueling but they did a tremendous job. They were professional, careful of the inside of the house and they restored everything back as it was ( hole covered, straw put down, patio walkway lites put back). They even installed a new water filter on the faucet of my kitchen sink because I knew I couldn't figure it out. The cost (with a special lead replacement program in DC was '0' to me.  I recommend this company highely and kudos to these three workers.",
+          "time": "2025-11-20T02:59:26.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Robert Braunohler",
+          "rating": 5,
+          "text": "We have used Thomas E Clark for plumbing as well as HVAC services for over two years. We find their service to be of excellent quality, prompt and fairly priced. For emergency repairs, they can usually respond within the same day.",
+          "time": "2026-01-07T15:06:15.000Z",
+          "relativeTime": "2 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:39.105Z",
+      "synthesis": {
+        "score": 88,
+        "trustLevel": "high",
+        "summary": "Thomas E Clark Inc appears to be a highly reliable plumbing company with excellent customer service and professional work quality. With a 4.8/5 rating and consistently positive reviews highlighting prompt response times, professional crews, and thorough communication, they seem well-suited for emergency plumbing needs.",
+        "strengths": [
+          "Prompt emergency response within same day",
+          "Professional and courteous technicians",
+          "Excellent communication and scheduling",
+          "Clean up after work completion"
+        ],
+        "weaknesses": [
+          "Limited review sample for comprehensive assessment"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "lead pipe replacement",
+          "general plumbing services"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "For emergency repairs, they can usually respond within the same day.",
+        "worstQuote": null
+      }
+    },
+    {
       "placeId": "ChIJhevdr-kRsocRQs7GXGI5_Ac",
       "name": "Benjamin Franklin Plumbing of Oklahoma City",
       "slug": "benjamin-franklin-plumbing-of-oklahoma-city",
@@ -8353,6 +9332,105 @@
         "priceSignal": "unknown",
         "topQuote": "I called them at 9:00 on a Sunday morning and Tim showed up at 12:00 to fix the frozen pipe issue. He had back up and running in an hour.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJ4_SUHTHPt4kRfn9WvLCSy_I",
+      "name": "Tim Whistler Plumbing, Gas Fitting, HVAC, and Electrical",
+      "slug": "tim-whistler-plumbing-gas-fitting-hvac-and-electrical",
+      "phone": "(866) 477-6190",
+      "website": "http://timwhistlerplumbing.com/",
+      "address": "2345 Distribution Cir, Silver Spring, MD 20910, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.0070106,
+        "lng": -77.049533
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 300,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "electrician",
+        "establishment",
+        "general_contractor",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Darwin J Feuerstein",
+          "rating": 5,
+          "text": "We have used Tim Whistler Plumbing on numerous projects in our home, from plumbing upgrades to repairs. Our recent experience with them capping a gas line to our range was exceptional service as usual. (We upgraded to an induction range) Chris arrived on time and explained the work as he was completing it. Very knowledgable and professional. We appreciated the high level of customer service provided and the quick response from the office in setting up an appointment to accommodate our schedule.\nWe definitely use them again",
+          "time": "2025-12-14T17:56:22.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Steven Denmark",
+          "rating": 5,
+          "text": "We have been very happy with all Tim Whistler plumbing work at our house. Each technician is competent, and they know when to call for additional help. We had Kevin answer the plumber call. We quickly learned he is a very good plumbing technician. He has a positive attitude. A challenge does not throw him \"off-game\". He is calm & mature. We like him as our plumber.",
+          "time": "2026-01-15T16:20:02.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Thi",
+          "rating": 2,
+          "text": "They were quick to schedule and send a technician, which I appreciated. I do wish the $145 diagnostic fee had been mentioned when booking, and the quote felt higher than expected for the shower valve and trim replacement. I moved forward with another reputable company that charged about half the price.",
+          "time": "2026-02-27T19:10:30.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Joseph Rogers",
+          "rating": 5,
+          "text": "We needed help with two different gas fireplaces.  Saul from Tim Whistler plumbing was huge help.  He was prompt, quickly analyzed the issues we had….and in one case we did not have.  Then explained more about how these things work and the basic T hi ings needed to insure both workability and safety.  He then cleaned and tested for gas leaks (none!) and was promptly on his way.  I recommend Saul for your fireplace needs be they gas or wood burning.\n\nWell I am back posting again for the good work from Tim Whistler Plumbing.  This time by Steven who was quickly able to discern an issue with our garbage disposal and correct it immediately.  And at a reasonable cost.  Then upon my request he looked at our hot water heater in our basement.  I told him it was a bit over ten years old and though it will ultimately need replacing, he turned and noticed some warning cards on some of our pipes.  They indicated they needed service and adjustment every five years.  Yipes!  Suffice it to say that will happen soon but what I appreciate is the proactive manner he took with our home and not just ton”up sell” us, but rather to protect us.  Thanks!",
+          "time": "2025-12-03T21:56:12.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Janice Fain Dean",
+          "rating": 5,
+          "text": "Chris from Tim Whistler Plumbing did a great job.  He went out of his way to get the right parts for our specific toilet and diagnosed & fixed our kitchen leak quickly and efficiently.  He told me the price ahead of time and was friendly and cordial.  Thanks so much for a job well done!",
+          "time": "2025-12-08T17:24:36.000Z",
+          "relativeTime": "3 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:35.836Z",
+      "synthesis": {
+        "score": 85,
+        "trustLevel": "high",
+        "summary": "Tim Whistler Plumbing consistently delivers professional, reliable service with knowledgeable technicians who explain their work and arrive on time. While their pricing may be higher than some competitors, customers praise their expertise across plumbing, gas, and HVAC work, making them a solid choice for emergency situations.",
+        "strengths": [
+          "Punctual and reliable service",
+          "Knowledgeable, professional technicians",
+          "Multi-trade expertise (plumbing, gas, HVAC)",
+          "Clear communication and work explanations"
+        ],
+        "weaknesses": [
+          "Higher pricing than competitors",
+          "Diagnostic fees not always disclosed upfront"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "gas line work",
+          "multi-trade projects"
+        ],
+        "redFlags": [],
+        "priceSignal": "premium",
+        "topQuote": "Each technician is competent, and they know when to call for additional help... He has a positive attitude. A challenge does not throw him 'off-game'. He is calm & mature.",
+        "worstQuote": "I do wish the $145 diagnostic fee had been mentioned when booking, and the quote felt higher than expected for the shower valve and trim replacement."
       }
     },
     {
@@ -11580,6 +12658,106 @@
       }
     },
     {
+      "placeId": "ChIJwQDchoHRt4kR03CMLt05qcw",
+      "name": "The Drain Guys",
+      "slug": "the-drain-guys",
+      "phone": "(301) 867-7632",
+      "website": "https://drainguys.com/",
+      "address": "8041 Cessna Ave Ste 100, Gaithersburg, MD 20879, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.1726375,
+        "lng": -77.1652022
+      },
+      "googleRating": 4.7,
+      "googleReviewCount": 169,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Andrian Goodum",
+          "rating": 2,
+          "text": "I had my sewer line replaced about 4 months ago for nearly $18,000, and unfortunately the experience after the installation has been very disappointing. The cleanup was poorly done, the concrete work was subpar, and it caused my vinyl flooring (installed after)to no longer sit properly. I reached out two weeks ago through their messaging system and received no response. Additionally, my front yard continues to sink, which suggests the ground was not properly compacted after excavation. I now have to constantly re-compact the area myself. For the price paid, I expected far better workmanship and follow-up. Fixed my sewer problem thanks but left me with two other issues\n\nRESPONSE: I’m sorry but for $18,000 I don’t think it’s to much to ask to smooth out a small area of concrete just like how it was in the first place. Reverting back to saying “our contract says” is a pretty poor example of customer service.",
+          "time": "2026-02-24T01:23:14.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "Tracey Crawley",
+          "rating": 5,
+          "text": "I really recommend this company. These young men are smart and intelligent. I felt safe with them working in my home. Here are pictures of what they resolved. My grandkids put a toy in the toilet and I had a rotten trap pipe that needed replaced.",
+          "time": "2025-11-19T18:15:49.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Hanser Bonzer",
+          "rating": 5,
+          "text": "This is the second time at our place with The Drain Guys, both times with Chris. Very knowledgeable and always professional. Both times he was there within 24 hours of us needing him and fixed broken pipes quickly on our old house. This last time he gave us invaluable tips to help avoid having similar problems in the future. Reasonable fees and yes, I would 100% recommend The Drain Guys!!",
+          "time": "2025-12-17T20:15:52.000Z",
+          "relativeTime": "3 months ago"
+        },
+        {
+          "author": "Mark Prysler",
+          "rating": 5,
+          "text": "The Drain Guys is the best kept secret for pipe replacement.  I went through two crummy plumbers who charged for camera work and didn't know what was going on with my drain.  Called The Drain Guys and was glad I did.  This team had master plumber Jay, along with his team, Parker and the rest of the crew to correctly solve the issue.  The team provided insight on each part of the job, arrived promptly and even worked late.  Job itself was extremely clean and was smart in terms of the geography of where my pipe needed to be.  I now feel safe with a long term pipe in my property.\nI highly recommend this crew for your plumbing needs.   Excavation can be a dirty job but these Michaelangelos made it look like a work of art.",
+          "time": "2023-10-19T01:00:05.000Z",
+          "relativeTime": "2 years ago"
+        },
+        {
+          "author": "Caroline Chang",
+          "rating": 5,
+          "text": "I had sewage issue and one plumbing company that said they could do the job came out and almost dug my front yard out to resolve it. I got a second opinion from the Drain Guys and they promptly informed me that the repair was actually in the city side of the property and that they were responsible, saving me thousands of dollars.\n\nI had a separate sewage issue under my basement and they were so efficient in diagnosing and fixing the problem. Tricia from customer service is really excellent and I appreciated the crew that came out to help resolve our issue.",
+          "time": "2025-11-24T20:20:00.000Z",
+          "relativeTime": "4 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:36.757Z",
+      "synthesis": {
+        "score": 78,
+        "trustLevel": "moderate",
+        "summary": "The Drain Guys shows strong technical expertise and emergency responsiveness, with multiple customers praising their quick 24-hour service and professional diagnosis. However, there are concerning issues with post-job cleanup, follow-up service, and customer communication that potential customers should be aware of.",
+        "strengths": [
+          "Quick 24-hour emergency response",
+          "Strong technical expertise and problem diagnosis",
+          "Professional and knowledgeable technicians",
+          "Honest assessments that can save customers money"
+        ],
+        "weaknesses": [
+          "Poor post-job cleanup and concrete work",
+          "Unresponsive to follow-up customer concerns",
+          "Inconsistent customer service after completion"
+        ],
+        "bestFor": [
+          "emergency drain repairs",
+          "pipe diagnostics",
+          "sewer line issues"
+        ],
+        "redFlags": [
+          "Customer reported $18,000 job with poor cleanup, ongoing ground settling issues, and complete lack of response to follow-up concerns for weeks"
+        ],
+        "priceSignal": "premium",
+        "topQuote": "I got a second opinion from the Drain Guys and they promptly informed me that the repair was actually in the city side of the property and that they were responsible, saving me thousands of dollars.",
+        "worstQuote": "I reached out two weeks ago through their messaging system and received no response. Additionally, my front yard continues to sink, which suggests the ground was not properly compacted after excavation."
+      }
+    },
+    {
       "placeId": "ChIJ4WPDgRrL-YgRAO_uaipYeBM",
       "name": "Affordable Plumbing, LLC",
       "slug": "affordable-plumbing-llc",
@@ -12755,6 +13933,106 @@
       }
     },
     {
+      "placeId": "ChIJk155S4TSt4kR9mW84oBtZCE",
+      "name": "JF Plumbing & Heating",
+      "slug": "jf-plumbing-heating",
+      "phone": "(240) 859-2409",
+      "website": "https://jf-plumbing.com/?utm_source=gmb&utm_medium=organic",
+      "address": "15751 Crabbs Branch Way, Derwood, MD 20855, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.1126632,
+        "lng": -77.1558586
+      },
+      "googleRating": 4.8,
+      "googleReviewCount": 138,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Trudie",
+          "rating": 1,
+          "text": "Avoid JF Plumbing – Unprofessional, Overpriced, and Disrespectful\nI had a terrible experience with JF Plumbing. My downstairs neighbor had a leak and called our HOA, who sent JF Plumbing. The plumber who showed up was extremely rude from the start dismissive, uncommunicative, and clearly uninterested in working with the condo residents to locate the source of the issue. He made no real effort to diagnose the problem and left behind a mess including his own ladder, which sat here for days.\nWhat made this worse was receiving a bill two weeks later for $695 for so-called “diagnostics.” To be clear, it cost about the same amount to actually fix the leak using a different company whose plumbers were professional, respectful, and thorough.\nWhen I called JF to ask about the charge, I was first told by the receptionist they bill double on weekends (their base fee is $89, so apparently $180/hour). Talking to Bill the manager he said its actually $250 and they even charged for trash bags (I didn’t know one black trash bag costs 100s these days). He also claimed that they fixed the issue. Later, I was told the visit was categorized as an “emergency” rather than diagnostics despite the fact that no real service emergency or otherwise was provided.\nThe most disappointing part? When the other plumbers came in, they were shocked at the damage and disarray the JF plumber caused. Instead of locating the source methodically, he just started hammering into walls unnecessarily. It was reckless and lazy.\nI’ll be honest I got angry on the phone and said some things I’ll answer to my God for. But my anger doesn’t negate the facts. This was a horrible experience, and I do not recommend this company to anyone, especially not if you are melanated. Stay FAAAR away.\nJF Plumbing showed a lack of professionalism, transparency, and basic respect. Save your time, your money, and your dignity call someone else.",
+          "time": "2025-08-06T15:18:39.000Z",
+          "relativeTime": "8 months ago"
+        },
+        {
+          "author": "fredo",
+          "rating": 1,
+          "text": "I want to start by saying the technician who came to my home was professional and genuinely tried to help. I contacted JF about a water leak and was told they could fix it. I made it clear that I needed same-day service or I’d seek another option. I explained the issue over the phone, but the technician arrived, confirmed what I had already identified, stayed for about five minutes, and said he couldn’t fix it. I was charged $79 for that brief visit, and two days later, I still haven’t received a quote or follow-up. I don’t blame the technician—I blame the corporate office for mishandling the request. Unfortunately, this experience has made it clear that JF isn’t reliable to solve my urgent plumbing issues.",
+          "time": "2025-11-01T17:24:36.000Z",
+          "relativeTime": "5 months ago"
+        },
+        {
+          "author": "Larré Danté",
+          "rating": 5,
+          "text": "Technician Will came out, identified the problem, and solved it. His knowledge and expertise helped relieve our concerns and got us back up and running. It was a 5-star experience.",
+          "time": "2026-01-27T14:20:20.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Heru Sutjahjo",
+          "rating": 2,
+          "text": "The service was completed two days ago, so I won’t assess its quality until a week or two later. My dissatisfaction lies mainly with the management, from the initial phone responder to the plumber’s supervisor. Upon calling, I explained the recurring issue of toilets clogging despite a prior plumber’s visit. Both toilets, in the hallway and master bath, experienced the problem. I contacted JF solely for their longer snake, beyond 6 feet. Initially, the phone responder quoted $300 for snaking both toilets, or $400 with toilet removal. However, the plumber, upon arrival, insisted on pulling out the toilets. When the manager call to confirm  the work it raised the price to $450 per toilet. The manager pressured me to decide immediately, disregarding the initial quote. After disputing the price, he said he would have honored the $300 had I hadn’t questioned him for so long. So he actually could honor the initial quote but he just refused to do so? this is not an honest business practice and I was VERY DISSAPPOINTED.",
+          "time": "2024-02-29T14:41:56.000Z",
+          "relativeTime": "2 years ago"
+        },
+        {
+          "author": "Dayan Habtemariam",
+          "rating": 5,
+          "text": "Patrick was amazing — very helpful and professional. He was neat with his work and made sure to clean up everything before he left. He double-checked the garbage disposal to ensure there were no leaks after installation and confirmed all the connections from the dishwasher and sink were secure. I really appreciated his attention to detail. Highly recommended!",
+          "time": "2025-07-07T17:44:14.000Z",
+          "relativeTime": "9 months ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:00 AM – 4:00 PM",
+        "Tuesday: 7:00 AM – 4:00 PM",
+        "Wednesday: 7:00 AM – 4:00 PM",
+        "Thursday: 7:00 AM – 4:00 PM",
+        "Friday: 7:00 AM – 4:00 PM",
+        "Saturday: Closed",
+        "Sunday: Closed"
+      ],
+      "scrapedAt": "2026-04-06T11:50:38.179Z",
+      "synthesis": {
+        "score": 45,
+        "trustLevel": "low",
+        "summary": "JF Plumbing shows inconsistent service quality with serious concerns about pricing transparency and emergency reliability. While some technicians provide excellent work, multiple customers report unprofessional behavior, price gouging, and poor management practices that make them unreliable for emergency situations.",
+        "strengths": [
+          "Some technicians are knowledgeable and professional",
+          "Clean work when service is completed properly",
+          "Attention to detail on successful jobs"
+        ],
+        "weaknesses": [
+          "Inconsistent pricing and quote manipulation",
+          "Poor emergency service reliability",
+          "Unprofessional management and communication"
+        ],
+        "bestFor": [
+          "Non-urgent repairs with upfront pricing confirmation"
+        ],
+        "redFlags": [
+          "Charges $695 for unsuccessful diagnostics with no actual repair",
+          "Management changes quotes after arrival and pressures customers",
+          "Technician caused unnecessary wall damage and left equipment behind",
+          "Cannot complete same-day emergency service as promised"
+        ],
+        "priceSignal": "premium",
+        "topQuote": "Patrick was amazing — very helpful and professional. He was neat with his work and made sure to clean up everything before he left. He double-checked the garbage disposal to ensure there were no leaks after installation and confirmed all the connections from the dishwasher and sink were secure.",
+        "worstQuote": "I was charged $79 for that brief visit, and two days later, I still haven't received a quote or follow-up. I don't blame the technician—I blame the corporate office for mishandling the request. Unfortunately, this experience has made it clear that JF isn't reliable to solve my urgent plumbing issues."
+      }
+    },
+    {
       "placeId": "ChIJa6nA4eTwDogRChCJC704rKE",
       "name": "Aquaduct Plumbing, Heating & Air",
       "slug": "aquaduct-plumbing-heating-air",
@@ -13145,6 +14423,103 @@
         "redFlags": [],
         "priceSignal": "unknown",
         "topQuote": "They were responsive and extremely helpful with the storm and our busted pipe and faucet. Alex and Levi came to the house and were respectful and very helpful - made sure we had water on during the storm.",
+        "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJe4btTjzJt4kRwmryphpb6hs",
+      "name": "Service Force Plumbing",
+      "slug": "service-force-plumbing",
+      "phone": "(301) 381-2770",
+      "website": "https://serviceforceplumbing.com/?utm_campaign=bethesda_gbp",
+      "address": "7625 Wisconsin Ave Suite 210, Bethesda, MD 20814, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 38.986562,
+        "lng": -77.094263
+      },
+      "googleRating": 4.9,
+      "googleReviewCount": 130,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Dave Lingenfelter",
+          "rating": 5,
+          "text": "So far so good, Colby, Chris and Hendrik, Thanks for coming out and help to decode my dad’s plumbing. Everything seems to be great, everyone was very professional, appreciate y’all. Hopefully I won’t be a repeat customer soon but if it turns out that way I’ll use your services again.\n\nThanks again,\nDave L.",
+          "time": "2026-03-03T21:35:51.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "annie baldwin",
+          "rating": 5,
+          "text": "We had a fantastic experience with Service Force Plumbing! Kolby, his brother, and another young man came to our office to fix our garbage disposal, and we couldn’t have asked for better service. They actually arrived early, quickly diagnosed the issue, and had everything working again in no time. All three were extremely professional, kind, and very personable—it was clear they take pride in their work.\nFrom start to finish, the entire process was smooth. Joe was incredibly helpful over the phone, answered all of my questions, and even made it easy for me to send reference photos to help explain the issue. Scheduling was simple, and their online customer portal is a fantastic feature that makes everything convenient and stress-free.\n\nI highly recommend Service Force Plumbing and will absolutely be using them again in the future!",
+          "time": "2026-02-24T15:56:54.000Z",
+          "relativeTime": "a month ago"
+        },
+        {
+          "author": "JK",
+          "rating": 5,
+          "text": "I highly recommend Service Force Plumbing.\n\nService Force Plumbing (SFP) was one of several Better Business Bureau accredited plumbers that I contacted. Of those firms, SFP provided a detailed phone consultation and a competitive price for the fiberoptic camera inspection that we required.\n\nPlumber Tyler thoroughly listened to the description of our plumbing problems—a metal tool lost in a drain pipe by a previous\nwell-intentioned plumber, a clogged drain and a leaking bath/shower faucet. He outlined a clear, logical plan to address these issues.\nTyler’s skilled recovery of the metal tool lodged in the pipes saved us time and thousands of dollars from additional damage the metal tool may have caused if it moved further down the drain. His repairs and enhancements took into consideration the dexterity and safety of the older adults in the home. The solutions addressed existing problems, as well as anticipating future needs, such as availability of replacement parts.  Thanks to Tyler, our 55 year old home now has shut oﬀ valves and a clean out that did not exist before. All the work was neatly done, and the work spaces were left clean and in order.\n\nThe results with Tyler and Service Force Plumbing exceeded our expectations, and we will share our positive experience with others\nrequiring plumbing work.",
+          "time": "2025-10-12T03:04:59.000Z",
+          "relativeTime": "5 months ago"
+        },
+        {
+          "author": "Christopher Georgatsos",
+          "rating": 5,
+          "text": "The Service Force Plumbing team ONCE AGAIN KNOCKED it out of the park!! A GRAND SLAM! True plumbing professionals, in fact INCREDIBLE PLUMBING PROFESSIONALS- the very best in the business! I have always been treated as a valued customer by Service Force Plumbing. As a veteran realtor, I give them my highest recommendation and confidently and without hesitation refer them to all my own clients. Roy, Hendrik and their team have never let me or my clients down. I just had an emergency plumbing situation in my own home, in which Roy and his team responded immediately, identifying and resolving the problem in record time. Tyler, the technician showed up before the schedule time, was exceptionally personable, knowledgeable, efficient, meticulously clean and well organized. Mission accomplished! The front office scheduling manager, Joe is a true credit to their operation. These men are the best in the business! Without any hesitation, I wholeheartedly recommend this company!",
+          "time": "2026-02-01T22:41:57.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Janet Allen",
+          "rating": 5,
+          "text": "Tyler came to our house after we called about water in the basement.  He added the visit at the end of his already long day and stayed for almost two hours.  He sent us detailed photos and videos so we could see the issues.  He gave us a reasonable quote before starting work.  At the end, he explained the situation clearly and gave us recommendations for next steps.  He was polite and kind.  Such an excellent experience.  He’s a gem.",
+          "time": "2026-01-31T03:04:53.000Z",
+          "relativeTime": "2 months ago"
+        }
+      ],
+      "is24Hour": false,
+      "workingHours": [
+        "Monday: 7:00 AM – 9:00 PM",
+        "Tuesday: 7:00 AM – 9:00 PM",
+        "Wednesday: 7:00 AM – 9:00 PM",
+        "Thursday: 7:00 AM – 9:00 PM",
+        "Friday: 7:00 AM – 5:00 PM",
+        "Saturday: 9:00 AM – 5:00 PM",
+        "Sunday: 9:00 AM – 5:00 PM"
+      ],
+      "scrapedAt": "2026-04-06T11:50:32.959Z",
+      "synthesis": {
+        "score": 92,
+        "trustLevel": "high",
+        "summary": "Service Force Plumbing demonstrates exceptional professionalism and technical expertise with highly skilled technicians like Tyler and Colby who consistently exceed customer expectations. They show strong emergency responsiveness and provide thorough, honest service with detailed explanations and competitive pricing.",
+        "strengths": [
+          "Highly skilled and professional technicians",
+          "Excellent emergency response time",
+          "Thorough problem diagnosis with photos/videos",
+          "Clean, organized work practices"
+        ],
+        "weaknesses": [
+          "Limited sample size of reviews",
+          "24-hour availability unclear"
+        ],
+        "bestFor": [
+          "emergency repairs",
+          "complex diagnostic work",
+          "older home plumbing issues"
+        ],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": "I just had an emergency plumbing situation in my own home, in which Roy and his team responded immediately, identifying and resolving the problem in record time. Tyler, the technician showed up before the schedule time, was exceptionally personable, knowledgeable, efficient, meticulously clean and well organized.",
         "worstQuote": null
       }
     },
@@ -21982,6 +23357,107 @@
         "priceSignal": "mid-range",
         "topQuote": "Joel exuded professionalism and friendliness. He showed up right on time, ready to tackle the issue. His warm demeanor immediately put me at ease, and I knew I was in capable hands.",
         "worstQuote": null
+      }
+    },
+    {
+      "placeId": "ChIJ15YXeYbOt4kRAkkU-wq6nRs",
+      "name": "Family Plumbing Services LLC",
+      "slug": "family-plumbing-services-llc",
+      "phone": "(240) 888-4192",
+      "website": "http://familyplumbingservices.com/",
+      "address": "12288 Wilkins Ave Unit A, Rockville, MD 20852, USA",
+      "city": "Bethesda",
+      "state": "MD",
+      "region": "",
+      "location": {
+        "lat": 39.0569524,
+        "lng": -77.11339009999999
+      },
+      "googleRating": 4.4,
+      "googleReviewCount": 17,
+      "businessStatus": "OPERATIONAL",
+      "types": [
+        "establishment",
+        "plumber",
+        "point_of_interest"
+      ],
+      "priceLevel": null,
+      "editorialSummary": null,
+      "reviews": [
+        {
+          "author": "Charles Kozorosky",
+          "rating": 5,
+          "text": "Nestor has been a pleasure to work with. He has been flawlessly managing a major home renovation job of mine.\n\nThere are a total of 5 gas fixtures, brand new kitchen with all new appliances (gas and electric). There are 3 full bathrooms that required new piping rough ins, valves, bathtubs, shower flanges, toilet flanges, etc.\n\nNestor has been doing a great job of keeping strong communications with me as the job progresses. Also, Nestor has been considerate of the client’s changes outside of the original scope of work.\n\nI highly recommend this company for any plumbing & gas services.",
+          "time": "2026-01-31T02:29:33.000Z",
+          "relativeTime": "2 months ago"
+        },
+        {
+          "author": "Tapas Saha",
+          "rating": 5,
+          "text": "Family Plumbing Services LLC did an excellent job installing our new water heater last month, and I could not be happier with their service. From the start, they were professional, courteous, and reliable. What really impressed me was that they even came out during the scheduled Rockville inspection to make sure everything went smoothly, showing their dedication to customer satisfaction. The team was knowledgeable, efficient, and respectful of our home, completing the work with great care.\n\nIt is rare to find a company that combines skill, professionalism, and genuine customer care the way Family Plumbing Services does. I would gladly recommend them to anyone looking for dependable plumbing services.",
+          "time": "2025-09-06T12:21:28.000Z",
+          "relativeTime": "7 months ago"
+        },
+        {
+          "author": "Henry Sunshine",
+          "rating": 2,
+          "text": "Just had their truck blast through a stop sign without stopping, cutting me off and forcing me to break. If they have this little patience, attention, consideration for safety, or consideration for the law on the road, I would bet money they don't have any of those things for plumbing either.",
+          "time": "2025-12-03T12:11:53.000Z",
+          "relativeTime": "4 months ago"
+        },
+        {
+          "author": "Ms Fitzgerald",
+          "rating": 1,
+          "text": "Made an appointment took off work to be here called when it was 46 minutes over my appointment, no phone call nothing I called and  he said oh sorry un professional!!! Never showed didn’t apologize nothing!!! It would have been the fastest job for them they would  of made money the job would have taken 15  minutes to do , I fractured my rib cage so I couldn’t do it or I would have !",
+          "time": "2025-04-04T19:47:52.000Z",
+          "relativeTime": "a year ago"
+        },
+        {
+          "author": "Leonardo Batalha",
+          "rating": 5,
+          "text": "Very good and professional guys! Zero leaks and excellent service!",
+          "time": "2026-01-29T14:44:10.000Z",
+          "relativeTime": "2 months ago"
+        }
+      ],
+      "is24Hour": true,
+      "workingHours": [
+        "Monday: Open 24 hours",
+        "Tuesday: Open 24 hours",
+        "Wednesday: Open 24 hours",
+        "Thursday: Open 24 hours",
+        "Friday: Open 24 hours",
+        "Saturday: Open 24 hours",
+        "Sunday: Open 24 hours"
+      ],
+      "scrapedAt": "2026-04-06T11:50:36.292Z",
+      "synthesis": {
+        "score": 65,
+        "trustLevel": "moderate",
+        "summary": "Family Plumbing Services shows strong technical skills and professionalism on completed projects, with excellent work on renovations and installations. However, reliability concerns including missed appointments and unprofessional behavior create uncertainty for emergency situations.",
+        "strengths": [
+          "Excellent technical work quality",
+          "Strong communication during projects",
+          "Professional installation services",
+          "Handles complex renovation work"
+        ],
+        "weaknesses": [
+          "Reliability issues with appointments",
+          "Poor customer service recovery",
+          "Unprofessional driving behavior reported"
+        ],
+        "bestFor": [
+          "bathroom remodels",
+          "water heater replacement",
+          "gas line work"
+        ],
+        "redFlags": [
+          "Missed appointment with no call or apology",
+          "Reckless driving behavior suggesting lack of professionalism"
+        ],
+        "priceSignal": "unknown",
+        "topQuote": "Nestor has been doing a great job of keeping strong communications with me as the job progresses. Also, Nestor has been considerate of the client's changes outside of the original scope of work.",
+        "worstQuote": "Made an appointment took off work to be here called when it was 46 minutes over my appointment, no phone call nothing I called and he said oh sorry un professional!!! Never showed didn't apologize nothing!!!"
       }
     },
     {
