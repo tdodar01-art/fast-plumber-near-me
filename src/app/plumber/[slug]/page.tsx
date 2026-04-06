@@ -201,6 +201,9 @@ export default async function PlumberProfilePage({
     name: plumber.name,
     telephone: plumber.phone,
     address: { "@type": "PostalAddress", addressLocality: plumber.city, addressRegion: plumber.state },
+    ...(plumber.location?.lat && plumber.location?.lng && {
+      geo: { "@type": "GeoCoordinates", latitude: plumber.location.lat, longitude: plumber.location.lng },
+    }),
     ...(plumber.website && { url: plumber.website }),
     ...(plumber.googleRating && {
       aggregateRating: {
@@ -213,10 +216,58 @@ export default async function PlumberProfilePage({
     }),
   };
 
+  const strengths = s?.strengths ?? [];
+  const weaknesses = [...(s?.weaknesses ?? []), ...(s?.redFlags ?? [])];
+  const reviewJsonLd = (strengths.length > 0 || weaknesses.length > 0) ? {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    itemReviewed: {
+      "@type": "Plumber",
+      name: plumber.name,
+      url: `https://fastplumbernearme.com/plumber/${slug}`,
+    },
+    author: {
+      "@type": "Organization",
+      name: "Fast Plumber Near Me",
+      url: "https://fastplumbernearme.com",
+    },
+    ...(plumber.googleRating && {
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: plumber.googleRating,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    }),
+    ...(strengths.length > 0 && {
+      positiveNotes: {
+        "@type": "ItemList",
+        itemListElement: strengths.map((item, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: item,
+        })),
+      },
+    }),
+    ...(weaknesses.length > 0 && {
+      negativeNotes: {
+        "@type": "ItemList",
+        itemListElement: weaknesses.map((item, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: item,
+        })),
+      },
+    }),
+  } : null;
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }} />
+      {reviewJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewJsonLd) }} />
+      )}
       <BounceTracker plumberId={slug} city={plumber.city} />
 
       <div className="max-w-[520px] mx-auto px-4 pt-4 pb-28 sm:pb-12 font-[family-name:var(--font-dm-sans)]">
