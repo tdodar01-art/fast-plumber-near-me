@@ -69,7 +69,15 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - Red flags displayed on PlumberCard (red pills with warning icon) — same on mobile and desktop
 - 51 state pages
 - Homepage with search + geolocation (fuzzy matching across all 2,300+ cities, handles "City, ST" format, St./Saint and Mt./Mount normalization)
-- Blog (8 posts with custom markdown renderer + HTML sanitization)
+- Blog (8 hand-written posts + AI-generated city blog clusters with custom markdown renderer + HTML sanitization)
+- Blog post generator (`scripts/generate-blog-posts.js`) — 5 post types per qualifying city:
+  - Rankings: "Best Emergency Plumbers in [City] ([Year])" — data-driven, all cities with 3+ plumbers
+  - Local Guides: "Emergency Plumber in [City]: What to Know Before You Call" — Claude-generated, 800-1200 words, region-specific
+  - Emergency Tips: "[City] Plumbing Emergency? How to Stop Water Damage While You Wait" — Claude-generated, 600-900 words
+  - Service-specific: "Best [Service] Plumbers in [City]" — powered by servicesMentioned data
+  - Red Flags: "Red Flags When Hiring a Plumber in [City]" — powered by red flag data
+- Region detection for content: northern (frozen pipes), southern (slab leaks), desert (heat stress), california (earthquake shutoff), coastal-hurricane (storm prep)
+- Plumber detail pages show top 15 reviews from Firestore (3 recent 5-star, 2 recent 1-2 star, fill with longest) with source badges (Google blue, Yelp red, Angi green)
 - Directory index + plumber directory with filters
 - Admin dashboard (Firebase Auth, plumber/city/lead/submission management, pagination, confirmation dialogs)
 - Business submission form (dynamic CITY_LIST, all available cities)
@@ -90,8 +98,9 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - GitHub Actions daily pipeline fully operational — 5 phases: GSC expansion → scrape → Firestore upload → review refresh → AI synthesis → commit/push → re-index
 - GitHub Actions deep review pull — daily at 7 AM Central: GSC tier filtering → BBB lookup → Outscraper multi-source reviews → Claude synthesis → export JSON → Vercel rebuild → re-index ALL serviceCities
 - All scripts use firebase-admin SDK with service-account.json (bypasses Firestore security rules)
-- 270 plumbers scraped across 30 cities (IL + Alameda CA, Nashville TN, Acworth GA, Yukon OK, Aiken SC, Ardmore OK)
-- 500+ reviews cached in Firestore reviews collection (Google + Yelp sources)
+- 392 plumbers scraped across 37 cities (IL + Aberdeen MD, Worcester MA, Abilene TX, San Leandro CA, Stow OH, Edmond OK, Huntsville AL, Nashville TN, Acworth GA, Alameda CA, Bethesda MD, Yukon OK, Aiken SC, Ardmore OK)
+- 11,000+ reviews cached in Firestore reviews collection (Google ~8,200 + Yelp ~2,600 + Angi ~125)
+- 189 plumbers BBB-checked (126 matched, 71 accredited)
 - Pipeline activity logged to `pipelineRuns` collection with per-plumber detail (viewable in admin Activity tab with expandable rows)
 - Budget guard hardened: shared module `scripts/lib/budget-guard.ts`, hard stop at 90%, per-phase allocation (expansion 60%, refresh 30%, reserve 10%)
 - Expansion queue: `scripts/seed-expansion-queue.ts` ready, Firestore-based, priority IL → adjacent states → population
@@ -107,14 +116,16 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - `scripts/seed-cities-collection.js` — seed Firestore `cities` collection from synthesized data (run once — done, 27 cities seeded)
 - `googleapis` npm package installed
 - `daily-scrape.js` auto-updates Firestore `cities` collection after each successful scrape (non-blocking)
-- Firestore `cities` collection: 2257 docs total, 28 scraped, single source of truth for city tracking
+- Firestore `cities` collection: 2257 docs total, 37 scraped, single source of truth for city tracking
 - First GSC-driven scrape completed: Ardmore, OK (found via impressions, scraped, live)
 - **GitHub Actions automated:** daily workflow runs GSC expansion → prepend → scrape → upload → refresh → synthesize → commit (all GSC steps continue-on-error so normal scrape is never blocked)
 
 **Review Synthesis:**
 - Claude AI (Haiku) multi-source synthesis engine: processes Google + Yelp + Angi reviews together with BBB data
 - Keyword fallback for plumbers with <3 reviews
-- Fields: `summary`, `emergencyReadiness`, `emergencyNotes`, `aiSynthesizedAt`, `synthesisVersion`, `platformDiscrepancy`
+- Fields: `summary`, `emergencyReadiness`, `emergencyNotes`, `aiSynthesizedAt`, `synthesisVersion`, `platformDiscrepancy`, `servicesMentioned`
+- **servicesMentioned:** 16 service categories extracted from reviews (burst-pipe, sewer, water-heater, drain-cleaning, toilet, sump-pump, gas-leak, flooding, water-line, slab-leak, garbage-disposal, faucet-fixture, backflow, repiping, water-softener, bathroom-remodel) — each with count, avgRating, topQuote
+- **Emergency readiness detection:** checks business name keywords (24/7, emergency, rescue), Google hours (Open 24 hours), and review signals (same-day, after-hours, weekend) — not just literal "emergency response" phrases
 - PlumberCard shows AI summary, emergency readiness indicator, BBB data bar
 - Badges earned from review data: Fast Responder, Fair Pricing, 24/7 Verified, Clean & Professional, Good Communicator
 - **Badge consistency rule:** badges cannot contradict red flags (response time complaints → no Fast Responder, pricing disputes → no Fair Pricing, unprofessional behavior → no Clean & Professional)
@@ -383,20 +394,23 @@ Cron Job (scheduled) → Twilio Outbound Call → Plumber's Phone
 
 ## Blog Post Cluster Strategy
 
-**Trigger:** GSC shows a city page crossing an impression threshold (e.g. 50+ impressions). Google is telling us this market has demand — invest in it.
+**Trigger:** City has 3+ plumbers in the system (rankings), or 5+ plumbers (guides/tips). Service-specific posts trigger when 2+ plumbers in a city have the same service mentioned in reviews.
 
-**Action:** Generate a cluster of 8-10 supporting posts per qualifying city, all linking to/from the city page and individual plumber detail pages. All content generated from existing Firestore plumber data (scores, review synthesis, strengths, weaknesses, red flags, emergency signals).
+**Generator:** `scripts/generate-blog-posts.js` — run manually or after re-synthesis. Outputs to `data/blog-posts/` as JSON files.
 
-### Post Types per City Cluster
+**Current output:** 109 posts across 31 cities (dry-run April 6, 2026). Service-specific posts pending `servicesMentioned` data from re-synthesis.
 
-**Comparison/Rankings**
-- "Best Emergency Plumbers in [City] [State] ([Year] Rankings)" — scored ranking with strengths/weaknesses breakdown
+### Post Types per City Cluster — ✅ BUILT
 
-**Situational/Problem-Specific** (filtered by review signal data)
-- Burst pipe emergencies
-- Sump pump repair
-- Water heater emergencies
-- Clogged drain / sewer backup
+| Type | Trigger | Generator | Status |
+|------|---------|-----------|--------|
+| **Rankings** | 3+ plumbers | Data-driven (static) | ✅ 31 posts |
+| **Local Guide** | 5+ plumbers | Claude Haiku (800-1200 words) | ✅ 28 posts |
+| **Emergency Tips** | 5+ plumbers | Claude Haiku (600-900 words) | ✅ 28 posts |
+| **Service-specific** | 2+ plumbers with same service | Data-driven (servicesMentioned) | Pending re-synthesis |
+| **Red Flags** | 2+ plumbers with red flags | Data-driven (static) | ✅ 22 posts |
+
+### Post Types per City Cluster — FUTURE (not yet built)
 
 **Pricing/Decision-Making**
 - "How Much Does an Emergency Plumber Cost in [City]?"
@@ -405,9 +419,6 @@ Cron Job (scheduled) → Twilio Outbound Call → Plumber's Phone
 **Seasonal**
 - Frozen pipes (winter)
 - Spring flooding / sump pump failures
-
-**Trust/Transparency**
-- "Red Flags to Watch For When Hiring a Plumber in [City]" — powered by red flag data
 
 ### Annual Awards Program
 - "Best Emergency Plumber in [City] — [Year] Award" for each city with enough data
@@ -524,7 +535,7 @@ Both automated workflows are live and running daily. Focus now:
 Outscraper `yelpReviews` returns 0 for smaller businesses (<20 Yelp reviews). Google search fallback correctly finds Yelp URLs, but Outscraper can't scrape the reviews. Need alternative approach — possibly direct Yelp page scraping or Yelp Fusion API.
 
 **Blog Post Cluster Generation:**
-Strategy defined (see Blog Post Cluster Strategy section) but no generation pipeline built yet. Three pillars: city support clusters, evergreen guides, annual awards.
+Generator built (`scripts/generate-blog-posts.js`) with 5 post types. 109 posts generated in dry-run. Remaining work: wire blog posts into Next.js dynamic routes, add to sitemap, run service-specific generation after `servicesMentioned` data populates. Annual awards program not yet built.
 
 **UI Pending:**
 - [ ] City page sort/filter: allow homeowners to sort by price, response time, trust score (data exists, UI not built)
@@ -554,6 +565,8 @@ Google Search Console integration is live and running:
 ### Manual-Only Scripts (intentional)
 | Script | Purpose |
 |--------|---------|
+| `generate-blog-posts.js` | Blog post generation — run after re-synthesis or data changes |
+| `resynthesize-emergency.js` | Bulk re-synthesis for emergency readiness + servicesMentioned (one-time scheduled Apr 7) |
 | `seed-expansion-queue.ts` | One-time seed — not recurring |
 | `seed-cities-collection.js` | One-time seed — already run |
 | `seed-plumbers.ts` | Test data only |
