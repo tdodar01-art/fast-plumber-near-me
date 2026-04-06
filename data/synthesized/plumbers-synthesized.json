@@ -3,7 +3,7 @@
     "scrapedAt": "2026-04-06T11:50:39.532Z",
     "totalPlumbers": 270,
     "citiesScraped": 30,
-    "synthesizedAt": "2026-04-06T13:13:58.974Z",
+    "synthesizedAt": "2026-04-06T13:31:00.819Z",
     "totalSynthesized": 268,
     "model": "claude-sonnet-4-20250514"
   },
@@ -3480,7 +3480,7 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T13:13:56.977Z",
+      "scrapedAt": "2026-04-06T13:22:36.375Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
@@ -3508,7 +3508,15 @@
         "platformDiscrepancy": "Google 4.9 vs. Yelp 3.9 (1.0-point gap). Yelp contains older complaints (2013–2023) about refused emergency service, billing disputes, and property damage rarely mentioned in recent Google reviews. Google's recent reviews (2025) heavily skew positive, while Yelp's older reviews reveal more service refusals and upselling concerns. This suggests either operational improvement or differential review curation."
       },
       "yelpRating": 3.9,
-      "yelpReviewCount": 43
+      "yelpReviewCount": 43,
+      "bbb": {
+        "accredited": false,
+        "rating": "A+",
+        "complaintsTotal": 1,
+        "complaintsPast3Years": 1,
+        "yearsInBusiness": 29,
+        "bbbUrl": "https://www.bbb.org/us/il/crystal-lake/profile/septic-tank-cleaning/tidy-tank-plumbing-sewer-and-septic-0654-12022242"
+      }
     },
     {
       "placeId": "ChIJB4eo-ATS-YgRHF_co06Zcl4",
@@ -23943,7 +23951,7 @@
         "Saturday: 7:00 AM – 11:00 PM",
         "Sunday: 7:00 AM – 11:00 PM"
       ],
-      "scrapedAt": "2026-04-06T12:22:35.869Z",
+      "scrapedAt": "2026-04-06T13:22:32.391Z",
       "synthesis": {
         "score": 78,
         "trustLevel": "high",
@@ -23964,6 +23972,14 @@
         "priceSignal": "budget",
         "topQuote": null,
         "worstQuote": null
+      },
+      "bbb": {
+        "accredited": false,
+        "rating": null,
+        "complaintsTotal": 0,
+        "complaintsPast3Years": 0,
+        "yearsInBusiness": 13,
+        "bbbUrl": "https://www.bbb.org/us/il/crystal-lake/profile/plumber/d-d-plumbing-company-0654-88587320"
       }
     },
     {
