@@ -50,6 +50,7 @@ const scriptLabels: Record<string, { label: string; color: string }> = {
   "fetch-plumbers": { label: "fetch-plumbers", color: "bg-blue-100 text-blue-700" },
   "refresh-reviews": { label: "refresh-reviews", color: "bg-purple-100 text-purple-700" },
   "synthesize-reviews": { label: "synthesize-reviews", color: "bg-green-100 text-green-700" },
+  "request-indexing": { label: "request-indexing", color: "bg-orange-100 text-orange-700" },
 };
 
 function RunSummary({ run }: { run: PipelineRun }) {
@@ -69,6 +70,12 @@ function RunSummary({ run }: { run: PipelineRun }) {
     if (s.plumbersSynthesized != null) parts.push(`Synthesized: ${s.plumbersSynthesized}`);
     if (s.redFlagsFound != null) parts.push(`Red flags: ${s.redFlagsFound}`);
     if (s.badgesAwarded != null) parts.push(`Badges: ${s.badgesAwarded}`);
+  } else if (run.script === "request-indexing") {
+    if (s.sitemapSubmitted != null) parts.push(`Sitemap: ${s.sitemapSubmitted ? "✓" : "✗"}`);
+    if (s.indexingSubmitted != null) parts.push(`Indexed: ${s.indexingSubmitted}`);
+    if (s.indexingErrors != null && (s.indexingErrors as number) > 0) parts.push(`Errors: ${s.indexingErrors}`);
+    if (s.urlsRequested != null) parts.push(`URLs: ${s.urlsRequested}`);
+    if (s.quotaExhausted) parts.push("Quota exhausted");
   }
 
   return <span className="text-xs text-gray-500">{parts.join(" · ") || "No details"}</span>;

@@ -201,25 +201,60 @@ async function requestIndexing(urlPath) {
 // Main
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Pipeline run logging (shows in admin Activity dashboard)
+// ---------------------------------------------------------------------------
+
+async function logPipelineRun(startedAt, summary, error) {
+  if (!db) return;
+  const completedAt = new Date();
+  const durationSeconds = Math.round((completedAt - startedAt) / 1000);
+  const hasErrors = !!error || (summary.indexingErrors || 0) > 0;
+
+  await db.collection("pipelineRuns").add({
+    script: "request-indexing",
+    startedAt: admin.firestore.Timestamp.fromDate(startedAt),
+    completedAt: admin.firestore.Timestamp.fromDate(completedAt),
+    durationSeconds,
+    status: error ? "error" : hasErrors ? "partial" : "success",
+    summary,
+    ...(error && { error }),
+    triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
 async function main() {
   const args = process.argv.slice(2);
   const sitemapOnly = args.includes("--sitemap-only");
   const urls = args.filter((a) => !a.startsWith("--"));
+  const startedAt = new Date();
 
   console.log("=== Request Indexing ===");
   console.log(`Date: ${todayStr()}`);
 
   // Always submit sitemap
-  await submitSitemap();
+  const sitemapOk = await submitSitemap();
 
   if (sitemapOnly) {
     console.log("\n--sitemap-only flag set, skipping URL indexing.");
+    await logPipelineRun(startedAt, {
+      sitemapSubmitted: sitemapOk,
+      urlsRequested: 0,
+    });
     return;
   }
 
   if (urls.length === 0) {
     console.log("\nNo URLs provided. Pass paths as arguments to request indexing.");
     console.log("Example: node scripts/request-indexing.js /emergency-plumbers/illinois/crystal-lake");
+    await logPipelineRun(startedAt, {
+      sitemapSubmitted: sitemapOk,
+      urlsRequested: 0,
+    });
     return;
   }
 
@@ -231,6 +266,11 @@ async function main() {
 
   if (remaining <= 0) {
     console.error("ERROR: Daily indexing quota exhausted. Try again tomorrow.");
+    await logPipelineRun(startedAt, {
+      sitemapSubmitted: sitemapOk,
+      urlsRequested: 0,
+      quotaExhausted: true,
+    }, "Daily indexing quota exhausted");
     process.exit(1);
   }
 
@@ -251,6 +291,14 @@ async function main() {
   const submitted = results.filter((r) => r.status === "submitted").length;
   const errors = results.filter((r) => r.status === "error").length;
   console.log(`\nDone: ${submitted} submitted, ${errors} failed.`);
+
+  await logPipelineRun(startedAt, {
+    sitemapSubmitted: sitemapOk,
+    urlsRequested: toProcess.length,
+    indexingSubmitted: submitted,
+    indexingErrors: errors,
+    urls: toProcess.map((u) => u.startsWith("http") ? u : `${SITE_ORIGIN}${u.startsWith("/") ? "" : "/"}${u}`),
+  });
 
   if (errors > 0) process.exit(1);
 }

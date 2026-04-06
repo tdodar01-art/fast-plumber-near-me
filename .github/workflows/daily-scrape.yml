@@ -87,10 +87,6 @@ jobs:
         run: npx tsx scripts/synthesize-reviews.ts
         continue-on-error: true
 
-      - name: Cleanup service account
-        if: always()
-        run: rm -f service-account.json
-
       - name: Check for changes
         id: changes
         run: |
@@ -111,3 +107,49 @@ jobs:
           NEW=$(node -e "const r=require('./data/logs/daily-result-$(date +%Y-%m-%d).json');console.log(r.newPlumbers)" 2>/dev/null || echo "0")
           git commit -m "Daily scrape: +${NEW} plumbers from ${CITIES}"
           git push
+
+      # Phase 4: Request indexing for updated city pages
+      - name: Request indexing for scraped cities
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
+        run: |
+          LOG="data/logs/daily-result-$(date +%Y-%m-%d).json"
+          if [ ! -f "$LOG" ]; then
+            echo "No daily result log found — skipping indexing."
+            exit 0
+          fi
+          URLS=$(node -e "
+            const r = require('./$LOG');
+            const slugify = (t) => t.toLowerCase().replace(/\./g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+            const cities = r.citiesProcessed || [];
+            if (cities.length === 0) { process.exit(0); }
+            // Each city in the log has a .city and we need to find its state+slug
+            // The log doesn't store state/slug, so read the synthesized data to match
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('data/synthesized/plumbers-synthesized.json','utf-8'));
+            const urls = new Set();
+            for (const c of cities) {
+              const match = data.plumbers.find(p => p.city === c.city);
+              if (match) {
+                const stateSlug = match.state.toLowerCase();
+                // Map state abbr to full slug
+                const abbrs = {AL:'alabama',AK:'alaska',AZ:'arizona',AR:'arkansas',CA:'california',CO:'colorado',CT:'connecticut',DE:'delaware',FL:'florida',GA:'georgia',HI:'hawaii',ID:'idaho',IL:'illinois',IN:'indiana',IA:'iowa',KS:'kansas',KY:'kentucky',LA:'louisiana',ME:'maine',MD:'maryland',MA:'massachusetts',MI:'michigan',MN:'minnesota',MS:'mississippi',MO:'missouri',MT:'montana',NE:'nebraska',NV:'nevada',NH:'new-hampshire',NJ:'new-jersey',NM:'new-mexico',NY:'new-york',NC:'north-carolina',ND:'north-dakota',OH:'ohio',OK:'oklahoma',OR:'oregon',PA:'pennsylvania',RI:'rhode-island',SC:'south-carolina',SD:'south-dakota',TN:'tennessee',TX:'texas',UT:'utah',VT:'vermont',VA:'virginia',WA:'washington',WV:'west-virginia',WI:'wisconsin',WY:'wyoming',DC:'district-of-columbia'};
+                const ss = abbrs[match.state] || stateSlug;
+                urls.add('/emergency-plumbers/' + ss + '/' + slugify(c.city));
+              }
+            }
+            if (urls.size > 0) console.log([...urls].join(' '));
+          " 2>/dev/null)
+          if [ -z "$URLS" ]; then
+            echo "No city URLs to index."
+            node scripts/request-indexing.js --sitemap-only
+          else
+            echo "Requesting indexing for: $URLS"
+            node scripts/request-indexing.js $URLS
+          fi
+
+      - name: Cleanup service account
+        if: always()
+        run: rm -f service-account.json
