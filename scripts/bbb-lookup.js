@@ -264,6 +264,8 @@ async function main() {
   let totalAccredited = 0;
   const startedAt = new Date();
 
+  const plumberDetails = [];
+
   for (const citySlug of citySlugs) {
     console.log(`\n📍 City: ${citySlug}`);
 
@@ -312,6 +314,7 @@ async function main() {
         if (!bbbData) {
           console.log(`    Not found on BBB.`);
           totalNotFound++;
+          plumberDetails.push({ name: data.businessName, id: doc.id, matched: false });
           continue;
         }
 
@@ -320,6 +323,8 @@ async function main() {
 
         const complaints = bbbData.complaintsPast3Years ?? bbbData.complaintsTotal ?? 0;
         console.log(`    ✓ BBB: ${bbbData.rating} | ${bbbData.accredited ? "Accredited" : "Not Accredited"} | ${complaints} complaints (3yr) | ${bbbData.yearsInBusiness ?? "?"} yrs | match: ${bbbData.matchScore}`);
+
+        plumberDetails.push({ name: data.businessName, id: doc.id, matched: true, rating: bbbData.rating, accredited: bbbData.accredited, complaints3yr: bbbData.complaintsPast3Years, yearsInBusiness: bbbData.yearsInBusiness });
 
         if (!dryRun) {
           await db.collection("plumbers").doc(doc.id).update({
@@ -330,6 +335,7 @@ async function main() {
       } catch (err) {
         console.error(`    ERROR: ${err.message}`);
         totalErrors++;
+        plumberDetails.push({ name: data.businessName, id: doc.id, error: err.message });
       }
     }
   }
@@ -363,6 +369,7 @@ async function main() {
           notFoundOnBBB: totalNotFound,
           accredited: totalAccredited,
           errors: totalErrors,
+          plumberDetails,
         },
         triggeredBy: "manual",
       });

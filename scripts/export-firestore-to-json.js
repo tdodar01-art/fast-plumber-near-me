@@ -76,6 +76,7 @@ const db = admin.firestore();
 // ---------------------------------------------------------------------------
 
 async function main() {
+  const startedAt = new Date();
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
   const noPush = args.includes("--no-push");
@@ -184,6 +185,30 @@ async function main() {
     } catch (err) {
       console.error("Git commit/push failed:", err.message);
       // Non-fatal — data is still written locally
+    }
+  }
+
+  // Log to pipelineRuns collection
+  if (!dryRun) {
+    try {
+      const durationSeconds = Math.round((Date.now() - startedAt.getTime()) / 1000);
+      await db.collection("pipelineRuns").add({
+        script: "export-json",
+        startedAt: admin.firestore.Timestamp.fromDate(startedAt),
+        completedAt: admin.firestore.Timestamp.now(),
+        durationSeconds,
+        status: "success",
+        summary: {
+          plumbersUpdated: updated,
+          plumbersAdded: added,
+          unchanged,
+          citiesAffected: [...affectedCities],
+          pushed: !noPush,
+        },
+        triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+      });
+    } catch (e) {
+      console.error("Failed to log pipelineRun:", e.message);
     }
   }
 

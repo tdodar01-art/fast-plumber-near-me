@@ -47,23 +47,31 @@ function formatDate(date: Date): string {
 }
 
 const scriptLabels: Record<string, { label: string; color: string }> = {
+  "daily-scrape": { label: "daily-scrape", color: "bg-blue-100 text-blue-700" },
   "fetch-plumbers": { label: "fetch-plumbers", color: "bg-blue-100 text-blue-700" },
+  "upload-firestore": { label: "upload-firestore", color: "bg-sky-100 text-sky-700" },
   "refresh-reviews": { label: "refresh-reviews", color: "bg-purple-100 text-purple-700" },
   "synthesize-reviews": { label: "synthesize-reviews", color: "bg-green-100 text-green-700" },
   "request-indexing": { label: "request-indexing", color: "bg-orange-100 text-orange-700" },
   "outscraper-reviews": { label: "outscraper-reviews", color: "bg-pink-100 text-pink-700" },
   "bbb-lookup": { label: "bbb-lookup", color: "bg-yellow-100 text-yellow-700" },
+  "export-json": { label: "export-json", color: "bg-teal-100 text-teal-700" },
 };
 
-function RunSummary({ run }: { run: PipelineRun }) {
+function getRunSummaryLine(run: PipelineRun): string {
   const s = run.summary;
   const parts: string[] = [];
 
-  if (run.script === "fetch-plumbers") {
+  if (run.script === "daily-scrape" || run.script === "fetch-plumbers") {
     if (s.citiesSearched) parts.push(`Searched: ${(s.citiesSearched as string[]).join(", ")}`);
     if (s.newPlumbers != null) parts.push(`New: ${s.newPlumbers}`);
     if (s.updatedPlumbers != null) parts.push(`Updated: ${s.updatedPlumbers}`);
     if (s.apiCalls != null) parts.push(`API calls: ${s.apiCalls}`);
+    if (s.monthlyUsage) parts.push(`Budget: ${s.monthlyUsage}`);
+  } else if (run.script === "upload-firestore") {
+    if (s.created != null) parts.push(`Created: ${s.created}`);
+    if (s.updated != null) parts.push(`Updated: ${s.updated}`);
+    if (s.failed != null && (s.failed as number) > 0) parts.push(`Failed: ${s.failed}`);
   } else if (run.script === "refresh-reviews") {
     if (s.plumbersRefreshed != null) parts.push(`Refreshed: ${s.plumbersRefreshed}`);
     if (s.newReviewsCached != null) parts.push(`New reviews: ${s.newReviewsCached}`);
@@ -96,9 +104,74 @@ function RunSummary({ run }: { run: PipelineRun }) {
     if (s.notFoundOnBBB != null) parts.push(`Not found: ${s.notFoundOnBBB}`);
     if (s.accredited != null) parts.push(`Accredited: ${s.accredited}`);
     if (s.citySlugs) parts.push(`Cities: ${(s.citySlugs as string[]).join(", ")}`);
+  } else if (run.script === "export-json") {
+    if (s.plumbersUpdated != null) parts.push(`Updated: ${s.plumbersUpdated}`);
+    if (s.plumbersAdded != null && (s.plumbersAdded as number) > 0) parts.push(`Added: ${s.plumbersAdded}`);
+    if (s.pushed != null) parts.push(s.pushed ? "Pushed" : "Local only");
+    if (s.citiesAffected) parts.push(`${(s.citiesAffected as string[]).length} cities`);
   }
 
-  return <span className="text-xs text-gray-500">{parts.join(" · ") || "No details"}</span>;
+  return parts.join(" · ") || "No details";
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function PlumberDetailRow({ p }: { p: Record<string, any> }) {
+  return (
+    <div className="flex items-center gap-2 flex-wrap text-[11px] py-0.5">
+      <span className="font-medium text-gray-700 min-w-[140px]">{p.name}</span>
+      {/* Outscraper review details */}
+      {p.reviews && (
+        <span className="text-gray-400">
+          G:{p.reviews.google || 0} Y:{p.reviews.yelp || 0} A:{p.reviews.angi || 0}
+        </span>
+      )}
+      {p.synthesized === true && <span className="text-green-600">synthesized</span>}
+      {p.badges && (p.badges as string[]).length > 0 && (
+        <span className="text-green-600">{(p.badges as string[]).join(", ")}</span>
+      )}
+      {p.redFlagsCount != null && (p.redFlagsCount as number) > 0 && (
+        <span className="text-red-600">{p.redFlagsCount} red flags</span>
+      )}
+      {p.hasBBB && <span className="text-yellow-600">BBB</span>}
+      {/* BBB details */}
+      {p.matched === true && p.rating && (
+        <span className="text-gray-500">BBB {p.rating}{p.accredited ? " Accredited" : ""}</span>
+      )}
+      {p.matched === true && p.complaints3yr != null && (p.complaints3yr as number) > 0 && (
+        <span className="text-amber-600">{p.complaints3yr} complaints</span>
+      )}
+      {p.matched === false && <span className="text-gray-400">not on BBB</span>}
+      {/* Skipped / error */}
+      {p.skipped && <span className="text-gray-400">skipped</span>}
+      {p.error && <span className="text-red-500">error: {p.error}</span>}
+    </div>
+  );
+}
+
+function RunDetails({ run }: { run: PipelineRun }) {
+  const s = run.summary;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const details = (s.plumberDetails || []) as Record<string, any>[];
+  const urls = (s.urls || []) as string[];
+  const cities = (s.citiesAffected || []) as string[];
+
+  if (details.length === 0 && urls.length === 0 && cities.length === 0) return null;
+
+  return (
+    <div className="mt-2 ml-0.5 pl-3 border-l-2 border-gray-100 space-y-0.5">
+      {details.length > 0 && details.map((p, i) => <PlumberDetailRow key={i} p={p} />)}
+      {urls.length > 0 && (
+        <div className="text-[11px] text-gray-400 pt-1">
+          URLs: {urls.map((u) => u.replace(/^https?:\/\/[^/]+/, "")).join(", ")}
+        </div>
+      )}
+      {cities.length > 0 && details.length === 0 && (
+        <div className="text-[11px] text-gray-400">
+          Cities: {cities.join(", ")}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function AdminActivityPage() {
@@ -108,6 +181,7 @@ export default function AdminActivityPage() {
   const [reviewCount, setReviewCount] = useState(0);
   const [apiUsage, setApiUsage] = useState<ApiUsage | null>(null);
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set(["Today"]));
+  const [expandedRuns, setExpandedRuns] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function load() {
@@ -214,10 +288,29 @@ export default function AdminActivityPage() {
                     {dayRuns.map((run) => {
                       const scriptInfo = scriptLabels[run.script] || { label: run.script, color: "bg-gray-100 text-gray-700" };
                       const time = run.startedAt?.toDate?.();
+                      const hasDetails = (run.summary.plumberDetails as unknown[])?.length > 0 ||
+                        (run.summary.urls as unknown[])?.length > 0 ||
+                        (run.summary.citiesAffected as unknown[])?.length > 0;
+                      const isExpanded = expandedRuns.has(run.id);
 
                       return (
                         <div key={run.id} className="px-4 py-3">
-                          <div className="flex items-center gap-2 flex-wrap">
+                          <div
+                            className={`flex items-center gap-2 flex-wrap ${hasDetails ? "cursor-pointer" : ""}`}
+                            onClick={() => {
+                              if (!hasDetails) return;
+                              setExpandedRuns((prev) => {
+                                const next = new Set(prev);
+                                if (next.has(run.id)) next.delete(run.id); else next.add(run.id);
+                                return next;
+                              });
+                            }}
+                          >
+                            {hasDetails && (
+                              isExpanded
+                                ? <ChevronDown className="w-3 h-3 text-gray-300" />
+                                : <ChevronRight className="w-3 h-3 text-gray-300" />
+                            )}
                             <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${scriptInfo.color}`}>
                               {scriptInfo.label}
                             </span>
@@ -232,11 +325,12 @@ export default function AdminActivityPage() {
                             )}
                           </div>
                           <div className="mt-1 ml-0.5">
-                            <RunSummary run={run} />
+                            <span className="text-xs text-gray-500">{getRunSummaryLine(run)}</span>
                           </div>
                           {run.error && (
                             <p className="text-xs text-red-600 mt-1 ml-0.5 line-clamp-2">{run.error}</p>
                           )}
+                          {isExpanded && <RunDetails run={run} />}
                         </div>
                       );
                     })}

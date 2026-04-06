@@ -559,7 +559,7 @@ async function synthesizePlumber(plumberId, plumberData, platformStats) {
   });
 
   console.log(`    ✓ Synthesis: ${ai.badges?.join(", ") || "no badges"} | ${ai.redFlags?.length || 0} red flags | emergency: ${ai.emergencyReadiness}${ai.platformDiscrepancy ? ` | ⚠ ${ai.platformDiscrepancy}` : ""}`);
-  return true;
+  return ai;
 }
 
 // ---------------------------------------------------------------------------
@@ -591,6 +591,7 @@ async function main() {
   let totalSynthesized = 0;
   let totalErrors = 0;
   const reviewsBySource = { google: 0, yelp: 0, angi: 0 };
+  const plumberDetails = [];
   const startedAt = new Date();
 
   for (const citySlug of citySlugs) {
@@ -631,12 +632,14 @@ async function main() {
 
       if (!placeId) {
         console.log(`    Skipping — no Google Place ID.`);
+        plumberDetails.push({ name: data.businessName, id: doc.id, skipped: true, reason: "no placeId" });
         continue;
       }
 
       if (dryRun) {
         const existing = data.lastOutscraperPull ? `last pull: ${data.lastOutscraperPull.toDate().toISOString().slice(0, 10)}` : "never pulled";
         console.log(`    [DRY RUN] Would pull Google${googleOnly ? "" : " + Yelp + Angi"} reviews (${existing})`);
+        plumberDetails.push({ name: data.businessName, id: doc.id, skipped: true, reason: "dry-run" });
         continue;
       }
 
@@ -647,6 +650,14 @@ async function main() {
         angiRating: null,
         angiReviewCount: null,
       };
+
+      // Per-plumber tracking variables
+      let plumberCountBySource = { google: 0, yelp: 0, angi: 0 };
+      let plumberDupeCount = 0;
+      let plumberSynthesized = false;
+      let plumberBadges = [];
+      let plumberRedFlagsCount = 0;
+      let plumberError = false;
 
       try {
         // 1. Google reviews
@@ -687,11 +698,18 @@ async function main() {
             lastOutscraperPull: admin.firestore.Timestamp.now(),
           });
           console.log(`    No reviews found across any platform.`);
+          plumberDetails.push({
+            name: data.businessName, id: doc.id,
+            reviews: { google: 0, yelp: 0, angi: 0 },
+            dupes: 0, synthesized: false, badges: [], redFlagsCount: 0, hasBBB: !!data.bbb,
+          });
           continue;
         }
 
         // Store all reviews
         const { newCount, dupeCount, countBySource } = await storeReviews(doc.id, allReviews);
+        plumberCountBySource = countBySource;
+        plumberDupeCount = dupeCount;
         totalNewReviews += newCount;
         totalDupes += dupeCount;
         for (const [src, cnt] of Object.entries(countBySource)) {
@@ -727,8 +745,13 @@ async function main() {
         if (data.bbb) platformStats.bbb = data.bbb;
         if (!skipSynthesis && newCount > 0 && ANTHROPIC_API_KEY) {
           try {
-            const synthesized = await synthesizePlumber(doc.id, data, platformStats);
-            if (synthesized) totalSynthesized++;
+            const aiResult = await synthesizePlumber(doc.id, data, platformStats);
+            if (aiResult) {
+              totalSynthesized++;
+              plumberSynthesized = true;
+              plumberBadges = aiResult.badges || [];
+              plumberRedFlagsCount = (aiResult.redFlags || []).length;
+            }
           } catch (err) {
             console.error(`    Synthesis error: ${err.message}`);
             totalErrors++;
@@ -739,7 +762,20 @@ async function main() {
       } catch (err) {
         console.error(`    ERROR: ${err.message}`);
         totalErrors++;
+        plumberError = true;
       }
+
+      plumberDetails.push({
+        name: data.businessName,
+        id: doc.id,
+        reviews: { google: plumberCountBySource.google || 0, yelp: plumberCountBySource.yelp || 0, angi: plumberCountBySource.angi || 0 },
+        dupes: plumberDupeCount,
+        synthesized: plumberSynthesized,
+        badges: plumberBadges,
+        redFlagsCount: plumberRedFlagsCount,
+        hasBBB: !!data.bbb,
+        ...(plumberError && { error: true }),
+      });
     }
   }
 
@@ -781,6 +817,7 @@ async function main() {
           synthesized: totalSynthesized,
           errors: totalErrors,
           estimatedCost: `$${estCost}`,
+          plumberDetails,
         },
         triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
       });
