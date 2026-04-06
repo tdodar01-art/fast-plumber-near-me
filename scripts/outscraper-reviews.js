@@ -394,7 +394,7 @@ async function storeReviews(plumberId, reviews) {
 // Claude synthesis (multi-source aware)
 // ---------------------------------------------------------------------------
 
-function buildPrompt(name, googleRating, googleReviewCount, reviews, platformStats) {
+function buildPrompt(name, googleRating, googleReviewCount, reviews, platformStats, businessContext) {
   // Group reviews by source for the prompt
   const googleReviews = reviews.filter((r) => r.source === "google");
   const yelpReviews = reviews.filter((r) => r.source === "yelp");
@@ -432,10 +432,22 @@ function buildPrompt(name, googleRating, googleReviewCount, reviews, platformSta
     if (bbb.yearsInBusiness != null) bbbContext += ` | Years in business: ${bbb.yearsInBusiness}`;
   }
 
-  return `You are analyzing reviews from multiple platforms for a plumber to help homeowners in an emergency.
+  // Business context for emergency detection
+  const ctx = businessContext || {};
+  let businessSignals = "";
+  if (ctx.is24Hour) businessSignals += "\nGoogle Hours: Open 24 hours";
+  else if (ctx.workingHours) businessSignals += `\nGoogle Hours: ${Array.isArray(ctx.workingHours) ? ctx.workingHours.join("; ") : ctx.workingHours}`;
+  const nameLower = name.toLowerCase();
+  const emergencyNameSignals = [];
+  if (/24.?7|24.?hour|twenty.?four/i.test(nameLower)) emergencyNameSignals.push("24/7 in name");
+  if (/emergency/i.test(nameLower)) emergencyNameSignals.push("'emergency' in name");
+  if (/after.?hour|anytime|rescue|rapid|fast/i.test(nameLower)) emergencyNameSignals.push("urgency keyword in name");
+  if (emergencyNameSignals.length > 0) businessSignals += `\nBusiness Name Signals: ${emergencyNameSignals.join(", ")}`;
+
+  return `You are analyzing reviews from multiple platforms for a plumber to help homeowners in an emergency. This is an EMERGENCY PLUMBER DIRECTORY — emergency readiness detection is critical.
 
 Plumber: ${name}
-${platformContext}${bbbContext}
+${platformContext}${businessSignals}${bbbContext}
 We have ${reviews.length} total reviews across all platforms.
 
 ${reviewBlock}
@@ -449,8 +461,8 @@ Respond in JSON only. No markdown, no preamble, no backticks.
   "summary": "One specific sentence a friend would say. Never say 'reliable and professional'. Reference actual patterns. If platforms disagree, mention it.",
   "strengths": ["2-3 specific strengths with evidence. e.g. '3 of 8 Google reviewers mention arriving within an hour'${bbb?.accredited ? " Include BBB accreditation as a trust signal." : ""}"],
   "weaknesses": ["1-2 specific weaknesses. e.g. 'Yelp reviews mention surprise fees not seen on Google'. Include platform discrepancies if significant.${bbb?.complaintsPast3Years > 0 ? " Flag BBB complaints." : ""}"],
-  "emergencyReadiness": "high|medium|low|unknown — IMPORTANT: Do NOT look for the literal phrase 'emergency response'. Instead look for these real-world signals: same-day service, after-hours visits, weekend availability, came within X hours, fixed it that night, showed up right away, handled it immediately, middle of the night, holiday service. If ANY reviewer mentions getting service the same day they called, or after normal business hours, or on weekends — that is HIGH emergency readiness. 'unknown' ONLY if zero reviews mention timing at all.",
-  "emergencyNotes": "Summarize what reviews reveal about urgency response. Example: 'Multiple reviewers report same-day service; one mentions a basement flood fixed the same night they called.' Do NOT say 'no emergency data' if reviews mention fast response, same-day visits, or after-hours work — those ARE emergency signals. If you can estimate typical response time from review mentions, include it (e.g. 'Reviews suggest 2-4 hour typical response window').",
+  "emergencyReadiness": "high|medium|low|unknown — IMPORTANT: This is an emergency plumber directory. Look for ALL signals: (1) Business name contains '24/7', 'emergency', '24 hour', 'anytime', 'after hours', 'rescue' → high. (2) Google hours show 'Open 24 hours' → high. (3) Reviews mention after-hours, weekend, holiday, midnight, same-day, or emergency response → high. (4) Reviews mention quick scheduling or fast arrival (even during business hours) → medium. (5) Only mark 'unknown' if there are literally zero signals in name, hours, or reviews. Most plumbers who show up in an 'emergency plumber' Google search have SOME emergency capability — lean toward medium over unknown when there's any signal at all.",
+  "emergencyNotes": "Summarize what reviews reveal about urgency response. Example: 'Multiple reviewers report same-day service; one mentions a basement flood fixed the same night they called.' Do NOT say 'no emergency data' if reviews mention fast response, same-day visits, or after-hours work — those ARE emergency signals. If you can estimate typical response time from review mentions, include it (e.g. 'Reviews suggest 2-4 hour typical response window'). If business hours show 24/7 or name contains emergency keywords, mention that.",
   "badges": ["Only from: 'Fast Responder', 'Fair Pricing', '24/7 Available', 'Clean & Professional', 'Great Communicator'. Only include if reviews clearly support it. CRITICAL: A badge MUST NOT contradict any red flag. If there is ANY red flag about response time, lateness, or slow callbacks, do NOT award 'Fast Responder'. If there is ANY red flag about pricing disputes or surprise charges, do NOT award 'Fair Pricing'. If there is ANY red flag about unprofessional behavior, do NOT award 'Clean & Professional'. Badges are earned — one contradicting complaint disqualifies the badge."],
   "redFlags": ["Concerning patterns — be especially aggressive with small sample sizes. If a plumber has fewer than 25 total reviews, even 1-2 negative reviews about the same issue (late arrival, didn't show up, didn't complete work, surprise charges, rude behavior, unresponsive) IS a pattern and MUST be flagged. For 25+ reviews, flag when 3+ reviews mention the same concern. Always flag: response time complaints, incomplete work, billing disputes, no-shows, licensing concerns, refusal to provide estimates. Format each flag as a specific finding with numbers, e.g. '2 of 14 reviewers report arrival delays exceeding 30 minutes'. Empty array ONLY if literally every review is 4-5 stars with no complaints."],
   "bestFor": ["1-2 specific services or scenarios this plumber excels at, based on review patterns."],
@@ -518,7 +530,8 @@ async function synthesizePlumber(plumberId, plumberData, platformStats) {
     plumberData.googleRating,
     plumberData.googleReviewCount || 0,
     reviews,
-    platformStats
+    platformStats,
+    { is24Hour: plumberData.is24Hour, workingHours: plumberData.workingHours }
   );
 
   await sleep(CLAUDE_RATE_LIMIT_MS);

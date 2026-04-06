@@ -371,6 +371,8 @@ function buildSynthesis(fd) {
     bestFor: rs.bestFor || [],
     redFlags: rs.redFlags || [],
     priceSignal: rs.pricingTier || "unknown",
+    emergencyReadiness: rs.emergencyReadiness || "unknown",
+    emergencyNotes: rs.emergencyNotes || "",
     topQuote: rs.topQuote || null,
     worstQuote: rs.worstQuote || null,
     ...(rs.platformDiscrepancy && { platformDiscrepancy: rs.platformDiscrepancy }),

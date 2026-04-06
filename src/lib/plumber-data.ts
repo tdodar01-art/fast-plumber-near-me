@@ -22,8 +22,11 @@ export interface PlumberSynthesis {
   bestFor: string[];
   redFlags: string[];
   priceSignal: "budget" | "mid-range" | "premium" | "mixed" | "unknown";
+  emergencyReadiness?: "high" | "medium" | "low" | "unknown";
+  emergencyNotes?: string;
   topQuote: string | null;
   worstQuote: string | null;
+  platformDiscrepancy?: string | null;
 }
 
 export interface SynthesizedPlumber {
