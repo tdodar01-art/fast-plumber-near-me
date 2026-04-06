@@ -450,7 +450,7 @@ Respond in JSON only. No markdown, no preamble, no backticks.
   "emergencyReadiness": "high|medium|low|unknown",
   "emergencyNotes": "One sentence about emergency signals — after-hours mentions, response time, weekend availability.",
   "badges": ["Only from: 'Fast Responder', 'Fair Pricing', '24/7 Available', 'Clean & Professional', 'Great Communicator'. Only include if reviews clearly support it."],
-  "redFlags": ["Concerning patterns across any platform. Empty array if none."],
+  "redFlags": ["Concerning patterns — be especially aggressive with small sample sizes. If a plumber has fewer than 25 total reviews, even 1-2 negative reviews about the same issue (late arrival, didn't show up, didn't complete work, surprise charges, rude behavior, unresponsive) IS a pattern and MUST be flagged. For 25+ reviews, flag when 3+ reviews mention the same concern. Always flag: response time complaints, incomplete work, billing disputes, no-shows, licensing concerns, refusal to provide estimates. Format each flag as a specific finding with numbers, e.g. '2 of 14 reviewers report arrival delays exceeding 30 minutes'. Empty array ONLY if literally every review is 4-5 stars with no complaints."],
   "bestFor": ["1-2 specific services or scenarios this plumber excels at, based on review patterns."],
   "pricingTier": "budget|mid-range|premium|unknown",
   "platformDiscrepancy": "Describe any significant rating gap between platforms, or null if ratings are consistent"
