@@ -185,55 +185,99 @@ async function pullGoogleReviews(placeId, businessName, cutoffTimestamp) {
 }
 
 // ---------------------------------------------------------------------------
-// Yelp Reviews via Outscraper
+// Yelp Reviews via Outscraper (3-step fallback)
 // ---------------------------------------------------------------------------
 
+function slugifyForYelp(name, city) {
+  // "D & D Plumbing Company" + "Crystal Lake" → "d-and-d-plumbing-company-crystal-lake"
+  return (name + " " + city)
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+async function fetchYelpReviews(yelpUrl) {
+  // Outscraper yelp/reviews returns flat review objects in data[0], not nested
+  const data = await outscraperRequest("/yelp/reviews", {
+    query: yelpUrl,
+    limit: String(MAX_REVIEWS_PER_SOURCE),
+    sort: "relevance_desc",
+    async: "false",
+  });
+
+  if (!data || !data[0]) return [];
+
+  // Reviews are flat objects in data[0] array
+  const reviews = Array.isArray(data[0]) ? data[0] : [];
+  // Filter out sentinel markers
+  return reviews.filter((r) => r.review_id !== "__NO_REVIEWS_FOUND__" && r.review_text);
+}
+
 async function pullYelpReviews(businessName, city, state) {
-  const query = `${businessName}, ${city}, ${state}`;
-  console.log(`    [Yelp] Searching: "${query}"...`);
+  console.log(`    [Yelp] Looking up "${businessName}" in ${city}, ${state}...`);
 
   try {
-    // Step 1: find the business on Yelp
-    const searchResults = await outscraper.yelpSearch(query, 3);
-    if (!searchResults || searchResults.length === 0) {
-      console.log(`    [Yelp] No business found.`);
-      return [];
+    let reviews = [];
+    let yelpUrl = null;
+
+    // --- Approach A: Construct likely Yelp URL and try directly ---
+    const slug = slugifyForYelp(businessName, city);
+    const constructedUrl = `https://www.yelp.com/biz/${slug}`;
+    console.log(`    [Yelp] Trying constructed URL: ${constructedUrl}`);
+
+    reviews = await fetchYelpReviews(constructedUrl);
+    if (reviews.length > 0) {
+      yelpUrl = constructedUrl;
+      console.log(`    [Yelp] Got ${reviews.length} reviews via constructed URL.`);
     }
 
-    // Find best match — name must roughly match
-    const nameNorm = businessName.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const match = searchResults.find((r) => {
-      const rName = (r.name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-      return rName.includes(nameNorm) || nameNorm.includes(rName);
-    }) || searchResults[0]; // fall back to top result
+    // --- Approach B: Google search for the Yelp page ---
+    if (reviews.length === 0) {
+      console.log(`    [Yelp] Constructed URL empty — searching Google for Yelp listing...`);
+      const searchData = await outscraperRequest("/google-search", {
+        query: `site:yelp.com "${businessName}" ${city} ${state}`,
+        limit: "3",
+        async: "false",
+      });
 
-    const yelpUrl = match.business_url || match.yelp_url || match.link;
-    if (!yelpUrl) {
-      console.log(`    [Yelp] No URL found for match: ${match.name}`);
-      return [];
+      const organic = searchData?.[0]?.organic_results || [];
+      const yelpResult = organic.find((r) =>
+        (r.link || "").match(/yelp\.com\/biz\/[a-z0-9-]+/)
+      );
+
+      if (yelpResult) {
+        // Clean URL: strip fragments, query params, and mobile prefix
+        yelpUrl = yelpResult.link
+          .replace(/[#?].*$/, "")
+          .replace("://m.yelp.com/", "://www.yelp.com/");
+        console.log(`    [Yelp] Found via Google: ${yelpUrl}`);
+        await sleep(OUTSCRAPER_QPS_DELAY_MS);
+        reviews = await fetchYelpReviews(yelpUrl);
+        console.log(`    [Yelp] Got ${reviews.length} reviews via Google-discovered URL.`);
+      } else {
+        console.log(`    [Yelp] No Yelp listing found via Google search.`);
+        return [];
+      }
     }
 
-    console.log(`    [Yelp] Matched: "${match.name}" — pulling reviews...`);
-
-    // Step 2: pull reviews
-    const reviewResults = await outscraper.yelpReviews(yelpUrl, MAX_REVIEWS_PER_SOURCE);
-    if (!reviewResults || reviewResults.length === 0) {
+    if (reviews.length === 0) {
       console.log(`    [Yelp] No reviews returned.`);
       return [];
     }
 
-    const place = reviewResults[0];
-    const reviews = place.reviews_data || [];
-    console.log(`    [Yelp] Got ${reviews.length} reviews.`);
+    // Extract aggregate rating from first review's business data if available
+    const firstReview = reviews[0] || {};
+    const yelpBizName = firstReview.business_name || null;
 
     return reviews.map((r) => ({
       source: "yelp",
-      author: r.author_title || r.reviewer_name || "Anonymous",
+      author: r.author_title || "Anonymous",
       rating: r.review_rating || 0,
       text: r.review_text || "",
-      date: r.review_datetime_utc || r.date || "",
-      yelpRating: match.rating || null,
-      yelpReviewCount: match.reviews || null,
+      date: r.datetime_utc || r.review_datetime_utc || "",
+      yelpUrl,
+      yelpBizName,
     }));
   } catch (err) {
     console.error(`    [Yelp] Error: ${err.message}`);
@@ -616,11 +660,11 @@ async function main() {
           await sleep(OUTSCRAPER_QPS_DELAY_MS);
           const yelpReviews = await pullYelpReviews(data.businessName, city, state);
           if (yelpReviews.length > 0) {
-            // Extract platform-level stats from first review that has them
-            const withStats = yelpReviews.find((r) => r.yelpRating);
-            if (withStats) {
-              platformStats.yelpRating = withStats.yelpRating;
-              platformStats.yelpReviewCount = withStats.yelpReviewCount;
+            // Compute average Yelp rating from the reviews we pulled
+            const yelpRatings = yelpReviews.filter((r) => r.rating > 0);
+            if (yelpRatings.length > 0) {
+              platformStats.yelpRating = Math.round(yelpRatings.reduce((s, r) => s + r.rating, 0) / yelpRatings.length * 10) / 10;
+              platformStats.yelpReviewCount = yelpRatings.length;
             }
             allReviews.push(...yelpReviews);
           }
