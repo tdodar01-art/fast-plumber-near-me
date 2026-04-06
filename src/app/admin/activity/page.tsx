@@ -51,6 +51,7 @@ const scriptLabels: Record<string, { label: string; color: string }> = {
   "refresh-reviews": { label: "refresh-reviews", color: "bg-purple-100 text-purple-700" },
   "synthesize-reviews": { label: "synthesize-reviews", color: "bg-green-100 text-green-700" },
   "request-indexing": { label: "request-indexing", color: "bg-orange-100 text-orange-700" },
+  "outscraper-reviews": { label: "outscraper-reviews", color: "bg-pink-100 text-pink-700" },
 };
 
 function RunSummary({ run }: { run: PipelineRun }) {
@@ -76,6 +77,12 @@ function RunSummary({ run }: { run: PipelineRun }) {
     if (s.indexingErrors != null && (s.indexingErrors as number) > 0) parts.push(`Errors: ${s.indexingErrors}`);
     if (s.urlsRequested != null) parts.push(`URLs: ${s.urlsRequested}`);
     if (s.quotaExhausted) parts.push("Quota exhausted");
+  } else if (run.script === "outscraper-reviews") {
+    if (s.plumbersProcessed != null) parts.push(`Plumbers: ${s.plumbersProcessed}`);
+    if (s.newReviews != null) parts.push(`New reviews: ${s.newReviews}`);
+    if (s.synthesized != null) parts.push(`Synthesized: ${s.synthesized}`);
+    if (s.estimatedCost) parts.push(`Cost: ${s.estimatedCost}`);
+    if (s.citySlugs) parts.push(`Cities: ${(s.citySlugs as string[]).join(", ")}`);
   }
 
   return <span className="text-xs text-gray-500">{parts.join(" · ") || "No details"}</span>;
