@@ -13,6 +13,18 @@ export interface PlumberReview {
   source?: "google" | "yelp" | "angi";
 }
 
+export interface ServiceMention {
+  count: number;
+  avgRating: number;
+  topQuote: string;
+}
+
+export type ServiceCategory =
+  | "burst-pipe" | "flooding" | "sewer" | "gas-leak" | "water-heater"
+  | "toilet" | "sump-pump" | "drain-cleaning" | "water-line" | "slab-leak"
+  | "garbage-disposal" | "faucet-fixture" | "backflow" | "repiping"
+  | "water-softener" | "bathroom-remodel";
+
 export interface PlumberSynthesis {
   score: number;
   trustLevel: "high" | "moderate" | "low";
@@ -27,6 +39,7 @@ export interface PlumberSynthesis {
   topQuote: string | null;
   worstQuote: string | null;
   platformDiscrepancy?: string | null;
+  servicesMentioned?: Partial<Record<ServiceCategory, ServiceMention>>;
 }
 
 export interface SynthesizedPlumber {

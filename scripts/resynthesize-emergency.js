@@ -156,6 +156,10 @@ We have ${reviews.length} total reviews across all platforms.
 ${reviewBlock}
 CONSISTENCY CHECK: Before responding, verify that no badge contradicts a red flag and no strength contradicts a weakness. Negative signals always win over positive ones.
 
+SERVICE CATEGORIES TO SCAN:
+Identify mentions of these services in reviews. For each found, report count, avgRating (of only those reviews), and topQuote. Use exact keys:
+burst-pipe, flooding, sewer, gas-leak, water-heater, toilet, sump-pump, drain-cleaning, water-line, slab-leak, garbage-disposal, faucet-fixture, backflow, repiping, water-softener, bathroom-remodel
+
 Respond in JSON only. No markdown, no preamble, no backticks.
 {
   "summary": "One specific sentence a friend would say. Never say 'reliable and professional'.",
@@ -167,7 +171,8 @@ Respond in JSON only. No markdown, no preamble, no backticks.
   "redFlags": ["Concerning patterns. Be aggressive with small sample sizes (<25 reviews)."],
   "bestFor": ["1-2 specific services or scenarios."],
   "pricingTier": "budget|mid-range|premium|unknown",
-  "platformDiscrepancy": "Rating gap between platforms, or null"
+  "platformDiscrepancy": "Rating gap between platforms, or null",
+  "servicesMentioned": "Object mapping service keys to {count, avgRating, topQuote}. Only include categories with 1+ review mentions. Empty {} if none."
 }`;
 }
 
@@ -279,8 +284,9 @@ async function main() {
         bestFor: ai.bestFor || [],
         pricingTier: ai.pricingTier || "unknown",
         platformDiscrepancy: ai.platformDiscrepancy || null,
+        servicesMentioned: ai.servicesMentioned || {},
         aiSynthesizedAt: admin.firestore.Timestamp.now(),
-        synthesisVersion: "ai-v1-emergency-fix",
+        synthesisVersion: "ai-v2-services",
       };
 
       await db.collection("plumbers").doc(id).update({

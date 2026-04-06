@@ -376,6 +376,7 @@ function buildSynthesis(fd) {
     topQuote: rs.topQuote || null,
     worstQuote: rs.worstQuote || null,
     ...(rs.platformDiscrepancy && { platformDiscrepancy: rs.platformDiscrepancy }),
+    ...(rs.servicesMentioned && Object.keys(rs.servicesMentioned).length > 0 && { servicesMentioned: rs.servicesMentioned }),
   };
 }
 

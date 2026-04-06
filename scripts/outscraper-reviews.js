@@ -456,6 +456,25 @@ ${bbb ? "IMPORTANT: BBB complaints are a strong reliability signal. Unresolved o
 
 CONSISTENCY CHECK: Before responding, verify that no badge contradicts a red flag and no strength contradicts a weakness. If a plumber has response time complaints in red flags, they cannot have 'Fast Responder' as a badge or 'quick response' as a strength. Resolve contradictions by removing the positive claim, not the negative one. Negative signals always win over positive ones — this protects homeowners.
 
+SERVICE CATEGORIES TO SCAN:
+When analyzing reviews, identify mentions of these specific plumbing services. For each category, count how many reviews mention it, compute the average rating of ONLY those reviews, and extract the single best quote (most detailed, ideally 5-star) as evidence. Use these exact keys:
+- "burst-pipe": burst pipe, broken pipe, pipe burst, frozen pipe, pipe leak, leaking pipe, pipe repair
+- "flooding": flood, flooded, water in basement, water damage, ceiling leak, leak in wall
+- "sewer": sewer, sewage, sewer backup, sewer line, sewer repair, sewer camera
+- "gas-leak": gas leak, gas line, gas pipe, smell gas, carbon monoxide
+- "water-heater": water heater, hot water, tankless, no hot water, water heater replacement
+- "toilet": toilet, toilet overflow, toilet repair, running toilet, toilet clogged
+- "sump-pump": sump pump, ejector pump, basement pump
+- "drain-cleaning": drain, clogged drain, drain cleaning, slow drain, snake, rooter
+- "water-line": water line, main line, water main, water supply, no water, water pressure
+- "slab-leak": slab leak, leak detection, hidden leak, under slab, foundation leak
+- "garbage-disposal": garbage disposal, disposal install
+- "faucet-fixture": faucet, fixture, sink repair, shower repair, bathtub, valve, dripping
+- "backflow": backflow, backflow preventer, backflow testing, RPZ
+- "repiping": repipe, repiping, pipe replacement, old pipes, copper repipe
+- "water-softener": water softener, water filter, water filtration, hard water
+- "bathroom-remodel": bathroom remodel, kitchen plumbing, remodel, renovation, rough in
+
 Respond in JSON only. No markdown, no preamble, no backticks.
 {
   "summary": "One specific sentence a friend would say. Never say 'reliable and professional'. Reference actual patterns. If platforms disagree, mention it.",
@@ -467,7 +486,8 @@ Respond in JSON only. No markdown, no preamble, no backticks.
   "redFlags": ["Concerning patterns — be especially aggressive with small sample sizes. If a plumber has fewer than 25 total reviews, even 1-2 negative reviews about the same issue (late arrival, didn't show up, didn't complete work, surprise charges, rude behavior, unresponsive) IS a pattern and MUST be flagged. For 25+ reviews, flag when 3+ reviews mention the same concern. Always flag: response time complaints, incomplete work, billing disputes, no-shows, licensing concerns, refusal to provide estimates. Format each flag as a specific finding with numbers, e.g. '2 of 14 reviewers report arrival delays exceeding 30 minutes'. Empty array ONLY if literally every review is 4-5 stars with no complaints."],
   "bestFor": ["1-2 specific services or scenarios this plumber excels at, based on review patterns."],
   "pricingTier": "budget|mid-range|premium|unknown",
-  "platformDiscrepancy": "Describe any significant rating gap between platforms, or null if ratings are consistent"
+  "platformDiscrepancy": "Describe any significant rating gap between platforms, or null if ratings are consistent",
+  "servicesMentioned": "Object mapping service category keys to {count: number, avgRating: number, topQuote: string}. ONLY include categories where at least 1 review explicitly mentions the service. Do NOT invent mentions. Example: {\"water-heater\": {\"count\": 4, \"avgRating\": 4.8, \"topQuote\": \"Replaced our 40-gallon tank same day — arrived within 2 hours of our call\"}, \"drain-cleaning\": {\"count\": 7, \"avgRating\": 4.6, \"topQuote\": \"Cleared a 30-year-old root blockage that two other companies gave up on\"}}. Empty object {} if no specific services are mentioned."
 }`;
 }
 
@@ -564,8 +584,9 @@ async function synthesizePlumber(plumberId, plumberData, platformStats) {
     emergencyReadiness: ai.emergencyReadiness || "unknown",
     emergencyNotes: ai.emergencyNotes || "",
     platformDiscrepancy: ai.platformDiscrepancy || null,
+    servicesMentioned: ai.servicesMentioned || {},
     aiSynthesizedAt: admin.firestore.Timestamp.now(),
-    synthesisVersion: "ai-v1-multisource",
+    synthesisVersion: "ai-v2-services",
   };
 
   await db.collection("plumbers").doc(plumberId).update({
