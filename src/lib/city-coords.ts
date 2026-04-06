@@ -43,7 +43,7 @@ const COORDS: Record<string, [number, number]> = {
   "CA:carlsbad": [33.16, -117.35], "CA:fairfield": [38.25, -122.04], "CA:murrieta": [33.55, -117.21],
   "CA:temecula": [33.49, -117.15], "CA:santa-maria": [34.95, -120.44], "CA:redding": [40.59, -122.39],
   "CA:chico": [39.73, -121.84], "CA:visalia": [36.33, -119.29], "CA:napa": [38.30, -122.29],
-  "CA:santa-cruz": [36.97, -122.03], "CA:san-luis-obispo": [35.28, -120.66],
+  "CA:santa-cruz": [36.97, -122.03], "CA:san-luis-obispo": [35.28, -120.66], "CA:san-leandro": [37.73, -122.16],
   // Colorado
   "CO:denver": [39.74, -104.99], "CO:colorado-springs": [38.83, -104.82], "CO:aurora": [39.73, -104.83],
   "CO:fort-collins": [40.59, -105.08], "CO:lakewood": [39.70, -105.08], "CO:thornton": [39.87, -104.97],
@@ -148,7 +148,7 @@ const COORDS: Record<string, [number, number]> = {
   "MD:baltimore": [39.29, -76.61], "MD:columbia": [39.20, -76.86], "MD:germantown": [39.17, -77.27],
   "MD:silver-spring": [38.99, -77.03], "MD:frederick": [39.41, -77.41],
   "MD:rockville": [39.08, -77.15], "MD:bethesda": [38.98, -77.10], "MD:bowie": [38.94, -76.73],
-  "MD:annapolis": [38.97, -76.50], "MD:hagerstown": [39.64, -77.72], "MD:salisbury": [38.36, -75.60],
+  "MD:annapolis": [38.97, -76.50], "MD:hagerstown": [39.64, -77.72], "MD:salisbury": [38.36, -75.60], "MD:aberdeen": [39.25, -76.68],
   // Massachusetts
   "MA:boston": [42.36, -71.06], "MA:worcester": [42.26, -71.80], "MA:springfield": [42.10, -72.59],
   "MA:lowell": [42.63, -71.32], "MA:cambridge": [42.37, -71.11], "MA:new-bedford": [41.64, -70.93],
@@ -233,7 +233,7 @@ const COORDS: Record<string, [number, number]> = {
   "OH:akron": [41.08, -81.52], "OH:dayton": [39.76, -84.19],
   "OH:canton": [40.80, -81.38], "OH:youngstown": [41.10, -80.65],
   "OH:lorain": [41.45, -82.18], "OH:springfield": [39.92, -83.81],
-  "OH:dublin": [40.10, -83.11], "OH:westerville": [40.13, -82.93],
+  "OH:dublin": [40.10, -83.11], "OH:westerville": [40.13, -82.93], "OH:stow": [41.17, -81.44],
   // Oklahoma
   "OK:ardmore": [34.17, -97.13], "OK:oklahoma-city": [35.47, -97.52], "OK:tulsa": [36.15, -95.99],
   "OK:norman": [35.22, -97.44], "OK:broken-arrow": [36.06, -95.79],
