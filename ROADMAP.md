@@ -57,14 +57,14 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 
 ---
 
-## Current Status (updated April 5, 2026)
+## Current Status (updated April 6, 2026)
 
 ### What's Built
 
 **Site & Pages:**
-- 2250+ city pages with plumber listings, SEO meta, JSON-LD (breadcrumb + FAQ + AggregateRating), OG images
+- 2250+ city pages with plumber listings, SEO meta, JSON-LD (BreadcrumbList + ItemList with Plumber items + FAQPage + Review with positiveNotes/negativeNotes), OG images
 - City pages use static JSON fallback with 20-mile Haversine radius matching — works at build time without Firestore
-- 135+ plumber profile pages with full AI synthesis, cached reviews, KPI cards, red flags, badges, JSON-LD
+- 135+ plumber profile pages with full AI synthesis, cached reviews, KPI cards, red flags, badges, BBB data bar, JSON-LD (BreadcrumbList + Plumber with geo + Review with pros/cons)
 - PlumberCard is tappable — links to plumber detail page at `/plumber/[slug]`
 - Red flags displayed on PlumberCard (red pills with warning icon) — same on mobile and desktop
 - 51 state pages
@@ -83,15 +83,21 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - `scripts/upload-to-firestore.js` — uploads synthesized JSON to Firestore plumbers collection (firebase-admin SDK)
 - `scripts/refresh-reviews.ts` — review accumulation, closure detection, auto-flagging, reliability scoring (firebase-admin SDK)
 - `scripts/synthesize-reviews.ts` — Claude AI (Haiku) synthesis with keyword fallback for <3 reviews (firebase-admin SDK)
-- GitHub Actions daily pipeline fully operational — all 4 phases: scrape → Firestore upload → review refresh → AI synthesis
+- `scripts/outscraper-reviews.js` — multi-source deep review pull (Google + Yelp + Angi) via Outscraper API with async polling, Claude multi-source synthesis with cross-platform discrepancy detection
+- `scripts/bbb-lookup.js` — Better Business Bureau data: searches BBB API + scrapes profile pages for accreditation, rating, complaints, years in business; fuzzy name matching with bigram Jaccard
+- `scripts/export-firestore-to-json.js` — exports Firestore enrichment (synthesis, BBB, Yelp/Angi ratings) back to static JSON, commits + pushes to trigger Vercel rebuild
+- `scripts/request-indexing.js` — submits sitemap + URL indexing requests via Google Indexing API, 200/day quota guard, logs to Firestore `indexingRequests` collection
+- GitHub Actions daily pipeline fully operational — 5 phases: GSC expansion → scrape → Firestore upload → review refresh → AI synthesis → commit/push → re-index
+- GitHub Actions deep review pull — daily at 7 AM Central: GSC tier filtering → BBB lookup → Outscraper multi-source reviews → Claude synthesis → export JSON → Vercel rebuild → re-index ALL serviceCities
 - All scripts use firebase-admin SDK with service-account.json (bypasses Firestore security rules)
-- 246 plumbers scraped across 27 cities (21 IL + 6 out-of-state: Alameda CA, Nashville TN, Acworth GA, Yukon OK, Aiken SC, Mundelein IL)
-- 100+ reviews cached in Firestore reviews collection via refresh cycle
-- Pipeline activity logged to `pipelineRuns` collection (viewable in admin Activity tab)
+- 270 plumbers scraped across 30 cities (IL + Alameda CA, Nashville TN, Acworth GA, Yukon OK, Aiken SC, Ardmore OK)
+- 500+ reviews cached in Firestore reviews collection (Google + Yelp sources)
+- Pipeline activity logged to `pipelineRuns` collection with per-plumber detail (viewable in admin Activity tab with expandable rows)
 - Budget guard hardened: shared module `scripts/lib/budget-guard.ts`, hard stop at 90%, per-phase allocation (expansion 60%, refresh 30%, reserve 10%)
 - Expansion queue: `scripts/seed-expansion-queue.ts` ready, Firestore-based, priority IL → adjacent states → population
 - API usage tracking in Firestore `apiUsage` collection
 - All IL-only hardcoding removed from pipeline scripts (daily-scrape, upload-to-firestore, seed-from-outscraper)
+- City slug matching: all scripts handle both formats (`crystal-lake-il` and `crystal-lake`)
 
 **GSC Expansion System (fully automated):**
 - GSC API access verified and working (service account has siteFullUser permission)
@@ -106,12 +112,16 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - **GitHub Actions automated:** daily workflow runs GSC expansion → prepend → scrape → upload → refresh → synthesize → commit (all GSC steps continue-on-error so normal scrape is never blocked)
 
 **Review Synthesis:**
-- Claude AI (Haiku) synthesis engine with keyword fallback for plumbers with <3 reviews
-- New fields: `summary`, `emergencyReadiness`, `emergencyNotes`, `aiSynthesizedAt`, `synthesisVersion`
-- PlumberCard shows AI summary and emergency readiness indicator
+- Claude AI (Haiku) multi-source synthesis engine: processes Google + Yelp + Angi reviews together with BBB data
+- Keyword fallback for plumbers with <3 reviews
+- Fields: `summary`, `emergencyReadiness`, `emergencyNotes`, `aiSynthesizedAt`, `synthesisVersion`, `platformDiscrepancy`
+- PlumberCard shows AI summary, emergency readiness indicator, BBB data bar
 - Badges earned from review data: Fast Responder, Fair Pricing, 24/7 Verified, Clean & Professional, Good Communicator
+- **Badge consistency rule:** badges cannot contradict red flags (response time complaints → no Fast Responder, pricing disputes → no Fair Pricing, unprofessional behavior → no Clean & Professional)
+- **Stricter red flag detection:** for plumbers with <25 reviews, even 1-2 negative reviews about the same issue = pattern flagged. For 25+ reviews, 3+ mentions required.
 - Strengths/weaknesses displayed on PlumberCard (green/amber text)
-- Red flags tracked: pricing complaints, slow response, communication issues, quality concerns
+- Red flags tracked: pricing complaints, slow response, communication issues, quality concerns, BBB complaints, cross-platform rating discrepancies
+- Cross-platform discrepancy detection: flags when Google rating differs significantly from Yelp (e.g. 4.9 vs 3.9)
 
 **First-Party Signals:**
 - Click-to-call lead tracking (persists to Firestore leads collection with plumberName, plumberPhone, city, state, citySlug, pageUrl, referrer)
@@ -132,7 +142,7 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - Security headers configured
 - NEXT_PUBLIC_BUSINESS_PHONE env var for emergency CTA (hidden if unset)
 - Firebase env vars configured on Vercel (all 6 NEXT_PUBLIC_FIREBASE_*)
-- GitHub Actions: 9 secrets configured (3 API keys + 6 Firebase config)
+- GitHub Actions: 10 secrets configured (3 API keys + 6 Firebase config + OUTSCRAPER_API_KEY)
 - GitHub token has `workflow` scope — can push workflow file changes
 - GitHub Actions workflow fixed: step-output pattern for secret checks, tsx for TS execution
 
@@ -250,14 +260,19 @@ Start building our own quality data that doesn't depend on Google. Every user in
 - Secondary: "24 hour plumber [city]", "plumber near me [city]", "emergency plumbing [city] IL"
 - Long-tail: "burst pipe plumber [city]", "water heater repair [city] emergency"
 
-**Technical SEO:** (MOSTLY DONE)
+**Technical SEO:** ✅ DONE (April 6, 2026 schema overhaul)
 - [x] XML sitemap auto-updates from cities-data (fixed broken plumber-data import)
 - [x] Submit sitemap to Google Search Console — 2,321 pages discovered (April 3, 2026)
 - [ ] Verify GA4 tracking is firing correctly (Tim to verify)
 - [x] Internal linking — every city page links to nearby cities
 - [x] Canonical URLs — metadataBase handles this for all pages
-- [x] Breadcrumb schema on state and city pages (JSON-LD)
-- [x] AggregateRating schema on city pages (aggregates all plumber ratings)
+- [x] Breadcrumb schema on ALL pages: homepage, state, city, plumber detail, blog index, blog posts, plumber directory, emergency plumbers index
+- [x] City pages: BreadcrumbList + ItemList (Plumber items with geo, streetAddress, postalCode, AggregateRating) + FAQPage + Review per plumber with positiveNotes/negativeNotes (pros/cons schema)
+- [x] Plumber detail pages: BreadcrumbList + Plumber (with geo coords) + Review with positiveNotes/negativeNotes
+- [x] Homepage: WebSite with SearchAction (sitelinks search box) + Organization
+- [x] Blog posts: Article with mainEntityOfPage + BreadcrumbList
+- [x] Removed bogus LocalBusiness AggregateRating that aggregated ratings from unrelated businesses (Google guidelines violation)
+- [x] Request indexing script: submits sitemap + URL indexing via Google Indexing API after every data update
 
 **Content Engine (Seinfeld Plan — 1 city page per day):**
 - [ ] Priority queue — start with northern IL:
@@ -426,7 +441,7 @@ Cron Job (scheduled) → Twilio Outbound Call → Plumber's Phone
 - **Review refresh cycle.** Existing plumbers get checked for new reviews every 30 days. Only new reviews get fetched. Synthesis re-runs when new data arrives. Refresh priority goes to high-traffic plumbers first. Refreshes count against the monthly API budget.
 - **Review synthesis must be specific and punchy.** "Reliable and professional" is banned. We show real strengths, real weaknesses, with specifics. That's why people trust us.
 - **First-party signals compound over time.** Every click, every call, every user report makes our data better and less dependent on Google.
-- **Data source is Google Places API** — no Outscraper, no middleman. Free monthly credits. Max them out, never exceed them.
+- **Primary data source is Google Places API** — free monthly credits, max them out, never exceed them. **Outscraper** supplements with deep Google reviews (100 per plumber vs 5 from Places API) + Yelp + Angi reviews for high-traction cities. **BBB** data adds accreditation, complaint history, and years in business.
 - **This is NOT Angi or HomeAdvisor.** No account for users, no lead auction, no upsells. Clean, fast, one job: connect people with a plumber NOW.
 - **Design:** Deep blue (#1a365d) primary, red (#e53e3e) for urgency, white background, green for verified/positive. Mobile-first.
 - **Firebase graceful degradation** — site still renders without Firebase.
@@ -442,96 +457,111 @@ Cron Job (scheduled) → Twilio Outbound Call → Plumber's Phone
 
 ---
 
-## What's Next
+## Automated Pipeline Architecture
 
-Phase 1 code is complete. Remaining work is operational — run the pipeline, verify output quality, let it bake.
+Two GitHub Actions workflows run daily with zero manual intervention:
 
-### Current Focus: Dial In the 5-Review Pipeline
-
-Before expanding aggressively or adding new review sources, we need to make sure our existing Google Places API pipeline is running smoothly and producing high-quality results with the 5 reviews we get per API call. This means:
-
-1. Run the pipeline on our existing plumber set and verify:
-   - AI synthesis produces specific, punchy summaries (not generic)
-   - Badges are earned correctly from review data
-   - Closure detection catches closed businesses
-   - Scoring produces reasonable rankings
-   - Budget tracking is accurate
-
-2. Polish the city page experience:
-   - Plumber cards display well with AI synthesis data
-   - Emergency readiness indicators are clear and useful
-   - Flagged/unverified plumbers display appropriately
-   - Search from homepage reliably routes to correct city pages
-
-3. Let the daily pipeline run for 2-4 weeks on existing coverage to:
-   - Accumulate additional unique reviews via natural refresh cycle variance
-   - Build confidence that the budget guard holds
-   - Catch any edge cases in synthesis, scoring, or closure detection
-
-4. Outscraper or SerpAPI for additional reviews = Phase 2 (after pipeline is proven and generating revenue)
-
-### IN PROGRESS: GSC-Driven Expansion
-
-Google Search Console shows we're already getting impressions on city pages — including out-of-state cities (Aiken SC, Yukon OK, Nashville TN, Acworth GA, Alameda CA). Google is testing our pages and we need to fill them with real plumber data before it moves on.
-
-**Strategy:** Don't replace the daily IL expansion. Layer GSC intelligence on top of it:
-- GSC pull: scrape impressions/clicks/position for all /emergency-plumbers/ pages
-- Track every city in Firestore `cities` collection: status (empty/scraped/has_plumbers), plumber count, GSC signals
-- Cities with impressions but no plumber data = highest scrape priority, jump the queue
-- Daily scrape handles GSC-priority cities FIRST, then continues normal geographic expansion with remaining budget
-- Admin dashboard shows city tracking table: impressions, clicks, position, plumber count, status
-
-**Prerequisites:**
-- [ ] GSC API enabled on GCP project (Tim manual — GCP console)
-- [ ] Service account added as user in GSC for fastplumbernearme.com (Tim manual — GSC UI)
-- [ ] Confirm GSC API works with existing service-account.json (run `node scripts/gsc-pull-test.js`)
-- [ ] service-account.json on local dev machine (download from Firebase console)
-
-**Scripts built:**
-- [x] `scripts/gsc-pull-test.js` — test GSC API access, show 7 days of page data
-- [x] `scripts/gsc-expansion.js` — pull GSC data, find cities with impressions but no plumber data, write expansion queue
-- [x] `scripts/seed-cities-collection.js` — seed Firestore `cities` collection from plumbers-synthesized.json (run once)
-- [x] `googleapis` npm package installed
-
-**Firestore `cities` collection schema:**
-```json
-{
-  "slug": "alameda-ca",
-  "city": "Alameda",
-  "state": "CA",
-  "source": "gsc" | "cron" | "manual",
-  "firstSeenGSC": "2026-04-05" | null,
-  "impressionsAtDiscovery": 12 | null,
-  "scraped": true,
-  "scrapedAt": "2026-04-05T00:00:00Z",
-  "scrapeSource": "google-places",
-  "plumberCount": 12
-}
+### Daily Scrape (6:00 AM Central — `daily-scrape.yml`)
+```
+GSC API → gsc-expansion.js → find cities with impressions, set gscTier
+    ↓
+gsc-prepend-queue.js → geocode, prepend to scrape queue
+    ↓
+daily-scrape.js → Google Places API → Claude Sonnet synthesis
+    ↓
+upload-to-firestore.js → upsert plumber docs
+    ↓
+refresh-reviews.ts → fetch new Google reviews for existing plumbers (30-day cadence)
+    ↓
+synthesize-reviews.ts → Claude Haiku synthesis on plumbers with new reviews
+    ↓
+git commit + push → Vercel rebuild
+    ↓
+request-indexing.js → sitemap + URL indexing for scraped cities
 ```
 
-**Remaining build tasks:**
-- [x] Daily scrape prepends GSC-priority cities before normal queue — DONE (gsc-prepend-queue.js runs in GitHub Actions before daily-scrape.js)
-- [ ] Admin dashboard city tracking table with color-coded status
-- [x] GitHub Actions workflow for GSC pull — DONE (integrated into daily workflow, not separate — runs daily with continue-on-error)
+### Deep Review Pull (7:00 AM Central — `deep-review-pull.yml`)
+```
+Firestore cities → query gscTier "medium"/"high" (10+ impressions)
+    ↓ filter: skip if all plumbers have <30 day Outscraper data
+    ↓ cap: 3 cities per run
+bbb-lookup.js → BBB search API + profile scrape (accreditation, complaints, years)
+    ↓
+outscraper-reviews.js → Google (100 reviews via REST API + async polling)
+                       → Yelp (constructed URL → Google search fallback)
+                       → Angi (Google search for site:angi.com)
+    ↓
+Claude Haiku synthesis → all reviews + BBB data, cross-platform discrepancy detection
+    ↓
+export-firestore-to-json.js → merge enrichment into static JSON → git push → Vercel rebuild
+    ↓
+request-indexing.js → sitemap + URL indexing for ALL serviceCities of updated plumbers
+```
+
+### GSC Tier Thresholds
+| Tier | Impressions | Action |
+|------|-------------|--------|
+| **high** | 50+ | Highest priority for scrape + deep review pull |
+| **medium** | 10–49 | Eligible for deep review pull |
+| **low** | 1–9 | Scraped via daily pipeline, not yet deep-reviewed |
+| **none** | 0 | No action |
+
+---
+
+## What's Next
+
+### Current Focus: Let the Pipeline Bake
+
+Both automated workflows are live and running daily. Focus now:
+1. Monitor admin Activity dashboard for 2-4 weeks to confirm pipeline stability
+2. Watch for synthesis quality — are red flags being caught? Are badges consistent?
+3. Track Outscraper costs — currently ~$0.10-0.20 per city (3 cities/day = ~$10-20/month)
+4. Verify Vercel rebuilds are triggering after export-firestore-to-json pushes
+
+### Known Gaps (Pending)
+
+**Yelp Coverage Gap:**
+Outscraper `yelpReviews` returns 0 for smaller businesses (<20 Yelp reviews). Google search fallback correctly finds Yelp URLs, but Outscraper can't scrape the reviews. Need alternative approach — possibly direct Yelp page scraping or Yelp Fusion API.
+
+**Blog Post Cluster Generation:**
+Strategy defined (see Blog Post Cluster Strategy section) but no generation pipeline built yet. Three pillars: city support clusters, evergreen guides, annual awards.
+
+**UI Pending:**
+- [ ] City page sort/filter: allow homeowners to sort by price, response time, trust score (data exists, UI not built)
+- [ ] Cross-platform rating display on plumber detail pages: show Google/Yelp/Angi ratings side by side (data in Firestore, UI partially built — BBB bar done, Yelp/Angi not)
+- [ ] Admin dashboard city tracking table with color-coded GSC tier status
+- [ ] Mobile QA pass
+
+**Email Collection for Award Outreach:**
+Google Places API doesn't return email. Collection paths: plumber self-service portal, business submission form, website scraping, or award outreach itself.
+
+### GSC-Driven Expansion — FULLY AUTOMATED
+
+Google Search Console integration is live and running:
+- [x] GSC API enabled and working (service account has siteOwner permission)
+- [x] `gsc-expansion.js` pulls impressions, sets `gscTier` on city docs, creates stubs
+- [x] `gsc-prepend-queue.js` geocodes new cities, prepends to scrape queue
+- [x] Deep review pull workflow targets medium/high tier cities automatically
+- [x] BBB lookup runs before Outscraper so synthesis has full context
 
 ### Operational TODO (Tim manual)
-- [ ] Run `npx tsx scripts/seed-expansion-queue.ts` to seed expansion queue
-- [x] Add Firebase secrets to GitHub Actions — DONE (9 secrets: 3 API keys + 6 Firebase config)
-- [x] Verify ANTHROPIC_API_KEY is in GitHub Secrets — DONE
-- [x] Submit sitemap to Google Search Console — DONE (2,321 pages discovered)
 - [ ] Verify GA4 is firing
 - [ ] Enable Places API (New) on Firebase GCP project (needed for refresh-reviews to call Google directly)
 - [ ] Mobile QA pass
 - [ ] Create favicon/icons
 - [ ] Deploy Firestore rules (`firebase deploy --only firestore:rules`)
-- [ ] Download service-account.json to local dev machine (Firebase Console > Project Settings > Service accounts)
-- [ ] Enable Search Console API in GCP (https://console.cloud.google.com/apis/library/searchconsole.googleapis.com?project=fast-plumber-near-me)
-- [ ] Add service account email as user in GSC with Restricted permission
-- [ ] Run `node scripts/gsc-pull-test.js` to verify GSC API access
-- [ ] Run `node scripts/seed-cities-collection.js` to seed Firestore cities collection
+
+### Manual-Only Scripts (intentional)
+| Script | Purpose |
+|--------|---------|
+| `seed-expansion-queue.ts` | One-time seed — not recurring |
+| `seed-cities-collection.js` | One-time seed — already run |
+| `seed-plumbers.ts` | Test data only |
+| `gsc-pull-test.js` | Diagnostic tool |
+| `fetch-plumbers-v2.ts` | Superseded by daily-scrape.js |
 
 ---
 
-*Last updated: April 5, 2026*
+*Last updated: April 6, 2026*
 *Owner: Tim Dodaro*
 *Contact: fastplumbernearme@gmail.com*
