@@ -366,6 +366,60 @@ Cron Job (scheduled) → Twilio Outbound Call → Plumber's Phone
 
 ---
 
+## Blog Post Cluster Strategy
+
+**Trigger:** GSC shows a city page crossing an impression threshold (e.g. 50+ impressions). Google is telling us this market has demand — invest in it.
+
+**Action:** Generate a cluster of 8-10 supporting posts per qualifying city, all linking to/from the city page and individual plumber detail pages. All content generated from existing Firestore plumber data (scores, review synthesis, strengths, weaknesses, red flags, emergency signals).
+
+### Post Types per City Cluster
+
+**Comparison/Rankings**
+- "Best Emergency Plumbers in [City] [State] ([Year] Rankings)" — scored ranking with strengths/weaknesses breakdown
+
+**Situational/Problem-Specific** (filtered by review signal data)
+- Burst pipe emergencies
+- Sump pump repair
+- Water heater emergencies
+- Clogged drain / sewer backup
+
+**Pricing/Decision-Making**
+- "How Much Does an Emergency Plumber Cost in [City]?"
+- "Should You Call an Emergency Plumber or Wait?"
+
+**Seasonal**
+- Frozen pipes (winter)
+- Spring flooding / sump pump failures
+
+**Trust/Transparency**
+- "Red Flags to Watch For When Hiring a Plumber in [City]" — powered by red flag data
+
+### Annual Awards Program
+- "Best Emergency Plumber in [City] — [Year] Award" for each city with enough data
+- Category awards: Fastest Response, Best Communication, Most Transparent Pricing
+- Awards derived from quality scoring system — data-backed, not arbitrary
+- Outreach to winners with badge graphic for their website (links back to award page)
+- Annual refresh creates recurring backlink acquisition cycle
+
+### Internal Linking
+- Every post links back to its parent city page
+- Every post links to relevant plumber detail pages
+- City page updated with outbound links to its cluster posts
+- Plumber detail pages get inbound links from relevant posts
+
+### Content Refresh
+- Posts regenerate when plumber scores change significantly (10+ point swing or ranking position change)
+- dateModified updates signal freshness to Google
+- Cadence: monthly or quarterly check, not on every review update
+
+### Backlink Strategy
+- City pages don't attract backlinks — posts do
+- Pricing guides and comparison posts are linkable assets for journalists, bloggers, real estate sites
+- Award pages generate backlinks from winning plumbers linking back with badge
+- Flywheel: more cities → awards → plumber shares/links → domain authority → higher rankings → more traffic
+
+---
+
 ## Key Design Decisions
 
 - **Cache everything for plumbers in our system.** We don't scrape every plumber in America upfront. As plumbers enter our system city by city, their data and reviews get cached permanently in Firestore. The dataset grows with us.
