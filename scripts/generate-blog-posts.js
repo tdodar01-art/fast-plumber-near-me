@@ -51,11 +51,87 @@ const SERVICE_LABELS = {
 };
 
 // ---------------------------------------------------------------------------
+// Load .env.local
+// ---------------------------------------------------------------------------
+
+function loadEnv() {
+  const envPath = path.join(__dirname, "..", ".env.local");
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, "utf-8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const val = trimmed.slice(eqIdx + 1).trim();
+    if (!process.env[key]) process.env[key] = val;
+  }
+}
+
+loadEnv();
+
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+const CLAUDE_RATE_LIMIT_MS = 1000;
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
+function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
 function slugify(text) {
   return text.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+// ---------------------------------------------------------------------------
+// Region detection
+// ---------------------------------------------------------------------------
+
+function getRegionTags(stateAbbr) {
+  const tags = [];
+  const northern = new Set(["IL","OH","MI","WI","MN","NY","MA","PA","NJ","CT","RI","NH","VT","ME","MD","IA","ND","SD","IN"]);
+  const southern = new Set(["TX","FL","GA","AL","MS","LA","SC","NC","TN","AR","OK"]);
+  const desert = new Set(["AZ","NM","NV","UT"]);
+  const coastalHurricane = new Set(["FL","NC","SC","GA","LA","TX","AL","MS"]);
+
+  if (northern.has(stateAbbr)) tags.push("northern");
+  if (southern.has(stateAbbr)) tags.push("southern");
+  if (desert.has(stateAbbr)) tags.push("desert");
+  if (stateAbbr === "CA") tags.push("california");
+  if (coastalHurricane.has(stateAbbr)) tags.push("coastal-hurricane");
+  if (tags.length === 0) tags.push("default");
+  return tags;
+}
+
+// ---------------------------------------------------------------------------
+// Claude API
+// ---------------------------------------------------------------------------
+
+async function callClaude(prompt) {
+  if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not set — needed for guide/tips posts");
+
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: 2048,
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const body = await resp.text();
+    throw new Error(`Claude API ${resp.status}: ${body}`);
+  }
+
+  const data = await resp.json();
+  return data.content?.[0]?.text || "";
 }
 
 function stateSlug(abbr) {
@@ -259,6 +335,156 @@ function generateRedFlagsPost(city, state, plumbers) {
 }
 
 // ---------------------------------------------------------------------------
+// Post Type 4: Local Emergency Plumbing Guide (Claude-generated)
+// ---------------------------------------------------------------------------
+
+async function generateGuidePost(city, state, plumbers, dryRun) {
+  if (plumbers.length < 5) return null;
+
+  const fullState = stateName(state);
+  const cityUrl = `/emergency-plumbers/${stateSlug(state)}/${slugify(city)}`;
+  const regions = getRegionTags(state);
+  const ranked = [...plumbers].sort((a, b) => (b.synthesis?.score || 0) - (a.synthesis?.score || 0));
+  const top3 = ranked.slice(0, 3);
+
+  // Compute city stats
+  const ratings = plumbers.filter((p) => p.googleRating).map((p) => p.googleRating);
+  const avgRating = ratings.length > 0 ? (ratings.reduce((s, r) => s + r, 0) / ratings.length).toFixed(1) : "N/A";
+  const totalReviews = plumbers.reduce((s, p) => s + (p.googleReviewCount || 0), 0);
+  const highEmergency = plumbers.filter((p) => p.synthesis?.emergencyReadiness === "high").length;
+  const pricingDist = {};
+  plumbers.forEach((p) => { const t = p.synthesis?.priceSignal || "unknown"; pricingDist[t] = (pricingDist[t] || 0) + 1; });
+  const bbbAccredited = plumbers.filter((p) => p.bbb?.accredited).length;
+
+  const meta = {
+    slug: `emergency-plumber-${slugify(city)}-${state.toLowerCase()}`,
+    title: `Emergency Plumber in ${city}, ${fullState}: What to Know Before You Call`,
+    description: `${plumbers.length} emergency plumbers in ${city} analyzed. Average ${avgRating}/5 rating, ${totalReviews.toLocaleString()} reviews studied. Response times, pricing, and what to look for.`,
+    publishedAt: new Date().toISOString().slice(0, 10),
+    updatedAt: new Date().toISOString().slice(0, 10),
+    readTime: "8 min read",
+    city,
+    state,
+    citySlug: slugify(city),
+    stateSlug: stateSlug(state),
+    type: "guide",
+    category: "guide",
+    plumberSlugs: top3.map((p) => p.slug),
+    cityPageUrl: cityUrl,
+    plumberCount: plumbers.length,
+    reviewsAnalyzed: totalReviews,
+    generatedAt: new Date().toISOString(),
+  };
+
+  if (dryRun) return meta;
+
+  if (!ANTHROPIC_API_KEY) {
+    meta.content = `[Content generation requires ANTHROPIC_API_KEY]`;
+    return meta;
+  }
+
+  const prompt = `Write a local emergency plumbing guide for ${city}, ${fullState}. 800-1200 words in markdown.
+
+DATA TO USE (real numbers — reference them):
+- ${plumbers.length} emergency plumbers serve ${city}
+- Average Google rating: ${avgRating}/5 across ${totalReviews.toLocaleString()} total reviews
+- ${highEmergency} plumbers have confirmed high emergency readiness
+- Pricing distribution: ${Object.entries(pricingDist).map(([k,v]) => `${v} ${k}`).join(", ")}
+- BBB accredited: ${bbbAccredited} of ${plumbers.length}
+- Region tags: ${regions.join(", ")}
+
+TOP 3 PLUMBERS (link to their profiles):
+${top3.map((p, i) => `${i+1}. ${p.name} — ${p.googleRating}/5 (${p.googleReviewCount} reviews), Score: ${p.synthesis?.score}/100, Badges: ${(p.synthesis?.badges || []).join(", ") || "none"} — link: /plumber/${p.slug}`).join("\n")}
+
+CITY PAGE LINK: ${cityUrl}
+
+STRUCTURE:
+1. Open with local context — how many plumbers, average rating, total reviews analyzed
+2. Average response time signals (${highEmergency} of ${plumbers.length} have high emergency readiness)
+3. Price range section based on pricing tier distribution
+4. Region-specific emergency context for ${regions.join("/")} region:${regions.includes("northern") ? " frozen pipes, winter prep, pipe insulation" : ""}${regions.includes("southern") || regions.includes("desert") ? " slab leaks, heat stress on water heaters" : ""}${regions.includes("california") ? " earthquake gas/water shutoff procedures" : ""}${regions.includes("coastal-hurricane") ? " hurricane plumbing prep, post-storm contamination" : ""}
+5. What to look for when choosing (licensing, BBB, 24/7, transparent pricing)
+6. Link to top 3 plumbers by name with /plumber/[slug] links
+7. CTA linking to ${cityUrl}
+
+Write in a helpful, authoritative tone. Use the real data. Do NOT make up statistics.
+Output ONLY the markdown content — no frontmatter, no code fences.`;
+
+  await sleep(CLAUDE_RATE_LIMIT_MS);
+  const content = await callClaude(prompt);
+  meta.content = content;
+  return meta;
+}
+
+// ---------------------------------------------------------------------------
+// Post Type 5: Emergency Tips While You Wait (Claude-generated)
+// ---------------------------------------------------------------------------
+
+async function generateTipsPost(city, state, plumbers, dryRun) {
+  if (plumbers.length < 5) return null;
+
+  const fullState = stateName(state);
+  const cityUrl = `/emergency-plumbers/${stateSlug(state)}/${slugify(city)}`;
+  const regions = getRegionTags(state);
+  const ranked = [...plumbers].sort((a, b) => (b.synthesis?.score || 0) - (a.synthesis?.score || 0));
+  const top2 = ranked.slice(0, 2);
+
+  const meta = {
+    slug: `plumbing-emergency-tips-${slugify(city)}-${state.toLowerCase()}`,
+    title: `${city}, ${fullState} Plumbing Emergency? Here's How to Stop Water Damage While You Wait`,
+    description: `Step-by-step emergency plumbing guide for ${city} homeowners. Stop water damage, protect your home, and know when to call a pro.`,
+    publishedAt: new Date().toISOString().slice(0, 10),
+    updatedAt: new Date().toISOString().slice(0, 10),
+    readTime: "5 min read",
+    city,
+    state,
+    citySlug: slugify(city),
+    stateSlug: stateSlug(state),
+    type: "emergency-tips",
+    category: "emergency-tips",
+    plumberSlugs: top2.map((p) => p.slug),
+    cityPageUrl: cityUrl,
+    plumberCount: plumbers.length,
+    reviewsAnalyzed: plumbers.reduce((s, p) => s + (p.googleReviewCount || 0), 0),
+    generatedAt: new Date().toISOString(),
+  };
+
+  if (dryRun) return meta;
+
+  if (!ANTHROPIC_API_KEY) {
+    meta.content = `[Content generation requires ANTHROPIC_API_KEY]`;
+    return meta;
+  }
+
+  const prompt = `Write an emergency plumbing tips article for homeowners in ${city}, ${fullState}. 600-900 words in markdown.
+
+Open with urgency: "If you're searching for an emergency plumber in ${city} right now, you probably have water somewhere it shouldn't be."
+
+STRUCTURE:
+1. Step 1: Find your main shutoff valve (where it usually is, what it looks like)
+2. Step 2: Stop the water at the source (toilet shutoff, sink shutoff, water heater shutoff)
+3. Step 3: Document damage for insurance (photos, video, keep receipts)
+4. Step 4: Mitigate further damage (towels, buckets, move belongings, open windows if needed)
+5. Step 5: When to call a plumber vs when you can wait
+
+REGION-SPECIFIC TIPS for ${regions.join("/")} region:
+${regions.includes("northern") ? "- Frozen pipe thawing technique (hair dryer, warm towels — NEVER open flame)\n- How to keep pipes from refreezing (drip faucets, open cabinet doors, heat tape)" : ""}${regions.includes("southern") || regions.includes("desert") ? "- Slab leak warning signs (hot spots on floor, unexplained water bill spike, foundation cracking)\n- Heat stress on water heaters in summer" : ""}${regions.includes("california") ? "- Earthquake gas and water shutoff procedure\n- Where the gas valve is and how to turn it off\n- Post-earthquake plumbing inspection checklist" : ""}${regions.includes("coastal-hurricane") ? "- Pre-storm plumbing prep (turn off water heater, know shutoff locations)\n- After-storm water contamination checks (don't drink tap water until cleared)" : ""}${regions.length === 1 && regions[0] === "default" ? "- General seasonal tips for your area" : ""}
+
+END WITH CTA: "When you're ready, here are ${city}'s top-rated emergency plumbers" linking to ${cityUrl}
+Also mention these top plumbers inline:
+- ${top2[0]?.name || "Top local plumber"} — /plumber/${top2[0]?.slug || ""}
+${top2[1] ? `- ${top2[1].name} — /plumber/${top2[1].slug}` : ""}
+
+Write in an urgent but calm tone — the reader might be standing in water right now.
+Output ONLY the markdown content — no frontmatter, no code fences.`;
+
+  await sleep(CLAUDE_RATE_LIMIT_MS);
+  const content = await callClaude(prompt);
+  meta.content = content;
+  return meta;
+}
+
+// ---------------------------------------------------------------------------
 // Firebase (optional — for pipelineRuns logging)
 // ---------------------------------------------------------------------------
 
@@ -308,7 +534,7 @@ async function main() {
 
   let totalPosts = 0;
   let totalCities = 0;
-  const postsByType = { rankings: 0, service: 0, "red-flags": 0 };
+  const postsByType = { rankings: 0, guide: 0, "emergency-tips": 0, service: 0, "red-flags": 0 };
   const postSlugs = [];
 
   for (const [key, plumbers] of cityMap) {
@@ -319,14 +545,36 @@ async function main() {
     totalCities++;
     const cityPosts = [];
 
-    // 1. Rankings post (always)
+    // 1. Rankings post (always, >= 3 plumbers)
     const rankingsPost = generateRankingsPost(city, state, plumbers);
     if (rankingsPost) {
       cityPosts.push(rankingsPost);
       postsByType.rankings++;
     }
 
-    // 2. Service-specific posts (only for services with 2+ plumbers mentioning them)
+    // 2. Local emergency plumbing guide (>= 5 plumbers, Claude-generated)
+    try {
+      const guidePost = await generateGuidePost(city, state, plumbers, dryRun);
+      if (guidePost) {
+        cityPosts.push(guidePost);
+        postsByType.guide++;
+      }
+    } catch (err) {
+      console.error(`  Guide error for ${city}: ${err.message}`);
+    }
+
+    // 3. Emergency tips while you wait (>= 5 plumbers, Claude-generated)
+    try {
+      const tipsPost = await generateTipsPost(city, state, plumbers, dryRun);
+      if (tipsPost) {
+        cityPosts.push(tipsPost);
+        postsByType["emergency-tips"]++;
+      }
+    } catch (err) {
+      console.error(`  Tips error for ${city}: ${err.message}`);
+    }
+
+    // 4. Service-specific posts (only for services with 2+ plumbers mentioning them)
     const serviceCounts = {};
     for (const p of plumbers) {
       for (const svc of Object.keys(p.synthesis?.servicesMentioned || {})) {
@@ -343,7 +591,7 @@ async function main() {
       }
     }
 
-    // 3. Red flags post (if 2+ plumbers have red flags)
+    // 5. Red flags post (if 2+ plumbers have red flags)
     const redFlagsPost = generateRedFlagsPost(city, state, plumbers);
     if (redFlagsPost) {
       cityPosts.push(redFlagsPost);
@@ -376,6 +624,8 @@ async function main() {
   console.log(`  Cities: ${totalCities}`);
   console.log(`  Total posts: ${totalPosts}`);
   console.log(`    Rankings: ${postsByType.rankings}`);
+  console.log(`    Local Guides: ${postsByType.guide}`);
+  console.log(`    Emergency Tips: ${postsByType["emergency-tips"]}`);
   console.log(`    Service-specific: ${postsByType.service}`);
   console.log(`    Red flags: ${postsByType["red-flags"]}`);
   console.log(`  Duration: ${elapsed}s`);
@@ -400,9 +650,11 @@ async function main() {
             totalPosts,
             cities: totalCities,
             rankings: postsByType.rankings,
+            guides: postsByType.guide,
+            emergencyTips: postsByType["emergency-tips"],
             service: postsByType.service,
             redFlags: postsByType["red-flags"],
-            postSlugs: postSlugs.slice(0, 50), // cap to avoid huge docs
+            postSlugs: postSlugs.slice(0, 50),
           },
           triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
         });

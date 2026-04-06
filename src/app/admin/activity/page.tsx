@@ -114,6 +114,8 @@ function getRunSummaryLine(run: PipelineRun): string {
   } else if (run.script === "generate-blog") {
     if (s.totalPosts != null) parts.push(`Posts: ${s.totalPosts}`);
     if (s.rankings != null) parts.push(`Rankings: ${s.rankings}`);
+    if (s.guides != null) parts.push(`Guides: ${s.guides}`);
+    if (s.emergencyTips != null) parts.push(`Tips: ${s.emergencyTips}`);
     if (s.service != null) parts.push(`Service: ${s.service}`);
     if (s.redFlags != null) parts.push(`Red flags: ${s.redFlags}`);
     if (s.cities != null) parts.push(`Cities: ${s.cities}`);
