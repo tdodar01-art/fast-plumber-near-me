@@ -80,6 +80,12 @@ function RunSummary({ run }: { run: PipelineRun }) {
   } else if (run.script === "outscraper-reviews") {
     if (s.plumbersProcessed != null) parts.push(`Plumbers: ${s.plumbersProcessed}`);
     if (s.newReviews != null) parts.push(`New reviews: ${s.newReviews}`);
+    const sources = [
+      s.googleReviews ? `G:${s.googleReviews}` : "",
+      s.yelpReviews ? `Y:${s.yelpReviews}` : "",
+      s.angiReviews ? `A:${s.angiReviews}` : "",
+    ].filter(Boolean).join(" ");
+    if (sources) parts.push(sources);
     if (s.synthesized != null) parts.push(`Synthesized: ${s.synthesized}`);
     if (s.estimatedCost) parts.push(`Cost: ${s.estimatedCost}`);
     if (s.citySlugs) parts.push(`Cities: ${(s.citySlugs as string[]).join(", ")}`);

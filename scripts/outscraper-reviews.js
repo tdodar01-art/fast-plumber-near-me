@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * Pull deep Google reviews via Outscraper API for plumbers in high-traction cities,
- * then re-synthesize with Claude using the full review corpus.
- *
- * Manual use only — not wired into the daily cron.
+ * Pull deep reviews from Google, Yelp, and Angi via Outscraper API
+ * for plumbers in high-traction cities, then re-synthesize with Claude
+ * using the full multi-source review corpus.
  *
  * Usage:
  *   node scripts/outscraper-reviews.js crystal-lake-il aberdeen-md
  *   node scripts/outscraper-reviews.js crystal-lake-il --dry-run
  *   node scripts/outscraper-reviews.js crystal-lake-il --skip-synthesis
+ *   node scripts/outscraper-reviews.js crystal-lake-il --google-only
  *
  * Env:
  *   OUTSCRAPER_API_KEY  — required
@@ -18,6 +18,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const Outscraper = require("outscraper");
 
 // ---------------------------------------------------------------------------
@@ -25,12 +26,11 @@ const Outscraper = require("outscraper");
 // ---------------------------------------------------------------------------
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
-const OUTSCRAPER_QPS_DELAY_MS = 2000; // 1 request per 2s to stay safe
+const OUTSCRAPER_QPS_DELAY_MS = 2000;
 const CLAUDE_RATE_LIMIT_MS = 500;
 const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
-const MAX_REVIEWS_PER_PLUMBER = 100;
-// Outscraper pricing: ~$2 per 1000 reviews
-const COST_PER_REVIEW = 0.002;
+const MAX_REVIEWS_PER_SOURCE = 100;
+const COST_PER_REVIEW = 0.002; // ~$2 per 1000 reviews across sources
 
 // ---------------------------------------------------------------------------
 // Load .env.local
@@ -94,65 +94,180 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function hashReviewId(authorName, text) {
-  // Same hash as refresh-reviews.ts for dedup compatibility
-  const crypto = require("crypto");
+function hashReviewId(source, authorName, text) {
+  return crypto.createHash("md5").update(`${source}:${authorName}:${text.slice(0, 100)}`).digest("hex");
+}
+
+// Backwards-compatible hash for existing Google reviews (no source prefix)
+function hashGoogleReviewId(authorName, text) {
   return crypto.createHash("md5").update(`${authorName}:${text.slice(0, 100)}`).digest("hex");
 }
 
 // ---------------------------------------------------------------------------
-// Outscraper: pull reviews for a plumber
+// Google Reviews via Outscraper
 // ---------------------------------------------------------------------------
 
-async function pullReviews(placeId, businessName, cutoffTimestamp) {
-  console.log(`    Calling Outscraper for ${businessName} (${placeId})...`);
+async function pullGoogleReviews(placeId, businessName, cutoffTimestamp) {
+  console.log(`    [Google] Pulling reviews for ${placeId}...`);
 
-  const params = {
-    reviewsLimit: MAX_REVIEWS_PER_PLUMBER,
-    sort: "newest",
-    language: "en",
-  };
-
+  let cutoffSec = null;
   if (cutoffTimestamp) {
-    // Outscraper cutoff is a Unix timestamp in seconds
-    const cutoffSec = Math.floor(cutoffTimestamp.toDate().getTime() / 1000);
-    params.cutoff = cutoffSec;
+    cutoffSec = Math.floor(cutoffTimestamp.toDate().getTime() / 1000);
   }
 
   try {
-    const results = await outscraper.googleMapsReviews([placeId], params.reviewsLimit, params.sort, null, params.language, null, params.cutoff || null);
+    const results = await outscraper.googleMapsReviews(
+      [placeId], MAX_REVIEWS_PER_SOURCE, "newest", null, "en", null, cutoffSec
+    );
 
-    if (!results || results.length === 0 || !results[0]) {
-      console.log(`    No results returned.`);
-      return [];
-    }
-
-    const place = results[0];
-    const reviews = place.reviews_data || [];
-    console.log(`    Got ${reviews.length} reviews from Outscraper.`);
-    return reviews;
+    if (!results || !results[0]) return [];
+    const reviews = results[0].reviews_data || [];
+    console.log(`    [Google] Got ${reviews.length} reviews.`);
+    return reviews.map((r) => ({
+      source: "google",
+      author: r.author_title || r.reviewer_name || "Anonymous",
+      rating: r.review_rating || 0,
+      text: r.review_text || "",
+      date: r.review_datetime_utc || "",
+    }));
   } catch (err) {
-    console.error(`    Outscraper error: ${err.message}`);
+    console.error(`    [Google] Error: ${err.message}`);
     return [];
   }
 }
 
 // ---------------------------------------------------------------------------
-// Store reviews in Firestore
+// Yelp Reviews via Outscraper
+// ---------------------------------------------------------------------------
+
+async function pullYelpReviews(businessName, city, state) {
+  const query = `${businessName}, ${city}, ${state}`;
+  console.log(`    [Yelp] Searching: "${query}"...`);
+
+  try {
+    // Step 1: find the business on Yelp
+    const searchResults = await outscraper.yelpSearch(query, 3);
+    if (!searchResults || searchResults.length === 0) {
+      console.log(`    [Yelp] No business found.`);
+      return [];
+    }
+
+    // Find best match — name must roughly match
+    const nameNorm = businessName.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const match = searchResults.find((r) => {
+      const rName = (r.name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      return rName.includes(nameNorm) || nameNorm.includes(rName);
+    }) || searchResults[0]; // fall back to top result
+
+    const yelpUrl = match.business_url || match.yelp_url || match.link;
+    if (!yelpUrl) {
+      console.log(`    [Yelp] No URL found for match: ${match.name}`);
+      return [];
+    }
+
+    console.log(`    [Yelp] Matched: "${match.name}" — pulling reviews...`);
+
+    // Step 2: pull reviews
+    const reviewResults = await outscraper.yelpReviews(yelpUrl, MAX_REVIEWS_PER_SOURCE);
+    if (!reviewResults || reviewResults.length === 0) {
+      console.log(`    [Yelp] No reviews returned.`);
+      return [];
+    }
+
+    const place = reviewResults[0];
+    const reviews = place.reviews_data || [];
+    console.log(`    [Yelp] Got ${reviews.length} reviews.`);
+
+    return reviews.map((r) => ({
+      source: "yelp",
+      author: r.author_title || r.reviewer_name || "Anonymous",
+      rating: r.review_rating || 0,
+      text: r.review_text || "",
+      date: r.review_datetime_utc || r.date || "",
+      yelpRating: match.rating || null,
+      yelpReviewCount: match.reviews || null,
+    }));
+  } catch (err) {
+    console.error(`    [Yelp] Error: ${err.message}`);
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Angi Reviews via Outscraper (Google search scrape — Angi has no direct API)
+// ---------------------------------------------------------------------------
+
+async function pullAngiReviews(businessName, city, state) {
+  const query = `${businessName} ${city} ${state} site:angi.com`;
+  console.log(`    [Angi] Searching Google for Angi listing: "${query}"...`);
+
+  try {
+    // Use Google search to find the Angi page, then scrape reviews from it
+    const searchResults = await outscraper.googleSearch(query, 3);
+    if (!searchResults || searchResults.length === 0 || !searchResults[0]) {
+      console.log(`    [Angi] No search results.`);
+      return [];
+    }
+
+    const organic = searchResults[0].organic_results || [];
+    const angiResult = organic.find((r) => (r.link || "").includes("angi.com"));
+    if (!angiResult) {
+      console.log(`    [Angi] No Angi listing found in search results.`);
+      return [];
+    }
+
+    console.log(`    [Angi] Found: ${angiResult.link}`);
+
+    // Extract review snippets from search result descriptions
+    // Angi doesn't have a dedicated Outscraper reviews endpoint,
+    // so we pull what's available from the search snippet + any rich data
+    const description = angiResult.description || angiResult.snippet || "";
+    if (!description || description.length < 20) {
+      console.log(`    [Angi] No review content extractable.`);
+      return [];
+    }
+
+    // Parse rating from search result if available
+    const ratingMatch = description.match(/(\d+\.?\d*)\s*(?:out of|\/)\s*5/i);
+    const reviewCountMatch = description.match(/(\d+)\s*(?:reviews?|ratings?)/i);
+
+    console.log(`    [Angi] Rating: ${ratingMatch ? ratingMatch[1] : "N/A"}, Reviews: ${reviewCountMatch ? reviewCountMatch[1] : "N/A"}`);
+
+    // Return metadata even without individual reviews — useful for cross-platform comparison
+    return [{
+      source: "angi",
+      author: "Angi Aggregate",
+      rating: ratingMatch ? parseFloat(ratingMatch[1]) : 0,
+      text: description,
+      date: "",
+      angiUrl: angiResult.link,
+      angiRating: ratingMatch ? parseFloat(ratingMatch[1]) : null,
+      angiReviewCount: reviewCountMatch ? parseInt(reviewCountMatch[1]) : null,
+    }];
+  } catch (err) {
+    console.error(`    [Angi] Error: ${err.message}`);
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Store reviews in Firestore (multi-source)
 // ---------------------------------------------------------------------------
 
 async function storeReviews(plumberId, reviews) {
   let newCount = 0;
   let dupeCount = 0;
+  const countBySource = { google: 0, yelp: 0, angi: 0 };
 
   for (const review of reviews) {
-    const authorName = review.author_title || review.reviewer_name || "Anonymous";
-    const text = review.review_text || "";
-    if (!text) continue;
+    if (!review.text) continue;
 
-    const reviewId = hashReviewId(authorName, text);
+    // Use backwards-compatible hash for Google, source-prefixed for others
+    const reviewId = review.source === "google"
+      ? hashGoogleReviewId(review.author, review.text)
+      : hashReviewId(review.source, review.author, review.text);
 
-    // Check for dupe in top-level reviews collection (existing pipeline compat)
+    // Check for dupe
     const dupeCheck = await db.collection("reviews")
       .where("plumberId", "==", plumberId)
       .where("googleReviewId", "==", reviewId)
@@ -164,54 +279,78 @@ async function storeReviews(plumberId, reviews) {
       continue;
     }
 
-    // Write to top-level reviews collection (same schema as refresh-reviews.ts)
     await db.collection("reviews").add({
       plumberId,
-      googleReviewId: reviewId,
-      authorName,
-      rating: review.review_rating || 0,
-      text,
-      relativeTimeDescription: review.review_datetime_utc || "",
-      publishedAt: review.review_datetime_utc || "",
+      googleReviewId: reviewId, // field name kept for compat; it's really "reviewHash"
+      authorName: review.author,
+      rating: review.rating || 0,
+      text: review.text,
+      relativeTimeDescription: review.date || "",
+      publishedAt: review.date || "",
       cachedAt: admin.firestore.Timestamp.now(),
-      source: "outscraper",
+      source: review.source,
     });
 
     newCount++;
+    countBySource[review.source] = (countBySource[review.source] || 0) + 1;
   }
 
-  return { newCount, dupeCount };
+  return { newCount, dupeCount, countBySource };
 }
 
 // ---------------------------------------------------------------------------
-// Claude synthesis (same prompt as synthesize-reviews.ts)
+// Claude synthesis (multi-source aware)
 // ---------------------------------------------------------------------------
 
-function buildPrompt(name, rating, googleReviewCount, reviews) {
-  const reviewBlock = reviews
-    .map((r) => `[${r.rating}/5${r.date ? ` — ${r.date}` : ""}] ${r.text}`)
-    .join("\n\n");
+function buildPrompt(name, googleRating, googleReviewCount, reviews, platformStats) {
+  // Group reviews by source for the prompt
+  const googleReviews = reviews.filter((r) => r.source === "google");
+  const yelpReviews = reviews.filter((r) => r.source === "yelp");
+  const angiReviews = reviews.filter((r) => r.source === "angi");
 
-  return `You are analyzing Google reviews for a plumber to help homeowners in an emergency.
+  let reviewBlock = "";
+
+  if (googleReviews.length > 0) {
+    reviewBlock += `=== GOOGLE REVIEWS (${googleReviews.length}) ===\n`;
+    reviewBlock += googleReviews.map((r) => `[${r.rating}/5${r.date ? ` — ${r.date}` : ""}] ${r.text}`).join("\n\n");
+    reviewBlock += "\n\n";
+  }
+  if (yelpReviews.length > 0) {
+    reviewBlock += `=== YELP REVIEWS (${yelpReviews.length}) ===\n`;
+    reviewBlock += yelpReviews.map((r) => `[${r.rating}/5${r.date ? ` — ${r.date}` : ""}] ${r.text}`).join("\n\n");
+    reviewBlock += "\n\n";
+  }
+  if (angiReviews.length > 0) {
+    reviewBlock += `=== ANGI DATA (${angiReviews.length}) ===\n`;
+    reviewBlock += angiReviews.map((r) => `[${r.rating}/5] ${r.text}`).join("\n\n");
+    reviewBlock += "\n\n";
+  }
+
+  let platformContext = `Google Rating: ${googleRating ?? "N/A"}/5 (${googleReviewCount} reviews)`;
+  if (platformStats.yelpRating) platformContext += `\nYelp Rating: ${platformStats.yelpRating}/5 (${platformStats.yelpReviewCount || "?"} reviews)`;
+  if (platformStats.angiRating) platformContext += `\nAngi Rating: ${platformStats.angiRating}/5 (${platformStats.angiReviewCount || "?"} reviews)`;
+
+  return `You are analyzing reviews from multiple platforms for a plumber to help homeowners in an emergency.
 
 Plumber: ${name}
-Google Rating: ${rating ?? "N/A"}/5 (${googleReviewCount} reviews)
-We have ${reviews.length} cached reviews.
+${platformContext}
+We have ${reviews.length} total reviews across all platforms.
 
-Reviews:
 ${reviewBlock}
+IMPORTANT: If ratings differ significantly between platforms (e.g. 4.8 on Google but 2.5 on Yelp), note this discrepancy in your summary and weaknesses. Platform rating gaps are a signal.
 
 Respond in JSON only. No markdown, no preamble, no backticks.
 {
-  "summary": "One specific sentence a friend would say. Never say 'reliable and professional'. Reference actual patterns from the reviews.",
-  "strengths": ["2-3 specific strengths with evidence. e.g. '3 of 8 reviewers mention arriving within an hour'"],
-  "weaknesses": ["1-2 specific weaknesses. e.g. 'Two reviews mention charges exceeding the initial quote'. Say 'Not enough data to identify weaknesses' if none are clear."],
+  "summary": "One specific sentence a friend would say. Never say 'reliable and professional'. Reference actual patterns. If platforms disagree, mention it.",
+  "strengths": ["2-3 specific strengths with evidence. e.g. '3 of 8 Google reviewers mention arriving within an hour'"],
+  "weaknesses": ["1-2 specific weaknesses. e.g. 'Yelp reviews mention surprise fees not seen on Google'. Include platform discrepancies if significant."],
   "emergencyReadiness": "high|medium|low|unknown",
   "emergencyNotes": "One sentence about emergency signals — after-hours mentions, response time, weekend availability.",
   "badges": ["Only from: 'Fast Responder', 'Fair Pricing', '24/7 Available', 'Clean & Professional', 'Great Communicator'. Only include if reviews clearly support it."],
-  "redFlags": ["Concerning patterns. Empty array if none."],
-  "bestFor": ["1-2 specific services or scenarios this plumber excels at, based on review patterns. e.g. 'Water heater replacements', 'After-hours emergencies'"],
-  "pricingTier": "budget|mid-range|premium|unknown"
+  "redFlags": ["Concerning patterns across any platform. Empty array if none."],
+  "bestFor": ["1-2 specific services or scenarios this plumber excels at, based on review patterns."],
+  "pricingTier": "budget|mid-range|premium|unknown",
+  "platformDiscrepancy": "Describe any significant rating gap between platforms, or null if ratings are consistent"
 }`;
 }
 
@@ -246,8 +385,8 @@ function parseAIResponse(text) {
   return JSON.parse(cleaned);
 }
 
-async function synthesizePlumber(plumberId, plumberData) {
-  // Fetch ALL cached reviews for this plumber
+async function synthesizePlumber(plumberId, plumberData, platformStats) {
+  // Fetch ALL cached reviews for this plumber (all sources)
   const reviewsSnap = await db.collection("reviews")
     .where("plumberId", "==", plumberId)
     .get();
@@ -258,18 +397,23 @@ async function synthesizePlumber(plumberId, plumberData) {
   }
 
   const reviews = reviewsSnap.docs.map((d) => ({
+    source: d.data().source || "google",
     rating: d.data().rating || 0,
     text: d.data().text || "",
     date: d.data().publishedAt || "",
   }));
 
-  console.log(`    Synthesizing with ${reviews.length} total reviews...`);
+  const googleCount = reviews.filter((r) => r.source === "google").length;
+  const yelpCount = reviews.filter((r) => r.source === "yelp").length;
+  const angiCount = reviews.filter((r) => r.source === "angi").length;
+  console.log(`    Synthesizing ${reviews.length} reviews (Google: ${googleCount}, Yelp: ${yelpCount}, Angi: ${angiCount})...`);
 
   const prompt = buildPrompt(
     plumberData.businessName,
     plumberData.googleRating,
     plumberData.googleReviewCount || 0,
-    reviews
+    reviews,
+    platformStats
   );
 
   await sleep(CLAUDE_RATE_LIMIT_MS);
@@ -298,12 +442,12 @@ async function synthesizePlumber(plumberId, plumberData) {
       homeRespect: { strengths: [], weaknesses: [] },
       punctuality: { strengths: [], weaknesses: [] },
     },
-    sampleSizeWarning: undefined,
     summary: ai.summary || "",
     emergencyReadiness: ai.emergencyReadiness || "unknown",
     emergencyNotes: ai.emergencyNotes || "",
+    platformDiscrepancy: ai.platformDiscrepancy || null,
     aiSynthesizedAt: admin.firestore.Timestamp.now(),
-    synthesisVersion: "ai-v1-outscraper",
+    synthesisVersion: "ai-v1-multisource",
   };
 
   await db.collection("plumbers").doc(plumberId).update({
@@ -311,7 +455,7 @@ async function synthesizePlumber(plumberId, plumberData) {
     updatedAt: admin.firestore.Timestamp.now(),
   });
 
-  console.log(`    ✓ Synthesis: ${ai.badges?.join(", ") || "no badges"} | ${ai.redFlags?.length || 0} red flags | emergency: ${ai.emergencyReadiness}`);
+  console.log(`    ✓ Synthesis: ${ai.badges?.join(", ") || "no badges"} | ${ai.redFlags?.length || 0} red flags | emergency: ${ai.emergencyReadiness}${ai.platformDiscrepancy ? ` | ⚠ ${ai.platformDiscrepancy}` : ""}`);
   return true;
 }
 
@@ -323,30 +467,32 @@ async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
   const skipSynthesis = args.includes("--skip-synthesis");
+  const googleOnly = args.includes("--google-only");
   const citySlugs = args.filter((a) => !a.startsWith("--"));
 
   if (citySlugs.length === 0) {
-    console.error("Usage: node scripts/outscraper-reviews.js <city-slug> [city-slug...] [--dry-run] [--skip-synthesis]");
+    console.error("Usage: node scripts/outscraper-reviews.js <city-slug> [city-slug...] [--dry-run] [--skip-synthesis] [--google-only]");
     console.error("Example: node scripts/outscraper-reviews.js crystal-lake-il aberdeen-md");
     process.exit(1);
   }
 
-  if (dryRun) console.log("DRY RUN — no Outscraper calls, no writes\n");
+  if (dryRun) console.log("DRY RUN — no API calls, no writes\n");
   if (skipSynthesis) console.log("SKIP SYNTHESIS — pulling reviews only\n");
+  if (googleOnly) console.log("GOOGLE ONLY — skipping Yelp and Angi\n");
 
-  console.log("=== Outscraper Deep Review Pull ===\n");
+  console.log("=== Outscraper Multi-Source Deep Review Pull ===\n");
 
   let totalPlumbers = 0;
   let totalNewReviews = 0;
   let totalDupes = 0;
   let totalSynthesized = 0;
   let totalErrors = 0;
+  const reviewsBySource = { google: 0, yelp: 0, angi: 0 };
   const startedAt = new Date();
 
   for (const citySlug of citySlugs) {
     console.log(`\n📍 City: ${citySlug}`);
 
-    // Look up plumbers with this city in serviceCities
     const snap = await db.collection("plumbers")
       .where("serviceCities", "array-contains", citySlug)
       .where("isActive", "==", true)
@@ -362,9 +508,11 @@ async function main() {
     for (const doc of snap.docs) {
       const data = doc.data();
       const placeId = data.googlePlaceId;
+      const city = data.address?.city || "";
+      const state = data.address?.state || "";
       totalPlumbers++;
 
-      console.log(`  🔧 ${data.businessName} (${placeId || "no placeId"})`);
+      console.log(`  🔧 ${data.businessName} (${city}, ${state})`);
 
       if (!placeId) {
         console.log(`    Skipping — no Google Place ID.`);
@@ -373,44 +521,97 @@ async function main() {
 
       if (dryRun) {
         const existing = data.lastOutscraperPull ? `last pull: ${data.lastOutscraperPull.toDate().toISOString().slice(0, 10)}` : "never pulled";
-        console.log(`    [DRY RUN] Would pull up to ${MAX_REVIEWS_PER_PLUMBER} reviews (${existing})`);
+        console.log(`    [DRY RUN] Would pull Google${googleOnly ? "" : " + Yelp + Angi"} reviews (${existing})`);
         continue;
       }
 
+      const allReviews = [];
+      const platformStats = {
+        yelpRating: null,
+        yelpReviewCount: null,
+        angiRating: null,
+        angiReviewCount: null,
+      };
+
       try {
-        // Pull reviews from Outscraper
+        // 1. Google reviews
         await sleep(OUTSCRAPER_QPS_DELAY_MS);
         const cutoff = data.lastOutscraperPull || null;
-        const reviews = await pullReviews(placeId, data.businessName, cutoff);
+        const googleReviews = await pullGoogleReviews(placeId, data.businessName, cutoff);
+        allReviews.push(...googleReviews);
 
-        if (reviews.length === 0) {
-          // Still update the timestamp so we don't re-pull immediately
+        if (!googleOnly) {
+          // 2. Yelp reviews
+          await sleep(OUTSCRAPER_QPS_DELAY_MS);
+          const yelpReviews = await pullYelpReviews(data.businessName, city, state);
+          if (yelpReviews.length > 0) {
+            // Extract platform-level stats from first review that has them
+            const withStats = yelpReviews.find((r) => r.yelpRating);
+            if (withStats) {
+              platformStats.yelpRating = withStats.yelpRating;
+              platformStats.yelpReviewCount = withStats.yelpReviewCount;
+            }
+            allReviews.push(...yelpReviews);
+          }
+
+          // 3. Angi reviews
+          await sleep(OUTSCRAPER_QPS_DELAY_MS);
+          const angiReviews = await pullAngiReviews(data.businessName, city, state);
+          if (angiReviews.length > 0) {
+            const withStats = angiReviews.find((r) => r.angiRating);
+            if (withStats) {
+              platformStats.angiRating = withStats.angiRating;
+              platformStats.angiReviewCount = withStats.angiReviewCount;
+            }
+            allReviews.push(...angiReviews);
+          }
+        }
+
+        if (allReviews.length === 0) {
           await db.collection("plumbers").doc(doc.id).update({
             lastOutscraperPull: admin.firestore.Timestamp.now(),
           });
+          console.log(`    No reviews found across any platform.`);
           continue;
         }
 
-        // Store reviews
-        const { newCount, dupeCount } = await storeReviews(doc.id, reviews);
+        // Store all reviews
+        const { newCount, dupeCount, countBySource } = await storeReviews(doc.id, allReviews);
         totalNewReviews += newCount;
         totalDupes += dupeCount;
+        for (const [src, cnt] of Object.entries(countBySource)) {
+          reviewsBySource[src] = (reviewsBySource[src] || 0) + cnt;
+        }
 
-        console.log(`    Stored: ${newCount} new, ${dupeCount} dupes skipped`);
+        console.log(`    Stored: ${newCount} new (G:${countBySource.google || 0} Y:${countBySource.yelp || 0} A:${countBySource.angi || 0}), ${dupeCount} dupes skipped`);
 
-        // Update plumber document
-        const totalCached = (await db.collection("reviews").where("plumberId", "==", doc.id).get()).size;
-        await db.collection("plumbers").doc(doc.id).update({
-          lastOutscraperPull: admin.firestore.Timestamp.now(),
-          cachedReviewCount: totalCached,
-          reviewSource: "outscraper",
-          reviewGap: (data.googleReviewCount || 0) - totalCached,
+        // Count reviews per source for this plumber
+        const allSnap = await db.collection("reviews").where("plumberId", "==", doc.id).get();
+        let gCount = 0, yCount = 0, aCount = 0;
+        allSnap.docs.forEach((d) => {
+          const src = d.data().source || "google";
+          if (src === "google") gCount++;
+          else if (src === "yelp") yCount++;
+          else if (src === "angi") aCount++;
         });
 
-        // Re-synthesize with full review corpus
+        // Update plumber document
+        await db.collection("plumbers").doc(doc.id).update({
+          lastOutscraperPull: admin.firestore.Timestamp.now(),
+          cachedReviewCount: allSnap.size,
+          googleReviewsCached: gCount,
+          yelpReviewsCached: yCount,
+          angiReviewsCached: aCount,
+          reviewSource: googleOnly ? "outscraper" : "outscraper-multi",
+          reviewGap: (data.googleReviewCount || 0) - gCount,
+          ...(platformStats.yelpRating && { yelpRating: platformStats.yelpRating, yelpReviewCount: platformStats.yelpReviewCount }),
+          ...(platformStats.angiRating && { angiRating: platformStats.angiRating, angiReviewCount: platformStats.angiReviewCount }),
+        });
+
+        // Re-synthesize with full multi-source corpus
         if (!skipSynthesis && newCount > 0 && ANTHROPIC_API_KEY) {
           try {
-            const synthesized = await synthesizePlumber(doc.id, data);
+            const synthesized = await synthesizePlumber(doc.id, data, platformStats);
             if (synthesized) totalSynthesized++;
           } catch (err) {
             console.error(`    Synthesis error: ${err.message}`);
@@ -435,6 +636,9 @@ async function main() {
   console.log(`  Cities processed: ${citySlugs.length}`);
   console.log(`  Plumbers processed: ${totalPlumbers}`);
   console.log(`  New reviews stored: ${totalNewReviews}`);
+  console.log(`    Google: ${reviewsBySource.google || 0}`);
+  console.log(`    Yelp:   ${reviewsBySource.yelp || 0}`);
+  console.log(`    Angi:   ${reviewsBySource.angi || 0}`);
   console.log(`  Duplicate reviews skipped: ${totalDupes}`);
   console.log(`  Plumbers re-synthesized: ${totalSynthesized}`);
   console.log(`  Errors: ${totalErrors}`);
@@ -454,12 +658,15 @@ async function main() {
           citySlugs,
           plumbersProcessed: totalPlumbers,
           newReviews: totalNewReviews,
+          googleReviews: reviewsBySource.google || 0,
+          yelpReviews: reviewsBySource.yelp || 0,
+          angiReviews: reviewsBySource.angi || 0,
           dupesSkipped: totalDupes,
           synthesized: totalSynthesized,
           errors: totalErrors,
           estimatedCost: `$${estCost}`,
         },
-        triggeredBy: "manual",
+        triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
       });
     } catch { /* */ }
   }

@@ -1,0 +1,206 @@
+name: Deep Review Pull (Outscraper)
+
+on:
+  schedule:
+    # 7 AM Central = 12:00 UTC (CDT) — 1 hour after main daily scrape
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
+
+jobs:
+  deep-reviews:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install firebase-admin outscraper googleapis
+
+      - name: Check secrets
+        id: secrets
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ] && [ -n "$OUTSCRAPER_API_KEY" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "Missing required secrets. FIREBASE_SERVICE_ACCOUNT or OUTSCRAPER_API_KEY not set."
+          fi
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
+
+      - name: Setup service account
+        if: steps.secrets.outputs.configured == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
+      # Query Firestore for high-traction cities, filter stale ones, cap at 3
+      - name: Find qualifying cities
+        if: steps.secrets.outputs.configured == 'true'
+        id: cities
+        run: |
+          CITY_SLUGS=$(node -e "
+            const admin = require('firebase-admin');
+            const fs = require('fs');
+            const sa = JSON.parse(fs.readFileSync('service-account.json', 'utf-8'));
+            admin.initializeApp({ credential: admin.credential.cert(sa) });
+            const db = admin.firestore();
+
+            async function main() {
+              // Get cities with medium or high GSC tier (10+ impressions)
+              const snap = await db.collection('cities')
+                .where('gscTier', 'in', ['medium', 'high'])
+                .get();
+
+              if (snap.empty) {
+                console.error('No medium/high tier cities found.');
+                process.exit(0);
+              }
+
+              const thirtyDaysAgo = new Date();
+              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+              const candidates = [];
+              for (const cityDoc of snap.docs) {
+                const cityData = cityDoc.data();
+                const citySlug = cityDoc.id; // e.g. 'crystal-lake-il'
+
+                // Check if ALL plumbers in this city already have fresh Outscraper data
+                const plumberSnap = await db.collection('plumbers')
+                  .where('serviceCities', 'array-contains', citySlug)
+                  .where('isActive', '==', true)
+                  .get();
+
+                if (plumberSnap.empty) continue;
+
+                let allFresh = true;
+                for (const p of plumberSnap.docs) {
+                  const lastPull = p.data().lastOutscraperPull;
+                  if (!lastPull || lastPull.toDate() < thirtyDaysAgo) {
+                    allFresh = false;
+                    break;
+                  }
+                }
+
+                if (!allFresh) {
+                  candidates.push({
+                    slug: citySlug,
+                    impressions: cityData.lastGSCImpressions || 0,
+                    tier: cityData.gscTier,
+                    plumbers: plumberSnap.size,
+                  });
+                }
+              }
+
+              // Sort by impressions desc, cap at 3
+              candidates.sort((a, b) => b.impressions - a.impressions);
+              const selected = candidates.slice(0, 3);
+
+              if (selected.length === 0) {
+                console.error('All qualifying cities have fresh Outscraper data.');
+                process.exit(0);
+              }
+
+              for (const c of selected) {
+                console.error('Selected: ' + c.slug + ' (' + c.tier + ', ' + c.impressions + ' impressions, ' + c.plumbers + ' plumbers)');
+              }
+
+              // Output space-separated slugs
+              console.log(selected.map(c => c.slug).join(' '));
+            }
+            main().catch(e => { console.error(e.message); process.exit(1); });
+          " 2>&1)
+
+          # Extract just the last line (stdout) as city slugs — stderr goes to log
+          SLUGS=$(echo "$CITY_SLUGS" | tail -1)
+          echo "$CITY_SLUGS" | head -n -1  # print logs
+
+          if [ -z "$SLUGS" ] || echo "$SLUGS" | grep -q "^No \|^All "; then
+            echo "No cities to process."
+            echo "slugs=" >> $GITHUB_OUTPUT
+          else
+            echo "Cities to process: $SLUGS"
+            echo "slugs=$SLUGS" >> $GITHUB_OUTPUT
+          fi
+
+      # Run outscraper-reviews.js for each city (one at a time for error isolation)
+      - name: Pull reviews for city 1
+        if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
+        continue-on-error: true
+        env:
+          OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $1}')
+          if [ -n "$SLUG" ]; then
+            echo "Processing city 1: $SLUG"
+            node scripts/outscraper-reviews.js "$SLUG"
+          fi
+
+      - name: Pull reviews for city 2
+        if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
+        continue-on-error: true
+        env:
+          OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $2}')
+          if [ -n "$SLUG" ]; then
+            echo "Processing city 2: $SLUG"
+            node scripts/outscraper-reviews.js "$SLUG"
+          fi
+
+      - name: Pull reviews for city 3
+        if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
+        continue-on-error: true
+        env:
+          OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $3}')
+          if [ -n "$SLUG" ]; then
+            echo "Processing city 3: $SLUG"
+            node scripts/outscraper-reviews.js "$SLUG"
+          fi
+
+      # Request indexing for the city pages that got new review data
+      - name: Request indexing for updated cities
+        if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
+        continue-on-error: true
+        env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
+        run: |
+          npm install googleapis 2>/dev/null
+
+          # Convert city slugs (e.g. crystal-lake-il) to URL paths
+          URLS=$(node -e "
+            const slugs = '${{ steps.cities.outputs.slugs }}'.trim().split(/\s+/);
+            const abbrs = {AL:'alabama',AK:'alaska',AZ:'arizona',AR:'arkansas',CA:'california',CO:'colorado',CT:'connecticut',DE:'delaware',FL:'florida',GA:'georgia',HI:'hawaii',ID:'idaho',IL:'illinois',IN:'indiana',IA:'iowa',KS:'kansas',KY:'kentucky',LA:'louisiana',ME:'maine',MD:'maryland',MA:'massachusetts',MI:'michigan',MN:'minnesota',MS:'mississippi',MO:'missouri',MT:'montana',NE:'nebraska',NV:'nevada',NH:'new-hampshire',NJ:'new-jersey',NM:'new-mexico',NY:'new-york',NC:'north-carolina',ND:'north-dakota',OH:'ohio',OK:'oklahoma',OR:'oregon',PA:'pennsylvania',RI:'rhode-island',SC:'south-carolina',SD:'south-dakota',TN:'tennessee',TX:'texas',UT:'utah',VT:'vermont',VA:'virginia',WA:'washington',WV:'west-virginia',WI:'wisconsin',WY:'wyoming',DC:'district-of-columbia'};
+            const urls = slugs.map(s => {
+              const stateAbbr = s.split('-').pop().toUpperCase();
+              const cityPart = s.slice(0, s.lastIndexOf('-'));
+              const stateSlug = abbrs[stateAbbr] || stateAbbr.toLowerCase();
+              return '/emergency-plumbers/' + stateSlug + '/' + cityPart;
+            });
+            console.log(urls.join(' '));
+          ")
+
+          if [ -n "$URLS" ]; then
+            echo "Requesting indexing for: $URLS"
+            node scripts/request-indexing.js $URLS
+          fi
+
+      - name: Cleanup service account
+        if: always()
+        run: rm -f service-account.json
