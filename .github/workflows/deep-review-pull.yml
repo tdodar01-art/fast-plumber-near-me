@@ -134,6 +134,17 @@ jobs:
             echo "slugs=$SLUGS" >> $GITHUB_OUTPUT
           fi
 
+      # BBB lookup BEFORE reviews so synthesis has BBB data available
+      - name: BBB lookup for qualifying cities
+        if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
+        continue-on-error: true
+        run: |
+          for SLUG in ${{ steps.cities.outputs.slugs }}; do
+            echo "BBB lookup for: $SLUG"
+            node scripts/bbb-lookup.js "$SLUG" || true
+            sleep 2
+          done
+
       # Run outscraper-reviews.js for each city (one at a time for error isolation)
       - name: Pull reviews for city 1
         if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
