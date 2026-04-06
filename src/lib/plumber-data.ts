@@ -10,6 +10,7 @@ export interface PlumberReview {
   text: string;
   time: string;
   relativeTime: string;
+  source?: "google" | "yelp" | "angi";
 }
 
 export interface PlumberSynthesis {

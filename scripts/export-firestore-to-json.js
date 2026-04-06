@@ -90,7 +90,25 @@ async function main() {
 
   // Load all Firestore plumber docs
   const firestoreSnap = await db.collection("plumbers").get();
-  console.log(`Firestore: ${firestoreSnap.size} plumbers | JSON: ${plumbers.length} plumbers\n`);
+
+  // Load all reviews, grouped by plumberId
+  const allReviewsSnap = await db.collection("reviews").get();
+  const reviewsByPlumber = new Map();
+  for (const rdoc of allReviewsSnap.docs) {
+    const rd = rdoc.data();
+    const pid = rd.plumberId;
+    if (!pid || !rd.text) continue;
+    if (!reviewsByPlumber.has(pid)) reviewsByPlumber.set(pid, []);
+    reviewsByPlumber.get(pid).push({
+      author: rd.authorName || "Anonymous",
+      rating: rd.rating || 0,
+      text: rd.text,
+      date: rd.publishedAt || "",
+      source: rd.source || "google",
+    });
+  }
+
+  console.log(`Firestore: ${firestoreSnap.size} plumbers, ${allReviewsSnap.size} reviews | JSON: ${plumbers.length} plumbers\n`);
 
   let updated = 0;
   let unchanged = 0;
@@ -107,7 +125,8 @@ async function main() {
       // Only add if it has minimum required fields
       if (!fd.businessName || !fd.address?.city) continue;
 
-      const newEntry = buildJsonEntry(fd, placeId);
+      const plumberReviews = reviewsByPlumber.get(doc.id) || [];
+      const newEntry = buildJsonEntry(fd, placeId, plumberReviews);
       plumbers.push(newEntry);
       plumbersByPlaceId.set(placeId, newEntry);
       added++;
@@ -133,7 +152,8 @@ async function main() {
     }
 
     // Merge Firestore enrichment into existing JSON entry
-    mergeFirestoreData(existing, fd);
+    const plumberReviews = reviewsByPlumber.get(doc.id) || [];
+    mergeFirestoreData(existing, fd, plumberReviews);
     updated++;
     (fd.serviceCities || []).forEach((c) => affectedCities.add(c));
 
@@ -216,10 +236,61 @@ async function main() {
 }
 
 // ---------------------------------------------------------------------------
+// Select top 15 reviews: 3 recent 5-star, 2 recent 1-2 star, fill with longest
+// ---------------------------------------------------------------------------
+
+function selectTopReviews(reviews, max = 15) {
+  if (!reviews || reviews.length === 0) return [];
+
+  const used = new Set();
+  const selected = [];
+
+  function formatReview(r) {
+    return {
+      author: r.author || "Anonymous",
+      rating: r.rating || 0,
+      text: r.text || "",
+      time: r.date || "",
+      relativeTime: "",
+      source: r.source || "google",
+    };
+  }
+
+  function pick(pool, count) {
+    for (const r of pool) {
+      if (selected.length >= max || count <= 0) break;
+      const key = r.author + ":" + (r.text || "").slice(0, 50);
+      if (used.has(key)) continue;
+      used.add(key);
+      selected.push(formatReview(r));
+      count--;
+    }
+  }
+
+  // Sort by date descending (newest first) — treat empty dates as oldest
+  const byDate = [...reviews].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+
+  // 1. Up to 3 most recent 5-star reviews
+  pick(byDate.filter((r) => r.rating === 5), 3);
+
+  // 2. Up to 2 most recent 1-2 star reviews
+  pick(byDate.filter((r) => r.rating <= 2 && r.rating > 0), 2);
+
+  // 3. Fill remaining slots with longest reviews (most detailed), any rating
+  const remaining = max - selected.length;
+  if (remaining > 0) {
+    const byLength = [...reviews].sort((a, b) => (b.text || "").length - (a.text || "").length);
+    pick(byLength, remaining);
+  }
+
+  return selected;
+}
+
+// ---------------------------------------------------------------------------
 // Build a new JSON entry from Firestore data
 // ---------------------------------------------------------------------------
 
-function buildJsonEntry(fd, placeId) {
+function buildJsonEntry(fd, placeId, reviews) {
   return {
     placeId,
     name: fd.businessName,
@@ -237,7 +308,7 @@ function buildJsonEntry(fd, placeId) {
     types: ["plumber"],
     priceLevel: null,
     editorialSummary: null,
-    reviews: [],
+    reviews: selectTopReviews(reviews || []),
     is24Hour: fd.is24Hour || false,
     workingHours: fd.workingHours || null,
     scrapedAt: fd.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
@@ -251,7 +322,7 @@ function buildJsonEntry(fd, placeId) {
 // Merge Firestore enrichment fields into existing JSON entry
 // ---------------------------------------------------------------------------
 
-function mergeFirestoreData(existing, fd) {
+function mergeFirestoreData(existing, fd, reviews) {
   // Update Google rating if Firestore has fresher data
   if (fd.googleRating) existing.googleRating = fd.googleRating;
   if (fd.googleReviewCount) existing.googleReviewCount = fd.googleReviewCount;
@@ -271,6 +342,11 @@ function mergeFirestoreData(existing, fd) {
   if (fd.yelpReviewCount) existing.yelpReviewCount = fd.yelpReviewCount;
   if (fd.angiRating) existing.angiRating = fd.angiRating;
   if (fd.angiReviewCount) existing.angiReviewCount = fd.angiReviewCount;
+
+  // Top reviews from Firestore (replaces old 5-review Places API reviews)
+  if (reviews && reviews.length > 0) {
+    existing.reviews = selectTopReviews(reviews);
+  }
 
   // Update scrapedAt
   if (fd.updatedAt?.toDate) {

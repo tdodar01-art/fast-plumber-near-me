@@ -44,14 +44,23 @@ interface GoogleReviewCardProps {
   rating: number;
   text: string;
   relativeTime: string;
+  source?: "google" | "yelp" | "angi";
 }
+
+const sourceLabels: Record<string, { label: string; color: string }> = {
+  google: { label: "Google", color: "bg-blue-50 text-blue-600" },
+  yelp: { label: "Yelp", color: "bg-red-50 text-red-600" },
+  angi: { label: "Angi", color: "bg-green-50 text-green-600" },
+};
 
 export function GoogleReviewCard({
   author,
   rating,
   text,
   relativeTime,
+  source,
 }: GoogleReviewCardProps) {
+  const srcInfo = source ? sourceLabels[source] : null;
   return (
     <div
       className="rounded-xl p-4"
@@ -63,6 +72,11 @@ export function GoogleReviewCard({
             {author.charAt(0).toUpperCase()}
           </div>
           <span className="text-sm font-medium text-gray-800">{author}</span>
+          {srcInfo && (
+            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${srcInfo.color}`}>
+              {srcInfo.label}
+            </span>
+          )}
         </div>
         <span className="text-xs text-gray-400">{relativeTime}</span>
       </div>

@@ -164,7 +164,7 @@ export default async function PlumberProfilePage({
   // Sample size warning: if we have <1% of reviews, flag it
   const samplePct = plumber.googleReviewCount > 0 ? plumber.reviews.length / plumber.googleReviewCount : 1;
   let sampleSizeWarning: string | null = null;
-  if (plumber.googleReviewCount > 100 && plumber.reviews.length <= 5) {
+  if (plumber.googleReviewCount > 100 && plumber.reviews.length <= 5 && !plumber.reviews.some((r) => r.source)) {
     sampleSizeWarning = `Analysis based on ${plumber.reviews.length} of ${plumber.googleReviewCount.toLocaleString()} total reviews`;
     if (!effectiveRedFlags.includes("limited-data")) effectiveRedFlags.push("limited-data");
     if (plumber.reviews.every((r) => r.rating === 5)) {
@@ -182,7 +182,7 @@ export default async function PlumberProfilePage({
 
   const responseKPI = getResponseKPI(s, allBadges);
   const emergencyKPI = getEmergencyKPI(s, allBadges, plumber.is24Hour);
-  const topReviews = plumber.reviews.slice(0, 5);
+  const topReviews = plumber.reviews.slice(0, 15);
 
   // JSON-LD
   const breadcrumbJsonLd = {
@@ -465,9 +465,11 @@ export default async function PlumberProfilePage({
 
           {topReviews.length > 0 && (
             <div className="space-y-3 mt-4">
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Recent Google reviews</p>
+              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">
+                {topReviews.some((r) => r.source && r.source !== "google") ? "Reviews from Google, Yelp & more" : "Recent Google reviews"}
+              </p>
               {topReviews.map((review, i) => (
-                <GoogleReviewCard key={i} author={review.author} rating={review.rating} text={review.text} relativeTime={review.relativeTime} />
+                <GoogleReviewCard key={i} author={review.author} rating={review.rating} text={review.text} relativeTime={review.relativeTime} source={review.source} />
               ))}
             </div>
           )}
