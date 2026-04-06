@@ -10,6 +10,15 @@ export const metadata: Metadata = {
     "Find verified emergency plumbers across the United States. Browse by state to find 24/7 plumbers in your city.",
 };
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
+    { "@type": "ListItem", position: 2, name: "Emergency Plumbers", item: "https://fastplumbernearme.com/emergency-plumbers" },
+  ],
+};
+
 export default function EmergencyPlumbersIndex() {
   const statesWithCities = getStatesWithCities();
   const totalCities = getTotalCityCount();
@@ -25,6 +34,8 @@ export default function EmergencyPlumbersIndex() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+
       <section className="bg-primary text-white py-12 sm:py-16">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h1 className="text-3xl sm:text-4xl font-extrabold mb-3">

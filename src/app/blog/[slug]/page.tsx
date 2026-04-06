@@ -169,6 +169,7 @@ export default async function BlogPostPage({
     "@type": "Article",
     headline: post.title,
     description: post.description,
+    mainEntityOfPage: `https://fastplumbernearme.com/blog/${slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     author: {

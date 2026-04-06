@@ -10,6 +10,15 @@ export const metadata: Metadata = {
     "Every plumber ranked by trust score. AI-analyzed Google reviews show the truth — strengths, weaknesses, and red flags. No paid placements.",
 };
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
+    { "@type": "ListItem", position: 2, name: "Plumber Rankings", item: "https://fastplumbernearme.com/plumbers" },
+  ],
+};
+
 export default function PlumbersDirectoryPage() {
   const plumbers = getPlumbersRanked();
   const meta = getDataMeta();
@@ -23,6 +32,8 @@ export default function PlumbersDirectoryPage() {
   }
 
   return (
+    <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
     <div className="max-w-[600px] mx-auto px-4 py-6 font-[family-name:var(--font-dm-sans)]">
       <div className="mb-6">
         <h1 className="font-[family-name:var(--font-fraunces)] text-2xl font-bold text-gray-900 mb-1">
@@ -44,5 +55,6 @@ export default function PlumbersDirectoryPage() {
         })}
       </div>
     </div>
+    </>
   );
 }

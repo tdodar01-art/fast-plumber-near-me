@@ -12,9 +12,36 @@ const totalCities = getTotalCityCount();
 const totalStates = getStatesWithCities().length;
 const cityCoords = getCityCoords();
 
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Fast Plumber Near Me",
+  url: "https://fastplumbernearme.com",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://fastplumbernearme.com/emergency-plumbers/{state}/{city}",
+    },
+    "query-input": "required name=city",
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Fast Plumber Near Me",
+  url: "https://fastplumbernearme.com",
+  description:
+    "Emergency plumber directory that connects homeowners with verified, responsive plumbers. Real Google review analysis with honest strengths and weaknesses — no pay-to-play rankings.",
+};
+
 export default function HomePage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary via-primary-dark to-primary text-white py-14 sm:py-24">
         <div className="max-w-5xl mx-auto px-4">

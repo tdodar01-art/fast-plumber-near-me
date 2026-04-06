@@ -9,9 +9,20 @@ export const metadata: Metadata = {
     "Expert guides on plumbing emergencies: what to do when a pipe bursts, emergency plumber costs, prevention tips, and more.",
 };
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
+    { "@type": "ListItem", position: 2, name: "Blog", item: "https://fastplumbernearme.com/blog" },
+  ],
+};
+
 export default function BlogIndex() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+
       <section className="bg-primary text-white py-12 sm:py-16">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h1 className="text-3xl sm:text-4xl font-extrabold mb-3">
