@@ -3,7 +3,7 @@
     "scrapedAt": "2026-04-06T14:18:39.598Z",
     "totalPlumbers": 392,
     "citiesScraped": 7,
-    "synthesizedAt": "2026-04-06T17:44:49.928Z",
+    "synthesizedAt": "2026-04-06T19:14:35.884Z",
     "totalSynthesized": 390,
     "model": "claude-sonnet-4-20250514"
   },
@@ -381,22 +381,28 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:31:56.301Z",
+      "scrapedAt": "2026-04-06T18:55:30.528Z",
       "synthesis": {
         "score": 90,
         "trustLevel": "high",
-        "summary": "They'll get you fixed fast and actually explain what they're doing instead of just charging you and leaving.",
+        "summary": "They show up fast for emergencies and their technicians genuinely seem to care about doing the job right, but you might wait longer than promised and the bill will definitely surprise you.",
         "strengths": [
-          "Emergency weekend availability — one reviewer had an emergency on the weekend and got service within 2 days despite 4 inches of snow",
-          "Named technicians consistently praised for expertise — Manuel, Yves, Aaron, Kemar, and Mr. H all mentioned by name for superior problem-solving skills",
-          "Transparent communication — multiple reviewers highlight technicians explaining solutions in detail, taking pictures, keeping customers in the loop, and answering all questions"
+          "Accredited A+ BBB with 31 years in business — strong trust signal for established operation",
+          "Emergency responsiveness: 4 reviewers specifically praise same-day or next-day service for urgent water heater replacements and weekend calls",
+          "Technician quality: 70+ of 85 reviews name individual technicians and highlight their communication, expertise, and willingness to explain problems in detail — standout pattern"
         ],
         "weaknesses": [
-          "Not enough data to identify weaknesses"
+          "Service window reliability: 1 reviewer explicitly states 'They rarely keep to the 4-hour service window' and waited over 34 hours for a service call; another waited 4 hours with cancellation and had to reschedule — appointment adherence issue flagged",
+          "Pricing disputes: 3 reviewers mention surprise charges or overpayment ($749 for under 1 hour work, $500+ for 1 hour work, $865 for main line cleaning marked 'high and more than expected') — pricing communication gap pattern",
+          "171 BBB complaints over 3 years despite A+ rating — high complaint volume relative to review base suggests unresolved issues below surface"
         ],
         "bestFor": [],
-        "redFlags": [],
-        "priceSignal": "mid-range",
+        "redFlags": [
+          "Service window violations: 2 of 85 reviewers report missed or significantly delayed appointments (34+ hours wait, 4-hour cancellation with reschedule required) — problematic for subscription/scheduled customers despite emergency strength",
+          "Billing transparency: 3 of 85 reviewers report surprise pricing or significant cost overruns not discussed upfront — concerning for budget-conscious homeowners",
+          "High BBB complaint volume (171 complaints, 3-year span) against A+ rating suggests complaints may be clustering around specific issues (likely appointment adherence or billing) that don't prevent accreditation but indicate systemic friction"
+        ],
+        "priceSignal": "premium",
         "topQuote": null,
         "worstQuote": null
       },
@@ -698,7 +704,9 @@
         "complaintsPast3Years": 4,
         "yearsInBusiness": 37,
         "bbbUrl": "https://www.bbb.org/us/ga/kennesaw/profile/plumber/superior-plumbing-services-inc-0443-2024"
-      }
+      },
+      "yelpRating": 2.4,
+      "yelpReviewCount": 100
     },
     {
       "placeId": "ChIJJ4-MUTbWMIgRH23n_k18HVg",
@@ -2372,22 +2380,26 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:30:01.313Z",
+      "scrapedAt": "2026-04-06T18:00:28.581Z",
       "synthesis": {
         "score": 90,
         "trustLevel": "high",
-        "summary": "They'll work through the night to fix your problem, even on Valentine's Day.",
+        "summary": "They've got 63 years in business, zero BBB complaints, and nearly 2,800 Google reviews at 4.9 stars—but their communication falls apart on large projects with scope changes, and at least one customer got a dangerously wrong diagnosis that cost them thousands to fix.",
         "strengths": [
-          "Exceptional after-hours availability - multiple reviews mention late-night service (9:30 PM, 2:30 AM) and weekend emergency response (Saturday on Valentine's Day)",
-          "Comprehensive staff professionalism - reviewers consistently praise multiple team members by name (Brandon, Dylan, Bryan, Jamaka, Dale) for friendliness and knowledge",
-          "Handles complex jobs competently - successfully diagnosed and replaced a 1,500-foot water line and managed damaged sewer line projects with cost-conscious guidance"
+          "Zero BBB complaints in 3 years and A+ accreditation signals genuine reliability and accountability over 63 years in business.",
+          "After-hours emergency response documented in multiple reviews: one customer received service at 2:30 AM wearing headlamps; another got a tech within 40 minutes at nearly midnight.",
+          "Specific technicians (Brian Miller, Dylan, Brandon, Tony Strickland, Manny) appear in 15+ individual 5-star reviews with consistent praise for honesty, thoroughness, and diagnostic accuracy."
         ],
         "weaknesses": [
-          "Not enough data to identify weaknesses"
+          "2 of 103 Google reviews (1/5 stars each) describe serious diagnostic failures: one customer was told a metal object caused a blockage (actually brown tape/debris), charged $600+, then had the diagnosis contradicted by another plumber; another customer reports a thermal expansion tank was installed incorrectly, PSI set dangerously over 100 (should be 65–75), and installation voided the warranty—requiring expensive repairs elsewhere.",
+          "Communication breakdown on revised estimates: one contractor stated they requested an updated estimate multiple times after scope reduction on a plumbing rough-in, received no callback, and had to relay messages through the main office rather than reaching the estimator directly."
         ],
         "bestFor": [],
-        "redFlags": [],
-        "priceSignal": "premium",
+        "redFlags": [
+          "2 of 103 Google reviews report serious diagnostic errors: one customer misidentified blockage cause (charged $600 for incorrect diagnosis), another had thermal expansion tank installed incorrectly with PSI set to dangerous 100+ (proper range 65–75), both resulting in costly rework by other plumbers. This represents a pattern of diagnostic failure, even if infrequent.",
+          "Communication failure on scope-change estimates: contractor reported inability to reach estimator after initial visit; messages had to be relayed through main office and were never returned."
+        ],
+        "priceSignal": "mid-range",
         "topQuote": null,
         "worstQuote": null
       },
@@ -2473,28 +2485,35 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:32:27.312Z",
+      "scrapedAt": "2026-04-06T19:02:39.164Z",
       "synthesis": {
         "score": 90,
         "trustLevel": "high",
-        "summary": "They'll send someone quickly and fix your problem, but you might pay more than you expected.",
+        "summary": "Google loves them, Yelp despises them — this is a company where your experience depends heavily on which technician shows up and whether you question the bill.",
         "strengths": [
-          "Fast emergency response — two reviewers mention arrival within an hour for urgent flooding and pipe issues",
-          "Strong individual technicians — Aung, Oleg B, Viente, Jerry, Marc, and Tyrell specifically praised for professionalism, clear communication, and thorough problem-solving",
-          "Handles complex diagnostics well — multiple reviews highlight technicians spending significant time identifying root causes before proceeding"
+          "BBB A+ accreditation and 91 years in business provide institutional trust and accountability",
+          "Multiple Google reviewers (Aung, Oleg B., Viente) demonstrate excellent communication, professionalism, and follow-up care in emergency situations",
+          "Fast emergency response documented in 2 Google reviews (within 1-2 hours for flooding/urgent repairs)"
         ],
         "weaknesses": [
-          "Pricing significantly above market — two separate reviewers mention overcharging and inflated quotes that don't match the work required",
-          "Inconsistent quality and accountability — one technician (Israel) repeatedly made excuses, provided inaccurate information, and offered no follow-up support after failing to complete work"
+          "Severe platform discrepancy: 4.8/5 on Google (2754 reviews) vs. 1.5/5 on Yelp (13 reviews) suggests possible review source bias or systematic service quality variation",
+          "Pricing disputes dominate Yelp: 9 of 13 Yelp reviews cite surprise charges, inflated quotes, or refusal to itemize costs (examples: $800 to snake a drain, $500 for 10-minute toilet unclog, $689 for drain snake, $438 for 15-minute washer replacement)",
+          "High BBB complaint volume (781 total complaints over company history) reflects systemic issues despite A+ rating",
+          "4 Yelp reviewers report technician refusal to complete work, provide estimates, or communicate clearly before charging",
+          "Incomplete work/follow-through failures: 1 Google and 2 Yelp reviews describe abandoned jobs, unprofessional supervision, or lack of post-service cleanup"
         ],
         "bestFor": [],
         "redFlags": [
-          "One technician (Israel) repeatedly declined to perform work with shifting excuses and provided misinformation about infrastructure responsibility",
-          "Pattern of overcharging acknowledged even by satisfied customers, limiting price comparison ability in emergencies"
+          "Pricing transparency crisis: 9 of 13 Yelp reviewers (69%) report surprise charges, refusal to provide estimates before work, or quotes 2-3x market rate; contradicts any fair pricing claim",
+          "Incomplete work and lack of follow-through: 2 Yelp reviews and 1 Google review describe technician refusal to complete jobs, supervisor disappearance after contract signing, and uncleaned job sites",
+          "Response time inconsistency: 1 Yelp reviewer waited 4 hours past 2-hour window on Saturday with no compensation; contradicts emergency readiness perception",
+          "Communication failures with non-English-speaking technicians documented in 1 Yelp review resulting in $800 estimate shock and confusion",
+          "Technician accountability issues: 2 Yelp reviewers describe technicians making false diagnoses (incorrect sewer line location, false break claims) and refusing to provide documentation"
         ],
         "priceSignal": "premium",
         "topQuote": null,
-        "worstQuote": null
+        "worstQuote": null,
+        "platformDiscrepancy": "Extreme discrepancy: 4.8/5 on Google (2754 reviews, mostly 5-star) vs. 1.5/5 on Yelp (13 reviews, 10 of 13 are 1-star). Google reviews focus on individual technician quality and communication; Yelp reviews focus on pricing, billing practices, and unmet expectations. This gap suggests either selective positive review posting on Google, different customer demographics, or systematic service inconsistency based on technician assignment and job complexity. High-touch emergency calls appear on Google; routine service calls appear on Yelp."
       },
       "bbb": {
         "accredited": true,
@@ -2503,7 +2522,9 @@
         "complaintsPast3Years": 781,
         "yearsInBusiness": 91,
         "bbbUrl": "https://www.bbb.org/us/oh/cincinnati/profile/plumber/roto-rooter-plumbing-water-cleanup-0292-1922"
-      }
+      },
+      "yelpRating": 1.5,
+      "yelpReviewCount": 13
     },
     {
       "placeId": "ChIJ1Z2YbNYh5IkRhCo-VZcIJPk",
@@ -3417,22 +3438,23 @@
         "Saturday: Closed",
         "Sunday: Closed"
       ],
-      "scrapedAt": "2026-04-06T14:31:44.935Z",
+      "scrapedAt": "2026-04-06T18:53:21.090Z",
       "synthesis": {
         "score": 90,
         "trustLevel": "high",
-        "summary": "They answer the phone immediately and show up early with crews who genuinely care about doing the job right.",
+        "summary": "They answer the phone immediately, show up on time, and do the work right the first time — 32 years in business with zero BBB complaints.",
         "strengths": [
-          "Immediate phone responsiveness - one reviewer specifically noted 'They immediately answered the phone' for a water heater emergency",
-          "Punctual and proactive - multiple reviews mention arriving early or within quoted timeframes, with one completing work 'within the hour they originally quoted'",
-          "Transparent communication - reviewers highlight technicians explaining work clearly, keeping customers informed of steps, and even proactively coordinating with third parties like appliance installers"
+          "BBB A+ accreditation with zero complaints in 32 years of operation signals strong reliability and dispute resolution",
+          "All 5 Google reviews are 5-star with specific praise for punctuality (Rob 'promptly came', Eric 'showed up early') and thoroughness",
+          "Technicians consistently named and praised by reviewers (Frederick Mason, Eric, Mark, Abbas, Koli, Roberto, Rob), indicating training quality and accountability"
         ],
         "weaknesses": [
-          "Not enough data to identify weaknesses"
+          "Only 6 total reviews across all platforms — extremely limited sample size prevents confident pattern assessment",
+          "Angi listing appears incomplete or inactive (0/5 rating with no review text, only listing description)"
         ],
         "bestFor": [],
         "redFlags": [],
-        "priceSignal": "premium",
+        "priceSignal": "mid-range",
         "topQuote": null,
         "worstQuote": null
       },
@@ -3903,28 +3925,24 @@
         "Saturday: 8:00 AM – 5:00 PM",
         "Sunday: 8:00 AM – 5:00 PM"
       ],
-      "scrapedAt": "2026-04-06T14:30:39.474Z",
+      "scrapedAt": "2026-04-06T18:22:40.048Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Plumbing Care Inc demonstrates exceptional reliability with skilled technicians who provide honest, thorough service without upselling. With a 4.9/5 rating from over 2000 reviews and 24-hour availability, they appear to be an excellent choice for emergency plumbing needs.",
+        "summary": "They show up on time, know their stuff, and don't nickel-and-dime you — 14 years in business with one complaint ever suggests they actually deliver.",
         "strengths": [
-          "Highly skilled technicians with specialized expertise",
-          "Honest pricing without upselling tactics",
-          "Thorough explanations and quality workmanship",
-          "Professional team with excellent communication"
+          "Exceptional punctuality and responsiveness: 15+ Google reviews specifically mention arriving on time or early, with several noting same-day or next-morning emergency dispatch for critical issues like water heater failures and carbon monoxide leaks",
+          "Transparent communication and education: Technicians consistently explained problems, showed customers how systems work, and provided detailed estimates before proceeding — mentioned in 20+ reviews",
+          "Highly experienced staff with strong retention: Multiple reviewers noted repeat technicians over years, and a general contractor using them for 5 years praised consistent quality; technician names appear frequently across reviews suggesting stable, skilled workforce"
         ],
         "weaknesses": [
-          "Limited sample of recent reviews to assess current performance"
+          "No warranty offered on drainage repairs: One 4/5 review flagged that company policy excludes warranties on drainage work, creating discomfort about long-term coverage despite satisfaction with the repair itself",
+          "Minimal complaint history limits feedback: Only 1 complaint in BBB's 3-year window and 14 years of business; while this is extremely positive, the small complaint volume means emerging patterns are harder to detect"
         ],
-        "bestFor": [
-          "water heater replacement",
-          "emergency repairs",
-          "complex plumbing diagnostics"
-        ],
+        "bestFor": [],
         "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "What really sets Hristo apart is his honesty and workmanship — no shortcuts, no upselling, just quality work done right the first time. Everything was left clean and working perfectly.",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -4689,28 +4707,29 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:31:51.671Z",
+      "scrapedAt": "2026-04-06T18:54:54.659Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Brian B Quick Plumbing demonstrates exceptional reliability and professionalism, with technicians consistently going above and beyond for customers, including weekend and emergency service. Multiple reviews highlight their honest pricing, thorough explanations, and willingness to work long hours to complete jobs the same day.",
+        "summary": "They show up fast and do solid work, but a handful of customers got hit with surprise bills and one had damage they wouldn't take responsibility for.",
         "strengths": [
-          "Excellent weekend/emergency availability",
-          "Honest pricing without unnecessary upselling",
-          "Technicians work until job completion",
-          "Clear communication and follow-up"
+          "Fast emergency response: 12+ Google reviews explicitly mention same-day or within-hours dispatch, including weekend availability (multiple Sunday calls noted)",
+          "BBB A+ accreditation with only 1 complaint in 10 years of business signals strong institutional reliability",
+          "Technician quality: Named techs like Dion, Pierre, Mike, and Patrick appear repeatedly in 5-star reviews with praise for knowledge, patience, and honesty (e.g., refusing to upsell unnecessary $9K floor drain)"
         ],
         "weaknesses": [
-          "May arrive later in day due to other jobs"
+          "Pricing disputes: 3 Google reviews (04/03 3-star, 04/03 3-star, 03/24 1-star) report surprise bills or overcharging ($530 for 30-min faucet swap, $428 for a $50 drain part) with poor callback response on billing inquiries",
+          "Damage liability avoidance: 2 reviews (04/02 1-star, 04/05 1-star) report technician-caused damage (cracked tile + flooding, broken pipe) with company refusing accountability and ignoring management callback requests for 4+ weeks",
+          "Inconsistent workmanship: 1 review (03/06 2-star) notes junior technician performed overly invasive repair that failed, requiring return to another plumber"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "weekend service calls",
-          "complex installations"
+        "bestFor": [],
+        "redFlags": [
+          "Billing disputes and potential overcharging: 3 of 87 Google reviews report surprise charges ranging $200–$530 for routine work; 2 customers unable to reach management for explanation despite multiple callback attempts over days/weeks",
+          "Damage and accountability failures: 2 reviews report technician-caused damage (tile cracking, pipe rupture, water damage) with company refusing responsibility and ignoring management contact for 4+ weeks; one customer escalated complaint outside platform",
+          "Inconsistent quality on complex jobs: 1 review notes junior tech sent for leak repair performed invasive, failed troubleshooting while more experienced plumber had proposed simpler solution"
         ],
-        "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "he stuck to it doing a fantastic job, demonstrating the work showing us all the details and providing follow-up information should we need it. Could not be more pleased or impressed with the experience.",
+        "priceSignal": "premium",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -4904,33 +4923,29 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T19:06:35.307Z",
       "synthesis": {
         "score": 82,
         "trustLevel": "high",
-        "summary": "Hill & Company appears to be a reliable service provider with strong emergency response capabilities and professional staff. While most customers report excellent experiences with quality work and fair pricing, there's at least one concerning report of potential overcharging that warrants getting multiple quotes for major projects.",
+        "summary": "They'll get to you fast in emergencies and explain everything clearly, but expect to pay premium prices and watch your invoice carefully.",
         "strengths": [
-          "Quick emergency response during storms",
-          "Professional and knowledgeable technicians",
-          "Thorough quality assurance inspections",
-          "Respectful of customer property"
+          "Emergency responsiveness: 5+ reviews specifically mention same-day or within-hours service during urgent situations (weekend heat failure, 3:30am leak, emergency AC failure), with one reviewer noting they were the only 24-hour plumber available",
+          "Technician quality and communication: 35+ reviews praise technicians for thorough explanations, professional demeanor, and taking time to educate homeowners; many mention photos/documentation of work performed",
+          "Honest upselling practices: Multiple reviews note technicians did NOT push unnecessary upgrades (e.g., 'did not try to sell me anything I didn't need', 'no pressure about being up-charged')"
         ],
         "weaknesses": [
-          "One report of significant overcharging",
-          "Potential upselling on unnecessary work",
-          "Mixed experiences with initial assessments"
+          "Pricing disputes and transparency: 5 reviews specifically flag high costs—one reviewer rejected an $840 labor quote for a warranty part replacement, another rejected $9,200 for tankless water heater (competitor quoted $5k, 45% less), one noted 'huge fee just to come out' not credited to final bill, and one found invoice 'confusing'; this pattern suggests pricing may not be clearly disclosed upfront",
+          "Service agreement follow-through: 1 review (1/5 star) documents that free tune-ups promised with HVAC purchase were later charged for when customer tried to book, indicating terms may not be honored consistently"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "HVAC installation and replacement",
-          "heating system repairs"
-        ],
+        "bestFor": [],
         "redFlags": [
-          "One customer reported being quoted $9,200 for a tankless water heater swap that another company did for 45% less, suggesting potential overcharging"
+          "Pricing disputes in 5 reviews: $9.2k quote rejected (competitor 45% lower), $840 labor quote for warranty part deemed excessive, service call fee not credited to final bill, confusing invoice, and characterization as 'very costly'—pattern suggests upfront pricing clarity is inconsistent",
+          "Service agreement non-compliance: 1 review documents promised free tune-ups were charged for upon redemption, indicating terms may not be consistently honored",
+          "One 1-star review (10/31/2025) initially very negative regarding repairs/costs, later updated to 5-stars after owner personally intervened and assisted with costs—suggests company recovery process exists but initial billing practices prompted complaint"
         ],
         "priceSignal": "premium",
-        "topQuote": "We needed emergency services because our downstairs heat stopped working during the January storm. They were able to send Paxton quickly who was very knowledgeable and very much willing to take the time to explain how the system worked. He was able to get us up and running within an hour.",
-        "worstQuote": "They were *absolutely* trying to take advantage of someone who didn't know better. Anyway, they quoted me $9,2k for a simple Tankless Water Heater swap."
+        "topQuote": null,
+        "worstQuote": null
       }
     },
     {
@@ -5004,30 +5019,31 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:29:37.502Z",
+      "scrapedAt": "2026-04-06T17:47:44.143Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Integrated Plumbing Solutions appears to be a highly reliable local plumber with excellent customer service and technical expertise. Multiple reviews highlight their honest pricing, professional work quality, and attention to detail, making them a strong choice for emergency plumbing needs.",
+        "summary": "They show up fast for emergencies and most techs are friendly and knowledgeable, but Yelp reviews reveal a pattern of surprise charges and billing disputes that Google reviews don't mention.",
         "strengths": [
-          "Honest pricing, no scamming",
-          "Professional and knowledgeable technicians",
-          "Same-day service capability",
-          "Excellent attention to detail and cleanliness"
+          "BBB A+ accreditation with zero complaints over 13 years and 103 total reviews — strong institutional trust signal",
+          "Multiple Google reviews (at least 8) specifically mention same-day or next-day emergency response, including weekend availability",
+          "Named technicians (Douglas, Corbett, Thomas, Matt B, Ben) consistently praised across 20+ reviews for professionalism, thoroughness, and clear explanation of work"
         ],
         "weaknesses": [
-          "Pricing described as expensive",
-          "Limited sample of emergency-specific feedback"
+          "Yelp shows 5 one-star reviews (out of 18 total) citing surprise charges, incomplete quotes, and overbilling — e.g., one reviewer charged $800 for wax seal repair (vs. $400 elsewhere), another saw hidden $2,342.50 added after estimate, another charged $1,651.44 for gas line with undisclosed $2,342.50 additional fee",
+          "One Google reviewer (2/5/2026) reported severe time underestimation (7am arrival became 11am+, job took 3+ hours longer than quoted), lack of callback from supervisor (Todd), and missing recommended sediment filter on water filtration system"
         ],
-        "bestFor": [
-          "Water heater replacement",
-          "Sewer line repairs",
-          "Gas line installation"
+        "bestFor": [],
+        "redFlags": [
+          "Yelp shows pattern of billing disputes: 5 of 18 Yelp reviews (28%) cite surprise charges, hidden fees, or massive overestimates not disclosed upfront — 1 customer charged $800 vs. $400 elsewhere for same work, 1 customer saw $2,342.50 added without discussion, 1 customer told $1,651.44 with hidden $2,342.50 fee, 1 customer quoted $400 but charged additional amount on top of deposit",
+          "Google review (2/5/2026) documents significant time underestimation and unresponsive management (supervisor Todd did not return calls); same reviewer notes company did not recommend sediment filter despite acknowledged high sediment in local water",
+          "Yelp review (2/9/2026 edited) alleges discount-for-review incentive scheme ('you get a discount if you leave one'), undermining reliability of Google's 4.9 rating if true",
+          "Two Yelp reviews report unprofessional technician behavior: one (1/5 from 2018) describes technician on tablet for 2+ hours unable to diagnose tankless water heater (Bosch tech fixed in 5 min for $89), another (1/5 from 2020) describes technician appearing intoxicated or impaired, rambling for 30 min, charging $109 for failed service"
         ],
-        "redFlags": [],
         "priceSignal": "premium",
-        "topQuote": "You will not be ripped off, scammed, or taken to the bank. I've used Matt multiple times to fix other plumbers expensive, mess. Don't think twice.",
-        "worstQuote": "It was pricy but in line with other quotes we received"
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google 4.9/5 (84 reviews) vs. Yelp 3.5/5 (18 reviews) — 1.4-point gap. Yelp concentrates complaints about billing practices, hidden fees, and overestimation not mentioned in Google reviews. This gap suggests either review manipulation on Google, platform bias toward service quality on Google vs. pricing concerns on Yelp, or genuine improvement over time. Homeowners should request detailed written estimates and confirm all fees before work begins."
       },
       "bbb": {
         "accredited": true,
@@ -5036,7 +5052,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 13,
         "bbbUrl": "https://www.bbb.org/us/ga/kennesaw/profile/plumber/integrated-plumbing-solutions-llc-0443-27467192"
-      }
+      },
+      "yelpRating": 3.5,
+      "yelpReviewCount": 18
     },
     {
       "placeId": "ChIJmWYBQpZ-hYARil5z5zAcKo8",
@@ -5207,29 +5225,26 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:30:43.551Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Service Hero Plumbing appears to be a highly reliable choice for emergency plumbing needs, with technicians who arrive quickly and resolve issues efficiently. Customers consistently praise their professionalism, transparency, and ability to handle urgent situations like potential flooding within 30-60 minutes.",
+        "summary": "They show up fast on weekends, explain what they're doing, and most customers get same-day service—but one customer was left hanging with a no-show and rescheduled appointment they didn't confirm.",
         "strengths": [
-          "Fast emergency response (within 1 hour)",
-          "Professional and courteous technicians",
-          "Transparent pricing and explanations",
-          "Quick problem resolution (30 minutes typical)"
+          "Fast emergency response: Multiple reviewers report arrival within 1 hour on nights and weekends (Kent on Sunday late evening, Bryan on Saturday evening within an hour, Christian within 10 minutes on exterior pipe)",
+          "Transparent communication and education: 18+ reviewers specifically mention technicians explaining work before starting, warning of long-term issues (oils in drains), and discussing pricing upfront",
+          "Consistent quality across named technicians: Leonard, Abel, Diego, Josias, Kent, and Armando each appear in 3-6 reviews with all 5-star ratings and specific praise for professionalism"
         ],
         "weaknesses": [
-          "Limited sample of review types",
-          "All reviews are 5-star which may not show full picture"
+          "No-show and rescheduling communication failure: 1 reviewer (2/5/2026) had initial appointment miss on 2/4, sent confirmation email with no response, then technician arrived unannounced on 2/5 without time window—customer had already hired competitor",
+          "Very small non-Google sample: Only 1 Angi review (0/5 stars, appears to be a misindexed list page, not an actual service review), making platform consistency impossible to verify"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "drain cleaning",
-          "urgent flooding situations"
+        "bestFor": [],
+        "redFlags": [
+          "No-show and failed rescheduling communication (1 incident on 2/5/2026): Customer had confirmed appointment miss on 2/4, sent confirmation email with no response, technician arrived unannounced on 2/5 outside agreed window, customer had already engaged competitor"
         ],
-        "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "Kent was quick to arrive, quick to assess and diagnose, and quick to resolve the issue. He was polite, personable, and made me feel completely at ease during the whole process - one that was causing me some concern as it was a potential flooding of my garage.",
+        "topQuote": null,
         "worstQuote": null
       }
     },
@@ -6354,29 +6369,26 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:32:52.646Z",
+      "scrapedAt": "2026-04-06T19:07:37.976Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Champion Plumbing consistently delivers professional, reliable service with technicians who take time to explain their work and educate customers. Multiple reviews highlight their honesty, quick response times, and ability to handle complex problems that other companies couldn't fix.",
+        "summary": "They've got solid Google ratings and BBB accreditation, but with only 1 total complaint in 10 years and minimal review data across platforms, there's just not enough information to confidently assess them for an emergency.",
         "strengths": [
-          "Professional and experienced technicians",
-          "Takes time to educate customers",
-          "Reliable next-day service",
-          "Honest pricing and diagnosis"
+          "BBB A+ accreditation with only 1 complaint in 10 years suggests reliable business practices and accountability",
+          "4.7/5 Google rating across 1,069 reviews indicates consistent positive customer experiences",
+          "10 years in business demonstrates longevity and established local presence"
         ],
         "weaknesses": [
-          "Not the least expensive option"
+          "Extremely limited review data on Angi (only 66 reviews at 4.4/5) compared to Google, making it difficult to assess service consistency across platforms",
+          "Insufficient detail in available reviews to evaluate emergency response times, after-hours availability, or specific service quality patterns"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "complex diagnostic issues",
-          "water heater service"
-        ],
+        "bestFor": [],
         "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "Thomas went above and beyond, where others failed. Thank you for your professionalism and character Thomas.",
-        "worstQuote": null
+        "priceSignal": "unknown",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google 4.7/5 (1,069 reviews) vs. Angi 4.4/5 (66 reviews) shows a minor gap, but Angi sample is too small to indicate a meaningful discrepancy. Insufficient data overall to assess platform consistency."
       },
       "bbb": {
         "accredited": true,
@@ -6649,30 +6661,28 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T19:04:13.483Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Amped Plumbing appears to be an exceptional choice for emergency plumbing needs, with consistent 5-star reviews praising their professionalism, quality work, and excellent communication. They responded to one customer within 30 minutes and have a strong track record of fixing problems right the first time.",
+        "summary": "Excellent Google reputation with nearly perfect ratings, but extremely limited independent verification — only 1 Angi review available to cross-check claims.",
         "strengths": [
-          "Excellent emergency response time (30 minutes)",
-          "Professional and knowledgeable technicians",
-          "Clear communication throughout projects",
-          "Clean, methodical work with minimal property damage"
+          "Near-perfect Google rating of 4.9/5 across 989 reviews indicates strong customer satisfaction",
+          "Recommended by Angi for plumbing needs, suggesting third-party credibility"
         ],
         "weaknesses": [
-          "Limited negative feedback to assess potential issues",
-          "All reviews are 5-star which may not show full picture"
+          "Insufficient review data for reliable analysis — only 1 total review across all platforms outside Google creates major verification gap",
+          "Cannot assess consistency, pricing fairness, response times, or emergency reliability with only 1 independent review"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "major plumbing replacements",
-          "sewer line work"
+        "bestFor": [],
+        "redFlags": [
+          "Critical data gap: 1 review across Angi and other platforms vs. 989 on Google suggests possible review concentration on single platform — cannot verify if high Google rating reflects actual service or algorithmic factors",
+          "Angi listing appears incomplete or improperly formatted in provided data — no actual review content available to validate claims"
         ],
-        "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "They had a technician at my house within 30 minutes after my initial call. Technician Byron is the best! He is so respectful and knowledgeable. Byron diagnosed the problems quickly and fixed it right the first time.",
-        "worstQuote": null
+        "priceSignal": "unknown",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Extreme discrepancy: 4.9/5 on Google (989 reviews) vs. only 1 review on Angi/other platforms. This 989:1 ratio is a significant red flag for verification purposes in an emergency situation."
       }
     },
     {
@@ -6843,30 +6853,30 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:30:45.481Z",
+      "scrapedAt": "2026-04-06T18:27:08.334Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Drain Doctor shows exceptional reliability for emergency services, with customers consistently praising their quick response times and ability to answer calls when other plumbers don't. The company demonstrates strong technical expertise and professionalism across both emergency repairs and complex installations.",
+        "summary": "They show up fast for emergencies and most techs are knowledgeable, but one customer was dramatically overcharged on a holiday job—$4,500 quoted when comparable work cost $2,800 elsewhere.",
         "strengths": [
-          "Excellent emergency response - arrives within 30 minutes",
-          "Actually answers phones 24/7 unlike competitors",
-          "High technical expertise and code compliance",
-          "Professional communication and follow-up"
+          "Fast emergency response: 15+ Google reviews mention arrival within 30-60 minutes, including nights and weekends",
+          "Knowledgeable technicians: Jorge, Bobby, Scott, and others repeatedly praised for explaining work clearly and diagnosing problems accurately",
+          "Strong customer service: Multiple reviews cite office staff (Diana, Vivian, Eddie) being helpful and accommodating, including payment arrangements for financial hardship"
         ],
         "weaknesses": [
-          "Limited sample of recent reviews",
-          "Individual technician quality may vary"
+          "Pricing disputes on major jobs: One detailed 1-star review (08/22/2025) documents a $4,500 Thanksgiving quote that two other licensed plumbers independently assessed should have cost $2,800—Rocky framed it as a 'discount' from a fabricated $7,000 price, and follow-up quotes were $5,000-$7,000 higher than competitors",
+          "Inconsistent emergency availability: One 1-star review (11/21/2025) reports being turned away for 24/7 emergency service because technician had 'worked too many hours,' contradicting advertised availability"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "main line problems"
+        "bestFor": [],
+        "redFlags": [
+          "Major pricing dispute on one significant job (1 of 91 Google reviews): Customer independently verified overcharge of $1,700-$4,200 on holiday emergency, with owner (Rocky) using 'discount' framing as sales tactic rather than genuine savings",
+          "False or inconsistent 24/7 emergency claim: 1 review documents dispatcher explicitly refusing late-night service despite advertised 24/7 availability",
+          "One hygiene/professionalism concern: 1-star review (07/20/2025) documents technician grabbing a mug and scooping water from customer's toilet bowl without permission—'disrespectful and gross behavior'"
         ],
-        "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "Four different businesses didn't answer the phone and one said they only take appointments…. What??? Drain Doctor Fremont was next and I was assured someone would be at my home within the hour. The technician was here within 30 minutes",
-        "worstQuote": null
+        "priceSignal": "mid-range to premium",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google 4.9/5 (91 reviews) vs. BBB D- with 2 total complaints over 33 years in business. The BBB rating appears outdated or based on accreditation status rather than complaint severity. However, the documented pricing dispute (one detailed, independently verified overcharge) conflicts with the overwhelmingly positive Google reviews and suggests possible selective review presence or platform differences. No Yelp data available for comparison."
       },
       "bbb": {
         "accredited": false,
@@ -8028,31 +8038,27 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:32:58.661Z",
+      "scrapedAt": "2026-04-06T19:10:03.689Z",
       "synthesis": {
         "score": 82,
         "trustLevel": "high",
-        "summary": "Champion Plumbing demonstrates strong technical expertise and professionalism with same-day emergency service and skilled technicians who handle complex repairs well. However, their pricing appears to be on the premium side, so get quotes from multiple companies for major work.",
+        "summary": "They've got a stellar Google rating and BBB accreditation, but there's almost no independent review data to verify if that holds up in the real world.",
         "strengths": [
-          "Same-day emergency response",
-          "Skilled technicians with attention to detail",
-          "Professional approach to complex repairs",
-          "Clear communication and explanation of work"
+          "BBB A+ accreditation and 10 years in business signals established legitimacy and consumer protection",
+          "4.7/5 Google rating from 689 reviews indicates consistent positive customer experience at scale"
         ],
         "weaknesses": [
-          "Premium pricing structure",
-          "Potential sticker shock on major jobs",
-          "Small service fee discrepancy"
+          "Critically low independent review verification: only 1 total BBB review and Angi data is irrelevant (home automation list, not plumbing), making it impossible to validate the Google rating across platforms",
+          "Small sample size on BBB (1 review) cannot reliably support the accreditation claim without more data"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "slab leak repairs",
-          "water softener installation"
+        "bestFor": [],
+        "redFlags": [
+          "Severe lack of corroborating reviews: 689 Google reviews vs. 1 BBB review creates unverifiable rating gap; too few independent sources to confirm legitimacy or catch hidden issues"
         ],
-        "redFlags": [],
-        "priceSignal": "premium",
-        "topQuote": "Ethan Patton technician came to fix at pipe leak urgent same day fix behind water heater in the wall and the service was fast, knowledgeable and expertly done.",
-        "worstQuote": "We had 10-15 feet of pipe to be routed off of our gas meter and they want $4500-$5500 to do the job! Are you kidding lol.. So we decided we would pay the $80 fee and be on our way. Well it is $89 as a fee. Just buyer beware as you need to know that is highway robbery !"
+        "priceSignal": "unknown",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google 4.7/5 (689 reviews) vs. BBB 1 review with no rating; Angi data is non-relevant (home automation category, not plumbing). Massive disparity in review volume between platforms raises verification concerns."
       },
       "bbb": {
         "accredited": true,
@@ -8734,29 +8740,27 @@
         "Saturday: 9:00 AM – 5:00 PM",
         "Sunday: 9:00 AM – 5:00 PM"
       ],
-      "scrapedAt": "2026-04-06T14:32:00.911Z",
+      "scrapedAt": "2026-04-06T18:57:25.627Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Service Force Plumbing demonstrates excellent emergency response with same-day service and knowledgeable technicians who complete jobs thoroughly. Multiple reviews highlight their ability to handle urgent situations quickly, with technicians who explain problems clearly and don't leave until work is finished.",
+        "summary": "They show up fast, explain what they're doing, and actually fix things the first time—24 years in business with zero BBB complaints backs that up.",
         "strengths": [
-          "Rapid emergency response - same day service",
-          "Knowledgeable technicians who explain problems clearly",
-          "Complete jobs thoroughly without leaving early",
-          "Professional installation and cleanup"
+          "BBB A+ accreditation with zero complaints over 3 years and 24 years in business—strong reliability signal",
+          "Same-day or next-day service mentioned in 12+ Google reviews; multiple reviewers report exact appointment times instead of 2-5 hour windows",
+          "Consistent pattern of transparency: 8+ reviewers specifically praise detailed explanations, diagnosis photos/videos, and willingness to discuss options before quoting expensive fixes"
         ],
         "weaknesses": [
-          "24-hour availability unclear",
-          "Limited sample of emergency situations"
+          "3 reviews (out of 86 total) report aggressive post-service billing pressure and high diagnostic fees ($475 for clogged drain quote; $1,000 for first snake attempt that failed within 2 days, then $1,000 again); one reviewer felt pressured into a $10k contract with time-limited discount",
+          "Pricing complaints appear in 2 Google reviews ($450 for faucet swap, $1,000+ drain work) and one 1-star review suggests potential skill gaps or over-quoting on sewer work relative to competitors"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "complex plumbing diagnostics"
+        "bestFor": [],
+        "redFlags": [
+          "3 of 86 reviews report pricing disputes or perceived billing pressure: one customer charged $475 for drain quote without diagnostic attempt; one customer re-snaked at $1,000 after first $1,000 service failed within 2 days and later fixed by competitor for $500; one customer felt pressure to sign $10k contract with time-limited discount. Pattern suggests possible overquoting or inconsistent technician skill on complex drain/sewer work.",
+          "One 1-star review (11/11/2025) reports sewer backup recurred 2 days after $1,000 snake service by Service Force, but did not recur for 5+ months after competitor's $500 service—raises questions about diagnostic accuracy or technique consistency on sewer lines specifically."
         ],
-        "redFlags": [],
-        "priceSignal": "unknown",
-        "topQuote": "My emergency occurred fairly late last night and they were able to get out here this morning.",
+        "priceSignal": "premium",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -8766,7 +8770,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 24,
         "bbbUrl": "https://www.bbb.org/us/md/rockville/profile/plumber/service-force-plumbing-llc-0241-235998110"
-      }
+      },
+      "yelpRating": 5,
+      "yelpReviewCount": 1
     },
     {
       "placeId": "ChIJq6qqqnpjZIgRVl_X5DseIss",
@@ -9440,29 +9446,25 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:30:27.507Z",
+      "scrapedAt": "2026-04-06T18:14:22.205Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Plumb Doctor demonstrates exceptional reliability for emergency plumbing situations, with multiple customers reporting same-day service and immediate response times. The owner Brandon is highly involved and the company consistently delivers quality work at fair prices, making them an excellent choice for urgent plumbing needs.",
+        "summary": "Brandon's crew shows up fast on weekends and emergencies, fixes major issues cleanly, and won't nickel-and-dime you—but they're not the cheapest option and a few customers found their routine pricing surprisingly high.",
         "strengths": [
-          "Same-day emergency response with owner involvement",
-          "Consistent quality service across multiple visits",
-          "Transparent pricing and detailed explanations",
-          "Honest assessments that save customers money"
+          "Emergency responsiveness: 12+ reviews specifically mention weekend/after-hours availability with same-day or next-morning service (sewer backups, burst pipes, water heater failures)",
+          "Owner involvement: Brandon personally answers calls, shows up to jobs, and addresses customer concerns—mentioned by name in 15+ reviews as a trust factor",
+          "Fair pricing on major work: Customers consistently praise 'reasonable' and 'fair' pricing on large projects (main line replacements, sewer repairs) and note they refused to upsell unnecessary work"
         ],
         "weaknesses": [
-          "Not the cheapest option available"
+          "Routine service pricing gaps: 2 reviews (Feb 2026, Aug 2025) report quotes 2-4x higher than competitors for standard jobs (faucet/fixture replacement: quoted $1,700 vs. $440-$675 elsewhere). Not reflected in major repair reviews, suggesting pricing inconsistency by job type",
+          "Minor operational lapses: 1 review (Dec 2025) reports crew left back gate open after work, allowing dogs to escape. Isolated but suggests attention-to-detail gaps on close-out"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water line replacements",
-          "repeat service needs"
-        ],
+        "bestFor": [],
         "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "8am phone call and Brandon answered immediately. Cody was here by 11am... Both times I have used Plumb Doctor they have provided a quick response and quality work the same day I called in.",
-        "worstQuote": "Not cheap but fair. Cheap does not usually equal good."
+        "topQuote": null,
+        "worstQuote": null
       },
       "bbb": {
         "accredited": false,
@@ -9850,34 +9852,29 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T19:08:29.584Z",
       "synthesis": {
         "score": 75,
-        "trustLevel": "moderate",
-        "summary": "Bailey Brothers shows strong emergency response times and technical skills, with most customers praising their professionalism and thoroughness. However, a concerning review reveals potential issues with pricing transparency and customer service when questioned, which could be problematic during stressful emergency situations.",
+        "trustLevel": "high",
+        "summary": "39-year-old established plumbing company with strong Google presence, but extremely limited review data across platforms makes it difficult to assess reliability for emergencies.",
         "strengths": [
-          "Excellent emergency response - responds within hours",
-          "Skilled technicians who solve difficult problems",
-          "Professional and thorough work approach",
-          "Willing to take jobs others refuse"
+          "Long operational history of 39 years suggests business stability and experience",
+          "High Google rating of 4.7/5 indicates generally positive customer experiences on that platform",
+          "Offers comprehensive services including plumbing, heating, AC, and indoor air purification"
         ],
         "weaknesses": [
-          "Potential pricing disputes and transparency issues",
-          "May become hostile when questioned about costs",
-          "Risk of abandoning job if pricing is challenged"
+          "Only 1 total review across all platforms outside Google creates severe data gap and inability to verify service quality",
+          "Angi rating of 4.3/5 is notably lower than Google's 4.7/5, suggesting potential platform-dependent performance or review selection bias"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "complex diagnostic problems"
-        ],
+        "bestFor": [],
         "redFlags": [
-          "Technician hung up and abandoned customer without water after pricing dispute",
-          "Alleged initial overquote of $1000+ for unnecessary tank replacement"
+          "Severe data scarcity: only 1 review on Angi versus 615 on Google raises questions about actual service volume, customer satisfaction consistency, or review authenticity",
+          "Rating discrepancy between platforms (4.7 vs 4.3) suggests inconsistent customer experience or selective review posting"
         ],
-        "priceSignal": "premium",
-        "topQuote": "Called Bailey Brothers Plumbing on a Friday around 2:30 PM—the day before we were about to get full-blown Snowpocalypse... Bailey Brothers said, 'No problem,' and sent Larry Floyd to the rescue... he didn't rush, didn't make excuses, and didn't quit because it was cold or getting late.",
-        "worstQuote": "Larry got hostile and hung up on me after saying if I didn't like the price I could call someone else. He left me and my customer high and dry with no water all night just because I was questioning some things and trying to figure out why labor was so high."
+        "priceSignal": "unknown",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google 4.7/5 (615 reviews) vs. Angi 4.3/5 (53 reviews) — 0.4-point gap suggests potential differences in customer expectations or service consistency between platforms"
       }
     },
     {
@@ -10575,28 +10572,23 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T19:05:29.239Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Anderson Plumbing appears to be an exceptional choice for emergency plumbing needs, with consistently outstanding service over many years and 24-hour availability. Multiple long-term customers praise their prompt response, professional technicians, and reliable follow-up service, making them a safe bet when you need urgent plumbing help.",
+        "summary": "They've built a solid reputation with consistent positive feedback, but you're working with very limited data — only 1 review across platforms to verify against their Google rating.",
         "strengths": [
-          "Prompt emergency response and 24-hour service",
-          "Highly knowledgeable and professional technicians",
-          "Excellent long-term customer relationships",
-          "Stands behind warranty work and follows up"
+          "High Google rating (4.9/5 across 525 reviews) suggests sustained customer satisfaction",
+          "Angi reviewer reports prompt service and recommends highly after multiple uses over several years"
         ],
         "weaknesses": [
-          "All reviews are 5-star, may not represent full range of experiences"
+          "Critically small sample size: only 1 review available across all platforms besides Google, making it impossible to independently verify quality or identify patterns",
+          "No emergency-specific feedback available (after-hours response, weekend availability, or rapid dispatch)"
         ],
-        "bestFor": [
-          "Emergency plumbing repairs",
-          "Water heater replacement and installation",
-          "HVAC and comprehensive home services"
-        ],
+        "bestFor": [],
         "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "Ashley will answer your calls, or, if needed, promptly return a call if you call after hours. I would not hesitate to contact Anderson Plumbing for all your plumbing needs.",
+        "priceSignal": "unknown",
+        "topQuote": null,
         "worstQuote": null
       }
     },
@@ -11061,30 +11053,26 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:32:06.745Z",
+      "scrapedAt": "2026-04-06T18:58:29.212Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Cherry Blossom Plumbing consistently delivers excellent emergency service with same-day response, professional technicians, and transparent pricing. Multiple customers praise their quick response times, clear explanations, and quality workmanship across various plumbing issues.",
+        "summary": "They've got a near-perfect Google rating and zero BBB complaints in 4 years, but you're working with very limited data—only 1 review visible across all platforms.",
         "strengths": [
-          "Same-day emergency response",
-          "Professional and knowledgeable technicians",
-          "Clear communication and explanations",
-          "Competitive pricing with matching policies"
+          "BBB A+ accreditation with zero complaints over 3 years signals established trust and accountability",
+          "Google rating of 4.9/5 (494 reviews) indicates strong overall customer satisfaction",
+          "Available review mentions prompt arrival and expert handling of water leak repair"
         ],
         "weaknesses": [
-          "Limited review sample size",
-          "All reviews are 5-star which may indicate filtering"
+          "Severely limited review visibility outside Google—only 1 Angi review captured, making it impossible to verify consistency across platforms",
+          "Sample size outside Google is too small to assess reliability patterns or identify potential issues"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "urgent plumbing issues"
-        ],
+        "bestFor": [],
         "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "I recently had an urgent plumbing issue in my bathroom that could have turned into a major problem. The plumber, Matt from Cherry Blossom Plumbing, responded quickly to my call and arrived promptly at my home.",
-        "worstQuote": null
+        "priceSignal": "unknown",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Significant discrepancy in review volume: 494 reviews on Google vs. 1 visible review on Angi. This gap makes it difficult to validate whether the 4.9 Google rating reflects consistent service across all customer segments or platforms."
       },
       "bbb": {
         "accredited": true,
@@ -12656,29 +12644,29 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:30:14.973Z",
+      "scrapedAt": "2026-04-06T18:08:01.096Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Pike Plumbing demonstrates exceptional emergency response and reliability, with customers praising their quick scheduling and professional service. They offer competitive pricing and stand behind their work with prompt follow-up service when needed.",
+        "summary": "They show up fast and do solid work, but there's a big gap between what Google loves (5.0 stars) and what Yelp saw (3.0 stars), and at least one Yelp reviewer felt pushed into an unnecessary $3,500 repair.",
         "strengths": [
-          "Excellent emergency response times",
-          "Competitive pricing",
-          "Professional installation work",
-          "Strong follow-up service"
+          "Exceptional response time: At least 12 Google reviews specifically mention same-day or next-day service, including one emergency call 2 hours before Thanksgiving guests arrived",
+          "BBB A+ accreditation with zero complaints over 31 years in business signals institutional reliability",
+          "Transparency on follow-ups: Multiple reviewers note technicians proactively checked for secondary issues and offered warranty follow-ups at no charge"
         ],
         "weaknesses": [
-          "Limited sample size for full assessment"
+          "Significant platform discrepancy: 5.0 stars on Google (76 reviews) vs 3.0 stars on Yelp (5 reviews) suggests potential selection bias or review skewing; older Yelp reviews from 2014-2017 include serious complaints about incomplete repairs and unresponsive management not present in recent Google reviews",
+          "Pricing disputes in Google reviews: One 3-star Google review (01/25/2026) reports $3,500+ estimate for work customer completed themselves for ~$300, indicating possible over-specification of repairs"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "repiping projects"
+        "bestFor": [],
+        "redFlags": [
+          "Platform rating discrepancy: 5.0/5 on Google vs 3.0/5 on Yelp is substantial; older Yelp reviews (2014, 2022) cite misdiagnosis ('guy they sent couldn't identify the leak'), failed repair warranty claims, and employee negligence causing $2,600 in water damage with refused liability",
+          "Pricing concern: 1 of 76 Google reviewers (1.3%) reports estimate 10x higher than actual needed repair cost ($3,500 vs $300), suggesting possible over-specification or aggressive upselling on complex diagnostics"
         ],
-        "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "It is 3 days before Thanksgiving, I have elderly relatives arriving in a few hours, and our water pipe broke in the front yard right before the foundation. I explained my situation and he could hear the panic in my voice. This amazing company had a plumbing technician in my driveway within 2 hours.",
-        "worstQuote": null
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Critical gap: Google 5.0/5 (405 reviews, mostly 2025-2026) vs Yelp 3.0/5 (5 reviews, spanning 2014-2025). Older Yelp reviews cite misdiagnosis and liability refusal; recent Google reviews are uniformly positive. Pattern suggests either significant service improvement over time or Google review concentration among satisfied customers. One recent Google review (01/25/2026) echoes Yelp concern about inflated estimates, indicating pricing disputes persist despite overall positive trajectory."
       },
       "bbb": {
         "accredited": true,
@@ -12687,7 +12675,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 31,
         "bbbUrl": "https://www.bbb.org/us/ga/kennesaw/profile/plumber/pike-plumbing-company-0443-27097372"
-      }
+      },
+      "yelpRating": 3,
+      "yelpReviewCount": 5
     },
     {
       "placeId": "ChIJg644BcTPt4kRVm6C3tBhb5E",
@@ -12760,30 +12750,25 @@
         "Saturday: 9:00 AM – 5:00 PM",
         "Sunday: 9:00 AM – 5:00 PM"
       ],
-      "scrapedAt": "2026-04-06T14:32:19.188Z",
+      "scrapedAt": "2026-04-06T19:00:55.977Z",
       "synthesis": {
         "score": 82,
         "trustLevel": "high",
-        "summary": "Service Force Plumbing appears to be a reliable company with skilled technicians like Tyler who respond quickly and diagnose problems efficiently. While they have a strong track record, one recent project management issue suggests verifying scope and timeline expectations upfront.",
+        "summary": "They've got an outstanding Google track record and zero BBB complaints in 24 years, but the data is too thin to be certain—only 1 review across all platforms outside Google, and that Angi entry appears to be a general list page, not actual feedback.",
         "strengths": [
-          "Quick diagnosis and repairs",
-          "Professional and punctual service",
-          "Experienced with complex installations",
-          "Strong customer loyalty"
+          "4.9/5 on Google with 397 reviews shows strong customer satisfaction over time",
+          "A+ BBB accreditation with zero complaints in 3 years and 24 years in business—solid trust signal",
+          "High review volume on Google suggests they handle significant call volume and complete most jobs to satisfaction"
         ],
         "weaknesses": [
-          "Occasional project management issues",
-          "Scope creep on larger projects"
+          "Extremely limited review data outside Google (1 review across all platforms)—difficult to validate consistency across feedback sources",
+          "No specific response time, pricing, or service detail comments visible in provided data—cannot assess emergency-specific capabilities"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "pre-purchase inspections"
-        ],
+        "bestFor": [],
         "redFlags": [],
         "priceSignal": "unknown",
-        "topQuote": "Tyler showed up on time(was even early) and diagnosed and resolved the issue in less then 30 minutes. Highly recommended and they are my go to for any plumbing issues.",
-        "worstQuote": "We experienced several issues related to timing, and the scope of work shifted significantly from the beginning to the end of the project."
+        "topQuote": null,
+        "worstQuote": null
       },
       "bbb": {
         "accredited": true,
@@ -13865,28 +13850,29 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:31:35.145Z",
+      "scrapedAt": "2026-04-06T18:49:49.534Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Thomas E Clark Inc appears to be a highly reliable plumbing company with excellent customer service and professional work quality. With a 4.8/5 rating and consistently positive reviews highlighting prompt response times, professional crews, and thorough communication, they seem well-suited for emergency plumbing needs.",
+        "summary": "They show up fast, know old DC homes inside and out, and finish jobs right—but they're not cheap and one customer had an awful experience with a technician's personal hygiene.",
         "strengths": [
-          "Prompt emergency response within same day",
-          "Professional and courteous technicians",
-          "Excellent communication and scheduling",
-          "Clean up after work completion"
+          "135 years in business with A+ BBB accreditation and zero complaints in 3 years—strongest trust signal available",
+          "Emergency response documented in 15+ reviews: same-day service, 2-hour response to 6:30pm calls, multiple 30-minute arrival mentions",
+          "Deep expertise in lead pipe replacement and old building systems: 20+ detailed reviews praising work quality on complex 70-100+ year old homes"
         ],
         "weaknesses": [
-          "Limited review sample for comprehensive assessment"
+          "One 1-star review from April 2024 describes a technician using customer's bathroom without permission and leaving feces unflushed for 3+ days—hygiene/respect violation that contradicts professional claims",
+          "One 1-star HVAC sales review (March 2025) documents unprofessional behavior: salesman mocked customer, refused to complete estimate, became angry; suggests internal quality control gaps in non-emergency divisions",
+          "2 reviews cite high pricing: one customer declined $320 drain clear (resolved with shop vac in 5 mins) and $800 flat-fee refrigerant charge; another notes 'not cheap' but 'best value long-run'"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "lead pipe replacement",
-          "general plumbing services"
+        "bestFor": [],
+        "redFlags": [
+          "1 documented case of technician using customer bathroom without permission and leaving waste unflushed for 3+ days (April 2024)—hygiene/respect violation",
+          "1 documented case of HVAC salesman unprofessional conduct: mocking customer, refusing to complete estimate, becoming hostile (March 2025)—suggests training/screening gaps in sales division",
+          "Pricing disputes in 2 reviews: customer felt charged excessively for routine work ($320 drain clear, $800 refrigerant flat fee); flagged as potential for surprise/high charges"
         ],
-        "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "For emergency repairs, they can usually respond within the same day.",
+        "priceSignal": "premium",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -14280,29 +14266,23 @@
         "Saturday: Closed",
         "Sunday: Closed"
       ],
-      "scrapedAt": "2026-04-06T14:30:23.524Z",
+      "scrapedAt": "2026-04-06T18:12:16.487Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "My Plumber LLC demonstrates exceptional emergency responsiveness and reliability, with multiple customers praising Tim's quick Sunday morning service for urgent issues. The company consistently delivers professional work with clear communication and thorough explanations, making them an excellent choice for emergency plumbing needs.",
+        "summary": "Tim shows up fast on weekends and doesn't pad the bill like other plumbers—multiple reviewers specifically mention being charged less than expected for the same emergency work.",
         "strengths": [
-          "Excellent emergency response on weekends",
-          "Clear communication and professional service",
-          "Quick problem diagnosis and resolution",
-          "Reliable scheduling and punctuality"
+          "Emergency responsiveness: 6+ Google reviews explicitly mention same-day or next-day service, including weekend/Sunday calls; one reviewer called Saturday morning of Mother's Day weekend and Tim came at 6 PM same day",
+          "Fair pricing and honesty: 8+ reviewers specifically praise reasonable rates, fair quotes, and refusal to upsell unnecessary work—contrasts explicitly with other plumbers charging 2x as much for identical jobs",
+          "Complex problem-solving: Multiple reviews highlight detection and repair of difficult issues (water leaks under concrete slabs, identifying problems other companies missed, water main breaks, gas line safety)"
         ],
         "weaknesses": [
-          "Limited review sample size",
-          "Unclear pricing transparency"
+          "Minor scheduling delays: 1 of 80 Google reviews (4/5 stars) reports arriving 1 hour 45 minutes late, attributed to Atlanta traffic; reviewer still rates positively but notes lateness is 'normal'"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "frozen pipe issues",
-          "bathroom renovations"
-        ],
+        "bestFor": [],
         "redFlags": [],
-        "priceSignal": "unknown",
-        "topQuote": "I called them at 9:00 on a Sunday morning and Tim showed up at 12:00 to fix the frozen pipe issue. He had back up and running in an hour.",
+        "priceSignal": "mid-range",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -14312,7 +14292,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 10,
         "bbbUrl": "https://www.bbb.org/us/ga/acworth/profile/plumber/my-plumber-llc-0443-27659786"
-      }
+      },
+      "yelpRating": 5,
+      "yelpReviewCount": 7
     },
     {
       "placeId": "ChIJ4_SUHTHPt4kRfn9WvLCSy_I",
@@ -14777,27 +14759,33 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:29:41.746Z",
+      "scrapedAt": "2026-04-06T17:49:45.397Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Paramount Plumbing demonstrates exceptional reliability and emergency response, with one reviewer noting they arrived within an hour for a pipe burst and worked until 5AM to complete repairs. Multiple reviews consistently praise their professionalism, quality workmanship, and clear communication across both residential and commercial projects.",
+        "summary": "They're great most of the time with skilled technicians like Nick and Fermin, but a few customers got hit with surprise charges and scheduling delays during emergencies.",
         "strengths": [
-          "Excellent emergency response (on-site within 1 hour)",
-          "Consistently professional and punctual",
-          "Clear communication and explanations",
-          "High-quality workmanship that passes inspections"
+          "Exceptional technician consistency: Nick, Fermin, Sosa, and Jason are named repeatedly across 40+ reviews for professionalism, honesty, and problem-solving expertise",
+          "BBB A+ accreditation with zero complaints over 3 years and 15 years in business signals institutional reliability",
+          "Diagnostic thoroughness: Multiple reviewers (water line, sewer line, leak detection) praise video documentation and honest assessment that avoided unnecessary major work"
         ],
-        "weaknesses": [],
-        "bestFor": [
-          "emergency repairs",
-          "major plumbing remodels",
-          "water heater replacement"
+        "weaknesses": [
+          "Emergency response gaps: 1 reviewer waited 4 days for garbage disposal repair (Thu-Mon); another complained about exorbitant undisclosed after-hours rates",
+          "Billing disputes on major jobs: 3 reviewers (tankless water heater, water heater replacement, detailed estimate) report surprise price increases, unclear breakdowns, and difficulty reaching owner Eric to resolve before payment",
+          "Yelp red flag (2022): Single 1-star review alleges language barrier, sump pump not tested before delivery, refurbished equipment sold as new, and rude owner response—contradicts otherwise professional profile"
         ],
-        "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "I immediately contacted Paramount Plumbing, and Nick was on-site within an hour. Upon arriving around 9:00 PM, he quickly assessed the situation and took immediate action. He worked diligently until nearly 5:00 AM, without complaint, ensuring the repairs were completed properly.",
-        "worstQuote": null
+        "bestFor": [],
+        "redFlags": [
+          "Scheduling delays on emergencies: 1 reviewer reported 4-day wait (Thu–Mon) for garbage disposal backup during peak need window",
+          "Surprise billing on major jobs: 3 separate reviewers report price increases post-estimate or bundled charges not broken down by labor/material/tax despite request",
+          "Owner accessibility: Multiple reviewers report difficulty reaching Eric; customer service manager stated owner 'does not deal with customers,' creating escalation barrier",
+          "Undisclosed after-hours pricing: 1 reviewer called after-hours unaware of exorbitant markup, company did not quote rate before repair",
+          "Yelp credibility gap: Single 2022 Yelp review alleges non-English-speaking crew, untested equipment, refurbished unit sold as new, and rude owner response—stark contrast to 97 Google 5-stars, suggesting possible review platform or timeline quality shift"
+        ],
+        "priceSignal": "premium",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Extreme: 4.9/5 (97 Google reviews, 2023–2026) vs. 1/5 (1 Yelp review, 2022). The 2022 Yelp review alleges untested equipment and rude service; all 97 Google reviews post-2023 praise professionalism. Timeline suggests possible service quality improvement, staff changes, or review platform bias. Discrepancy warrants caution on major jobs and advance communication."
       },
       "bbb": {
         "accredited": true,
@@ -14806,7 +14794,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 15,
         "bbbUrl": "https://www.bbb.org/us/ga/kennesaw/profile/plumber/paramount-plumbing-llc-0443-27439661"
-      }
+      },
+      "yelpRating": 1,
+      "yelpReviewCount": 1
     },
     {
       "placeId": "ChIJQzvYQ18TD4gReC8NU6lPfY4",
@@ -14979,31 +14969,31 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:18:51.374Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "The Neighborly Plumber consistently delivers reliable emergency service with same-day response, honest pricing, and skilled technicians who go above and beyond. This family-owned business has proven track record handling urgent situations in harsh conditions while maintaining excellent customer service.",
+        "summary": "They show up fast when things break and explain what they're doing—most reviewers say they won't oversell you, but a few got hit with surprise bills that felt unfair after the fact.",
         "strengths": [
-          "Same-day emergency response",
-          "Honest, no overselling approach",
-          "Experienced in harsh weather conditions",
-          "Family-owned with personal service"
+          "Fast emergency response: 8+ reviews explicitly mention same-day or next-morning arrival, with multiple noting service within hours of calling",
+          "Honest diagnostics: 6+ reviewers praise them for NOT pushing unnecessary work or catching problems other plumbers missed (e.g., 'saw that the pipe was good to go and needed no extra repairs')",
+          "Exceptional customer service team: Jessica (office staff) is named in 5+ reviews as knowledgeable, responsive, and supportive through the process"
         ],
         "weaknesses": [
-          "Limited price comparison data",
-          "Uncertainty about pricing competitiveness"
+          "Pricing disputes on follow-up repairs: 2 separate 1-star reviews (Dustin) cite being charged $400+ for follow-up work on same issue within weeks; customer felt misled about condition of old pipes and claims he was overcharged for a coupling vs. replacement",
+          "Billing shock on specialized jobs: 1 review reports a $1,059 labor charge ($800 for 2 hours) on a pump repair where the part cost $259 at Home Depot—reviewer called it 'highway robbery' and filed a complaint with Angi"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "pipe repairs and replacement"
+        "bestFor": [],
+        "redFlags": [
+          "Pricing transparency issue on complex repairs: 2 of 83 total reviews report surprise charges on follow-up or specialized work (Dustin coupling/Apex pipe at $400+; pump labor at $800 for 2 hours). While small percentage, both complaints center on same plumber (Dustin) and same pattern (upselling on follow-up visits or labor-heavy jobs).",
+          "Inconsistent estimate accuracy: 1 review notes they were only bid selected without comparing others, suggesting customers may lack baseline pricing context; another notes uncertainty about whether they overpaid."
         ],
-        "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "Despite the stress, freezing weather conditions and time constraints, he showed up on time and fixed our urgent issue! From the beginning James and Jessica really helped me and I will never forget it.",
-        "worstQuote": "Im not sure if we overpaid but they were tg3 only ones that came out and repaired and replaced in a timely manner."
-      }
+        "topQuote": null,
+        "worstQuote": null
+      },
+      "yelpRating": 5,
+      "yelpReviewCount": 1
     },
     {
       "placeId": "ChIJC8E8KcvFx4kRhq_ZVFGmsGA",
@@ -15177,34 +15167,30 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:42:25.869Z",
       "synthesis": {
         "score": 45,
-        "trustLevel": "low",
-        "summary": "While Rooter Hero has 24-hour availability and some satisfied customers praising their responsiveness and professionalism, multiple reviews raise serious concerns about aggressive upselling and unnecessary work recommendations. Two separate customers report being quoted $10,000-$15,000 for pipe work that other plumbers deemed unnecessary, suggesting potential predatory practices targeting vulnerable customers.",
+        "trustLevel": "moderate",
+        "summary": "They do solid work when the job is straightforward, but multiple customers report being pressured into expensive upgrades they didn't need — and when they got second opinions, those upgrades disappeared.",
         "strengths": [
-          "24-hour emergency availability",
-          "Professional and courteous technicians",
-          "Good communication and follow-up",
-          "Same-day service capability"
+          "Specific technicians (Jedidiah, Jordan, Luis, Adrian) consistently praised for professionalism, knowledge, and clear communication across 30+ reviews",
+          "Fast completion on simple jobs: multiple reviews cite drain clearing or repairs completed 'within minutes' or 'within an hour'",
+          "Emergency responsiveness: at least 3 reviews mention same-day or midnight service arrival"
         ],
         "weaknesses": [
-          "Aggressive upselling tactics",
-          "Potentially unnecessary expensive recommendations",
-          "Inconsistent diagnostic quality"
+          "Aggressive upselling pattern: 4 separate 1-star reviews (01/16/2025, 07/23/2024, 11/25/2023, 04/22/2023, 01/21/2026) report initial low estimates followed by pressure to book expensive services ($1,500–$10,000 hydro jets, epoxy lining, full repiping) that competing plumbers either completed much cheaper or said weren't needed. Second opinions ranged from $225–$1,800 vs. Rooter Hero's $1,600–$10,000 estimates.",
+          "Inconsistent follow-through: 1 review (12/09/2024) reports technician abandoned job mid-way to take another call and disappeared for hours; 1 review (11/05/2024) cites poor internal communication between offices and failure to clean up drywall dust after repair work"
         ],
-        "bestFor": [
-          "Simple drain clearing",
-          "Emergency availability when other options unavailable"
-        ],
+        "bestFor": [],
         "redFlags": [
-          "Multiple reports of unnecessary expensive pipe work recommendations ($10K-$15K)",
-          "Pattern of targeting elderly customers with high-cost solutions",
-          "Other plumbers easily solved problems this company claimed required major work"
+          "Upselling pattern flagged: 4 of 82 Google reviews explicitly report being quoted $1,500–$10,000 for upgrades (hydro jet, epoxy lining, full repipe) that were either completed by competitors for 75–90% less or diagnosed as unnecessary. This matches a deliberate sales tactic of low initial quote followed by high-pressure scope creep.",
+          "No-show/abandonment: 1 review reports technician disappeared mid-job for hours without explanation and was reassigned to another customer",
+          "Quality control gaps: 1 review documents inadequate cleanup (drywall dust, left plastic) and poor office-to-field communication resulting in rescheduling failures",
+          "Lack of diagnostic confidence in writing: Multiple negative reviews note technician would not guarantee hydro jet would fix the problem but still charged full price regardless of outcome"
         ],
         "priceSignal": "premium",
-        "topQuote": "Very responsive, great communication via phone, text, & email - always knew of status. Angel Ramirez was courteous and professional, quickly cleared drain and explained warranty and follow up process if needed. Great price for same day service.",
-        "worstQuote": "They attempted to snake the line for only a few minutes before saying it could not be cleared. Another worker went under the house and told her the pipes needed to be replaced and gave an estimate of $10,000. I advised my mother to cancel that work. The next day, we hired a different plumber who snaked the same line for about three hours and fully cleared the clog for $225."
+        "topQuote": null,
+        "worstQuote": null
       }
     },
     {
@@ -15278,30 +15264,29 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:29:45.698Z",
+      "scrapedAt": "2026-04-06T17:52:42.012Z",
       "synthesis": {
         "score": 82,
         "trustLevel": "high",
-        "summary": "Serv'All Plumbing consistently delivers professional, reliable service with technicians who are knowledgeable and trustworthy. While pricing may be on the higher side, customers praise their quality work, emergency availability, and excellent customer service over multiple years.",
+        "summary": "They show up fast and fix things right, but watch out — a handful of Yelp reviews suggest they've quoted sky-high prices and once caused water damage they refused to cover.",
         "strengths": [
-          "Professional, knowledgeable technicians",
-          "Reliable emergency and weekend service",
-          "Long-term customer relationships",
-          "Goes above and beyond for customers"
+          "BBB A+ accredited with zero complaints in 3 years and 31 years in business — strong trust signal for reliability",
+          "Multiple Google reviewers (15+) specifically mention same-day or next-day appointments and quick response to emergencies, including weekend calls",
+          "Consistent praise for transparent communication and fair pricing; 8+ reviews mention honest quotes with no surprise fees or upcharging"
         ],
         "weaknesses": [
-          "Higher pricing than DIY alternatives",
-          "May quote high for simple repairs"
+          "Significant platform discrepancy: 4.9/5 on Google (90 reviews) vs. 3/5 on Yelp (5 reviews). Two of five Yelp reviews mention overquoting or refusal to take responsibility — one customer reports $2,600 in water damage after technician failed to fully shut off water, and company refused responsibility",
+          "One Google 1-star review reports a $1,200 quote for a 3-foot PVC pipe repair that homeowner completed for $20 in materials, suggesting occasional dramatically inflated estimates"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "complex plumbing issues",
-          "water pressure problems"
+        "bestFor": [],
+        "redFlags": [
+          "2 of 5 Yelp reviews (40%) report billing or liability disputes: one customer reports $2,600 water damage from technician error with refused responsibility; platform discrepancy suggests Google reviews may not capture full complaint picture",
+          "Two reviews (1 Google, 1 Yelp) report significantly overinflated quotes ($1,200 for $20 repair; another plumber diagnosed leak after Serv'All quoted full-line replacement) — pattern of expensive initial quotes that may not reflect actual work needed"
         ],
-        "redFlags": [],
-        "priceSignal": "premium",
-        "topQuote": "Your Employee saved my entire Home Structure on the response of his actions, as I wouldn't have a House to call Home as of date.",
-        "worstQuote": "Needed a 3ft piece of PVC going to my septic tank. Got a $1200 quote. Told plumber no thanks and he left. I dug out the pipe and repaired it in less than 3 hours and $20 of pipe."
+        "priceSignal": "mid-range to premium",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Stark discrepancy: 4.9/5 on Google (264 reviews, 90 shown) vs. 3/5 on Yelp (5 reviews). Yelp includes two 1-star reviews citing overquoting and refused liability for damage; Google shows no comparable complaints. Small Yelp sample but pattern (40% negative) differs sharply from Google (1-2% negative). Suggests potential selection bias or that serious complaints migrate to Yelp."
       },
       "bbb": {
         "accredited": true,
@@ -15310,7 +15295,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 31,
         "bbbUrl": "https://www.bbb.org/us/ga/acworth/profile/plumber/servall-plumbing-rooter-service-0443-9035"
-      }
+      },
+      "yelpRating": 3,
+      "yelpReviewCount": 5
     },
     {
       "placeId": "ChIJnYW8amAjD4gRfZmT_1D45vk",
@@ -16664,29 +16651,24 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:29:55.510Z",
+      "scrapedAt": "2026-04-06T17:58:02.661Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "High Priority Plumbing demonstrates exceptional professionalism and technical expertise, with multiple customers praising their clear communication and honest approach. Their technicians take time to explain procedures and provide education, making them a strong choice for emergency plumbing needs.",
+        "summary": "Steven and their team consistently show up knowing exactly what's wrong and explain it in plain English—96 Google reviews all 5 stars, 25 years in business, virtually no complaints.",
         "strengths": [
-          "Excellent communication and explanation of work",
-          "Highly knowledgeable and professional technicians",
-          "Punctual and reliable service",
-          "Honest recommendations and transparent pricing"
+          "Exceptional diagnostic clarity: 15+ reviewers specifically mention technicians explained the problem and solution in detail before charging",
+          "Individual technician standouts: Steven appears in 25+ reviews with consistent praise for knowledge and professionalism; Aaron, David, Justin, and Jordan each mentioned 5+ times with similar patterns",
+          "Educational approach: Multiple reviewers note technicians taught them how to identify issues themselves or maintain systems, reducing future emergency calls"
         ],
         "weaknesses": [
-          "Limited sample of technician diversity (mostly Steven)",
-          "No mention of pricing competitiveness"
+          "One upfront payment requirement mentioned: Single reviewer (01/09/2026) noted the company 'initially wanted up front payment...which in my experience is not customary,' though issue was resolved",
+          "No BBB accreditation despite A+ rating: 25 years in business with only 1 complaint on record suggests strong reliability, but lack of accreditation is a minor trust gap"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "leak detection and repair"
-        ],
+        "bestFor": [],
         "redFlags": [],
-        "priceSignal": "unknown",
-        "topQuote": "I've been in the construction industry for 26 years and am a licensed General Contractor, so I don't give praise lightly. Steven was outstanding—professional, knowledgeable, and clear in explaining the issues and solutions. Based on my experience, he's easily in the top 1% of vendors I've worked with.",
+        "priceSignal": "mid-range",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -17587,30 +17569,30 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:29:51.578Z",
+      "scrapedAt": "2026-04-06T17:55:45.755Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "City Wide Plumbing demonstrates exceptional emergency response capabilities with technicians arriving within minutes and completing repairs efficiently on the first visit. Multiple reviews highlight their professionalism, speed, and ability to handle urgent situations like water heater floods and leaks effectively.",
+        "summary": "They show up fast and most customers rave about them, but Yelp tells a very different story about aggressive upselling and surprise charges that Google reviews almost never mention.",
         "strengths": [
-          "Extremely fast emergency response",
-          "Gets repairs right the first time",
-          "Professional and knowledgeable technicians",
-          "Handles water heater replacements efficiently"
+          "Fast emergency response: 10+ Google reviews specifically mention arrival within 15-30 minutes, including multiple after-hours calls; BBB A+ rating with 50 years in business and zero complaints signals strong reliability",
+          "Consistent technician quality: Named technicians (Nick, Bryce, Josh, Ricky) appear repeatedly in positive reviews across both residential and commercial clients, suggesting trained staff",
+          "24/7 availability demonstrated: Multiple reviews from late Friday nights, midnight emergencies, and weekends with same-day service"
         ],
         "weaknesses": [
-          "Limited sample size of reviews",
-          "No pricing information mentioned"
+          "Significant platform discrepancy: 4.9/5 on Google (96 reviews) vs. 3.1/5 on Yelp (8 reviews) suggests potential review bias or fundamentally different customer experiences; 4 of 8 Yelp reviews (50%) mention pricing disputes, aggressive upselling, or surprise charges, which are almost never mentioned on Google",
+          "Upselling and billing disputes: Multiple Yelp reviewers (2022-2020) report $3,500 quotes for issues charged $800 elsewhere, $368 fill valve replacement for a $12 part, and $180 for running toilet diagnostics; this pattern does not appear in 96 Google reviews"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "leak detection and repair"
+        "bestFor": [],
+        "redFlags": [
+          "Platform rating gap (4.9 vs. 3.1) with Yelp complaints concentrated on pricing: 4 of 8 Yelp reviews mention overcharges, upselling, or quote disputes vs. zero on Google — suggests either selective Google review posting or aggressive commercial pricing practices",
+          "Billing disputes: Rene Nava quoted $3,500 vs. competitor's $800 (2022); unnamed tech quoted $368 for $12 part (2020); both Yelp incidents suggest price estimation inconsistency",
+          "Unprofessional conduct documented on Yelp (but not Google): Tech arrived without mask/gloves and dirtied customer's home (2020); tech showed attitude when questioned on pricing (2016); yard damage and poor cleanup (2017) — none of these service failures appear in Google reviews despite 96 reviews"
         ],
-        "redFlags": [],
         "priceSignal": "unknown",
-        "topQuote": "He was there less than 10mins after the email was sent. He fixed the problem right away and now we can sell that room.",
-        "worstQuote": null
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Critical discrepancy: Google 4.9/5 (96 reviews) vs. Yelp 3.1/5 (8 reviews). Yelp reviewers report excessive quotes ($3,500 vs. $800 competitor, $368 vs. $12 part cost), unprofessional conduct, and property damage. Google reviews do not mention pricing concerns despite high volume. This suggests either Google reviews skew toward satisfied emergency customers (quick fixes, no time to compare prices) while Yelp captures customers who discovered overcharges post-service, or selective review management. Homeowners should request written estimates and get second opinions before authorizing major work."
       },
       "bbb": {
         "accredited": true,
@@ -17619,7 +17601,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 50,
         "bbbUrl": "https://www.bbb.org/us/ga/acworth/profile/plumber/city-wide-plumbing-0443-11002517"
-      }
+      },
+      "yelpRating": 3.1,
+      "yelpReviewCount": 8
     },
     {
       "placeId": "ChIJiYQZqOJB9YgR4WMiuzZ4lI0",
@@ -17693,28 +17677,28 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:05:07.524Z",
       "synthesis": {
         "score": 95,
         "trustLevel": "high",
-        "summary": "JMJ Plumbing appears to be an exceptional choice for emergency plumbing with a perfect 5-star rating across 207 reviews. Multiple customers highlight their fast response times, even on holidays, along with professional, courteous service and transparent pricing.",
+        "summary": "They show up fast, fix it right, and charge you fairly—exactly what you need when your pipes burst at midnight.",
         "strengths": [
-          "Fast emergency response even on holidays",
-          "Transparent pricing with upfront options",
-          "Professional and courteous technicians",
-          "Clean work and respectful of customer homes"
+          "Same-day and emergency response: 12+ Google reviewers explicitly mention same-day service, emergency calls answered within 10-15 minutes, and weekend/holiday availability without extra charges",
+          "Technician expertise and honesty: Brent McFarland and Greg McFarland are named repeatedly (25+ mentions) for diagnosing complex issues accurately, offering DIY alternatives to save customers money, and explaining work transparently before charging",
+          "Fair pricing consistently verified: 18+ reviewers specifically praise competitive quotes, no surprise fees, and pricing matching or beating competitor estimates"
         ],
-        "weaknesses": [],
-        "bestFor": [
-          "Emergency repairs",
-          "Holiday/after-hours service",
-          "Bathroom plumbing issues"
+        "weaknesses": [
+          "Only 91 total reviews across all platforms limits statistical confidence in rare negative scenarios",
+          "One review mentions a water pressure issue causing a cracked fitting days after installation—while JMJ replaced it quickly, it signals potential pressure/materials concerns that weren't discussed in other reviews"
         ],
+        "bestFor": [],
         "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "Even on a holiday, their response was fast and professional. The technicians are punctual, clean, and respectful of my home. Pricing is very reasonable for the quality and speed of service. It's hard to find dependable plumbers—especially during holidays—but JMJ Plumbing always delivers.",
+        "topQuote": null,
         "worstQuote": null
-      }
+      },
+      "yelpRating": 5,
+      "yelpReviewCount": 1
     },
     {
       "placeId": "ChIJeStAPgDnx4kROvFKrAcjd4w",
@@ -20977,33 +20961,24 @@
         "Saturday: Closed",
         "Sunday: Closed"
       ],
-      "scrapedAt": "2026-04-06T14:32:23.331Z",
+      "scrapedAt": "2026-04-06T19:01:19.204Z",
       "synthesis": {
         "score": 45,
-        "trustLevel": "low",
-        "summary": "JF Plumbing shows inconsistent service quality with serious concerns about pricing transparency and emergency reliability. While some technicians provide excellent work, multiple customers report unprofessional behavior, price gouging, and poor management practices that make them unreliable for emergency situations.",
+        "trustLevel": "moderate",
+        "summary": "34-year veteran with pristine BBB record and consistently high ratings across platforms—this is a solid, established shop with no complaint history.",
         "strengths": [
-          "Some technicians are knowledgeable and professional",
-          "Clean work when service is completed properly",
-          "Attention to detail on successful jobs"
+          "Zero BBB complaints over 34 years in business, signaling strong reliability and customer satisfaction",
+          "Exceptional consistency across platforms: 4.8/5 on Google (138 reviews) and 4.6/5 on Angi (1,604 reviews) suggests genuine positive performance, not platform-specific manipulation",
+          "Large review sample size (1,740+ total reviews) provides high confidence in rating authenticity"
         ],
         "weaknesses": [
-          "Inconsistent pricing and quote manipulation",
-          "Poor emergency service reliability",
-          "Unprofessional management and communication"
+          "BBB accreditation status is 'No'—while not a red flag with A+ rating and zero complaints, accreditation would strengthen trust signal"
         ],
-        "bestFor": [
-          "Non-urgent repairs with upfront pricing confirmation"
-        ],
-        "redFlags": [
-          "Charges $695 for unsuccessful diagnostics with no actual repair",
-          "Management changes quotes after arrival and pressures customers",
-          "Technician caused unnecessary wall damage and left equipment behind",
-          "Cannot complete same-day emergency service as promised"
-        ],
-        "priceSignal": "premium",
-        "topQuote": "Patrick was amazing — very helpful and professional. He was neat with his work and made sure to clean up everything before he left. He double-checked the garbage disposal to ensure there were no leaks after installation and confirmed all the connections from the dishwasher and sink were secure.",
-        "worstQuote": "I was charged $79 for that brief visit, and two days later, I still haven't received a quote or follow-up. I don't blame the technician—I blame the corporate office for mishandling the request. Unfortunately, this experience has made it clear that JF isn't reliable to solve my urgent plumbing issues."
+        "bestFor": [],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": null,
+        "worstQuote": null
       },
       "bbb": {
         "accredited": false,
@@ -21581,29 +21556,27 @@
         "Saturday: 9:00 AM – 5:00 PM",
         "Sunday: 9:00 AM – 5:00 PM"
       ],
-      "scrapedAt": "2026-04-06T14:32:15.180Z",
+      "scrapedAt": "2026-04-06T19:00:03.524Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Service Force Plumbing demonstrates exceptional professionalism and technical expertise with highly skilled technicians like Tyler and Colby who consistently exceed customer expectations. They show strong emergency responsiveness and provide thorough, honest service with detailed explanations and competitive pricing.",
+        "summary": "They show up fast, know what they're doing, and most customers say they're honest—but one person got charged $450 for a failed diagnostic and unnecessary upselling before another plumber fixed it for less.",
         "strengths": [
-          "Highly skilled and professional technicians",
-          "Excellent emergency response time",
-          "Thorough problem diagnosis with photos/videos",
-          "Clean, organized work practices"
+          "BBB A+ accreditation with zero complaints across 24 years in business—strong trust signal for reliability.",
+          "Fast response and same-day service mentioned in 12+ Google reviews; multiple customers praised arrival within hours of calling.",
+          "Consistent pattern of thorough diagnostics and transparent pricing: 15+ reviews explicitly mention upfront estimates, clear explanations, and willingness to discuss alternatives before work begins."
         ],
         "weaknesses": [
-          "Limited sample size of reviews",
-          "24-hour availability unclear"
+          "One detailed 1-star review (04/02/2026) alleges $450 charge for unsuccessful diagnostic work and aggressive upselling of a $4,800+ repair that a second plumber fixed without digging—suggests potential for high-pressure sales on complex drain issues.",
+          "One 3-star review (07/21/2025) cites $750 charge for partial RO water system installation as 'way too much,' indicating pricing disputes exist despite strong overall ratings; customer indicated they would shop around before using again."
         ],
-        "bestFor": [
-          "emergency repairs",
-          "complex diagnostic work",
-          "older home plumbing issues"
+        "bestFor": [],
+        "redFlags": [
+          "1 of 69 Google reviewers (04/02/2026) reports being charged $450 for unsuccessful diagnostic work followed by high-pressure recommendation for $4,800+ unnecessary repair—complaint centers on diagnostic accuracy and sales pressure, not technician behavior.",
+          "2 of 69 Google reviewers cite pricing concerns: one questioned $750 RO installation cost and another (separate incident) reported being quoted $10k for sewer line replacement by another plumber but Service Force found no damage needed (positive outcome, but suggests complex diagnostics carry upsell risk)."
         ],
-        "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "I just had an emergency plumbing situation in my own home, in which Roy and his team responded immediately, identifying and resolving the problem in record time. Tyler, the technician showed up before the schedule time, was exceptionally personable, knowledgeable, efficient, meticulously clean and well organized.",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -21613,7 +21586,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 24,
         "bbbUrl": "https://www.bbb.org/us/md/rockville/profile/plumber/service-force-plumbing-llc-0241-235998110"
-      }
+      },
+      "yelpRating": 5,
+      "yelpReviewCount": 1
     },
     {
       "placeId": "ChIJ8RZw3mcoMYgRX4jSeJIlmms",
@@ -22280,30 +22255,29 @@
         "Saturday: 7:00 AM – 4:00 PM",
         "Sunday: Closed"
       ],
-      "scrapedAt": "2026-04-06T14:30:49.781Z",
+      "scrapedAt": "2026-04-06T18:28:24.618Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "JC Plumbing & Rooter shows exceptional reliability and professionalism with consistent 5-star reviews praising prompt response times, fair pricing, and thorough work. Jose appears to be highly knowledgeable, particularly with tankless water heaters, and customers consistently recommend him to family and friends.",
+        "summary": "Jose shows up fast, explains everything clearly, and charges fair prices—but he's sometimes hard to reach after the initial contact, which could be a problem in emergencies.",
         "strengths": [
-          "Excellent response times and communication",
-          "Specializes in tankless water heater systems",
-          "Fair pricing with no hidden costs",
-          "Thorough work with follow-up service"
+          "BBB Accredited with A+ rating and zero complaints over 3 years—strong trust signal for licensed, insured work.",
+          "Exceptional response time on initial contact: 15+ Google reviews explicitly mention same-day or next-day arrival, often arriving early or within hours of calling.",
+          "Transparent pricing and honest diagnostics: 20+ reviewers praise upfront quotes and willingness to recommend cheaper solutions (e.g., buying smart valve on Amazon instead of markup) or repair instead of replacement."
         ],
         "weaknesses": [
-          "Limited sample size of reviews",
-          "24-hour emergency availability unclear"
+          "Communication breakdown after job booking: 2 Yelp reviews (out of 7) report Jose not returning calls/texts for days despite multiple attempts, creating uncertainty before service. Contradicts 'Great Communicator' badge claim.",
+          "One report of unprofessional incident handling: Yelp review documents worker moving neighbor's van mirror without acknowledgment, then Jose avoided direct communication when called—only relayed response through neighbor instead of addressing homeowner directly."
         ],
-        "bestFor": [
-          "tankless water heater service",
-          "general plumbing repairs",
-          "toilet and faucet work"
+        "bestFor": [],
+        "redFlags": [
+          "2 of 7 Yelp reviewers report non-responsiveness to follow-up calls/texts over days after initial contact or quote—significantly higher complaint rate on Yelp (29%) vs Google (2 of 94 = 2%). Suggests communication issues surface post-booking.",
+          "1 Yelp review documents alleged unprofessional handling of incident (worker touching neighbor's vehicle without acknowledgment, then owner avoided direct communication when confronted)."
         ],
-        "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "His final bill for services was $100 less than his initial quote. He kept his workspace tidy, cleaned everything up before he left.",
-        "worstQuote": null
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google 4.9/5 (115 reviews) vs Yelp 3.9/5 (7 reviews)—significant 1.0-point gap. Yelp contains 2 one-star reviews citing communication/responsiveness issues and 1 one-star incident report not visible in Google reviews. Suggests negative experiences may cluster on Yelp or be filtered/removed on Google. BBB zero-complaint record does not align with Yelp communication complaints; may indicate complaints not escalated to BBB or customers resolved offline."
       },
       "bbb": {
         "accredited": true,
@@ -22312,7 +22286,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 3,
         "bbbUrl": "https://www.bbb.org/us/ca/hayward/profile/plumber/jc-plumbing-rooter-1116-939880"
-      }
+      },
+      "yelpRating": 3.9,
+      "yelpReviewCount": 7
     },
     {
       "placeId": "ChIJh1UZvox5D4gRzbNKJhVNdqA",
@@ -22977,29 +22953,23 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:25:38.118Z",
       "synthesis": {
         "score": 92,
         "trustLevel": "high",
-        "summary": "Michael Gardner Plumbing demonstrates exceptional emergency responsiveness and professionalism, with customers consistently praising his quick callbacks, same-day or next-day service, and transparent pricing options. He handles both simple repairs and complex excavation work with thorough documentation and permits, making him a reliable choice for urgent plumbing needs.",
+        "summary": "Mike shows up fast on weekends, fixes things same-day, and doesn't push expensive solutions—93 perfect Google reviews with consistent praise for emergency response and honesty.",
         "strengths": [
-          "Excellent emergency response time",
-          "Transparent pricing with multiple options",
-          "Handles complex repairs and permits",
-          "Clean, professional, and respectful"
+          "Emergency responsiveness: 31+ reviewers explicitly mention same-day or within-1-hour arrival, including nights and Sundays; multiple reviewers note he answered immediately when other companies didn't return calls",
+          "Honest pricing and options: 18+ reviewers praise fair pricing, lack of upselling, or multiple cost options provided; several mention he was cheaper than competitors or provided discounts",
+          "Thorough diagnosis and transparency: 14+ reviewers mention detailed explanations, camera inspections, written estimates, or step-by-step walkthroughs; property manager with 36-building portfolio relies on him for consistency"
         ],
         "weaknesses": [
-          "May need to wait if handling another emergency",
-          "Limited sample of reviews (98 total)"
+          "Angi listing appears incomplete or unverified: only 1 Angi entry provided vs. 93 Google reviews; no alternate platform ratings available to corroborate 5/5 Google rating"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater issues",
-          "sewer line problems"
-        ],
+        "bestFor": [],
         "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "We had an emergency issue with our water heater and Michael came out on a call at 8pm, which already showed incredible responsiveness and customer service. He diagnosed the problem quickly and came back the next day to get everything fully fixed.",
+        "topQuote": null,
         "worstQuote": null
       }
     },
@@ -26775,31 +26745,30 @@
         "Saturday: Closed",
         "Sunday: Closed"
       ],
-      "scrapedAt": "2026-04-06T14:31:20.954Z",
+      "scrapedAt": "2026-04-06T18:43:44.070Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Pacific Plumbing Systems appears to be a highly reliable company with excellent customer service, led by skilled plumber Todd who consistently delivers quality work. All reviews praise their professionalism, punctuality, and clear communication, making them a solid choice for plumbing needs.",
+        "summary": "Todd shows up early, fixes your problem quickly, and explains everything clearly—but the company has had a handful of no-shows and scheduling mishaps that contradict the otherwise stellar reputation.",
         "strengths": [
-          "Excellent communication and professionalism",
-          "Consistently on-time and reliable service",
-          "High-quality workmanship and problem diagnosis",
-          "Good employee retention and customer loyalty"
+          "BBB A+ accreditation with zero complaints over 3 years and 28 years in business—strong trust signal for emergency situations",
+          "Consistent pattern of arriving early or on-time: 15+ Google reviews specifically praise punctuality, with multiple mentions of arriving before the scheduled window",
+          "Exceptional communication and transparency: 20+ reviews across platforms highlight detailed explanations, photo/video documentation of problems, and clear cost breakdowns before work begins"
         ],
         "weaknesses": [
-          "All reviews feature only one plumber (Todd)",
-          "No information about 24-hour emergency availability",
-          "Limited sample size with only 62 reviews"
+          "3 documented no-shows or severe scheduling failures (2011, 2013, 2024) where technician didn't arrive or arrived at wrong address—all resolved eventually but shows systemic scheduling vulnerability during peak demand",
+          "Yelp shows 4 one-star reviews citing surprise fees ($49-$98 travel/diagnosis charges), wrong address dispatch, and one complaint about rude technician behavior—these complaints are absent from Google reviews, suggesting possible platform-specific billing or communication issues"
         ],
-        "bestFor": [
-          "toilet repairs",
-          "hose bib replacement",
-          "garbage disposal installation"
+        "bestFor": [],
+        "redFlags": [
+          "3 documented no-shows or wrong-address dispatches (2011, 2013, 2024) spanning 13 years—systemic scheduling issue despite otherwise excellent service",
+          "4 Yelp one-star reviews citing surprise fees ($49 diagnostic, $98 travel charge to Fremont/Dublin area) not mentioned in Google reviews—suggests billing transparency issues or platform-specific complaint pattern",
+          "1 Yelp review reports rude/unprofessional technician behavior during a 20-minute $155 service call—isolated but contradicts 'professional' pattern"
         ],
-        "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "Todd came by and said that he would need to cut the old hose bibs off and connect new ones in and estimated time for labor to give an estimate of the cost. We were able to use their senior discount rate since we have two individuals over 60 in the household, which was nice.",
-        "worstQuote": null
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google 5/5 (62 reviews) vs. Yelp 4.3/5 (42 reviews)—gap driven by 4 one-star Yelp complaints about surprise fees, scheduling failures, and one rude interaction not reflected in Google reviews; suggests either different customer bases or selective Google review filtering. BBB data and pattern analysis support Yelp's 4.3 rating as more accurate risk assessment."
       },
       "bbb": {
         "accredited": true,
@@ -26808,7 +26777,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 28,
         "bbbUrl": "https://www.bbb.org/us/ca/san-leandro/profile/plumber/pacific-plumbing-systems-inc-1116-18797"
-      }
+      },
+      "yelpRating": 4.3,
+      "yelpReviewCount": 42
     },
     {
       "placeId": "ChIJ9XaBEiUSnA4RuCazgIzGXWc",
@@ -27473,29 +27444,26 @@
         "Saturday: 9:00 AM – 4:00 PM",
         "Sunday: Closed"
       ],
-      "scrapedAt": "2026-04-06T14:31:27.114Z",
+      "scrapedAt": "2026-04-06T18:46:57.704Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Costello's Plumbing appears to be an exceptionally honest and professional local company with strong technical expertise and fair pricing. Multiple reviews praise their integrity, thorough explanations, and ability to provide second opinions that save customers money, making them a reliable choice for plumbing needs.",
+        "summary": "Gary and his crew show up fast, fix it right the first time, and won't try to sell you work you don't need—even when bigger jobs are sitting there.",
         "strengths": [
-          "Exceptional honesty and integrity",
-          "Thorough explanations with visual proof",
-          "Fair and reasonable pricing",
-          "Strong technical expertise"
+          "Exceptional emergency response: 15+ Google and Yelp reviews explicitly mention same-day or within-1-hour arrival, with multiple Saturday/Sunday emergency calls honored. Owner Gary personally answers calls and coordinates rapid dispatch.",
+          "Honest diagnostics that save money: 6+ reviews across platforms describe being quoted $2,000–$7,000 by competitors, then Costello's diagnosing the real issue for a fraction of the cost. One reviewer states 'Instead of pushing expensive work, they told us the truth and pointed us in the right direction.'",
+          "BBB A+ accreditation with zero complaints over 9 years and 140+ total reviews—strong trust signal for emergency situations where you need confidence in the vendor immediately."
         ],
         "weaknesses": [
-          "Limited review sample size",
-          "24-hour availability unclear"
+          "One Yelp reviewer (3/5, Feb 2026) reported being quoted $400 over phone but charged $800 on-site, with incomplete drain clearing that required a second plumber call days later. Reviewer felt the technician should have identified the machine wasn't long enough and communicated the full scope upfront.",
+          "One Yelp review (4/5, June 2017, older) and one Google review (4/5, Jan 2025) note incomplete cleanups or minor mess left behind during snaking work, though both still rated favorably overall."
         ],
-        "bestFor": [
-          "Sewer line inspections",
-          "Second opinions",
-          "General plumbing repairs"
+        "bestFor": [],
+        "redFlags": [
+          "One pricing discrepancy case (Feb 2026 Yelp): phone quote $400, on-site charge $800 before 10% discount negotiated. Technician did not use camera to fully diagnose main drain, leading to incomplete clearing and callback requirement."
         ],
-        "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "His professional opinion was not only different from the corporate plumbing company who wanted to charge us an exorbitant amount of money, but Mr Costello told us the truth of what our real needs were, provided us with more than reasonable pricing, and fixed our plumbing issue in one day.",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -27505,7 +27473,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 9,
         "bbbUrl": "https://www.bbb.org/us/ca/san-leandro/profile/plumber/costellos-plumbing-1116-875835"
-      }
+      },
+      "yelpRating": 4.9,
+      "yelpReviewCount": 91
     },
     {
       "placeId": "ChIJiThlHIaVD4gR2Mhlc1oiqfg",
@@ -30551,29 +30521,27 @@
         "Saturday: 9:00 AM – 6:00 PM",
         "Sunday: Closed"
       ],
-      "scrapedAt": "2026-04-06T14:30:07.550Z",
+      "scrapedAt": "2026-04-06T18:03:42.431Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Plumb Xpress appears to be a highly reliable plumbing company with excellent emergency response capabilities and comprehensive services. Multiple customers praise their weekend/after-hours availability, quality workmanship on major projects like whole-house repiping, and professional cleanup.",
+        "summary": "They show up fast for emergencies and do solid work, but you might struggle to reach them by phone if you need to reschedule or follow up.",
         "strengths": [
-          "Emergency and weekend availability",
-          "Complete project management including drywall/painting",
-          "Thorough cleanup after work",
-          "Reasonable pricing for quality work"
+          "Emergency response: 5 reviewers specifically mention same-day or night service during urgent situations (frozen pipes, sewer backups, weekend emergencies)",
+          "Whole-house repipe expertise: 4 reviewers praise large-scale copper pipe replacement jobs with minimal wall damage and cleanup",
+          "Fair pricing: 6 reviewers mention reasonable costs, upfront quotes with no hidden charges, and prices lower than franchise competitors"
         ],
         "weaknesses": [
-          "Limited number of reviews",
-          "All reviews are 5-star which may indicate selective posting"
+          "Communication gaps: 3 reviewers (2017, 2018, 2015) report unanswered voicemails, missed appointments, and failure to send promised invoices or follow up—creating multi-day delays",
+          "Incomplete work on service calls: 1 reviewer reports a drain clearing that only addressed the front of the line, leaving the main clog, requiring a second plumber to finish the job correctly"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "whole house repiping",
-          "commercial plumbing"
+        "bestFor": [],
+        "redFlags": [
+          "Responsiveness failures: 3 of 29 Google reviewers report no callback/voicemail response over 2-4 days, missed scheduled appointments, and failure to send quotes—roughly 10% failure rate on follow-up communication",
+          "Incomplete service delivery: 1 reviewer reports drain clearing that was inadequate (only 2 minutes of work on a 50-foot line), requiring another plumber to finish the job"
         ],
-        "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "They came out that night (Saturday) and worked through the weekend to get us back up and running. My house was built in the 40's and had the original orangeburg lines. They were able to offer a reasonable price.",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -32239,29 +32207,21 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:16:07.402Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Dickinson Commercial & Residential Plumbing shows excellent craftsmanship and professionalism with perfect 5-star reviews, though the small review count limits certainty. Customers consistently praise their fair pricing, thorough work, and respectful service across various plumbing projects.",
+        "summary": "Todd and his team show up fast for emergencies, know their stuff, and won't nickel-and-dime you—multiple reviewers mention fair pricing compared to competitors.",
         "strengths": [
-          "Fair and competitive pricing",
-          "Professional and thorough workmanship",
-          "Excellent communication and customer service",
-          "Respectful of customer property"
+          "Emergency responsiveness: 4 reviewers explicitly mention same-day or Sunday emergency calls answered and resolved quickly, with Todd arriving when promised",
+          "Knowledge and communication: 6+ reviewers praise Todd specifically for explaining work thoroughly, answering questions patiently, and offering advice beyond the immediate job scope",
+          "Fair pricing: 3 reviewers mention competitive or affordable quotes compared to other companies that tried to overcharge"
         ],
-        "weaknesses": [
-          "Very limited review history (only 23 reviews)",
-          "No specific emergency response feedback"
-        ],
-        "bestFor": [
-          "Water heater replacement",
-          "Plumbing system overhauls",
-          "Kitchen and bathroom fixtures"
-        ],
+        "weaknesses": [],
+        "bestFor": [],
         "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "His pricing was very fair, especially compared to other companies that tried to overcharge us. Todd was professional, respectful, and incredibly efficient—he got everything done quickly and with great attention to detail.",
+        "topQuote": null,
         "worstQuote": null
       }
     },
@@ -32732,31 +32692,37 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:32:44.599Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Albion Plumbing shows exceptional reliability and integrity, with the owner personally handling emergency water heater replacement same-day. All reviews praise their professionalism, fair pricing, and quality work, making them a strong choice for emergency plumbing needs.",
+        "summary": "Google loves them, Yelp despises them — this company has a severe trust problem where emergency customers report being pressured into $15k–$40k jobs that second opinions say cost $200–$3k.",
         "strengths": [
-          "Same-day emergency response",
-          "Owner-operated with personal involvement",
-          "Fair and transparent pricing",
-          "Clean work and professional service"
+          "18 of 19 Google reviews (95%) are 5-star, praising same-day emergency response, professional technicians (Emilio, Armando, Michael), fair pricing, and honest diagnostics",
+          "Multiple Google reviewers specifically praise owner Michael for dropping other jobs to handle emergencies same-day and refusing extra payment"
         ],
         "weaknesses": [
-          "Limited number of reviews",
-          "Small company may have capacity constraints"
+          "Yelp shows a systematic pattern: 76 of 100 reviews (76%) are 1-star, with 40+ detailed complaints of identical tactics — low initial quotes followed by supervisor upsells of $15k–$50k jobs, fake camera evidence of 'broken pipes' or 'raw sewage,' pressure to sign same-day, then second opinions finding zero problems or charging 80–90% less",
+          "Multiple seniors (ages 65–87) report feeling scammed or manipulated; BBB lists 65 complaints in 3 years with D- rating; reviewers describe 'predatory,' 'fraudulent,' and 'bait-and-switch' practices"
         ],
-        "bestFor": [
-          "Emergency repairs",
-          "Water heater replacement",
-          "Drain cleaning"
+        "bestFor": [],
+        "redFlags": [
+          "76 of 100 Yelp reviews (76%) report identical pattern: initial $77–$300 service becomes $1,500–$50,000 job via supervisor upsell after technician claims camera found 'broken pipes,' 'raw sewage,' or 'collapsed lines'",
+          "40+ Yelp reviewers (40%) confirm second opinions found zero problems, no leaks, no damage, or quoted 80–90% less for identical work",
+          "15+ Yelp reviews report pressure tactics: supervisor insists decision needed same-day, financing offered, claims permits already obtained, threatens liens",
+          "Multiple reviews (seniors especially) report misleading diagnostics: camera run with water still in line (blurry images), photos not from property, claims of pipe defects contradicted by licensed second opinions",
+          "BBB shows 65 complaints filed in 3 years, company not accredited, D- rating, 9+ complaints ignored",
+          "Significant platform discrepancy: Google 4.8/5 (22 reviews, mostly 5-star) vs. Yelp 2/5 (100 reviews, 76% are 1-star) — gap suggests Google reviews may be from happy contract-signers, Yelp from those who obtained second opinions and felt scammed",
+          "5+ reviews report incomplete work or work that failed within days, then company pressured re-payment or refused callbacks",
+          "3+ reviews report technicians gave verbal quotes, supervisor quoted 3–5× higher, or coupon terms hidden in fine print (valid once/year only)"
         ],
-        "redFlags": [],
-        "priceSignal": "mid-range",
-        "topQuote": "My water heater broke down one morning and Michael, the owner, left another job he was supervising and came to my house the same day. He went out an bought a new water heater and installed it himself that afternoon. I tried to pay him extra for doing the job on such short notice, but he would not hear of it.",
-        "worstQuote": null
-      }
+        "priceSignal": "premium (and disputed — advertised $77–$300 services frequently escalate to $8k–$50k quotes; second opinions suggest true cost is mid-range)",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Extreme: Google 4.8/5 (all 5-star or positive) vs. Yelp 2/5 (76% 1-star). Pattern suggests: (1) Google reviews from satisfied upsell acceptors, (2) Yelp from customers who got second opinions and felt defrauded, (3) possible review moderation or deletion on Google. Yelp's 100-review sample is 4.5× larger and more recent; weight Yelp heavily for decision-making."
+      },
+      "yelpRating": 2,
+      "yelpReviewCount": 100
     },
     {
       "placeId": "ChIJw4OTVRQfD4gRHH2zVw4jCLY",
@@ -33124,30 +33090,26 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T17:59:27.856Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Cherokee Plumbing appears to be a reliable choice for emergency plumbing needs, with consistent praise for quick response times and honest pricing. Justin consistently diagnoses issues quickly and provides cost-effective solutions, often saving customers thousands compared to other estimates.",
+        "summary": "Justin shows up fast for emergencies and saves you money by diagnosing honestly instead of upselling—he talked a salon out of a $10k water heater replacement and fixed it for under $200.",
         "strengths": [
-          "Quick diagnosis and repairs (30 minutes or less)",
-          "Honest pricing - saves customers money",
-          "Professional and knowledgeable service",
-          "Goes above and beyond (connects with restoration services)"
+          "Emergency responsiveness: 3 reviewers specifically mention Christmas Eve emergencies and same-day service; Justin arrived and completed repairs quickly",
+          "Honest diagnostics and fair pricing: Multiple reviewers (salon, water pressure valve case) praise him for avoiding unnecessary expensive repairs and providing reasonable quotes",
+          "Professional communication: 4+ reviewers mention he explains problems clearly before fixing them and provides helpful follow-up advice"
         ],
         "weaknesses": [
-          "Limited review sample size (only 21 reviews)",
-          "All reviews appear to be for one technician (Justin)"
+          "Extremely limited review sample (18 total across all platforms) creates high uncertainty—even one pattern complaint in this size dataset is significant, though none currently exist",
+          "Angi listing appears to be a data error (excavation/land clearing company mixed into plumber profile), creating platform credibility confusion"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater diagnostics",
-          "leak detection and repair"
-        ],
+        "bestFor": [],
         "redFlags": [],
-        "priceSignal": "budget",
-        "topQuote": "He tested it and came to the conclusion that a new water heater wasn't needed and fixed the issue for less than $200. So happy we trusted him and you will too.",
-        "worstQuote": null
+        "priceSignal": "mid-range",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google shows perfect 5/5 across 17 reviews; Angi listing appears to be incorrect data (excavation company profile, not plumber), creating platform confusion but not a rating gap."
       }
     },
     {
@@ -34295,34 +34257,30 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:31:39.095Z",
+      "scrapedAt": "2026-04-06T18:50:51.793Z",
       "synthesis": {
         "score": 65,
         "trustLevel": "moderate",
-        "summary": "Family Plumbing Services shows strong technical skills and professionalism on completed projects, with excellent work on renovations and installations. However, reliability concerns including missed appointments and unprofessional behavior create uncertainty for emergency situations.",
+        "summary": "They do great work when they show up, but getting them to actually arrive is a coin flip—two customers were no-shows, one waited 46 minutes past appointment with no call.",
         "strengths": [
-          "Excellent technical work quality",
-          "Strong communication during projects",
-          "Professional installation services",
-          "Handles complex renovation work"
+          "High-quality installation and repair work: 8 of 12 Google reviewers praise professionalism, efficiency, and craftsmanship, with detailed mentions of complex projects (water heater installation, gas line work, full bathroom rough-ins) completed to inspection standards",
+          "Strong communication on active jobs: Two recent reviews (Nestor's renovation work) specifically praise proactive updates and flexibility with scope changes during multi-phase projects"
         ],
         "weaknesses": [
-          "Reliability issues with appointments",
-          "Poor customer service recovery",
-          "Unprofessional driving behavior reported"
+          "Severe no-show and lateness pattern: 2 of 12 Google reviewers report complete no-shows after taking off work; 1 reviewer waited 46+ minutes past appointment with no communication and described the response as 'unprofessional'; 1 reviewer reported a truck safety violation (running stop sign), raising questions about driver accountability",
+          "Low BBB rating (B-, not accredited) with unresolved complaint history: Despite 13 years in business and good Google ratings, BBB records 1 complaint with no indication of resolution, suggesting potential issues with complaint handling"
         ],
-        "bestFor": [
-          "bathroom remodels",
-          "water heater replacement",
-          "gas line work"
-        ],
+        "bestFor": [],
         "redFlags": [
-          "Missed appointment with no call or apology",
-          "Reckless driving behavior suggesting lack of professionalism"
+          "2 of 12 Google reviewers report complete no-shows after scheduling appointments and taking time off work",
+          "1 of 12 reviewers waited 46+ minutes past scheduled appointment with zero communication; plumber acknowledged being late but gave no apology or explanation",
+          "1 reviewer reported erratic vehicle operation (running stop sign without stopping) by company truck, suggesting possible lack of driver vetting or accountability",
+          "Unresolved BBB complaint on file despite 13 years of operation; company is not BBB-accredited despite being in business long enough to qualify"
         ],
         "priceSignal": "unknown",
-        "topQuote": "Nestor has been doing a great job of keeping strong communications with me as the job progresses. Also, Nestor has been considerate of the client's changes outside of the original scope of work.",
-        "worstQuote": "Made an appointment took off work to be here called when it was 46 minutes over my appointment, no phone call nothing I called and he said oh sorry un professional!!! Never showed didn't apologize nothing!!!"
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google (4.4/5, 12 reviews) shows high ratings but contains stark no-show complaints absent from other platforms; Angi mentions a 5-star review but provides minimal detail; overall platform gap is minor, but Google's detailed negative reviews expose operational failures not visible in brief testimonials elsewhere"
       },
       "bbb": {
         "accredited": false,
@@ -36287,30 +36245,26 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:01:58.901Z",
       "synthesis": {
         "score": 78,
-        "trustLevel": "moderate",
-        "summary": "Metro Plumbing shows strong emergency response with customers reporting quick arrival times and professional service. However, with only 9 reviews, there's limited data to fully assess consistency, though all available feedback is positive.",
+        "trustLevel": "high",
+        "summary": "They respond fast to emergencies and finish jobs the same day, but the Angi listing appears abandoned or improperly maintained.",
         "strengths": [
-          "Fast emergency response",
-          "Professional and courteous service",
-          "Clear communication and explanations",
-          "Clean work practices"
+          "Fast emergency response: 3 of 9 Google reviewers explicitly mention arrival within an hour for urgent issues (water heater leaks, main line problems)",
+          "Same-day service completion: Multiple reviewers report jobs finished in one afternoon or same day, including sewer repairs and line snaking",
+          "Competitive pricing: 4 of 9 reviewers specifically mention affordability compared to other quotes they received"
         ],
         "weaknesses": [
-          "Very limited review history",
-          "Small sample size for reliability assessment"
+          "Angi platform shows 0/5 rating with a generic directory listing instead of actual company profile, suggesting no active management or response to platform reviews",
+          "Only 10 total reviews across all platforms is a very small sample size, limiting confidence in reliability patterns"
         ],
-        "bestFor": [
-          "emergency repairs",
-          "water heater replacement",
-          "re-piping projects"
-        ],
+        "bestFor": [],
         "redFlags": [],
-        "priceSignal": "budget",
-        "topQuote": "I had a sudden and serious leak from my water heater late at night, and it was quickly turning into a major issue. I contacted Metro Plumbing and drains and they were incredibly responsive—arrived within the hour. The pricing was great for the urgency and the quality of the work they performed.",
-        "worstQuote": null
+        "priceSignal": "mid-range",
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Critical discrepancy: 5/5 stars (perfect) across all 9 Google reviews versus 0/5 on Angi with no actual reviews, suggesting Angi listing is inactive or improperly set up rather than reflecting actual customer dissatisfaction."
       }
     },
     {
@@ -37183,29 +37137,21 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:31:14.827Z",
+      "scrapedAt": "2026-04-06T18:41:32.075Z",
       "synthesis": {
         "score": 88,
         "trustLevel": "high",
-        "summary": "Total Underground Construction appears to be a highly trustworthy plumbing company with excellent customer service and fair pricing. The team demonstrates strong expertise in major repairs like sewer line replacement, offers 24-hour service, and shows exceptional integrity by helping customers solve simple problems themselves rather than charging unnecessarily.",
+        "summary": "Joe and his crew fix major underground plumbing problems fast and won't oversell you unnecessary work — they even talked one customer through a DIY fix instead of charging for a service call.",
         "strengths": [
-          "Exceptional honesty and integrity",
-          "Fast emergency response and assessment",
-          "Fair and transparent pricing",
-          "Professional team with strong expertise"
+          "Fast emergency response: 4 of 14 reviewers explicitly mention arrival within hours or 20 minutes of calling, with one noting service 'within hours' for an urgent leak",
+          "Honest assessment and cost-consciousness: 3 reviewers highlight that Joe refused unnecessary work, proposed cost-effective solutions, or suggested DIY alternatives instead of maximizing the bill",
+          "Major project execution: 5+ reviews describe complex jobs (sewer line replacement, 100-foot underground pipes, galvanized-to-copper replacements) completed in 1-2 days with minimal disruption"
         ],
-        "weaknesses": [
-          "Very limited review sample size",
-          "No detailed feedback on complex emergency scenarios"
-        ],
-        "bestFor": [
-          "sewer line repairs",
-          "emergency plumbing assessment",
-          "major underground work"
-        ],
+        "weaknesses": [],
+        "bestFor": [],
         "redFlags": [],
         "priceSignal": "mid-range",
-        "topQuote": "They immediately came out to assess the situation and proposed a cost effective solution... they took the extra steps to drive out that night to get the sewer line in a passable condition for the few days until the start of the project so we would not be without water and this was all done free of charge",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
@@ -37215,7 +37161,9 @@
         "complaintsPast3Years": 0,
         "yearsInBusiness": 4,
         "bbbUrl": "https://www.bbb.org/us/ca/san-leandro/profile/general-engineering-contractor/total-underground-construction-1116-951682"
-      }
+      },
+      "yelpRating": 5,
+      "yelpReviewCount": 7
     },
     {
       "placeId": "ChIJH8579_JaD4gR6Ii_pBPl2rQ",
@@ -37659,33 +37607,31 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T18:06:10.295Z",
       "synthesis": {
         "score": 25,
         "trustLevel": "low",
-        "summary": "While this company advertises 24-hour service and has some positive feedback about being quick and affordable, there's a detailed negative review describing serious reliability and professionalism issues. The limited number of reviews makes it difficult to assess consistency, but the documented problems with incomplete work and unprofessional behavior are concerning for emergency situations.",
+        "summary": "This plumber has a track record of incomplete work and unprofessional behavior—the most recent review describes a week-long job left unfinished, property damage, and hostile customer service.",
         "strengths": [
-          "Affordable pricing",
-          "Claims 24-hour availability",
-          "Some customers report quick service"
+          "Early positive reviews (2020-2021) mention affordability and quick service",
+          "Advertises handyman services in addition to plumbing, offering versatility"
         ],
         "weaknesses": [
-          "Reliability issues with completing jobs",
-          "Unprofessional behavior reported",
-          "May leave jobs unfinished"
+          "1 of 4 reviews (25%) reports incomplete work, job abandonment to handle other calls, 2-hour late arrival, and hostile behavior toward customer's friend",
+          "Same negative review documents property damage (leak in washing machine hookup) caused by technician's work, yet customer still charged $130"
         ],
-        "bestFor": [
-          "Simple repairs where budget is primary concern"
-        ],
+        "bestFor": [],
         "redFlags": [
-          "Leaving jobs incomplete for a week",
-          "Unprofessional attitude and yelling at customers",
-          "Creating additional damage (washing machine leak)",
-          "Poor communication and showing up hours late"
+          "1 of 4 reviews (25%) reports job not completed after multiple days and technician departing to service other clients",
+          "1 of 4 reviews reports technician arrived 2+ hours late",
+          "1 of 4 reviews reports unprofessional behavior including yelling at customer's helper and displaying frustration/complaints",
+          "1 of 4 reviews reports property damage (washing machine hookup leak) resulting from technician's work with no resolution offered",
+          "Very small sample size (4 total reviews): even one negative review on this scale represents significant risk; the Nov 2023 complaint contradicts the positive 2020-2021 pattern, suggesting deterioration in service quality"
         ],
         "priceSignal": "budget",
-        "topQuote": "Quick and reliable",
-        "worstQuote": "Danny has been trying the whole week to get a clog in kitchen sink undone and I have been without my kitchen sink all week. He kept leaving to go to other jobs without finishing, using my friend as a helper, and kept saying he would be here shortly but arrived 2 hours late with bad attitude."
+        "topQuote": null,
+        "worstQuote": null,
+        "platformDiscrepancy": "Google shows 4.0/5 (3 Google reviews averaging 3.7/5 when calculated; Angi entry appears to be a directory listing without actual rating data for this specific plumber). Insufficient cross-platform data to identify true discrepancy, but the single recent 1-star Google review significantly drags down the overall rating."
       }
     },
     {
@@ -38012,30 +37958,28 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:21:41.069Z",
+      "scrapedAt": "2026-04-06T17:54:19.625Z",
       "synthesis": {
         "score": 45,
-        "trustLevel": "low",
-        "summary": "Acworth Plumbing LLC has a perfect 5-star rating but with only 3 reviews, there's insufficient data to confidently assess their reliability for emergency situations. While the limited feedback is positive, the extremely small sample size makes it difficult to gauge their consistency and emergency response capabilities.",
+        "trustLevel": "moderate",
+        "summary": "They show up the next day, fix it right, and come back free if something goes wrong — Tim's the owner and he does the work himself.",
         "strengths": [
-          "Good follow-up service",
-          "Positive customer feedback"
+          "Fast emergency response: 3 reviews specifically mention same-day or next-day arrival for urgent issues (stopped toilet, pipe problems)",
+          "Owner-operated with accountability: Tim (president) personally completes jobs and provides free follow-up repairs if issues recur, mentioned in 3 reviews",
+          "Transparent pricing: 4 reviews explicitly praise honest quotes, no pressure, and upfront options before work begins"
         ],
         "weaknesses": [
-          "Very limited review history",
-          "Insufficient data on emergency response",
-          "No detailed service descriptions"
+          "Extremely limited review sample (10 total) with no negative reviews creates low confidence in accuracy — even one hidden complaint would shift patterns significantly",
+          "No documented response time for nights/weekends or after-hours emergencies despite claiming emergency plumbing services"
         ],
-        "bestFor": [
-          "routine maintenance"
-        ],
-        "redFlags": [
-          "Only 3 total reviews raises questions about business maturity and experience volume"
-        ],
-        "priceSignal": "unknown",
-        "topQuote": "Great follow-up after service completion.",
+        "bestFor": [],
+        "redFlags": [],
+        "priceSignal": "mid-range",
+        "topQuote": null,
         "worstQuote": null
-      }
+      },
+      "yelpRating": 5,
+      "yelpReviewCount": 7
     },
     {
       "placeId": "ChIJuSXjBdyXD4gRETuHgYc8rDs",
@@ -38181,28 +38125,27 @@
         "Saturday: Open 24 hours",
         "Sunday: Open 24 hours"
       ],
-      "scrapedAt": "2026-04-06T14:31:10.219Z",
+      "scrapedAt": "2026-04-06T18:40:01.144Z",
       "synthesis": {
         "score": 65,
         "trustLevel": "moderate",
-        "summary": "The Oakland Plumber has perfect ratings but only 3 reviews, making it difficult to fully assess reliability. Customers praise their speed and honesty, which are crucial for emergency situations, but the limited feedback means you're taking some risk.",
+        "summary": "Highly rated on Google with fast service and honest work, but only 3 total reviews across all platforms makes it hard to verify consistency—proceed with caution in an emergency until you confirm current availability.",
         "strengths": [
-          "Fast response time",
-          "Described as honest and trustworthy",
-          "Good emergency timing",
-          "Perfect 5-star rating"
+          "Fast response time mentioned explicitly in Google reviews ('Really fast service')",
+          "Trustworthiness highlighted as a key strength by reviewers",
+          "BBB A+ rating with zero complaints over 4 years in business"
         ],
         "weaknesses": [
-          "Very few reviews to judge by",
-          "No detailed feedback on work quality",
-          "Limited track record"
+          "Extremely small sample size (3 total reviews) limits reliability of ratings; cannot identify patterns or consistent performance",
+          "No recent reviews on Google since 2023; current operational status and service quality unclear"
         ],
-        "bestFor": [
-          "emergency repairs"
+        "bestFor": [],
+        "redFlags": [
+          "Sample size critically small (3 reviews total)—insufficient data to assess reliability; even one negative review on such a small base represents 33% of feedback",
+          "No verifiable current contact information or confirmation of active emergency services in provided data"
         ],
-        "redFlags": [],
         "priceSignal": "unknown",
-        "topQuote": "Really fast service. Honest and trustworthy. I highly recommend.",
+        "topQuote": null,
         "worstQuote": null
       },
       "bbb": {
