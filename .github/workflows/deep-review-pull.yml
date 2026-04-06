@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Allow manual trigger
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   deep-reviews:
@@ -174,27 +174,46 @@ jobs:
             node scripts/outscraper-reviews.js "$SLUG"
           fi
 
-      # Request indexing for the city pages that got new review data
-      - name: Request indexing for updated cities
+      # Export Firestore enrichment to static JSON → commit → push → Vercel rebuild
+      - name: Export Firestore to static JSON
         if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
+        continue-on-error: true
+        id: export
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase || true
+          node scripts/export-firestore-to-json.js | tee /tmp/export-output.txt
+
+          # Parse affected cities for indexing step
+          CITIES=$(grep '__AFFECTED_CITIES__:' /tmp/export-output.txt | sed 's/.*__AFFECTED_CITIES__://' || true)
+          echo "affected_cities=$CITIES" >> $GITHUB_OUTPUT
+
+      # Request indexing for ALL city pages served by updated plumbers
+      - name: Request indexing for affected cities
+        if: steps.secrets.outputs.configured == 'true' && steps.export.outputs.affected_cities != '' && steps.export.outputs.affected_cities != '[]'
         continue-on-error: true
         env:
           GSC_SITE_URL: https://www.fastplumbernearme.com/
         run: |
           npm install googleapis 2>/dev/null
 
-          # Convert city slugs (e.g. crystal-lake-il) to URL paths
           URLS=$(node -e "
-            const slugs = '${{ steps.cities.outputs.slugs }}'.trim().split(/\s+/);
+            const fs = require('fs');
+            const cities = ${{ steps.export.outputs.affected_cities || '[]' }};
+            if (!cities.length) process.exit(0);
             const abbrs = {AL:'alabama',AK:'alaska',AZ:'arizona',AR:'arkansas',CA:'california',CO:'colorado',CT:'connecticut',DE:'delaware',FL:'florida',GA:'georgia',HI:'hawaii',ID:'idaho',IL:'illinois',IN:'indiana',IA:'iowa',KS:'kansas',KY:'kentucky',LA:'louisiana',ME:'maine',MD:'maryland',MA:'massachusetts',MI:'michigan',MN:'minnesota',MS:'mississippi',MO:'missouri',MT:'montana',NE:'nebraska',NV:'nevada',NH:'new-hampshire',NJ:'new-jersey',NM:'new-mexico',NY:'new-york',NC:'north-carolina',ND:'north-dakota',OH:'ohio',OK:'oklahoma',OR:'oregon',PA:'pennsylvania',RI:'rhode-island',SC:'south-carolina',SD:'south-dakota',TN:'tennessee',TX:'texas',UT:'utah',VT:'vermont',VA:'virginia',WA:'washington',WV:'west-virginia',WI:'wisconsin',WY:'wyoming',DC:'district-of-columbia'};
-            const urls = slugs.map(s => {
-              const stateAbbr = s.split('-').pop().toUpperCase();
-              const cityPart = s.slice(0, s.lastIndexOf('-'));
-              const stateSlug = abbrs[stateAbbr] || stateAbbr.toLowerCase();
-              return '/emergency-plumbers/' + stateSlug + '/' + cityPart;
-            });
-            console.log(urls.join(' '));
-          ")
+            const data = JSON.parse(fs.readFileSync('data/synthesized/plumbers-synthesized.json','utf-8'));
+            const cityState = new Map();
+            data.plumbers.forEach(p => (p.serviceCities||[]).forEach(c => { if (!cityState.has(c)) cityState.set(c, p.state); }));
+            const urls = cities.map(c => {
+              const state = cityState.get(c);
+              if (!state) return null;
+              const ss = abbrs[state] || state.toLowerCase();
+              return '/emergency-plumbers/' + ss + '/' + c;
+            }).filter(Boolean);
+            if (urls.length) console.log(urls.join(' '));
+          " 2>/dev/null)
 
           if [ -n "$URLS" ]; then
             echo "Requesting indexing for: $URLS"

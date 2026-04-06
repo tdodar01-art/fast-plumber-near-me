@@ -788,7 +788,67 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
+main()
+  .then(() => {
+    // Post-run: export to static JSON + request indexing for all affected cities
+    const { execSync } = require("child_process");
+    const root = path.join(__dirname, "..");
+    const noPush = process.argv.includes("--dry-run") ? "--no-push" : "";
+
+    console.log("\n=== Exporting Firestore → Static JSON ===\n");
+    try {
+      const exportOut = execSync(
+        `node scripts/export-firestore-to-json.js ${noPush}`,
+        { cwd: root, encoding: "utf-8", timeout: 120000 }
+      );
+      console.log(exportOut);
+
+      // Parse affected cities from export output
+      const citiesMatch = exportOut.match(/__AFFECTED_CITIES__:(.+)/);
+      if (citiesMatch) {
+        const cities = JSON.parse(citiesMatch[1]);
+        if (cities.length > 0 && !process.argv.includes("--dry-run")) {
+          console.log("\n=== Requesting indexing for all affected city pages ===\n");
+
+          // Convert service city slugs to URL paths
+          const STATE_ABBR_TO_SLUG = {AL:"alabama",AK:"alaska",AZ:"arizona",AR:"arkansas",CA:"california",CO:"colorado",CT:"connecticut",DE:"delaware",FL:"florida",GA:"georgia",HI:"hawaii",ID:"idaho",IL:"illinois",IN:"indiana",IA:"iowa",KS:"kansas",KY:"kentucky",LA:"louisiana",ME:"maine",MD:"maryland",MA:"massachusetts",MI:"michigan",MN:"minnesota",MS:"mississippi",MO:"missouri",MT:"montana",NE:"nebraska",NV:"nevada",NH:"new-hampshire",NJ:"new-jersey",NM:"new-mexico",NY:"new-york",NC:"north-carolina",ND:"north-dakota",OH:"ohio",OK:"oklahoma",OR:"oregon",PA:"pennsylvania",RI:"rhode-island",SC:"south-carolina",SD:"south-dakota",TN:"tennessee",TX:"texas",UT:"utah",VT:"vermont",VA:"virginia",WA:"washington",WV:"west-virginia",WI:"wisconsin",WY:"wyoming",DC:"district-of-columbia"};
+
+          // Service city slugs are like "crystal-lake" — we need to figure out the state.
+          // Read from the just-exported JSON to get city→state mapping.
+          const jsonData = JSON.parse(fs.readFileSync(path.join(root, "data", "synthesized", "plumbers-synthesized.json"), "utf-8"));
+          const cityStateMap = new Map();
+          for (const p of jsonData.plumbers) {
+            for (const sc of (p.serviceCities || [])) {
+              if (!cityStateMap.has(sc)) cityStateMap.set(sc, p.state);
+            }
+          }
+
+          const urls = cities
+            .map((c) => {
+              const state = cityStateMap.get(c);
+              if (!state) return null;
+              const stateSlug = STATE_ABBR_TO_SLUG[state] || state.toLowerCase();
+              return `/emergency-plumbers/${stateSlug}/${c}`;
+            })
+            .filter(Boolean);
+
+          if (urls.length > 0) {
+            try {
+              execSync(
+                `node scripts/request-indexing.js ${urls.join(" ")}`,
+                { cwd: root, stdio: "inherit", timeout: 60000 }
+              );
+            } catch (e) {
+              console.error("Indexing request failed:", e.message);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Export failed:", err.message);
+    }
+  })
+  .catch((err) => {
+    console.error("Fatal error:", err);
+    process.exit(1);
+  });
