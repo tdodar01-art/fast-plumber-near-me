@@ -442,6 +442,8 @@ ${reviewBlock}
 IMPORTANT: If ratings differ significantly between platforms (e.g. 4.8 on Google but 2.5 on Yelp), note this discrepancy in your summary and weaknesses. Platform rating gaps are a signal.
 ${bbb ? "IMPORTANT: BBB complaints are a strong reliability signal. Unresolved or high complaint counts should be flagged as red flags. BBB accreditation is a positive trust signal. Low BBB ratings (B or below) with high Google ratings suggest possible review manipulation." : ""}
 
+CONSISTENCY CHECK: Before responding, verify that no badge contradicts a red flag and no strength contradicts a weakness. If a plumber has response time complaints in red flags, they cannot have 'Fast Responder' as a badge or 'quick response' as a strength. Resolve contradictions by removing the positive claim, not the negative one. Negative signals always win over positive ones — this protects homeowners.
+
 Respond in JSON only. No markdown, no preamble, no backticks.
 {
   "summary": "One specific sentence a friend would say. Never say 'reliable and professional'. Reference actual patterns. If platforms disagree, mention it.",
@@ -449,7 +451,7 @@ Respond in JSON only. No markdown, no preamble, no backticks.
   "weaknesses": ["1-2 specific weaknesses. e.g. 'Yelp reviews mention surprise fees not seen on Google'. Include platform discrepancies if significant.${bbb?.complaintsPast3Years > 0 ? " Flag BBB complaints." : ""}"],
   "emergencyReadiness": "high|medium|low|unknown",
   "emergencyNotes": "One sentence about emergency signals — after-hours mentions, response time, weekend availability.",
-  "badges": ["Only from: 'Fast Responder', 'Fair Pricing', '24/7 Available', 'Clean & Professional', 'Great Communicator'. Only include if reviews clearly support it."],
+  "badges": ["Only from: 'Fast Responder', 'Fair Pricing', '24/7 Available', 'Clean & Professional', 'Great Communicator'. Only include if reviews clearly support it. CRITICAL: A badge MUST NOT contradict any red flag. If there is ANY red flag about response time, lateness, or slow callbacks, do NOT award 'Fast Responder'. If there is ANY red flag about pricing disputes or surprise charges, do NOT award 'Fair Pricing'. If there is ANY red flag about unprofessional behavior, do NOT award 'Clean & Professional'. Badges are earned — one contradicting complaint disqualifies the badge."],
   "redFlags": ["Concerning patterns — be especially aggressive with small sample sizes. If a plumber has fewer than 25 total reviews, even 1-2 negative reviews about the same issue (late arrival, didn't show up, didn't complete work, surprise charges, rude behavior, unresponsive) IS a pattern and MUST be flagged. For 25+ reviews, flag when 3+ reviews mention the same concern. Always flag: response time complaints, incomplete work, billing disputes, no-shows, licensing concerns, refusal to provide estimates. Format each flag as a specific finding with numbers, e.g. '2 of 14 reviewers report arrival delays exceeding 30 minutes'. Empty array ONLY if literally every review is 4-5 stars with no complaints."],
   "bestFor": ["1-2 specific services or scenarios this plumber excels at, based on review patterns."],
   "pricingTier": "budget|mid-range|premium|unknown",
