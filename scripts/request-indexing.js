@@ -24,8 +24,9 @@ const { google } = require("googleapis");
 // ---------------------------------------------------------------------------
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
-const SITE_URL = "https://fastplumbernearme.com";
-const SITEMAP_URL = `${SITE_URL}/sitemap.xml`;
+const SITE_URL = process.env.GSC_SITE_URL || "https://www.fastplumbernearme.com/";
+const SITE_ORIGIN = SITE_URL.replace(/\/$/, "");
+const SITEMAP_URL = `${SITE_ORIGIN}/sitemap.xml`;
 const DAILY_QUOTA = 200;
 
 // ---------------------------------------------------------------------------
@@ -67,15 +68,13 @@ if (!fs.existsSync(SERVICE_ACCOUNT_PATH)) {
 
 const serviceAccount = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"));
 
-const auth = new google.auth.JWT(
-  serviceAccount.client_email,
-  null,
-  serviceAccount.private_key,
-  [
+const auth = new google.auth.GoogleAuth({
+  credentials: serviceAccount,
+  scopes: [
     "https://www.googleapis.com/auth/indexing",
     "https://www.googleapis.com/auth/webmasters",
-  ]
-);
+  ],
+});
 
 // ---------------------------------------------------------------------------
 // Firebase Admin (lazy — only if service-account.json exists)
@@ -161,7 +160,7 @@ async function submitSitemap() {
 // ---------------------------------------------------------------------------
 
 async function requestIndexing(urlPath) {
-  const fullUrl = urlPath.startsWith("http") ? urlPath : `${SITE_URL}${urlPath.startsWith("/") ? "" : "/"}${urlPath}`;
+  const fullUrl = urlPath.startsWith("http") ? urlPath : `${SITE_ORIGIN}${urlPath.startsWith("/") ? "" : "/"}${urlPath}`;
 
   const indexing = google.indexing({ version: "v3", auth });
 
