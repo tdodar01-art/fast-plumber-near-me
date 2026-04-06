@@ -153,6 +153,10 @@ export default async function CityPage({
     ],
   };
 
+  function plumberSlug(name: string) {
+    return name.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  }
+
   const plumberListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -164,13 +168,89 @@ export default async function CityPage({
         "@type": "Plumber",
         name: p.businessName,
         telephone: p.phone,
-        address: { "@type": "PostalAddress", addressLocality: city.name, addressRegion: city.state },
+        url: `https://fastplumbernearme.com/plumber/${plumberSlug(p.businessName)}`,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: p.address?.city || city.name,
+          addressRegion: p.address?.state || city.state,
+          ...(p.address?.street && { streetAddress: p.address.street }),
+          ...(p.address?.zip && { postalCode: p.address.zip }),
+        },
+        ...(p.address?.lat && p.address?.lng && {
+          geo: { "@type": "GeoCoordinates", latitude: p.address.lat, longitude: p.address.lng },
+        }),
         ...(p.googleRating && {
-          aggregateRating: { "@type": "AggregateRating", ratingValue: p.googleRating, reviewCount: p.googleReviewCount },
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: p.googleRating,
+            reviewCount: p.googleReviewCount,
+            bestRating: 5,
+            worstRating: 1,
+          },
         }),
       },
     })),
   };
+
+  // Pros/Cons Review schema — one Review per plumber with positiveNotes/negativeNotes
+  const plumberReviewsJsonLd = plumbers
+    .filter((p) => {
+      const strengths = p.reviewSynthesis?.strengths ?? [];
+      const weaknesses = [
+        ...(p.reviewSynthesis?.weaknesses ?? []),
+        ...(p.reviewSynthesis?.redFlags ?? []),
+      ];
+      return strengths.length > 0 || weaknesses.length > 0;
+    })
+    .map((p) => {
+      const strengths = p.reviewSynthesis?.strengths ?? [];
+      const weaknesses = [
+        ...(p.reviewSynthesis?.weaknesses ?? []),
+        ...(p.reviewSynthesis?.redFlags ?? []),
+      ];
+      return {
+        "@context": "https://schema.org",
+        "@type": "Review",
+        itemReviewed: {
+          "@type": "Plumber",
+          name: p.businessName,
+          url: `https://fastplumbernearme.com/plumber/${plumberSlug(p.businessName)}`,
+        },
+        author: {
+          "@type": "Organization",
+          name: "Fast Plumber Near Me",
+          url: "https://fastplumbernearme.com",
+        },
+        ...(p.googleRating && {
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: p.googleRating,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }),
+        ...(strengths.length > 0 && {
+          positiveNotes: {
+            "@type": "ItemList",
+            itemListElement: strengths.map((s, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: s,
+            })),
+          },
+        }),
+        ...(weaknesses.length > 0 && {
+          negativeNotes: {
+            "@type": "ItemList",
+            itemListElement: weaknesses.map((w, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: w,
+            })),
+          },
+        }),
+      };
+    });
 
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -182,29 +262,14 @@ export default async function CityPage({
     })),
   };
 
-  // AggregateRating for the city page (aggregate of all plumber ratings)
-  const ratedPlumbers = plumbers.filter((p) => p.googleRating && p.googleReviewCount);
-  const aggregateRatingJsonLd = ratedPlumbers.length > 0 ? {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: `Emergency Plumbers in ${city.name}, ${city.state}`,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: (ratedPlumbers.reduce((sum, p) => sum + (p.googleRating || 0), 0) / ratedPlumbers.length).toFixed(1),
-      reviewCount: ratedPlumbers.reduce((sum, p) => sum + (p.googleReviewCount || 0), 0),
-      bestRating: 5,
-      worstRating: 1,
-    },
-  } : null;
-
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(plumberListJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
-      {aggregateRatingJsonLd && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateRatingJsonLd) }} />
-      )}
+      {plumberReviewsJsonLd.map((reviewJsonLd, i) => (
+        <script key={`review-${i}`} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewJsonLd) }} />
+      ))}
 
       {/* Hero */}
       <section className="bg-primary text-white py-10 sm:py-14">
