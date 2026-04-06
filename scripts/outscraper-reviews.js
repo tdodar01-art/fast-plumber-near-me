@@ -504,10 +504,22 @@ async function main() {
   for (const citySlug of citySlugs) {
     console.log(`\n📍 City: ${citySlug}`);
 
-    const snap = await db.collection("plumbers")
+    // Try slug as-is, then without state suffix (e.g. "crystal-lake-il" -> "crystal-lake")
+    let snap = await db.collection("plumbers")
       .where("serviceCities", "array-contains", citySlug)
       .where("isActive", "==", true)
       .get();
+
+    if (snap.empty) {
+      const shortSlug = citySlug.replace(/-[a-z]{2}$/, "");
+      if (shortSlug !== citySlug) {
+        snap = await db.collection("plumbers")
+          .where("serviceCities", "array-contains", shortSlug)
+          .where("isActive", "==", true)
+          .get();
+        if (!snap.empty) console.log(`  (matched on "${shortSlug}")`);
+      }
+    }
 
     if (snap.empty) {
       console.log(`  No active plumbers found for ${citySlug}. Skipping.`);
