@@ -104,25 +104,73 @@ function hashGoogleReviewId(authorName, text) {
 }
 
 // ---------------------------------------------------------------------------
+// Outscraper REST API with async polling (SDK doesn't poll for reviews)
+// ---------------------------------------------------------------------------
+
+async function outscraperRequest(path, params) {
+  const qs = new URLSearchParams(params).toString();
+  const resp = await fetch(`https://api.app.outscraper.com${path}?${qs}`, {
+    headers: { "X-API-KEY": OUTSCRAPER_API_KEY, "client": "Node Script" },
+  });
+
+  const body = await resp.json();
+
+  // Synchronous response — data is inline
+  if (body.data) return body.data;
+
+  // Async response — poll for results
+  if (body.id && body.results_location) {
+    console.log(`    Waiting for async result (${body.id})...`);
+    const pollUrl = body.results_location;
+    for (let attempt = 0; attempt < 30; attempt++) {
+      await sleep(5000);
+      const pollResp = await fetch(pollUrl, {
+        headers: { "X-API-KEY": OUTSCRAPER_API_KEY },
+      });
+      const pollBody = await pollResp.json();
+      if (pollBody.status === "Success" && pollBody.data) {
+        return pollBody.data;
+      }
+      if (pollBody.status === "Error") {
+        throw new Error(`Outscraper async error: ${pollBody.errorMessage || "unknown"}`);
+      }
+      // Still pending — continue polling
+    }
+    throw new Error("Outscraper async request timed out after 150s");
+  }
+
+  if (body.error || body.errorMessage) {
+    throw new Error(`Outscraper: ${body.errorMessage || body.error}`);
+  }
+
+  return [];
+}
+
+// ---------------------------------------------------------------------------
 // Google Reviews via Outscraper
 // ---------------------------------------------------------------------------
 
 async function pullGoogleReviews(placeId, businessName, cutoffTimestamp) {
   console.log(`    [Google] Pulling reviews for ${placeId}...`);
 
-  let cutoffSec = null;
+  const params = {
+    query: placeId,
+    reviewsLimit: String(MAX_REVIEWS_PER_SOURCE),
+    sort: "newest",
+    language: "en",
+    async: "false",
+  };
+
   if (cutoffTimestamp) {
-    cutoffSec = Math.floor(cutoffTimestamp.toDate().getTime() / 1000);
+    params.cutoff = String(Math.floor(cutoffTimestamp.toDate().getTime() / 1000));
   }
 
   try {
-    const results = await outscraper.googleMapsReviews(
-      [placeId], MAX_REVIEWS_PER_SOURCE, "newest", null, "en", null, cutoffSec
-    );
+    const data = await outscraperRequest("/maps/reviews-v3", params);
 
-    if (!results || !results[0]) return [];
-    const reviews = results[0].reviews_data || [];
-    console.log(`    [Google] Got ${reviews.length} reviews.`);
+    if (!data || !data[0]) return [];
+    const reviews = data[0].reviews_data || [];
+    console.log(`    [Google] Got ${reviews.length} reviews (of ${data[0].reviews || "?"} total).`);
     return reviews.map((r) => ({
       source: "google",
       author: r.author_title || r.reviewer_name || "Anonymous",
