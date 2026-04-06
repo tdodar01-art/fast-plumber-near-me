@@ -330,20 +330,31 @@ function buildPrompt(name, googleRating, googleReviewCount, reviews, platformSta
   if (platformStats.yelpRating) platformContext += `\nYelp Rating: ${platformStats.yelpRating}/5 (${platformStats.yelpReviewCount || "?"} reviews)`;
   if (platformStats.angiRating) platformContext += `\nAngi Rating: ${platformStats.angiRating}/5 (${platformStats.angiReviewCount || "?"} reviews)`;
 
+  // BBB data
+  const bbb = platformStats.bbb;
+  let bbbContext = "";
+  if (bbb) {
+    bbbContext = `\n\n=== BBB DATA ===\nBBB Rating: ${bbb.rating || "N/A"} | Accredited: ${bbb.accredited ? "Yes" : "No"}`;
+    if (bbb.complaintsPast3Years != null) bbbContext += ` | Complaints (3yr): ${bbb.complaintsPast3Years}`;
+    if (bbb.complaintsTotal != null) bbbContext += ` | Complaints (total): ${bbb.complaintsTotal}`;
+    if (bbb.yearsInBusiness != null) bbbContext += ` | Years in business: ${bbb.yearsInBusiness}`;
+  }
+
   return `You are analyzing reviews from multiple platforms for a plumber to help homeowners in an emergency.
 
 Plumber: ${name}
-${platformContext}
+${platformContext}${bbbContext}
 We have ${reviews.length} total reviews across all platforms.
 
 ${reviewBlock}
 IMPORTANT: If ratings differ significantly between platforms (e.g. 4.8 on Google but 2.5 on Yelp), note this discrepancy in your summary and weaknesses. Platform rating gaps are a signal.
+${bbb ? "IMPORTANT: BBB complaints are a strong reliability signal. Unresolved or high complaint counts should be flagged as red flags. BBB accreditation is a positive trust signal. Low BBB ratings (B or below) with high Google ratings suggest possible review manipulation." : ""}
 
 Respond in JSON only. No markdown, no preamble, no backticks.
 {
   "summary": "One specific sentence a friend would say. Never say 'reliable and professional'. Reference actual patterns. If platforms disagree, mention it.",
-  "strengths": ["2-3 specific strengths with evidence. e.g. '3 of 8 Google reviewers mention arriving within an hour'"],
-  "weaknesses": ["1-2 specific weaknesses. e.g. 'Yelp reviews mention surprise fees not seen on Google'. Include platform discrepancies if significant."],
+  "strengths": ["2-3 specific strengths with evidence. e.g. '3 of 8 Google reviewers mention arriving within an hour'${bbb?.accredited ? " Include BBB accreditation as a trust signal." : ""}"],
+  "weaknesses": ["1-2 specific weaknesses. e.g. 'Yelp reviews mention surprise fees not seen on Google'. Include platform discrepancies if significant.${bbb?.complaintsPast3Years > 0 ? " Flag BBB complaints." : ""}"],
   "emergencyReadiness": "high|medium|low|unknown",
   "emergencyNotes": "One sentence about emergency signals — after-hours mentions, response time, weekend availability.",
   "badges": ["Only from: 'Fast Responder', 'Fair Pricing', '24/7 Available', 'Clean & Professional', 'Great Communicator'. Only include if reviews clearly support it."],
@@ -608,7 +619,8 @@ async function main() {
           ...(platformStats.angiRating && { angiRating: platformStats.angiRating, angiReviewCount: platformStats.angiReviewCount }),
         });
 
-        // Re-synthesize with full multi-source corpus
+        // Re-synthesize with full multi-source corpus (include BBB if available)
+        if (data.bbb) platformStats.bbb = data.bbb;
         if (!skipSynthesis && newCount > 0 && ANTHROPIC_API_KEY) {
           try {
             const synthesized = await synthesizePlumber(doc.id, data, platformStats);

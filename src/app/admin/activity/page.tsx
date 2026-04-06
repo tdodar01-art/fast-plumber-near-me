@@ -52,6 +52,7 @@ const scriptLabels: Record<string, { label: string; color: string }> = {
   "synthesize-reviews": { label: "synthesize-reviews", color: "bg-green-100 text-green-700" },
   "request-indexing": { label: "request-indexing", color: "bg-orange-100 text-orange-700" },
   "outscraper-reviews": { label: "outscraper-reviews", color: "bg-pink-100 text-pink-700" },
+  "bbb-lookup": { label: "bbb-lookup", color: "bg-yellow-100 text-yellow-700" },
 };
 
 function RunSummary({ run }: { run: PipelineRun }) {
@@ -88,6 +89,12 @@ function RunSummary({ run }: { run: PipelineRun }) {
     if (sources) parts.push(sources);
     if (s.synthesized != null) parts.push(`Synthesized: ${s.synthesized}`);
     if (s.estimatedCost) parts.push(`Cost: ${s.estimatedCost}`);
+    if (s.citySlugs) parts.push(`Cities: ${(s.citySlugs as string[]).join(", ")}`);
+  } else if (run.script === "bbb-lookup") {
+    if (s.plumbersLookedUp != null) parts.push(`Looked up: ${s.plumbersLookedUp}`);
+    if (s.matchedOnBBB != null) parts.push(`Matched: ${s.matchedOnBBB}`);
+    if (s.notFoundOnBBB != null) parts.push(`Not found: ${s.notFoundOnBBB}`);
+    if (s.accredited != null) parts.push(`Accredited: ${s.accredited}`);
     if (s.citySlugs) parts.push(`Cities: ${(s.citySlugs as string[]).join(", ")}`);
   }
 

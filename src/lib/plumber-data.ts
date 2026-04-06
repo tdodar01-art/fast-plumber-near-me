@@ -48,6 +48,14 @@ export interface SynthesizedPlumber {
   scrapedAt: string;
   synthesis: PlumberSynthesis | null;
   serviceCities?: string[];
+  bbb?: {
+    accredited: boolean;
+    rating: string | null;
+    complaintsTotal: number | null;
+    complaintsPast3Years: number | null;
+    yearsInBusiness: number | null;
+    bbbUrl: string | null;
+  } | null;
 }
 
 interface SynthesizedData {

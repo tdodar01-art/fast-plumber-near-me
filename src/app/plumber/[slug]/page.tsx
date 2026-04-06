@@ -304,6 +304,27 @@ export default async function PlumberProfilePage({
           </div>
         )}
 
+        {/* BBB DATA */}
+        {plumber.bbb && (
+          <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-white rounded-lg" style={{ border: "0.5px solid #E5E7EB" }}>
+            <span className="text-xs font-bold text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded">BBB</span>
+            {plumber.bbb.rating && (
+              <span className={`text-sm font-bold ${plumber.bbb.rating.startsWith("A") ? "text-green-700" : plumber.bbb.rating.startsWith("B") ? "text-yellow-700" : "text-red-700"}`}>
+                {plumber.bbb.rating}
+              </span>
+            )}
+            <span className={`text-xs px-1.5 py-0.5 rounded-full ${plumber.bbb.accredited ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+              {plumber.bbb.accredited ? "Accredited" : "Not Accredited"}
+            </span>
+            {plumber.bbb.complaintsPast3Years != null && plumber.bbb.complaintsPast3Years > 0 && (
+              <span className="text-xs text-amber-600">{plumber.bbb.complaintsPast3Years} complaint{plumber.bbb.complaintsPast3Years !== 1 ? "s" : ""} (3yr)</span>
+            )}
+            {plumber.bbb.yearsInBusiness != null && (
+              <span className="text-xs text-gray-400 ml-auto">{plumber.bbb.yearsInBusiness} yrs</span>
+            )}
+          </div>
+        )}
+
         {/* KPI CARDS — 2x2 grid */}
         <div className="grid grid-cols-2 gap-2 mb-4">
           {/* Response */}
