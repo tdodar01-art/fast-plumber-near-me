@@ -137,8 +137,13 @@ export function getDataMeta() {
 /**
  * Map a synthesized plumber to the Plumber type used by city pages.
  */
-function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { distanceMiles?: number } {
+function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { distanceMiles?: number; latestReviewAt?: string } {
   const syn = p.synthesis;
+  const latestReviewAt = (p.reviews || [])
+    .map(r => r.time)
+    .filter(Boolean)
+    .sort()
+    .reverse()[0] || undefined;
   return {
     id: p.placeId,
     businessName: p.name,
@@ -195,11 +200,15 @@ function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { d
         homeRespect: { strengths: [], weaknesses: [] },
         punctuality: { strengths: [], weaknesses: [] },
       },
+      pricingTier: syn.priceSignal === "budget" || syn.priceSignal === "mid-range" || syn.priceSignal === "premium"
+        ? syn.priceSignal : "unknown",
       summary: syn.summary || "",
+      emergencyReadiness: syn.emergencyReadiness || "unknown",
       synthesisVersion: "json-static",
     } : undefined,
     distanceMiles,
-  } as Plumber & { distanceMiles?: number };
+    latestReviewAt,
+  } as Plumber & { distanceMiles?: number; latestReviewAt?: string };
 }
 
 /**
@@ -210,13 +219,13 @@ export function getPlumbersNearCity(
   stateAbbr: string,
   citySlug: string,
   radiusMiles: number = 20,
-): (Plumber & { distanceMiles?: number })[] {
+): (Plumber & { distanceMiles?: number; latestReviewAt?: string })[] {
   const coord = getCityCoordBySlug(stateAbbr, citySlug);
   if (!coord) return [];
   const [cityLat, cityLng] = coord;
 
   const allPlumbers = loadData().plumbers;
-  const results: (Plumber & { distanceMiles?: number })[] = [];
+  const results: (Plumber & { distanceMiles?: number; latestReviewAt?: string })[] = [];
 
   for (const p of allPlumbers) {
     if (!p.location?.lat || !p.location?.lng) continue;

@@ -2,10 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Phone, Globe, Clock, Shield, Star, Award, BadgeCheck, Calendar, Flag, ChevronDown, MapPin, AlertTriangle } from "lucide-react";
+import {
+  Phone, Globe, Star, BadgeCheck, Flag, ChevronDown, MapPin,
+  AlertTriangle, AlertOctagon, Info, MessageSquare, Zap, DollarSign,
+  CheckCircle2,
+} from "lucide-react";
 import type { Plumber } from "@/lib/types";
-import ReliabilityBadge from "./ReliabilityBadge";
-import VerifiedBadge from "./VerifiedBadge";
+import { getScoreLabel } from "@/lib/scoring";
 import { getDistanceLabel } from "@/lib/geo";
 
 function slugify(text: string) {
@@ -23,7 +26,6 @@ function useViewTracking(plumberId: string, citySlug: string) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    let startTime = 0;
     let timer5: ReturnType<typeof setTimeout>;
     let timer15: ReturnType<typeof setTimeout>;
     let timer30: ReturnType<typeof setTimeout>;
@@ -41,7 +43,6 @@ function useViewTracking(plumberId: string, citySlug: string) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          startTime = Date.now();
           timer5 = setTimeout(() => fire("view-5s"), 5000);
           timer15 = setTimeout(() => fire("view-15s"), 15000);
           timer30 = setTimeout(() => fire("view-30s"), 30000);
@@ -60,31 +61,100 @@ function useViewTracking(plumberId: string, citySlug: string) {
   return ref;
 }
 
-function StarRating({ rating, count }: { rating: number; count: number }) {
-  const fullStars = Math.floor(rating);
-  const hasHalf = rating - fullStars >= 0.5;
+// --- Helpers ---
+
+function formatReviewCount(count: number): string {
+  if (count >= 10000) return `${Math.round(count / 1000)}k`;
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
+  return String(count);
+}
+
+/** Truncate to first clause break at or before maxLen. */
+function truncateClause(text: string, maxLen = 60): string {
+  if (text.length <= maxLen) return text;
+  const breaks = [". ", "; ", " — ", " – ", " - "];
+  let best = -1;
+  for (const br of breaks) {
+    const idx = text.lastIndexOf(br, maxLen);
+    if (idx > 20 && idx > best) best = idx;
+  }
+  if (best > 0) return text.slice(0, best + 1).trim();
+  // No clause break found — hard truncate at word boundary
+  const cut = text.lastIndexOf(" ", maxLen);
+  return (cut > 20 ? text.slice(0, cut) : text.slice(0, maxLen)) + "…";
+}
+
+/** Check if two strings share significant keywords (for dedup). */
+function isDuplicate(flagText: string, concernText: string): boolean {
+  const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, "");
+  const flagWords = new Set(normalize(flagText).split(/\s+/).filter(w => w.length > 3));
+  const concernWords = normalize(concernText).split(/\s+/).filter(w => w.length > 3);
+  let shared = 0;
+  for (const w of concernWords) {
+    if (flagWords.has(w)) shared++;
+  }
+  return shared >= 3 || (shared >= 2 && flagWords.size < 6);
+}
+
+function priceLevelSymbol(level: number | null | undefined): string | null {
+  if (level === 0) return "Free";
+  if (level === 1) return "$";
+  if (level === 2) return "$$";
+  if (level === 3) return "$$$";
+  if (level === 4) return "$$$$";
+  return null;
+}
+
+const SOURCE_LOGOS = [
+  { key: "google", src: "/logos/sources/google.svg", label: "Google", active: true },
+  { key: "yelp", src: "/logos/sources/yelp.svg", label: "Yelp", active: false },
+  { key: "bbb", src: "/logos/sources/bbb.svg", label: "BBB", active: false },
+  { key: "angi", src: "/logos/sources/angi.svg", label: "Angi", active: false },
+] as const;
+
+function SourceLogos({ googleReviewCount }: { googleReviewCount: number | null }) {
+  const [tip, setTip] = useState<string | null>(null);
+  const activeCount = 1;
 
   return (
-    <div className="flex items-center gap-1 text-sm">
-      <div className="flex items-center text-yellow-500">
-        {Array.from({ length: 5 }, (_, i) => (
-          <Star
-            key={i}
-            className={`w-4 h-4 ${
-              i < fullStars
-                ? "fill-current"
-                : i === fullStars && hasHalf
-                ? "fill-current opacity-50"
-                : "text-gray-300"
-            }`}
-          />
-        ))}
-      </div>
-      <span className="font-semibold text-gray-900">{rating}</span>
-      <span className="text-gray-500">({count} reviews)</span>
-    </div>
+    <span
+      className="inline-flex items-center gap-1"
+      role="img"
+      aria-label={`Review sources: ${activeCount} of ${SOURCE_LOGOS.length} synthesized`}
+    >
+      {SOURCE_LOGOS.map((s) => {
+        const isActive = s.active;
+        const tooltipText = isActive
+          ? `${s.label}: ${googleReviewCount ? formatReviewCount(googleReviewCount) + " reviews" : "synthesized"}`
+          : `${s.label} reviews not yet synthesized`;
+        return (
+          <span
+            key={s.key}
+            className="relative"
+            onMouseEnter={() => setTip(s.key)}
+            onMouseLeave={() => setTip(null)}
+            onClick={(e) => { e.stopPropagation(); setTip(tip === s.key ? null : s.key); }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={s.src}
+              alt={isActive ? `${s.label} reviews synthesized` : `${s.label} reviews not yet synthesized`}
+              aria-label={isActive ? `${s.label} reviews synthesized` : `${s.label} reviews not yet synthesized`}
+              className={`h-4 sm:h-5 w-auto ${isActive ? "" : "grayscale opacity-30"}`}
+            />
+            {tip === s.key && (
+              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap bg-gray-900 text-white text-[11px] font-normal px-2 py-1 rounded-md shadow-lg z-20">
+                {tooltipText}
+              </span>
+            )}
+          </span>
+        );
+      })}
+    </span>
   );
 }
+
+// --- Main Component ---
 
 export default function PlumberCard({
   plumber,
@@ -92,7 +162,7 @@ export default function PlumberCard({
   distanceMiles,
   cityName,
 }: {
-  plumber: Plumber;
+  plumber: Plumber & { latestReviewAt?: string };
   citySlug: string;
   distanceMiles?: number;
   cityName?: string;
@@ -100,6 +170,8 @@ export default function PlumberCard({
   const viewRef = useViewTracking(plumber.id, citySlug);
   const router = useRouter();
   const slug = slugify(plumber.businessName);
+  const syn = plumber.reviewSynthesis;
+  const isFullySynthesized = (syn?.weaknesses?.length ?? 0) > 0;
 
   const handleCardClick = () => {
     router.push(`/plumber/${slug}`);
@@ -123,49 +195,87 @@ export default function PlumberCard({
     }).catch(() => {});
   };
 
-  const tierStyles = {
-    featured: "border-accent bg-red-50 ring-2 ring-accent/20",
-    premium: "border-primary bg-blue-50 ring-1 ring-primary/10",
-    free: "border-gray-200 bg-white",
-  };
+  // --- Build merged concerns list: red flags first, then weaknesses, deduped ---
+  const redFlagTexts = syn?.redFlags ?? [];
+  const weaknessTexts = isFullySynthesized ? (syn?.weaknesses ?? []) : [];
+  // Dedup weaknesses against red flags
+  const dedupedWeaknesses = weaknessTexts.filter(w => !redFlagTexts.some(f => isDuplicate(f, w)));
+  // Merge: red flags first (severe), then weaknesses (lesser), cap at 4
+  const allConcerns: { text: string; severe: boolean }[] = [
+    ...redFlagTexts.map(t => ({ text: t, severe: true })),
+    ...dedupedWeaknesses.map(t => ({ text: t, severe: false })),
+  ].slice(0, 4);
+  const totalConcernsAvailable = redFlagTexts.length + dedupedWeaknesses.length;
+
+  const strengths = (syn?.strengths ?? []).slice(0, 4);
+  const totalStrengthsAvailable = (syn?.strengths ?? []).length;
+  const hasConcerns = allConcerns.length > 0;
+  const hasRedFlags = redFlagTexts.length > 0;
+
+  // --- KPI tiles ---
+  const kpis: { icon: React.ReactNode; value: string; label: string }[] = [];
+
+  if (plumber.googleReviewCount != null && plumber.googleReviewCount > 0) {
+    kpis.push({
+      icon: <MessageSquare className="w-4 h-4 text-gray-500" />,
+      value: formatReviewCount(plumber.googleReviewCount),
+      label: "Google reviews",
+    });
+  }
+
+  if (plumber.is24Hour) {
+    kpis.push({
+      icon: <Zap className="w-4 h-4 text-gray-500" />,
+      value: "24/7",
+      label: "Always open",
+    });
+  }
+
+  const priceSymbol = priceLevelSymbol((plumber as { priceLevel?: number | null }).priceLevel);
+  if (priceSymbol) {
+    kpis.push({
+      icon: <DollarSign className="w-4 h-4 text-gray-500" />,
+      value: priceSymbol,
+      label: "Price tier",
+    });
+  }
 
   return (
     <div
       ref={viewRef}
       onClick={handleCardClick}
-      className={`rounded-xl border-2 p-4 sm:p-6 shadow-sm hover:shadow-md active:shadow-inner transition-shadow cursor-pointer ${
-        tierStyles[plumber.listingTier]
+      className={`rounded-xl border-2 p-4 sm:p-5 shadow-sm hover:shadow-md active:shadow-inner transition-shadow cursor-pointer ${
+        hasRedFlags
+          ? "border-l-red-500 border-l-4 border-t-gray-200 border-r-gray-200 border-b-gray-200 bg-white"
+          : "border-gray-200 bg-white"
       }`}
     >
-      {/* Tier badge */}
-      {plumber.listingTier === "featured" && (
-        <div className="flex items-center gap-1 text-accent font-semibold text-sm mb-2">
-          <Award className="w-4 h-4" />
-          Featured Plumber
-        </div>
-      )}
-      {plumber.listingTier === "premium" && (
-        <div className="flex items-center gap-1 text-primary font-semibold text-sm mb-2">
-          <Award className="w-4 h-4" />
-          Premium Listing
-        </div>
-      )}
+      {/* === IDENTITY + TRUST LINE === */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-lg font-bold text-gray-900 leading-tight truncate">{plumber.businessName}</h3>
 
-      {/* Top row: rating + business name */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-        <div>
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900">{plumber.businessName}</h3>
-          {plumber.googleRating && plumber.googleReviewCount && (
-            <StarRating rating={plumber.googleRating} count={plumber.googleReviewCount} />
-          )}
-        </div>
-        <div className="text-sm text-gray-600">
-          <p>
-            {plumber.address.city}, {plumber.address.state}
-            {plumber.yearsInBusiness && ` · ${plumber.yearsInBusiness} yrs`}
-          </p>
+          {/* Trust line */}
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-1 text-sm text-gray-600">
+            {plumber.googleRating != null && (
+              <span className="inline-flex items-center gap-0.5 font-semibold text-gray-900">
+                <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                {plumber.googleRating}
+              </span>
+            )}
+            {plumber.googleReviewCount != null && plumber.googleReviewCount > 0 && (
+              <>
+                <span className="text-gray-400">·</span>
+                <span className="font-medium">{formatReviewCount(plumber.googleReviewCount)} reviews</span>
+              </>
+            )}
+            <span className="text-gray-400">·</span>
+            <SourceLogos googleReviewCount={plumber.googleReviewCount} />
+          </div>
+
+          {/* Distance — below name on mobile */}
           {distanceMiles != null && (
-            <p className={`flex items-center gap-1 text-xs mt-0.5 ${
+            <p className={`flex items-center gap-1 text-xs mt-1 sm:hidden ${
               getDistanceLabel(distanceMiles).color === "amber" ? "text-amber-600" : "text-gray-500"
             }`}>
               <MapPin className="w-3 h-3" />
@@ -173,239 +283,241 @@ export default function PlumberCard({
             </p>
           )}
         </div>
+
+        {/* Desktop: distance + score on right */}
+        <div className="hidden sm:flex sm:flex-col sm:items-end sm:gap-1 sm:flex-shrink-0 sm:ml-4">
+          {distanceMiles != null && (
+            <p className={`flex items-center gap-1 text-xs ${
+              getDistanceLabel(distanceMiles).color === "amber" ? "text-amber-600" : "text-gray-500"
+            }`}>
+              <MapPin className="w-3 h-3" />
+              {getDistanceLabel(distanceMiles, cityName).text}
+            </p>
+          )}
+          {plumber.reliabilityScore > 0 && <TrustScore score={plumber.reliabilityScore} />}
+        </div>
       </div>
 
-      {/* Badges — horizontal scroll on mobile */}
-      <div className="flex items-center gap-1.5 mt-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-        {plumber.verificationStatus === "verified" && <VerifiedBadge />}
+      {/* === BADGES — compact row (no 24/7 badge — moved to KPI) === */}
+      <div className="flex items-center gap-1.5 mt-2 overflow-x-auto scrollbar-hide">
         {plumber.googleVerified && (
-          <span className="inline-flex items-center gap-1 text-xs font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 text-xs font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full whitespace-nowrap">
             <BadgeCheck className="w-3 h-3" />
             Google Verified
           </span>
         )}
-        {plumber.is24Hour && (
-          <span className="inline-flex items-center gap-1 text-xs font-medium bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full whitespace-nowrap">
-            <Clock className="w-3 h-3" />
-            24/7
-          </span>
-        )}
-        {plumber.insured && (
-          <span className="inline-flex items-center gap-1 text-xs font-medium bg-green-100 text-green-800 px-2 py-0.5 rounded-full whitespace-nowrap">
-            <Shield className="w-3 h-3" />
-            Insured
-          </span>
-        )}
+        {/* Mobile trust score — inline with badges */}
         {plumber.reliabilityScore > 0 && (
-          <ReliabilityBadge score={plumber.reliabilityScore} />
+          <span className="sm:hidden">
+            <TrustScore score={plumber.reliabilityScore} />
+          </span>
         )}
       </div>
 
-      {/* Services — show max 4 on mobile, all on desktop */}
-      <div className="flex flex-wrap gap-1 mt-2">
-        {plumber.services.slice(0, 4).map((service) => (
-          <span
-            key={service}
-            className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md capitalize"
-          >
-            {service.replace(/-/g, " ")}
-          </span>
-        ))}
-        {plumber.services.length > 4 && (
-          <span className="text-xs text-gray-500 px-1 py-0.5 sm:hidden">
-            +{plumber.services.length - 4} more
-          </span>
-        )}
-        {plumber.services.slice(4).map((service) => (
-          <span
-            key={service}
-            className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md capitalize hidden sm:inline"
-          >
-            {service.replace(/-/g, " ")}
-          </span>
-        ))}
-      </div>
+      {/* === KPI TILES === */}
+      {kpis.length > 0 && (
+        <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide sm:flex-wrap">
+          {kpis.map((kpi, i) => (
+            <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 flex-shrink-0">
+              {kpi.icon}
+              <div className="min-w-0">
+                <div className="text-sm font-bold text-gray-900 leading-tight">{kpi.value}</div>
+                <div className="text-[11px] text-gray-500 leading-tight">{kpi.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* Flagged plumber warning */}
+      {/* === FLAGGED WARNING === */}
       {plumber.status === "flagged" && (
         <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5 text-xs text-amber-700 font-medium">
           Unverified — this listing may have issues
         </div>
       )}
 
-      {/* Review synthesis */}
-      {plumber.reviewSynthesis && (
-        <div className="mt-2 space-y-1">
-          {/* AI summary */}
-          {plumber.reviewSynthesis.summary && (
-            <p className="text-sm text-gray-700 italic">&ldquo;{plumber.reviewSynthesis.summary}&rdquo;</p>
-          )}
-          {/* Emergency readiness indicator */}
-          {plumber.reviewSynthesis.emergencyReadiness && plumber.reviewSynthesis.emergencyReadiness !== "unknown" && (
-            <div className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${
-              plumber.reviewSynthesis.emergencyReadiness === "high"
-                ? "bg-green-100 text-green-800"
-                : plumber.reviewSynthesis.emergencyReadiness === "medium"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-red-100 text-red-800"
-            }`}>
-              <Clock className="w-3 h-3" />
-              Emergency: {plumber.reviewSynthesis.emergencyReadiness}
-            </div>
-          )}
-          {/* Synthesis badges */}
-          {plumber.reviewSynthesis.badges.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {plumber.reviewSynthesis.badges.map((badge) => (
-                <span key={badge} className="text-xs font-medium bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                  {badge}
-                </span>
-              ))}
-            </div>
-          )}
-          {/* Top strengths */}
-          {plumber.reviewSynthesis.strengths.slice(0, 2).map((s, i) => (
-            <p key={i} className="text-xs text-green-700">+ {s}</p>
-          ))}
-          {/* Top weakness */}
-          {plumber.reviewSynthesis.weaknesses.length > 0 && (
-            <p className="text-xs text-amber-700">- {plumber.reviewSynthesis.weaknesses[0]}</p>
-          )}
-          {/* Red flags */}
-          {plumber.reviewSynthesis.redFlags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1">
-              {plumber.reviewSynthesis.redFlags.map((flag, i) => (
-                <span key={i} className="inline-flex items-center gap-0.5 text-xs font-medium bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
-                  <AlertTriangle className="w-3 h-3" />
-                  {flag.replace(/-/g, " ")}
-                </span>
-              ))}
-            </div>
-          )}
-          {/* Compact KPI row */}
-          <KPIRow synthesis={plumber.reviewSynthesis} is24Hour={plumber.is24Hour} />
-        </div>
+      {/* === STRENGTHS / CONCERNS COMPARISON === */}
+      {syn && (strengths.length > 0 || hasConcerns) && (
+        <ComparisonColumns
+          strengths={strengths}
+          totalStrengths={totalStrengthsAvailable}
+          allStrengths={syn.strengths ?? []}
+          concerns={allConcerns}
+          totalConcerns={totalConcernsAvailable}
+          allRedFlags={redFlagTexts}
+          allWeaknesses={dedupedWeaknesses}
+        />
       )}
 
-      {/* Reliability bar */}
-      {plumber.reliabilityScore > 0 && plumber.totalCallAttempts >= 3 && (
-        <div className="mt-2">
-          <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-            <span>Reliability Score</span>
-            <span className="font-semibold">{plumber.reliabilityScore}/100</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-1.5">
-            <div
-              className={`h-1.5 rounded-full transition-all ${
-                plumber.reliabilityScore >= 80
-                  ? "bg-green-500"
-                  : plumber.reliabilityScore >= 50
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
-              }`}
-              style={{ width: `${plumber.reliabilityScore}%` }}
-            />
-          </div>
-        </div>
+      {/* === PRELIMINARY LISTING NOTE === */}
+      {syn && !isFullySynthesized && (
+        <p className="mt-2 text-xs text-gray-400">Preliminary listing — full review analysis coming soon</p>
       )}
 
-      {/* CTA — stacked on mobile, inline on desktop */}
-      <div className="mt-3 flex flex-col sm:flex-row gap-2">
+      {/* === CTA === */}
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
         <a
           href={`tel:${plumber.phone}`}
           onClick={(e) => { e.stopPropagation(); handleCallClick(); }}
-          className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-accent/25 cta-pulse"
+          className="flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white font-bold py-3 px-5 rounded-xl transition-colors shadow-lg shadow-accent/25 w-full sm:w-auto"
         >
           <Phone className="w-5 h-5 flex-shrink-0" />
-          <span className="sm:hidden">CALL {plumber.phone}</span>
-          <span className="hidden sm:inline">CALL NOW {plumber.phone}</span>
+          <span className="sm:hidden">Call Now</span>
+          <span className="hidden sm:inline">{plumber.phone}</span>
         </a>
-        {(plumber.website || plumber.bookingLink) && (
-          <div className="flex gap-2">
-            {plumber.website && (
-              <a
-                href={plumber.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fetch("/api/track-lead", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      plumberId: plumber.id,
-                      plumberName: plumber.businessName,
-                      plumberPhone: plumber.phone,
-                      city: cityName || citySlug,
-                      state: plumber.address?.state || "",
-                      citySlug,
-                      pageUrl: `/emergency-plumbers/${citySlug}`,
-                      clickType: "website",
-                      source: `/emergency-plumbers/${citySlug}`,
-                    }),
-                  }).catch(() => {});
-                }}
-                className="flex-1 flex items-center justify-center gap-2 border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-2.5 px-3 rounded-xl transition-colors text-sm"
-              >
-                <Globe className="w-4 h-4" />
-                Website
-              </a>
-            )}
-            {plumber.bookingLink && (
-              <a
-                href={plumber.bookingLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex-1 flex items-center justify-center gap-2 border-2 border-success text-success hover:bg-success hover:text-white font-semibold py-2.5 px-3 rounded-xl transition-colors text-sm"
-              >
-                <Calendar className="w-4 h-4" />
-                Book
-              </a>
-            )}
-          </div>
+        {plumber.website && (
+          <a
+            href={plumber.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.stopPropagation();
+              fetch("/api/track-lead", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  plumberId: plumber.id,
+                  plumberName: plumber.businessName,
+                  plumberPhone: plumber.phone,
+                  city: cityName || citySlug,
+                  state: plumber.address?.state || "",
+                  citySlug,
+                  pageUrl: `/emergency-plumbers/${citySlug}`,
+                  clickType: "website",
+                  source: `/emergency-plumbers/${citySlug}`,
+                }),
+              }).catch(() => {});
+            }}
+            className="flex items-center justify-center gap-1.5 text-sm text-gray-500 hover:text-primary transition-colors sm:ml-1"
+          >
+            <Globe className="w-4 h-4" />
+            <span>Visit website</span>
+          </a>
         )}
       </div>
 
-      {/* Report button */}
+      {/* === REPORT === */}
       <ReportButton plumberId={plumber.id} citySlug={citySlug} />
     </div>
   );
 }
 
-function KPIRow({ synthesis, is24Hour }: { synthesis: Plumber["reviewSynthesis"]; is24Hour: boolean }) {
-  if (!synthesis) return null;
+// --- Comparison Columns ---
 
-  // Response
-  const hasFastBadge = synthesis.badges?.includes("Fast Responder");
-  const responseLabel = hasFastBadge ? "Fast" : "Unknown";
-  const responseColor = hasFastBadge ? "text-green-700" : "text-gray-400";
+function ComparisonColumns({
+  strengths,
+  totalStrengths,
+  allStrengths,
+  concerns,
+  totalConcerns,
+  allRedFlags,
+  allWeaknesses,
+}: {
+  strengths: string[];
+  totalStrengths: number;
+  allStrengths: string[];
+  concerns: { text: string; severe: boolean }[];
+  totalConcerns: number;
+  allRedFlags: string[];
+  allWeaknesses: string[];
+}) {
+  const [expandStrengths, setExpandStrengths] = useState(false);
+  const [expandConcerns, setExpandConcerns] = useState(false);
 
-  // Emergency
-  const er = synthesis.emergencyReadiness;
-  const has247Badge = synthesis.badges?.includes("24/7 Available") || synthesis.badges?.includes("24/7 Verified by Reviews");
-  const emergLabel = has247Badge ? "24/7" : er === "high" ? "High" : er === "medium" ? "Medium" : is24Hour ? "Claims 24/7" : "Unknown";
-  const emergColor = has247Badge || er === "high" ? "text-green-700" : er === "medium" || is24Hour ? "text-amber-600" : "text-gray-400";
+  const hasStrengths = strengths.length > 0;
+  const hasConcerns = concerns.length > 0;
 
-  // Pricing
-  const pt = synthesis.pricingTier;
-  const priceLabel = pt === "budget" ? "Budget" : pt === "mid-range" ? "Mid-Range" : pt === "premium" ? "Premium" : "Unknown";
-  const priceColor = pt === "budget" || pt === "mid-range" ? "text-green-700" : pt === "premium" ? "text-amber-600" : "text-gray-400";
+  const displayedStrengths = expandStrengths ? allStrengths : strengths;
+  const displayedConcerns = expandConcerns
+    ? [
+        ...allRedFlags.map(t => ({ text: t, severe: true })),
+        ...allWeaknesses.map(t => ({ text: t, severe: false })),
+      ]
+    : concerns;
 
-  // Red flags
-  const flagCount = synthesis.redFlags?.length || 0;
-  const flagLabel = flagCount === 0 ? "None" : `${flagCount}`;
-  const flagColor = flagCount === 0 ? "text-green-700" : "text-red-600";
+  const strengthsHasMore = totalStrengths > 4 && !expandStrengths;
+  const concernsHasMore = totalConcerns > 4 && !expandConcerns;
 
   return (
-    <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-[11px] font-medium">
-      <span className={responseColor}>⚡ Response: {responseLabel}</span>
-      <span className={emergColor}>🛡 Emergency: {emergLabel}</span>
-      <span className={priceColor}>💰 {priceLabel}</span>
-      <span className={flagColor}>⚠ Flags: {flagLabel}</span>
+    <div className={`mt-3 grid gap-3 ${hasStrengths && hasConcerns ? "sm:grid-cols-2" : "grid-cols-1"}`}>
+      {hasStrengths && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-2">Strengths</div>
+          <div className="space-y-1.5">
+            {displayedStrengths.map((s, i) => (
+              <div key={i} className="flex items-start gap-1.5 text-sm text-green-800 leading-snug">
+                <CheckCircle2 className="w-3.5 h-3.5 text-green-600 flex-shrink-0 mt-0.5" />
+                <span>{truncateClause(s, 65)}</span>
+              </div>
+            ))}
+          </div>
+          {strengthsHasMore && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setExpandStrengths(true); }}
+              className="mt-1.5 text-xs text-green-600 hover:text-green-800 font-medium"
+            >
+              Show {totalStrengths - 4} more
+            </button>
+          )}
+        </div>
+      )}
+
+      {hasConcerns && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-2">Concerns</div>
+          <div className="space-y-1.5">
+            {displayedConcerns.map((c, i) => (
+              <div key={i} className={`flex items-start gap-1.5 text-sm leading-snug ${c.severe ? "text-red-700" : "text-amber-700"}`}>
+                {c.severe
+                  ? <AlertOctagon className="w-3.5 h-3.5 text-red-600 flex-shrink-0 mt-0.5" />
+                  : <AlertTriangle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
+                }
+                <span>{truncateClause(c.text, 65)}</span>
+              </div>
+            ))}
+          </div>
+          {concernsHasMore && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setExpandConcerns(true); }}
+              className="mt-1.5 text-xs text-red-600 hover:text-red-800 font-medium"
+            >
+              Show {totalConcerns - 4} more
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
+
+// --- Trust Score Badge with tooltip ---
+
+function TrustScore({ score }: { score: number }) {
+  const [showTip, setShowTip] = useState(false);
+  const label = getScoreLabel(score);
+  const color = score >= 80 ? "bg-green-50 text-green-700"
+    : score >= 50 ? "bg-yellow-50 text-yellow-700"
+    : "bg-red-50 text-red-700";
+
+  return (
+    <span
+      className={`relative inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${color} cursor-default`}
+      onMouseEnter={() => setShowTip(true)}
+      onMouseLeave={() => setShowTip(false)}
+      onClick={(e) => { e.stopPropagation(); setShowTip(!showTip); }}
+    >
+      {score} — {label}
+      <Info className="w-3 h-3 opacity-50" />
+      {showTip && (
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-52 bg-gray-900 text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg z-20 text-center leading-tight">
+          Trust score based on review depth, recency, and consistency across sources
+        </span>
+      )}
+    </span>
+  );
+}
+
+// --- Report Button ---
 
 function ReportButton({ plumberId, citySlug }: { plumberId: string; citySlug: string }) {
   const [open, setOpen] = useState(false);

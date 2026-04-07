@@ -6,7 +6,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    dependencies:
+      simple-icons:
+        specifier: ^16.15.0
+        version: 16.15.0
 
   apps/plumbers-web:
     dependencies:
@@ -2482,6 +2486,10 @@ packages:
   side-channel@1.1.0:
     resolution: {integrity: sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==}
     engines: {node: '>= 0.4'}
+
+  simple-icons@16.15.0:
+    resolution: {integrity: sha512-hOyY4Cdvh1D/FJa1Qx4nTvypCT2BoI3jpc4xjxVgwVh1Hmd9mnqBqBTziDytCj2f5UOAXCfdnwODiNv710aqkQ==}
+    engines: {node: '>=0.12.18'}
 
   sirv@2.0.4:
     resolution: {integrity: sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ==}
@@ -5604,6 +5612,8 @@ snapshots:
       side-channel-list: 1.0.0
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
+
+  simple-icons@16.15.0: {}
 
   sirv@2.0.4:
     dependencies:
