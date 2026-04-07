@@ -1,0 +1,70 @@
+name: Rebuild JSON from Firestore (Safety Net)
+
+on:
+  schedule:
+    # Every 6 hours: midnight, 6am, noon, 6pm UTC
+    - cron: '0 0,6,12,18 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/plumbers-web
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install firebase-admin
+
+      - name: Check Firebase config
+        id: firebase
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "FIREBASE_SERVICE_ACCOUNT not set — skipping rebuild."
+          fi
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Setup service account
+        if: steps.firebase.outputs.configured == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
+      - name: Rebuild JSON from Firestore
+        if: steps.firebase.outputs.configured == 'true'
+        run: node scripts/export-firestore-to-json.js --no-push
+
+      - name: Commit and push if changed
+        if: steps.firebase.outputs.configured == 'true'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps/plumbers-web/data/synthesized/plumbers-synthesized.json apps/plumbers-web/data/synthesized/leaderboard.json
+          if git diff --cached --quiet; then
+            echo "JSON is already in sync with Firestore. No changes."
+          else
+            git commit -m "data: scheduled JSON rebuild from Firestore (safety net)"
+            git push
+          fi
+
+      - name: Cleanup service account
+        if: always()
+        run: rm -f service-account.json
