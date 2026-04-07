@@ -292,12 +292,16 @@ async function main() {
   const errors = results.filter((r) => r.status === "error").length;
   console.log(`\nDone: ${submitted} submitted, ${errors} failed.`);
 
+  const fullUrls = toProcess.map((u) => u.startsWith("http") ? u : `${SITE_ORIGIN}${u.startsWith("/") ? "" : "/"}${u}`);
+  const slugPaths = toProcess.map((u) => u.startsWith("http") ? new URL(u).pathname : (u.startsWith("/") ? u : `/${u}`));
+
   await logPipelineRun(startedAt, {
     sitemapSubmitted: sitemapOk,
     urlsRequested: toProcess.length,
     indexingSubmitted: submitted,
     indexingErrors: errors,
-    urls: toProcess.map((u) => u.startsWith("http") ? u : `${SITE_ORIGIN}${u.startsWith("/") ? "" : "/"}${u}`),
+    urls: fullUrls,
+    slugPaths,
   });
 
   if (errors > 0) process.exit(1);

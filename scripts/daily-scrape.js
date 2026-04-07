@@ -392,6 +392,7 @@ async function main() {
   let totalNewPlumbers = 0;
   let totalDeduped = 0;
   const citiesProcessed = [];
+  const newPlumberDetails = [];
 
   // State abbreviation to full name for search queries
   const STATE_NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",DC:"District of Columbia"};
@@ -442,6 +443,7 @@ async function main() {
         existingPlumbers[plumber.placeId] = plumber;
         cityNew++;
         totalNewPlumbers++;
+        newPlumberDetails.push({ name: plumber.name, slug: slugify(plumber.name), city: cityName, state: cityState });
       }
 
       const callsUsed = apiCallsMade - callsBefore;
@@ -623,6 +625,7 @@ async function main() {
     startedAt: scrapeStartTime,
     citiesProcessed,
     newPlumbers: totalNewPlumbers,
+    newPlumberDetails,
     totalPlumbers: allPlumbersList.length,
     apiCalls: apiCallsMade,
     synthesized: synthSuccess,
@@ -661,6 +664,7 @@ async function logPipelineRun(result, error) {
       summary: {
         citiesSearched: (result?.citiesProcessed || []).map((c) => c.city),
         newPlumbers: result?.newPlumbers || 0,
+        newPlumberDetails: result?.newPlumberDetails || [],
         totalPlumbers: result?.totalPlumbers || 0,
         apiCalls: result?.apiCalls || 0,
         synthesized: result?.synthesized || 0,

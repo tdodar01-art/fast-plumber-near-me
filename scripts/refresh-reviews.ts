@@ -56,7 +56,13 @@ function initFirebase(): admin.firestore.Firestore {
     console.error("ERROR: No service-account.json or GOOGLE_APPLICATION_CREDENTIALS found");
     process.exit(1);
   }
-  return admin.firestore();
+  const db = admin.firestore();
+  db.settings({ ignoreUndefinedProperties: true });
+  return db;
+}
+
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
@@ -240,6 +246,7 @@ async function main() {
   let refreshed = 0;
   let newReviews = 0;
   let apiCalls = 0;
+  const refreshedPlumbers: { name: string; slug: string; newReviews: number }[] = [];
 
   for (const entry of toProcess) {
     // Budget check
@@ -392,6 +399,7 @@ async function main() {
     }
 
     refreshed++;
+    refreshedPlumbers.push({ name: entry.businessName, slug: slugify(entry.businessName), newReviews: newForThis });
     await sleep(200);
   }
 
@@ -411,7 +419,7 @@ async function main() {
 
   // Count total cached reviews
   const totalCached = Object.values(cachedCounts).reduce((s, c) => s + c, 0) + newReviews;
-  return { refreshed, newReviews, apiCalls, totalCached };
+  return { refreshed, newReviews, apiCalls, totalCached, refreshedPlumbers };
 }
 
 const startedAt = admin.firestore.Timestamp.now();
@@ -433,6 +441,7 @@ main()
             newReviewsCached: result?.newReviews ?? 0,
             totalReviewsNow: result?.totalCached ?? 0,
             apiCalls: result?.apiCalls ?? 0,
+            refreshedPlumbers: result?.refreshedPlumbers ?? [],
           },
           triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
         });

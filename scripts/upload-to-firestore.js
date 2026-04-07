@@ -100,6 +100,7 @@ async function main() {
   let updated = 0;
   let skipped = 0;
   let failed = 0;
+  const createdPlumbers = [];
 
   const batch_size = 500; // Firestore batch limit
   let batch = db.batch();
@@ -179,6 +180,7 @@ async function main() {
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
         created++;
+        createdPlumbers.push({ name: plumber.name, slug: slugify(plumber.name), city: plumber.city, state: plumber.state });
       }
 
       batchCount++;
@@ -226,6 +228,7 @@ async function main() {
         skipped,
         failed,
         totalPlumbers: plumbers.length,
+        createdPlumbers,
       },
     });
     console.log(`📝 Pipeline run logged to Firestore`);

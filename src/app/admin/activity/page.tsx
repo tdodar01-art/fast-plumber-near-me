@@ -66,7 +66,7 @@ function getRunSummaryLine(run: PipelineRun): string {
 
   if (run.script === "daily-scrape" || run.script === "fetch-plumbers") {
     if (s.citiesSearched) parts.push(`Searched: ${(s.citiesSearched as string[]).join(", ")}`);
-    if (s.newPlumbers != null) parts.push(`New: ${s.newPlumbers}`);
+    if (s.newPlumbers != null) parts.push(`New plumbers: ${s.newPlumbers}`);
     if (s.updatedPlumbers != null) parts.push(`Updated: ${s.updatedPlumbers}`);
     if (s.apiCalls != null) parts.push(`API calls: ${s.apiCalls}`);
     if (s.monthlyUsage) parts.push(`Budget: ${s.monthlyUsage}`);
@@ -80,6 +80,7 @@ function getRunSummaryLine(run: PipelineRun): string {
     if (s.totalReviewsNow != null) parts.push(`Total cached: ${s.totalReviewsNow}`);
   } else if (run.script === "synthesize-reviews") {
     if (s.plumbersSynthesized != null) parts.push(`Synthesized: ${s.plumbersSynthesized}`);
+    if (s.failed != null && (s.failed as number) > 0) parts.push(`Errors: ${s.failed}`);
     if (s.redFlagsFound != null) parts.push(`Red flags: ${s.redFlagsFound}`);
     if (s.badgesAwarded != null) parts.push(`Badges: ${s.badgesAwarded}`);
   } else if (run.script === "request-indexing") {
@@ -166,24 +167,163 @@ function PlumberDetailRow({ p }: { p: Record<string, any> }) {
   );
 }
 
+const SITE_ORIGIN = "https://www.fastplumbernearme.com";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ExpandableList({ items, renderItem, label, initialShow = 5 }: { items: any[]; renderItem: (item: any, i: number) => React.ReactNode; label: string; initialShow?: number }) {
+  const [showAll, setShowAll] = useState(false);
+  if (items.length === 0) return null;
+  const visible = showAll ? items : items.slice(0, initialShow);
+  const remaining = items.length - initialShow;
+
+  return (
+    <div className="pt-1">
+      <div className="text-[11px] font-medium text-gray-500 mb-0.5">{label}:</div>
+      {visible.map((item, i) => <div key={i}>{renderItem(item, i)}</div>)}
+      {remaining > 0 && !showAll && (
+        <button onClick={() => setShowAll(true)} className="text-[11px] text-blue-600 hover:underline mt-0.5">
+          Show all ({items.length})
+        </button>
+      )}
+    </div>
+  );
+}
+
+function PlumberLink({ name, slug }: { name: string; slug: string }) {
+  return (
+    <a href={`${SITE_ORIGIN}/plumber/${slug}`} target="_blank" rel="noopener" className="text-[11px] text-blue-600 hover:underline">
+      {name}
+    </a>
+  );
+}
+
 function RunDetails({ run }: { run: PipelineRun }) {
   const s = run.summary;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const details = (s.plumberDetails || []) as Record<string, any>[];
   const urls = (s.urls || []) as string[];
+  const slugPaths = (s.slugPaths || []) as string[];
   const cities = (s.citiesAffected || []) as string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const newPlumberDetails = (s.newPlumberDetails || []) as Record<string, any>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const createdPlumbers = (s.createdPlumbers || []) as Record<string, any>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const refreshedPlumbers = (s.refreshedPlumbers || []) as Record<string, any>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const synthesizedPlumbers = (s.synthesizedPlumbers || []) as Record<string, any>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const errors = (s.errors || []) as Record<string, any>[];
 
-  if (details.length === 0 && urls.length === 0 && cities.length === 0) return null;
+  const hasContent = details.length > 0 || urls.length > 0 || cities.length > 0 ||
+    newPlumberDetails.length > 0 || createdPlumbers.length > 0 ||
+    refreshedPlumbers.length > 0 || synthesizedPlumbers.length > 0 || errors.length > 0;
+
+  if (!hasContent) return null;
 
   return (
-    <div className="mt-2 ml-0.5 pl-3 border-l-2 border-gray-100 space-y-0.5">
+    <div className="mt-2 ml-0.5 pl-3 border-l-2 border-gray-100 space-y-1">
+      {/* Legacy plumber details (outscraper, bbb, etc.) */}
       {details.length > 0 && details.map((p, i) => <PlumberDetailRow key={i} p={p} />)}
-      {urls.length > 0 && (
-        <div className="text-[11px] text-gray-400 pt-1">
-          URLs: {urls.map((u) => u.replace(/^https?:\/\/[^/]+/, "")).join(", ")}
-        </div>
+
+      {/* request-indexing: show submitted URLs with links + exact GSC URL */}
+      {(urls.length > 0 || slugPaths.length > 0) && (
+        <ExpandableList
+          items={slugPaths.length > 0 ? slugPaths.map((sp, i) => ({ slug: sp, fullUrl: urls[i] })) : urls.map((u) => ({ slug: u.replace(/^https?:\/\/[^/]+/, ""), fullUrl: u }))}
+          label="Indexed URLs"
+          renderItem={(item) => (
+            <div className="flex items-center gap-2 text-[11px] py-0.5">
+              <a href={`${SITE_ORIGIN}${item.slug}`} target="_blank" rel="noopener" className="text-blue-600 hover:underline">
+                {item.slug}
+              </a>
+              {item.fullUrl && (
+                <span className="text-gray-300 text-[10px]" title={item.fullUrl}>
+                  GSC: {item.fullUrl}
+                </span>
+              )}
+            </div>
+          )}
+        />
       )}
-      {cities.length > 0 && details.length === 0 && (
+
+      {/* daily-scrape: new plumber details */}
+      {newPlumberDetails.length > 0 && (
+        <ExpandableList
+          items={newPlumberDetails}
+          label="New plumbers"
+          renderItem={(p) => (
+            <div className="flex items-center gap-2 text-[11px] py-0.5">
+              <PlumberLink name={p.name} slug={p.slug} />
+              {p.city && p.state && (
+                <a href={`${SITE_ORIGIN}/emergency-plumbers/${p.state.toLowerCase()}/${p.city.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} target="_blank" rel="noopener" className="text-gray-400 hover:text-gray-600">
+                  {p.city}, {p.state}
+                </a>
+              )}
+            </div>
+          )}
+        />
+      )}
+
+      {/* upload-firestore: created plumbers */}
+      {createdPlumbers.length > 0 && (
+        <ExpandableList
+          items={createdPlumbers}
+          label="Created plumbers"
+          renderItem={(p) => (
+            <div className="flex items-center gap-2 text-[11px] py-0.5">
+              <PlumberLink name={p.name} slug={p.slug} />
+              {p.city && <span className="text-gray-400">{p.city}, {p.state}</span>}
+            </div>
+          )}
+        />
+      )}
+
+      {/* refresh-reviews: refreshed plumbers */}
+      {refreshedPlumbers.length > 0 && (
+        <ExpandableList
+          items={refreshedPlumbers}
+          label="Refreshed plumbers"
+          renderItem={(p) => (
+            <div className="flex items-center gap-2 text-[11px] py-0.5">
+              <PlumberLink name={p.name} slug={p.slug} />
+              {p.newReviews > 0 && <span className="text-green-600">+{p.newReviews} reviews</span>}
+              {p.newReviews === 0 && <span className="text-gray-400">0 new</span>}
+            </div>
+          )}
+        />
+      )}
+
+      {/* synthesize-reviews: synthesized plumbers */}
+      {synthesizedPlumbers.length > 0 && (
+        <ExpandableList
+          items={synthesizedPlumbers}
+          label="Synthesized plumbers"
+          renderItem={(p) => (
+            <div className="flex items-center gap-2 text-[11px] py-0.5">
+              <PlumberLink name={p.name} slug={p.slug} />
+              {p.method && <span className="text-gray-400">{p.method}</span>}
+            </div>
+          )}
+        />
+      )}
+
+      {/* synthesize-reviews: errors */}
+      {errors.length > 0 && (
+        <ExpandableList
+          items={errors}
+          label="Errors"
+          initialShow={10}
+          renderItem={(e) => (
+            <div className="flex items-center gap-2 text-[11px] py-0.5">
+              <PlumberLink name={e.name} slug={e.slug} />
+              <span className="text-red-500">{e.error}</span>
+            </div>
+          )}
+        />
+      )}
+
+      {/* Legacy cities display */}
+      {cities.length > 0 && details.length === 0 && newPlumberDetails.length === 0 && (
         <div className="text-[11px] text-gray-400">
           Cities: {cities.join(", ")}
         </div>
@@ -308,7 +448,13 @@ export default function AdminActivityPage() {
                       const time = run.startedAt?.toDate?.();
                       const hasDetails = (run.summary.plumberDetails as unknown[])?.length > 0 ||
                         (run.summary.urls as unknown[])?.length > 0 ||
-                        (run.summary.citiesAffected as unknown[])?.length > 0;
+                        (run.summary.slugPaths as unknown[])?.length > 0 ||
+                        (run.summary.citiesAffected as unknown[])?.length > 0 ||
+                        (run.summary.newPlumberDetails as unknown[])?.length > 0 ||
+                        (run.summary.createdPlumbers as unknown[])?.length > 0 ||
+                        (run.summary.refreshedPlumbers as unknown[])?.length > 0 ||
+                        (run.summary.synthesizedPlumbers as unknown[])?.length > 0 ||
+                        (run.summary.errors as unknown[])?.length > 0;
                       const isExpanded = expandedRuns.has(run.id);
 
                       return (

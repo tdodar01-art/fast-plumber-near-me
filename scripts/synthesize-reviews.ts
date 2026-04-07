@@ -56,7 +56,9 @@ function initFirebase(): admin.firestore.Firestore {
     console.error("ERROR: No service-account.json or GOOGLE_APPLICATION_CREDENTIALS found");
     process.exit(1);
   }
-  return admin.firestore();
+  const db = admin.firestore();
+  db.settings({ ignoreUndefinedProperties: true });
+  return db;
 }
 
 // ---------------------------------------------------------------------------
@@ -68,7 +70,23 @@ const RATE_LIMIT_MS = 500;
 
 function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
 
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 interface ReviewData { rating: number; text: string; date?: string; }
+
+interface PlumberDetail {
+  name: string;
+  slug: string;
+  method?: string;
+}
+
+interface PlumberError {
+  name: string;
+  slug: string;
+  error: string;
+}
 
 function buildPrompt(
   name: string,
@@ -216,7 +234,7 @@ function keywordFallback(reviews: ReviewData[], googleReviewCount: number) {
       punctuality: { strengths: [] as string[], weaknesses: [] as string[] },
     },
     pricingTier,
-    sampleSizeWarning: googleReviewCount > 50 ? `Based on ${total} of ${googleReviewCount} reviews` : undefined,
+    ...(googleReviewCount > 50 ? { sampleSizeWarning: `Based on ${total} of ${googleReviewCount} reviews` } : {}),
     synthesisVersion: "keyword-fallback",
   };
 }
@@ -241,6 +259,8 @@ async function main() {
   let failed = 0;
   let totalRedFlags = 0;
   let totalBadges = 0;
+  const synthesizedPlumbers: PlumberDetail[] = [];
+  const errors: PlumberError[] = [];
 
   for (const plumberDoc of plumbersSnap.docs) {
     const data = plumberDoc.data();
@@ -283,6 +303,7 @@ async function main() {
       keywordCount++;
       synthesized++;
       totalBadges += synthesis.badges.length;
+      synthesizedPlumbers.push({ name: data.businessName, slug: slugify(data.businessName), method: "keyword" });
       continue;
     }
 
@@ -332,9 +353,9 @@ async function main() {
           homeRespect: { strengths: [] as string[], weaknesses: [] as string[] },
           punctuality: { strengths: [] as string[], weaknesses: [] as string[] },
         },
-        sampleSizeWarning: googleReviewCount > 50 && reviews.length / googleReviewCount < 0.05
-          ? `Based on ${reviews.length} of ${googleReviewCount} reviews`
-          : undefined,
+        ...(googleReviewCount > 50 && reviews.length / googleReviewCount < 0.05
+          ? { sampleSizeWarning: `Based on ${reviews.length} of ${googleReviewCount} reviews` }
+          : {}),
         // New AI-specific fields
         summary: aiResult.summary,
         emergencyReadiness: aiResult.emergencyReadiness,
@@ -354,9 +375,11 @@ async function main() {
       synthesized++;
       totalRedFlags += aiResult.redFlags.length;
       totalBadges += aiResult.badges.length;
+      synthesizedPlumbers.push({ name: data.businessName, slug: slugify(data.businessName), method: "ai" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`❌ ${data.businessName}: ${msg}`);
+      errors.push({ name: data.businessName, slug: slugify(data.businessName), error: msg });
       failed++;
     }
   }
@@ -370,7 +393,7 @@ async function main() {
   console.log(`  Total badges: ${totalBadges}`);
   console.log(`  Total red flags: ${totalRedFlags}`);
 
-  return { synthesized, aiCount, keywordCount, skipped, failed, totalBadges, totalRedFlags };
+  return { synthesized, aiCount, keywordCount, skipped, failed, totalBadges, totalRedFlags, synthesizedPlumbers, errors };
 }
 
 // ---------------------------------------------------------------------------
@@ -399,6 +422,8 @@ main()
             failed: result.failed,
             badgesAwarded: result.totalBadges,
             redFlagsFound: result.totalRedFlags,
+            synthesizedPlumbers: result.synthesizedPlumbers,
+            errors: result.errors,
           },
           triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
         });
