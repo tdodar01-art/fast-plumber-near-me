@@ -13,6 +13,9 @@ jobs:
   scrape-and-publish:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/plumbers-web
 
     steps:
       - name: Checkout
@@ -89,9 +92,10 @@ jobs:
 
       - name: Check for changes
         id: changes
+        working-directory: .
         run: |
-          git add -N data/gsc-expansion-queue.json 2>/dev/null || true
-          if git diff --quiet data/ scripts/scrape-queue.json src/lib/city-coords.ts; then
+          git add -N apps/plumbers-web/data/gsc-expansion-queue.json 2>/dev/null || true
+          if git diff --quiet apps/plumbers-web/data/ apps/plumbers-web/scripts/scrape-queue.json apps/plumbers-web/src/lib/city-coords.ts; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -99,12 +103,13 @@ jobs:
 
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
+        working-directory: .
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/raw/plumbers-latest.json data/synthesized/plumbers-synthesized.json data/synthesized/leaderboard.json scripts/scrape-queue.json data/gsc-expansion-queue.json src/lib/city-coords.ts
-          CITIES=$(node -e "const r=require('./data/logs/daily-result-$(date +%Y-%m-%d).json');console.log(r.citiesProcessed.map(c=>c.city).join(', '))" 2>/dev/null || echo "unknown")
-          NEW=$(node -e "const r=require('./data/logs/daily-result-$(date +%Y-%m-%d).json');console.log(r.newPlumbers)" 2>/dev/null || echo "0")
+          git add apps/plumbers-web/data/raw/plumbers-latest.json apps/plumbers-web/data/synthesized/plumbers-synthesized.json apps/plumbers-web/data/synthesized/leaderboard.json apps/plumbers-web/scripts/scrape-queue.json apps/plumbers-web/data/gsc-expansion-queue.json apps/plumbers-web/src/lib/city-coords.ts
+          CITIES=$(node -e "const r=require('./apps/plumbers-web/data/logs/daily-result-$(date +%Y-%m-%d).json');console.log(r.citiesProcessed.map(c=>c.city).join(', '))" 2>/dev/null || echo "unknown")
+          NEW=$(node -e "const r=require('./apps/plumbers-web/data/logs/daily-result-$(date +%Y-%m-%d).json');console.log(r.newPlumbers)" 2>/dev/null || echo "0")
           git commit -m "Daily scrape: +${NEW} plumbers from ${CITIES}"
           git push
 

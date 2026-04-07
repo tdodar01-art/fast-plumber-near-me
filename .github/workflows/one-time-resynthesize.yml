@@ -13,6 +13,9 @@ jobs:
   resynthesize:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: apps/plumbers-web
 
     steps:
       - name: Checkout
@@ -46,6 +49,7 @@ jobs:
         run: rm -f service-account.json
 
       - name: Self-destruct workflow
+        working-directory: .
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
