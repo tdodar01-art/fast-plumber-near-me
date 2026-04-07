@@ -10,5 +10,13 @@
     "build:plumbers": "pnpm --filter plumbers-web build",
     "start:plumbers": "pnpm --filter plumbers-web start",
     "lint:plumbers": "pnpm --filter plumbers-web lint"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@firebase/util",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }
