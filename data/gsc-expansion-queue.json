@@ -1,11 +1,100 @@
 {
-  "generatedAt": "2026-04-05T19:47:39.359Z",
+  "generatedAt": "2026-04-07T11:55:09.598Z",
   "dateRange": {
-    "start": "2026-01-05",
-    "end": "2026-04-05"
+    "start": "2026-01-07",
+    "end": "2026-04-07"
   },
-  "totalGscPages": 5,
-  "alreadyScraped": 5,
-  "needsScraping": 0,
-  "cities": []
+  "totalGscPages": 22,
+  "alreadyScraped": 14,
+  "needsScraping": 8,
+  "cities": [
+    {
+      "city": "Duncan",
+      "state": "OK",
+      "citySlug": "duncan",
+      "stateSlug": "oklahoma",
+      "impressions": 3,
+      "clicks": 0,
+      "avgPosition": 25.7,
+      "source": "gsc",
+      "discoveredAt": "2026-04-07T11:55:09.598Z"
+    },
+    {
+      "city": "Greer",
+      "state": "SC",
+      "citySlug": "greer",
+      "stateSlug": "south-carolina",
+      "impressions": 3,
+      "clicks": 0,
+      "avgPosition": 47.3,
+      "source": "gsc",
+      "discoveredAt": "2026-04-07T11:55:09.598Z"
+    },
+    {
+      "city": "Hurricane",
+      "state": "WV",
+      "citySlug": "hurricane",
+      "stateSlug": "west-virginia",
+      "impressions": 3,
+      "clicks": 0,
+      "avgPosition": 33,
+      "source": "gsc",
+      "discoveredAt": "2026-04-07T11:55:09.598Z"
+    },
+    {
+      "city": "Westminster",
+      "state": "CO",
+      "citySlug": "westminster",
+      "stateSlug": "colorado",
+      "impressions": 2,
+      "clicks": 0,
+      "avgPosition": 59.5,
+      "source": "gsc",
+      "discoveredAt": "2026-04-07T11:55:09.598Z"
+    },
+    {
+      "city": "Pittsfield",
+      "state": "MA",
+      "citySlug": "pittsfield",
+      "stateSlug": "massachusetts",
+      "impressions": 1,
+      "clicks": 0,
+      "avgPosition": 133,
+      "source": "gsc",
+      "discoveredAt": "2026-04-07T11:55:09.598Z"
+    },
+    {
+      "city": "Natchez",
+      "state": "MS",
+      "citySlug": "natchez",
+      "stateSlug": "mississippi",
+      "impressions": 1,
+      "clicks": 0,
+      "avgPosition": 11,
+      "source": "gsc",
+      "discoveredAt": "2026-04-07T11:55:09.598Z"
+    },
+    {
+      "city": "Muskogee",
+      "state": "OK",
+      "citySlug": "muskogee",
+      "stateSlug": "oklahoma",
+      "impressions": 1,
+      "clicks": 0,
+      "avgPosition": 6,
+      "source": "gsc",
+      "discoveredAt": "2026-04-07T11:55:09.598Z"
+    },
+    {
+      "city": "Provo",
+      "state": "UT",
+      "citySlug": "provo",
+      "stateSlug": "utah",
+      "impressions": 1,
+      "clicks": 0,
+      "avgPosition": 17,
+      "source": "gsc",
+      "discoveredAt": "2026-04-07T11:55:09.598Z"
+    }
+  ]
 }

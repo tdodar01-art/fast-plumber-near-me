@@ -1,8 +1,72 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 321,
-  "queue": [],
+  "usedThisMonth": 342,
+  "queue": [
+    {
+      "city": "Muskogee",
+      "state": "OK",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Natchez",
+      "state": "MS",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Pittsfield",
+      "state": "MA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Westminster",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Hurricane",
+      "state": "WV",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Greer",
+      "state": "SC",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Duncan",
+      "state": "OK",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    }
+  ],
   "completed": [
     {
       "city": "Aberdeen",
@@ -66,6 +130,16 @@
       "actualCalls": 21,
       "plumbersFound": 20,
       "completedAt": "2026-04-06"
+    },
+    {
+      "city": "Provo",
+      "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 21,
+      "plumbersFound": 20,
+      "completedAt": "2026-04-07"
     }
   ]
 }
