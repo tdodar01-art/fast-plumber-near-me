@@ -168,11 +168,6 @@ async function main() {
   console.log(`\nResults: ${updated} updated, ${added} added, ${unchanged} unchanged`);
   console.log(`Affected cities: ${affectedCities.size > 0 ? [...affectedCities].join(", ") : "none"}`);
 
-  if (updated === 0 && added === 0) {
-    console.log("\nNo changes to write.");
-    return { updated, added, affectedCities: [...affectedCities] };
-  }
-
   // Update meta
   jsonData.meta.synthesizedAt = new Date().toISOString();
   jsonData.meta.totalPlumbers = plumbers.length;
@@ -183,15 +178,42 @@ async function main() {
     return { updated, added, affectedCities: [...affectedCities] };
   }
 
-  // Write JSON
+  // Always write — this is the SOLE writer to plumbers-synthesized.json.
+  // Even if Firestore had no newer data, the JSON may have been overwritten
+  // by a scrape working file, so we always rewrite from Firestore truth.
   fs.writeFileSync(JSON_PATH, JSON.stringify(jsonData, null, 2));
   console.log(`\nWrote ${JSON_PATH}`);
+
+  // Generate leaderboard (derived from the same data)
+  const LEADERBOARD_PATH = path.join(path.dirname(JSON_PATH), "leaderboard.json");
+  const ranked = plumbers
+    .filter((p) => p.synthesis?.score)
+    .sort((a, b) => b.synthesis.score - a.synthesis.score)
+    .map((p, i) => ({
+      rank: i + 1,
+      name: p.name || p.businessName,
+      city: p.city,
+      score: p.synthesis.score,
+      trustLevel: p.synthesis.trustLevel,
+      googleRating: p.googleRating,
+      reviewCount: p.googleReviewCount,
+      phone: p.phone,
+      summary: p.synthesis.summary,
+      bestFor: p.synthesis.bestFor || [],
+      redFlags: p.synthesis.redFlags || [],
+    }));
+  fs.writeFileSync(LEADERBOARD_PATH, JSON.stringify({
+    generatedAt: new Date().toISOString(),
+    totalRanked: ranked.length,
+    plumbers: ranked,
+  }, null, 2));
+  console.log(`Wrote ${LEADERBOARD_PATH}`);
 
   // Git commit + push
   if (!noPush) {
     try {
       const root = path.join(__dirname, "..");
-      execSync("git add data/synthesized/plumbers-synthesized.json", { cwd: root, stdio: "pipe" });
+      execSync("git add data/synthesized/plumbers-synthesized.json data/synthesized/leaderboard.json", { cwd: root, stdio: "pipe" });
 
       const diff = execSync("git diff --cached --stat", { cwd: root, encoding: "utf-8" });
       if (!diff.trim()) {

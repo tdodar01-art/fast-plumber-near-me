@@ -3,6 +3,7 @@
 # data — keep synthesized JSON (needed at build time), ignore raw/CSV/progress/logs
 **/data/outscraper-plumbers.csv
 **/data/raw/.scrape-progress.json
+**/data/raw/plumbers-with-synthesis.json
 **/data/synthesized/.synthesis-progress.json
 **/data/logs/
 

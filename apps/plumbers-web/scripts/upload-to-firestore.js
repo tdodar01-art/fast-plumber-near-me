@@ -18,13 +18,11 @@ const path = require("path");
 // Config
 // ---------------------------------------------------------------------------
 
-const INPUT_PATH = path.join(
-  __dirname,
-  "..",
-  "data",
-  "synthesized",
-  "plumbers-synthesized.json"
-);
+// Read from the staging file produced by daily-scrape.js.
+// Falls back to the canonical synthesized JSON if staging doesn't exist.
+const STAGING_PATH = path.join(__dirname, "..", "data", "raw", "plumbers-with-synthesis.json");
+const CANONICAL_PATH = path.join(__dirname, "..", "data", "synthesized", "plumbers-synthesized.json");
+const INPUT_PATH = fs.existsSync(STAGING_PATH) ? STAGING_PATH : CANONICAL_PATH;
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 
 // ---------------------------------------------------------------------------

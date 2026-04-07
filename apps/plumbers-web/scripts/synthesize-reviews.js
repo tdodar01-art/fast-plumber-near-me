@@ -24,10 +24,9 @@ const path = require("path");
 // ---------------------------------------------------------------------------
 
 const INPUT_PATH = path.join(__dirname, "..", "data", "raw", "plumbers-latest.json");
-const OUTPUT_DIR = path.join(__dirname, "..", "data", "synthesized");
-const OUTPUT_PATH = path.join(OUTPUT_DIR, "plumbers-synthesized.json");
-const LEADERBOARD_PATH = path.join(OUTPUT_DIR, "leaderboard.json");
-const PROGRESS_PATH = path.join(OUTPUT_DIR, ".synthesis-progress.json");
+const OUTPUT_DIR = path.join(__dirname, "..", "data", "raw");
+const OUTPUT_PATH = path.join(OUTPUT_DIR, "plumbers-with-synthesis.json");
+const PROGRESS_PATH = path.join(__dirname, "..", "data", "synthesized", ".synthesis-progress.json");
 const SAVE_EVERY = 10; // Save progress every N plumbers
 const RATE_LIMIT_MS = 500; // ms between Claude API calls
 
@@ -286,32 +285,6 @@ async function main() {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(output, null, 2));
 
-  // Build leaderboard
-  const ranked = synthesizedPlumbers
-    .filter((p) => p.synthesis?.score)
-    .sort((a, b) => b.synthesis.score - a.synthesis.score)
-    .map((p, i) => ({
-      rank: i + 1,
-      name: p.name,
-      city: p.city,
-      score: p.synthesis.score,
-      trustLevel: p.synthesis.trustLevel,
-      googleRating: p.googleRating,
-      reviewCount: p.googleReviewCount,
-      phone: p.phone,
-      summary: p.synthesis.summary,
-      bestFor: p.synthesis.bestFor,
-      redFlags: p.synthesis.redFlags,
-    }));
-
-  const leaderboard = {
-    generatedAt: new Date().toISOString(),
-    totalRanked: ranked.length,
-    plumbers: ranked,
-  };
-
-  fs.writeFileSync(LEADERBOARD_PATH, JSON.stringify(leaderboard, null, 2));
-
   // Clean up progress on full completion
   if (failed === 0) {
     if (fs.existsSync(PROGRESS_PATH)) fs.unlinkSync(PROGRESS_PATH);
@@ -323,8 +296,7 @@ async function main() {
   console.log(`   Skipped (already done): ${skipped}`);
   console.log(`   Failed: ${failed}`);
   console.log(`   Total synthesized: ${Object.keys(progress.completed).length}`);
-  console.log(`   Output: ${OUTPUT_PATH}`);
-  console.log(`   Leaderboard: ${LEADERBOARD_PATH}\n`);
+  console.log(`   Output: ${OUTPUT_PATH}\n`);
 }
 
 main().catch((err) => {

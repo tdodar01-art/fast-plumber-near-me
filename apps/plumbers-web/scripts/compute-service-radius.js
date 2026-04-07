@@ -146,16 +146,13 @@ function main() {
     totalAssignments += plumber.serviceCities.length;
   }
 
-  // Write updated synthesized data
-  fs.writeFileSync(SYNTH_PATH, JSON.stringify(data, null, 2));
-
-  // Update leaderboard too
-  const leaderboard = JSON.parse(fs.readFileSync(LEADERBOARD_PATH, "utf-8"));
-  for (const entry of leaderboard.plumbers) {
-    const plumber = data.plumbers.find(p => p.name === entry.name);
-    if (plumber) entry.serviceCities = plumber.serviceCities;
-  }
-  fs.writeFileSync(LEADERBOARD_PATH, JSON.stringify(leaderboard, null, 2));
+  // DEPRECATED: This script previously wrote to plumbers-synthesized.json and
+  // leaderboard.json directly. Those files are now derived artifacts owned
+  // exclusively by export-firestore-to-json.js. Service radius data should be
+  // computed and stored in Firestore, then exported.
+  console.log("\nWARNING: compute-service-radius.js no longer writes to synthesized JSON.");
+  console.log("Service cities should be computed during Firestore upload instead.");
+  console.log("Computed", totalAssignments, "city assignments for", data.plumbers.length, "plumbers (dry-run only).");
 
   // Summary
   console.log(`\nService radius computed (${SERVICE_RADIUS_MILES} miles)`);

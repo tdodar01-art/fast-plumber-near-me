@@ -19,8 +19,7 @@ const path = require("path");
 
 const QUEUE_PATH = path.join(__dirname, "scrape-queue.json");
 const RAW_PATH = path.join(__dirname, "..", "data", "raw", "plumbers-latest.json");
-const SYNTH_PATH = path.join(__dirname, "..", "data", "synthesized", "plumbers-synthesized.json");
-const LEADERBOARD_PATH = path.join(__dirname, "..", "data", "synthesized", "leaderboard.json");
+const UPLOAD_STAGING_PATH = path.join(__dirname, "..", "data", "raw", "plumbers-with-synthesis.json");
 const LOG_DIR = path.join(__dirname, "..", "data", "logs");
 
 // ---------------------------------------------------------------------------
@@ -346,10 +345,14 @@ async function main() {
     log(`Loaded ${Object.keys(existingPlumbers).length} existing plumbers for dedup`);
   }
 
-  // Load existing synthesis data
+  // Load existing synthesis data (from staging file or canonical JSON)
   let existingSynthesis = {};
-  if (fs.existsSync(SYNTH_PATH)) {
-    const synth = JSON.parse(fs.readFileSync(SYNTH_PATH, "utf-8"));
+  const synthSourcePath = fs.existsSync(UPLOAD_STAGING_PATH) ? UPLOAD_STAGING_PATH
+    : fs.existsSync(path.join(__dirname, "..", "data", "synthesized", "plumbers-synthesized.json"))
+      ? path.join(__dirname, "..", "data", "synthesized", "plumbers-synthesized.json")
+      : null;
+  if (synthSourcePath) {
+    const synth = JSON.parse(fs.readFileSync(synthSourcePath, "utf-8"));
     for (const p of synth.plumbers) {
       if (p.synthesis) existingSynthesis[p.placeId] = p.synthesis;
     }
@@ -557,15 +560,18 @@ async function main() {
   }
 
   // =========================================================================
-  // WRITE SYNTHESIZED DATA + LEADERBOARD
+  // WRITE STAGING FILE FOR UPLOAD-TO-FIRESTORE
   // =========================================================================
+  // NOTE: daily-scrape does NOT write plumbers-synthesized.json.
+  // That file is a derived artifact owned by export-firestore-to-json.js.
+  // This staging file is an intermediate working file only.
 
   const synthesizedPlumbers = allPlumbersList.map((p) => ({
     ...p,
     synthesis: existingSynthesis[p.placeId] || null,
   }));
 
-  const synthOutput = {
+  const stagingOutput = {
     meta: {
       ...rawOutput.meta,
       synthesizedAt: new Date().toISOString(),
@@ -575,32 +581,8 @@ async function main() {
     plumbers: synthesizedPlumbers,
   };
 
-  fs.mkdirSync(path.dirname(SYNTH_PATH), { recursive: true });
-  fs.writeFileSync(SYNTH_PATH, JSON.stringify(synthOutput, null, 2));
-
-  // Leaderboard
-  const ranked = synthesizedPlumbers
-    .filter((p) => p.synthesis?.score)
-    .sort((a, b) => b.synthesis.score - a.synthesis.score)
-    .map((p, i) => ({
-      rank: i + 1,
-      name: p.name,
-      city: p.city,
-      score: p.synthesis.score,
-      trustLevel: p.synthesis.trustLevel,
-      googleRating: p.googleRating,
-      reviewCount: p.googleReviewCount,
-      phone: p.phone,
-      summary: p.synthesis.summary,
-      bestFor: p.synthesis.bestFor,
-      redFlags: p.synthesis.redFlags,
-    }));
-
-  fs.writeFileSync(LEADERBOARD_PATH, JSON.stringify({
-    generatedAt: new Date().toISOString(),
-    totalRanked: ranked.length,
-    plumbers: ranked,
-  }, null, 2));
+  fs.writeFileSync(UPLOAD_STAGING_PATH, JSON.stringify(stagingOutput, null, 2));
+  log(`Staging file written: ${UPLOAD_STAGING_PATH}`);
 
   // =========================================================================
   // SUMMARY
