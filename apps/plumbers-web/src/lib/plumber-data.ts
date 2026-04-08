@@ -10,7 +10,7 @@ export interface PlumberReview {
   text: string;
   time: string;
   relativeTime: string;
-  source?: "google" | "yelp" | "angi";
+  source?: "google" | "yelp";
 }
 
 export interface ServiceMention {

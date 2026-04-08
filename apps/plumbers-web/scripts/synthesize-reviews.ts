@@ -66,7 +66,8 @@ function initFirebase(): admin.firestore.Firestore {
 // ---------------------------------------------------------------------------
 
 const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
-const RATE_LIMIT_MS = 500;
+const RATE_LIMIT_MS = 2000; // 2s between calls to stay under 50k input tokens/min
+const MAX_RETRIES = 3;
 
 function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
 
@@ -125,27 +126,39 @@ async function callClaude(prompt: string): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
 
-  const resp = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: 1024,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
 
-  if (!resp.ok) {
+    if (resp.ok) {
+      const data = await resp.json();
+      return data.content?.[0]?.text || "";
+    }
+
+    if (resp.status === 429 && attempt < MAX_RETRIES) {
+      const retryAfter = parseInt(resp.headers.get("retry-after") || "0", 10);
+      const backoff = retryAfter > 0 ? retryAfter * 1000 : (2 ** attempt) * 5000; // 5s, 10s, 20s
+      console.log(`    ⏳ Rate limited, retrying in ${Math.round(backoff / 1000)}s (attempt ${attempt + 1}/${MAX_RETRIES})...`);
+      await sleep(backoff);
+      continue;
+    }
+
     const body = await resp.text();
     throw new Error(`Claude API ${resp.status}: ${body}`);
   }
 
-  const data = await resp.json();
-  return data.content?.[0]?.text || "";
+  throw new Error("Claude API: max retries exceeded");
 }
 
 interface AISynthesisResult {

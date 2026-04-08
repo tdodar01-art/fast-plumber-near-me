@@ -141,7 +141,7 @@ function PlumberDetailRow({ p }: { p: Record<string, any> }) {
       {/* Outscraper review details */}
       {p.reviews && (
         <span className="text-gray-400">
-          G:{p.reviews.google || 0} Y:{p.reviews.yelp || 0} A:{p.reviews.angi || 0}
+          G:{p.reviews.google || 0} Y:{p.reviews.yelp || 0}
         </span>
       )}
       {p.synthesized === true && <span className="text-green-600">synthesized</span>}

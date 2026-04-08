@@ -44,13 +44,12 @@ interface GoogleReviewCardProps {
   rating: number;
   text: string;
   relativeTime: string;
-  source?: "google" | "yelp" | "angi";
+  source?: "google" | "yelp";
 }
 
 const sourceLabels: Record<string, { label: string; color: string }> = {
   google: { label: "Google", color: "bg-blue-50 text-blue-600" },
   yelp: { label: "Yelp", color: "bg-red-50 text-red-600" },
-  angi: { label: "Angi", color: "bg-green-50 text-green-600" },
 };
 
 export function GoogleReviewCard({

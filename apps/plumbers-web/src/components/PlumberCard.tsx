@@ -109,7 +109,6 @@ const SOURCE_LOGOS = [
   { key: "google", src: "/logos/sources/google.svg", label: "Google", active: true },
   { key: "yelp", src: "/logos/sources/yelp.svg", label: "Yelp", active: false },
   { key: "bbb", src: "/logos/sources/bbb.svg", label: "BBB", active: false },
-  { key: "angi", src: "/logos/sources/angi.svg", label: "Angi", active: false },
 ] as const;
 
 function SourceLogos({ googleReviewCount }: { googleReviewCount: number | null }) {

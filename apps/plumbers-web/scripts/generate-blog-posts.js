@@ -191,7 +191,7 @@ function generateRankingsPost(city, state, plumbers) {
   }
 
   content += `## How We Rank Plumbers\n\n`;
-  content += `Our rankings are based on a composite score that blends Google rating, review volume, emergency response signals, earned badges, and reliability data. We also check BBB complaint history and cross-reference ratings across Yelp and Angi. No plumber can pay to rank higher.\n\n`;
+  content += `Our rankings are based on a composite score that blends Google rating, review volume, emergency response signals, earned badges, and reliability data. We also check BBB complaint history and cross-reference ratings across Yelp. No plumber can pay to rank higher.\n\n`;
   content += `[See all emergency plumbers in ${city}](${cityUrl})\n`;
 
   return {

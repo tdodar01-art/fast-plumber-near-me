@@ -3,7 +3,7 @@
 /**
  * Export plumber data from Firestore back to the static JSON the Next.js site reads.
  *
- * Merges Firestore review synthesis, BBB data, Yelp/Angi ratings, and cached
+ * Merges Firestore review synthesis, BBB data, Yelp ratings, and cached
  * review counts into the existing plumbers-synthesized.json. Only touches
  * plumbers whose Firestore updatedAt is newer than the JSON's synthesizedAt.
  *
@@ -161,7 +161,6 @@ async function main() {
     if (fd.reviewSynthesis?.aiSynthesizedAt) changes.push("synthesis");
     if (fd.bbb) changes.push("bbb");
     if (fd.yelpRating) changes.push("yelp");
-    if (fd.angiRating) changes.push("angi");
     console.log(`  ↻ ${fd.businessName} (${changes.join(", ") || "updated"})`);
   }
 
@@ -359,11 +358,9 @@ function mergeFirestoreData(existing, fd, reviews) {
     existing.bbb = cleanBBB(fd.bbb);
   }
 
-  // Yelp/Angi aggregate ratings
+  // Yelp aggregate ratings
   if (fd.yelpRating) existing.yelpRating = fd.yelpRating;
   if (fd.yelpReviewCount) existing.yelpReviewCount = fd.yelpReviewCount;
-  if (fd.angiRating) existing.angiRating = fd.angiRating;
-  if (fd.angiReviewCount) existing.angiReviewCount = fd.angiReviewCount;
 
   // Top reviews from Firestore (replaces old 5-review Places API reviews)
   if (reviews && reviews.length > 0) {

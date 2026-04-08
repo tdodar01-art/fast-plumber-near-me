@@ -21,7 +21,8 @@ const { execSync } = require("child_process");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
-const RATE_LIMIT_MS = 500;
+const RATE_LIMIT_MS = 2000;
+const MAX_RETRIES = 3;
 
 // ---------------------------------------------------------------------------
 // Load .env.local
@@ -76,27 +77,39 @@ const db = admin.firestore();
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
 async function callClaude(prompt) {
-  const resp = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: 1024,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
 
-  if (!resp.ok) {
+    if (resp.ok) {
+      const data = await resp.json();
+      return data.content?.[0]?.text || "";
+    }
+
+    if (resp.status === 429 && attempt < MAX_RETRIES) {
+      const retryAfter = parseInt(resp.headers.get("retry-after") || "0", 10);
+      const backoff = retryAfter > 0 ? retryAfter * 1000 : (2 ** attempt) * 5000;
+      console.log(`    ⏳ Rate limited, retrying in ${Math.round(backoff / 1000)}s (attempt ${attempt + 1}/${MAX_RETRIES})...`);
+      await sleep(backoff);
+      continue;
+    }
+
     const body = await resp.text();
     throw new Error(`Claude API ${resp.status}: ${body}`);
   }
 
-  const data = await resp.json();
-  return data.content?.[0]?.text || "";
+  throw new Error("Claude API: max retries exceeded");
 }
 
 function parseAIResponse(text) {
@@ -108,7 +121,6 @@ function parseAIResponse(text) {
 function buildPrompt(name, googleRating, googleReviewCount, reviews, platformStats, businessContext) {
   const googleReviews = reviews.filter((r) => r.source === "google");
   const yelpReviews = reviews.filter((r) => r.source === "yelp");
-  const angiReviews = reviews.filter((r) => r.source === "angi");
 
   let reviewBlock = "";
   if (googleReviews.length > 0) {
@@ -119,14 +131,9 @@ function buildPrompt(name, googleRating, googleReviewCount, reviews, platformSta
     reviewBlock += `=== YELP REVIEWS (${yelpReviews.length}) ===\n`;
     reviewBlock += yelpReviews.map((r) => `[${r.rating}/5${r.date ? ` — ${r.date}` : ""}] ${r.text}`).join("\n\n") + "\n\n";
   }
-  if (angiReviews.length > 0) {
-    reviewBlock += `=== ANGI DATA (${angiReviews.length}) ===\n`;
-    reviewBlock += angiReviews.map((r) => `[${r.rating}/5] ${r.text}`).join("\n\n") + "\n\n";
-  }
 
   let platformContext = `Google Rating: ${googleRating ?? "N/A"}/5 (${googleReviewCount} reviews)`;
   if (platformStats.yelpRating) platformContext += `\nYelp Rating: ${platformStats.yelpRating}/5 (${platformStats.yelpReviewCount || "?"} reviews)`;
-  if (platformStats.angiRating) platformContext += `\nAngi Rating: ${platformStats.angiRating}/5 (${platformStats.angiReviewCount || "?"} reviews)`;
 
   const bbb = platformStats.bbb;
   let bbbContext = "";
@@ -242,8 +249,6 @@ async function main() {
     const platformStats = {
       yelpRating: data.yelpRating || null,
       yelpReviewCount: data.yelpReviewCount || null,
-      angiRating: data.angiRating || null,
-      angiReviewCount: data.angiReviewCount || null,
       bbb: data.bbb || null,
     };
 
