@@ -1,34 +1,133 @@
 {
-  "generatedAt": "2026-04-08T11:56:26.186Z",
+  "generatedAt": "2026-04-09T11:56:42.637Z",
   "dateRange": {
-    "start": "2026-01-08",
-    "end": "2026-04-08"
+    "start": "2026-01-09",
+    "end": "2026-04-09"
   },
-  "totalGscPages": 30,
-  "alreadyScraped": 22,
-  "needsScraping": 8,
+  "totalGscPages": 39,
+  "alreadyScraped": 24,
+  "needsScraping": 15,
   "cities": [
-    {
-      "city": "Brooklyn Park",
-      "state": "MN",
-      "citySlug": "brooklyn-park",
-      "stateSlug": "minnesota",
-      "impressions": 6,
-      "clicks": 0,
-      "avgPosition": 31.7,
-      "source": "gsc",
-      "discoveredAt": "2026-04-08T11:56:26.186Z"
-    },
     {
       "city": "Sanford",
       "state": "FL",
       "citySlug": "sanford",
       "stateSlug": "florida",
+      "impressions": 21,
+      "clicks": 0,
+      "avgPosition": 25.4,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Brooklyn Park",
+      "state": "MN",
+      "citySlug": "brooklyn-park",
+      "stateSlug": "minnesota",
+      "impressions": 11,
+      "clicks": 0,
+      "avgPosition": 20.8,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Commerce City",
+      "state": "CO",
+      "citySlug": "commerce-city",
+      "stateSlug": "colorado",
+      "impressions": 10,
+      "clicks": 0,
+      "avgPosition": 25.8,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Fairfield",
+      "state": "OH",
+      "citySlug": "fairfield",
+      "stateSlug": "ohio",
+      "impressions": 10,
+      "clicks": 0,
+      "avgPosition": 8.9,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Lawrenceville",
+      "state": "GA",
+      "citySlug": "lawrenceville",
+      "stateSlug": "georgia",
+      "impressions": 6,
+      "clicks": 0,
+      "avgPosition": 29.5,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Hanover Park",
+      "state": "IL",
+      "citySlug": "hanover-park",
+      "stateSlug": "illinois",
+      "impressions": 6,
+      "clicks": 0,
+      "avgPosition": 7.3,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Abingdon",
+      "state": "VA",
+      "citySlug": "abingdon",
+      "stateSlug": "virginia",
+      "impressions": 6,
+      "clicks": 0,
+      "avgPosition": 53.5,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Lampasas",
+      "state": "TX",
+      "citySlug": "lampasas",
+      "stateSlug": "texas",
+      "impressions": 5,
+      "clicks": 0,
+      "avgPosition": 14.8,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "West Jordan",
+      "state": "UT",
+      "citySlug": "west-jordan",
+      "stateSlug": "utah",
+      "impressions": 5,
+      "clicks": 0,
+      "avgPosition": 66.6,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Ken Caryl",
+      "state": "CO",
+      "citySlug": "ken-caryl",
+      "stateSlug": "colorado",
       "impressions": 4,
       "clicks": 0,
-      "avgPosition": 38,
+      "avgPosition": 32.8,
       "source": "gsc",
-      "discoveredAt": "2026-04-08T11:56:26.186Z"
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
+    },
+    {
+      "city": "Pigeon Forge",
+      "state": "TN",
+      "citySlug": "pigeon-forge",
+      "stateSlug": "tennessee",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 6,
+      "source": "gsc",
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
     },
     {
       "city": "Box Elder",
@@ -39,18 +138,18 @@
       "clicks": 1,
       "avgPosition": 8.3,
       "source": "gsc",
-      "discoveredAt": "2026-04-08T11:56:26.186Z"
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
     },
     {
-      "city": "Pigeon Forge",
-      "state": "TN",
-      "citySlug": "pigeon-forge",
-      "stateSlug": "tennessee",
+      "city": "Marble Falls",
+      "state": "TX",
+      "citySlug": "marble-falls",
+      "stateSlug": "texas",
       "impressions": 3,
       "clicks": 0,
-      "avgPosition": 5.7,
+      "avgPosition": 54,
       "source": "gsc",
-      "discoveredAt": "2026-04-08T11:56:26.186Z"
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
     },
     {
       "city": "Trumbull",
@@ -61,7 +160,7 @@
       "clicks": 0,
       "avgPosition": 46.5,
       "source": "gsc",
-      "discoveredAt": "2026-04-08T11:56:26.186Z"
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
     },
     {
       "city": "Wasilla",
@@ -72,29 +171,7 @@
       "clicks": 0,
       "avgPosition": 49,
       "source": "gsc",
-      "discoveredAt": "2026-04-08T11:56:26.186Z"
-    },
-    {
-      "city": "Ken Caryl",
-      "state": "CO",
-      "citySlug": "ken-caryl",
-      "stateSlug": "colorado",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 12,
-      "source": "gsc",
-      "discoveredAt": "2026-04-08T11:56:26.186Z"
-    },
-    {
-      "city": "Northglenn",
-      "state": "CO",
-      "citySlug": "northglenn",
-      "stateSlug": "colorado",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 68,
-      "source": "gsc",
-      "discoveredAt": "2026-04-08T11:56:26.186Z"
+      "discoveredAt": "2026-04-09T11:56:42.637Z"
     }
   ]
 }

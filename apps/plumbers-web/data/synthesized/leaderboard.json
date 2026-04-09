@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-04-09T07:28:06.594Z",
-  "totalRanked": 507,
+  "generatedAt": "2026-04-09T12:03:26.917Z",
+  "totalRanked": 521,
   "plumbers": [
     {
       "rank": 1,
@@ -9,11 +9,16 @@
       "score": 100,
       "trustLevel": "high",
       "googleRating": 4.8,
-      "reviewCount": 9710,
+      "reviewCount": 9712,
       "phone": "(615) 358-9132",
-      "summary": "They show up fast, fix it right the first time, and actually explain what's going on instead of just handing you a bill.",
+      "summary": "They'll get you fixed fast and the techs are genuinely nice, but sometimes they'll quote you thousands more than what the job actually costs.",
       "bestFor": [],
-      "redFlags": []
+      "redFlags": [
+        "Pattern of high-pressure sales tactics and upselling: 6+ reviews describe technicians recommending expensive full replacements when repairs would suffice, or adding unnecessary services to quotes",
+        "Significant price discrepancies: Multiple customers found identical work done by competitors for 50-75% less, suggesting either inflated pricing or unnecessary add-ons",
+        "Occasional quality control issues: 4+ reviews mention improper installations, damage to property during work, or technicians not following through on contract specifications",
+        "Commission-based technician compensation: One detailed review explicitly mentions overhearing discussion about commission structure, suggesting incentive to upsell"
+      ]
     },
     {
       "rank": 2,
@@ -24,9 +29,15 @@
       "googleRating": 4.8,
       "reviewCount": 4957,
       "phone": "(770) 422-7586",
-      "summary": "They answer the phone immediately, get you in the same day even on weekends, and their plumbers actually know what they're doing.",
+      "summary": "They'll get your plumbing fixed fast and thoroughly, but expect to pay significantly more than other plumbers in your area.",
       "bestFor": [],
-      "redFlags": []
+      "redFlags": [
+        "False 24/7 advertising - Company advertises emergency 24/7 service but documented refusals to service after-hours (10:45 PM call, 6:30 PM Saturday call, no Sunday service)",
+        "Pattern of upselling unnecessary repairs - Multiple reviews describe being told items need replacement when simpler fixes sufficed (e.g., $274 tank rebuild vs $10 flapper, new toilet vs clogged drain 20+ feet away)",
+        "Poor management responsiveness - At least 8 reviews mention calling repeatedly for manager callbacks that never came or took 48+ hours",
+        "Inconsistent warranty enforcement - Two separate reviews describe warranty claims being charged full labor despite warranty coverage",
+        "Financial coercion incident - One review documents supervisor threatening to cut pipes and leave customer without water if payment wasn't made immediately"
+      ]
     },
     {
       "rank": 3,
@@ -35,11 +46,17 @@
       "score": 100,
       "trustLevel": "high",
       "googleRating": 4.5,
-      "reviewCount": 4288,
+      "reviewCount": 4290,
       "phone": "(615) 654-1315",
-      "summary": "They'll get someone out to your house within hours, even on a Sunday, and actually answer all your questions without pushing you to buy something expensive.",
+      "summary": "You'll get a tech who might be great, but the company will probably mess up the scheduling and overcharge you.",
       "bestFor": [],
-      "redFlags": []
+      "redFlags": [
+        "Systemic pattern: Technicians quote expensive repairs or replacements, second opinions often show the original diagnosis was false (thermostat vs. entire AC, simple cleaning vs. $12k replacement)",
+        "Multiple reviews of appointment cancellations without notice, technicians sent 30+ miles away without proper dispatch coordination",
+        "Billing issues: customers charged after paying with card, collections letters for paid services, $119+ diagnostic fees for estimates",
+        "Warranty disputes: customers denied warranty coverage they believed they had, charged high labor fees for warranty repairs",
+        "Management non-responsiveness: 'manager will call back' promised repeatedly but never happens; corporate complaints ignored"
+      ]
     },
     {
       "rank": 4,
@@ -319,13 +336,15 @@
       "googleRating": 4.9,
       "reviewCount": 1299,
       "phone": "(510) 957-9648",
-      "summary": "Mr. Rooter demonstrates exceptional emergency response capability with same-day and next-morning availability. Their technicians consistently deliver professional, thorough service with clear communication and no-pressure approach, making them highly reliable for plumbing emergencies.",
-      "bestFor": [
-        "emergency repairs",
-        "kitchen sink issues",
-        "sewer backups"
-      ],
-      "redFlags": []
+      "summary": "They show up fast and do solid work, but you absolutely need a second opinion before signing anything because their quotes can be 3-10x higher than what the actual job costs.",
+      "bestFor": [],
+      "redFlags": [
+        "Pervasive pattern of diagnostic overcharging: supervisors quote $15k-$51k for sewer/pipe work that second opinions consistently identify as unnecessary or worth $2k-$8k",
+        "Multiple reviews of fake 'evidence'—blurry camera footage, pictures not from property, claims of leaks/damage that don't exist when inspected by competing plumbers",
+        "High-pressure sales tactics: pushing for same-day signing, threatening urgency, offering financing immediately, reluctance to provide written estimates",
+        "Inconsistent follow-up: several complaints of unanswered callbacks, promised estimates never delivered, unresolved issues after paid service",
+        "BBB accredited rating of D- with 64+ filed complaints in 3 years; Better Business Bureau notes failure to respond to complaints"
+      ]
     },
     {
       "rank": 22,
@@ -2123,84 +2142,234 @@
     },
     {
       "rank": 131,
-      "name": "ABC Plumbing, Sewer, Heating, Cooling & Electric",
-      "city": "St. Charles",
-      "score": 90,
+      "name": "Marble Falls Plumbing LLC",
+      "city": "Marble Falls",
+      "score": 92,
       "trustLevel": "high",
-      "googleRating": 4.7,
-      "reviewCount": 23007,
-      "phone": "(888) 991-3942",
-      "summary": "They treat your home like it matters—one reviewer said they worked like they were 'building a castle' with precious cargo.",
-      "bestFor": [],
+      "googleRating": 5,
+      "reviewCount": 18,
+      "phone": "(512) 789-6213",
+      "summary": "Marble Falls Plumbing consistently delivers professional, high-quality work with excellent customer service across both emergency repairs and major installations. Multiple customers praise their prompt response to urgent issues, thorough work, and knowledgeable technicians who take time to explain problems and solutions.",
+      "bestFor": [
+        "emergency repairs",
+        "water heater replacement",
+        "bathroom renovations"
+      ],
       "redFlags": []
     },
     {
       "rank": 132,
-      "name": "Black Diamond Plumbing & Mechanical Inc.",
-      "city": "Woodstock",
-      "score": 90,
+      "name": "Spicewood Plumbing",
+      "city": "Marble Falls",
+      "score": 92,
       "trustLevel": "high",
       "googleRating": 4.9,
-      "reviewCount": 6639,
-      "phone": "(815) 322-9227",
-      "summary": "They'll go out of their way to help you even before you're a customer, and they've got honest pricing that actually saves you money long-term.",
-      "bestFor": [],
+      "reviewCount": 25,
+      "phone": "(830) 206-5130",
+      "summary": "Spicewood Plumbing demonstrates exceptional reliability with 20+ years in business, true 24-hour emergency response, and consistently professional service. They excel at emergency repairs with fast response times and thorough problem-solving, making them an excellent choice for urgent plumbing needs.",
+      "bestFor": [
+        "emergency repairs",
+        "pipe repairs and replacement",
+        "general plumbing maintenance"
+      ],
       "redFlags": []
     },
     {
       "rank": 133,
-      "name": "Five Star Plumbing, Heating, Cooling & Electrical",
-      "city": "Greer",
-      "score": 90,
+      "name": "Brandenburg Plumbing, Heating, & Air",
+      "city": "Marble Falls",
+      "score": 92,
       "trustLevel": "high",
-      "googleRating": 4.8,
-      "reviewCount": 4746,
-      "phone": "(864) 306-4898",
-      "summary": "They show up fast, actually listen to what you're saying, and the techs genuinely seem to care about not overcharging you.",
-      "bestFor": [],
+      "googleRating": 4.9,
+      "reviewCount": 699,
+      "phone": "(512) 756-9847",
+      "summary": "Brandenburg Plumbing is a highly reliable choice for emergency plumbing with 30 years of proven service, same-day availability, and consistently professional technicians. The owner-operated company maintains high standards with skilled plumbers who explain issues clearly and complete work efficiently.",
+      "bestFor": [
+        "Emergency leak repairs",
+        "Same-day plumbing fixes",
+        "Water system repairs and upgrades"
+      ],
       "redFlags": []
     },
     {
       "rank": 134,
-      "name": "Jennings Heating, Cooling, Plumbing & Electric",
-      "city": "Stow",
-      "score": 90,
+      "name": "Spicewood Plumbing",
+      "city": "Marble Falls",
+      "score": 92,
       "trustLevel": "high",
       "googleRating": 4.9,
-      "reviewCount": 4293,
-      "phone": "(330) 614-7783",
-      "summary": "They actually listen to what you need instead of pushing unnecessary upgrades, and their technicians take real pride in explaining their work.",
-      "bestFor": [],
+      "reviewCount": 370,
+      "phone": "(830) 203-6859",
+      "summary": "Spicewood Plumbing is highly reliable with exceptional customer service and skilled technicians who handle both emergencies and complex projects with professionalism. Multiple customers specifically praise their prompt response times and thorough work, making them a strong choice for emergency plumbing needs.",
+      "bestFor": [
+        "emergency repairs",
+        "water heater replacement",
+        "bathroom remodels"
+      ],
       "redFlags": []
     },
     {
       "rank": 135,
-      "name": "S and J Plumbing & Sewer",
-      "city": "South Elgin",
-      "score": 90,
+      "name": "Tanker's Plumbing & Septics",
+      "city": "Marble Falls",
+      "score": 92,
       "trustLevel": "high",
       "googleRating": 4.9,
-      "reviewCount": 4211,
-      "phone": "(847) 233-1748",
-      "summary": "They show up fast, fix it right, and actually explain what they're doing without trying to upsell you.",
-      "bestFor": [],
+      "reviewCount": 132,
+      "phone": "(830) 385-5325",
+      "summary": "Tanker's Plumbing & Septics demonstrates exceptional reliability and customer service, with multiple reviews highlighting their ability to handle emergency situations promptly and professionally. Their 4.9/5 rating across 132 reviews, combined with consistent praise for same-day service and willingness to rearrange schedules for urgent needs, makes them a solid choice for emergency plumbing situations.",
+      "bestFor": [
+        "emergency repairs",
+        "water leak detection and repair",
+        "water heater replacement"
+      ],
       "redFlags": []
     },
     {
       "rank": 136,
-      "name": "Advantage Plumbing, Heating & Air Conditioning",
-      "city": "South Elgin",
+      "name": "Any Hour Services - Electric, Plumbing, Heating & Air",
+      "city": "Provo",
       "score": 90,
       "trustLevel": "high",
-      "googleRating": 4.7,
-      "reviewCount": 4108,
-      "phone": "(847) 994-4761",
-      "summary": "They'll get someone out to fix your emergency the same day, even when it's freezing cold and you desperately need heat.",
+      "googleRating": 4.8,
+      "reviewCount": 27028,
+      "phone": "(385) 832-6519",
+      "summary": "The technicians actually show up on time, walk you through what they're doing, and seem genuinely invested in fixing your problem right the first time.",
       "bestFor": [],
       "redFlags": []
     },
     {
       "rank": 137,
+      "name": "ABC Plumbing, Sewer, Heating, Cooling & Electric",
+      "city": "St. Charles",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.7,
+      "reviewCount": 23009,
+      "phone": "(888) 991-3942",
+      "summary": "They treat every job like they're building a castle—meticulous, detail-obsessed, and willing to stay 12 hours to get it right.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 138,
+      "name": "Black Diamond Plumbing & Mechanical Inc.",
+      "city": "Woodstock",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.9,
+      "reviewCount": 6641,
+      "phone": "(815) 322-9227",
+      "summary": "They'll show up fast, fix it right, and treat you like family while saving you money.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 139,
+      "name": "Five Star Plumbing, Heating, Cooling & Electrical",
+      "city": "Greer",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.8,
+      "reviewCount": 4747,
+      "phone": "(864) 306-4898",
+      "summary": "They'll send someone out fast, even on Sunday mornings, and actually listen to what you're saying instead of just selling you expensive fixes.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 140,
+      "name": "Mullin Plumbing, HVAC & Septic",
+      "city": "Muskogee",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.6,
+      "reviewCount": 4443,
+      "phone": "(918) 265-4271",
+      "summary": "They'll drop everything to help you—even stopped on the highway for a stranger with a flat tire.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 141,
+      "name": "Wilson Plumbing, Heating, Cooling and Electric",
+      "city": "Stow",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.8,
+      "reviewCount": 4373,
+      "phone": "(234) 255-3315",
+      "summary": "Their technicians actually fix extra problems on the spot without charging you, which is genuinely rare.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 142,
+      "name": "Jennings Heating, Cooling, Plumbing & Electric",
+      "city": "Stow",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.9,
+      "reviewCount": 4295,
+      "phone": "(330) 614-7783",
+      "summary": "They show up, do the job right the first time, and actually explain what they're doing instead of upselling you.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 143,
+      "name": "S and J Plumbing & Sewer",
+      "city": "South Elgin",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.9,
+      "reviewCount": 4213,
+      "phone": "(847) 233-1748",
+      "summary": "They'll send someone out the same day, actually know their stuff, and won't try to sell you things you don't need.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 144,
+      "name": "Advantage Plumbing, Heating & Air Conditioning",
+      "city": "South Elgin",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.7,
+      "reviewCount": 4111,
+      "phone": "(847) 994-4761",
+      "summary": "They showed up within 2 hours during my emergency and got me hot water back the next day without trying to upsell me.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 145,
+      "name": "J&J Plumbing, Heating, Cooling, & Electric",
+      "city": "Stow",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.8,
+      "reviewCount": 3818,
+      "phone": "(330) 967-0147",
+      "summary": "They show up the same day for emergencies and actually fix things right the first time instead of leaving you with temporary patches.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 146,
+      "name": "Hiller Plumbing, Heating, Cooling & Electrical",
+      "city": "Huntsville",
+      "score": 90,
+      "trustLevel": "high",
+      "googleRating": 4.9,
+      "reviewCount": 3314,
+      "phone": "(256) 298-8821",
+      "summary": "They'll get someone out to you fast, even late at night, and actually show up when they say they will.",
+      "bestFor": [],
+      "redFlags": []
+    },
+    {
+      "rank": 147,
       "name": "Lifeline Plumbing, Heating & Cooling",
       "city": "Algonquin",
       "score": 90,
@@ -2208,12 +2377,12 @@
       "googleRating": 4.9,
       "reviewCount": 3281,
       "phone": "(847) 802-8401",
-      "summary": "They show up fast, fix it right, and actually care about doing good work.",
+      "summary": "They show up fast, fix it right, and leave your place cleaner than they found it.",
       "bestFor": [],
       "redFlags": []
     },
     {
-      "rank": 138,
+      "rank": 148,
       "name": "J. Blanton Plumbing, Sewer & Drain",
       "city": "Geneva",
       "score": 90,
@@ -2221,12 +2390,12 @@
       "googleRating": 4.6,
       "reviewCount": 3066,
       "phone": "(773) 657-4820",
-      "summary": "They actually show up on weekends and evenings when you need them most, and their technicians won't even take money for their help.",
+      "summary": "They actually show up on nights and weekends without making you feel gouged.",
       "bestFor": [],
       "redFlags": []
     },
     {
-      "rank": 139,
+      "rank": 149,
       "name": "Hull Plumbing, Inc.",
       "city": "Yukon",
       "score": 90,
@@ -2239,7 +2408,7 @@
       "redFlags": []
     },
     {
-      "rank": 140,
+      "rank": 150,
       "name": "Atlantis Plumbing",
       "city": "Acworth",
       "score": 90,
@@ -2255,7 +2424,7 @@
       ]
     },
     {
-      "rank": 141,
+      "rank": 151,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Bethesda",
       "score": 90,
@@ -2274,7 +2443,7 @@
       ]
     },
     {
-      "rank": 142,
+      "rank": 152,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Alameda",
       "score": 90,
@@ -2290,7 +2459,7 @@
       ]
     },
     {
-      "rank": 143,
+      "rank": 153,
       "name": "Roto-Rooter",
       "city": "Yukon",
       "score": 90,
@@ -2303,7 +2472,7 @@
       "redFlags": []
     },
     {
-      "rank": 144,
+      "rank": 154,
       "name": "Hoffmann Brothers",
       "city": "Nashville",
       "score": 90,
@@ -2323,7 +2492,7 @@
       ]
     },
     {
-      "rank": 145,
+      "rank": 155,
       "name": "Mallick Plumbing & Heating, Inc.",
       "city": "Bethesda",
       "score": 90,
@@ -2336,7 +2505,7 @@
       "redFlags": []
     },
     {
-      "rank": 146,
+      "rank": 156,
       "name": "Black Diamond Experts, Electric, Plumbing, HVAC",
       "city": "Provo",
       "score": 89,
@@ -2353,7 +2522,7 @@
       "redFlags": []
     },
     {
-      "rank": 147,
+      "rank": 157,
       "name": "Parley's Plumbing, Heating & Air Conditioning",
       "city": "Provo",
       "score": 89,
@@ -2370,7 +2539,7 @@
       "redFlags": []
     },
     {
-      "rank": 148,
+      "rank": 158,
       "name": "Michels Plumbing Inc",
       "city": "North Aurora",
       "score": 89,
@@ -2387,7 +2556,7 @@
       "redFlags": []
     },
     {
-      "rank": 149,
+      "rank": 159,
       "name": "Benjamin Franklin Plumbing of Denver",
       "city": "Westminster",
       "score": 88,
@@ -2404,7 +2573,7 @@
       "redFlags": []
     },
     {
-      "rank": 150,
+      "rank": 160,
       "name": "Heritage Home Service",
       "city": "Worcester",
       "score": 88,
@@ -2423,7 +2592,7 @@
       ]
     },
     {
-      "rank": 151,
+      "rank": 161,
       "name": "Horizon Services - Air Conditioning, Heating, Plumbing & Electrical",
       "city": "Aberdeen",
       "score": 88,
@@ -2441,7 +2610,7 @@
       ]
     },
     {
-      "rank": 152,
+      "rank": 162,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Gurnee",
       "score": 88,
@@ -2454,7 +2623,7 @@
       "redFlags": []
     },
     {
-      "rank": 153,
+      "rank": 163,
       "name": "Robinson Air & Plumbing",
       "city": "Duncan",
       "score": 88,
@@ -2471,7 +2640,7 @@
       "redFlags": []
     },
     {
-      "rank": 154,
+      "rank": 164,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Aurora",
       "score": 88,
@@ -2484,7 +2653,7 @@
       "redFlags": []
     },
     {
-      "rank": 155,
+      "rank": 165,
       "name": "Wizard Plumbing and Drain",
       "city": "San Leandro",
       "score": 88,
@@ -2492,16 +2661,18 @@
       "googleRating": 4.8,
       "reviewCount": 1646,
       "phone": "(650) 275-4988",
-      "summary": "Wizard Plumbing demonstrates exceptional emergency responsiveness and technical expertise, with multiple customers praising their same-day service and thorough work quality. While they may not service all areas, their track record for urgent repairs and water heater replacements is outstanding.",
-      "bestFor": [
-        "emergency repairs",
-        "water heater replacement",
-        "commercial plumbing"
-      ],
-      "redFlags": []
+      "summary": "They'll get to your emergency fast and the technician will probably be friendly, but watch out for surprise charges that double the original quote.",
+      "bestFor": [],
+      "redFlags": [
+        "Bait-and-switch on free estimates: Advertised 'free quote' or 'no cost to send technician' repeatedly contradicted by $100-$200 diagnostic charges that may or may not apply to final job",
+        "Inflated estimates for major jobs: Multiple reviews cite quotes 2-3x higher than competitors for identical work (sewer lines, water heaters, sewer laterals); one customer received $9,000 quote that another company said needed $0 work",
+        "Ownership/management transition: Several recent reviews (Sept 2025) mention the company was 'bought out by EJS plumbing' and quality has noticeably declined; AI phone system ('Dane') appears to be causing scheduling failures",
+        "Unresolved warranty disputes: At least 3 reviews mention warranty denial or refusal to honor previous work despite claiming 'standing by their work'",
+        "Selective technician quality: While named technicians are praised, generic dispatches sometimes send inexperienced staff or staff with aggressive upselling tactics"
+      ]
     },
     {
-      "rank": 156,
+      "rank": 166,
       "name": "Chisholm Plumbing, AC & Furnace Repair",
       "city": "Greer",
       "score": 88,
@@ -2518,7 +2689,7 @@
       "redFlags": []
     },
     {
-      "rank": 157,
+      "rank": 167,
       "name": "Busy Bee Plumbing, Heating, & Air Conditioning",
       "city": "Nashville",
       "score": 88,
@@ -2536,7 +2707,7 @@
       ]
     },
     {
-      "rank": 158,
+      "rank": 168,
       "name": "Teays Valley Service Experts",
       "city": "Hurricane",
       "score": 88,
@@ -2553,7 +2724,7 @@
       "redFlags": []
     },
     {
-      "rank": 159,
+      "rank": 169,
       "name": "Natchez Heating & Cooling",
       "city": "Natchez",
       "score": 88,
@@ -2570,7 +2741,7 @@
       "redFlags": []
     },
     {
-      "rank": 160,
+      "rank": 170,
       "name": "Service Hero Plumbing & Air",
       "city": "San Leandro",
       "score": 88,
@@ -2585,7 +2756,7 @@
       ]
     },
     {
-      "rank": 161,
+      "rank": 171,
       "name": "Scott Plumbing LLC",
       "city": "Huntsville",
       "score": 88,
@@ -2602,7 +2773,7 @@
       "redFlags": []
     },
     {
-      "rank": 162,
+      "rank": 172,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Provo",
       "score": 88,
@@ -2619,7 +2790,7 @@
       "redFlags": []
     },
     {
-      "rank": 163,
+      "rank": 173,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Worcester",
       "score": 88,
@@ -2637,7 +2808,7 @@
       ]
     },
     {
-      "rank": 164,
+      "rank": 174,
       "name": "YES! Air Conditioning, Heating, Plumbing and Electric",
       "city": "Provo",
       "score": 88,
@@ -2654,7 +2825,7 @@
       "redFlags": []
     },
     {
-      "rank": 165,
+      "rank": 175,
       "name": "Admiral Plumbing Heating and Cooling",
       "city": "Provo",
       "score": 88,
@@ -2671,7 +2842,7 @@
       "redFlags": []
     },
     {
-      "rank": 166,
+      "rank": 176,
       "name": "615 Plumbing",
       "city": "Nashville",
       "score": 88,
@@ -2688,7 +2859,7 @@
       ]
     },
     {
-      "rank": 167,
+      "rank": 177,
       "name": "Tidy Tank Plumbing, Sewer, and Septic",
       "city": "Crystal Lake",
       "score": 88,
@@ -2707,7 +2878,7 @@
       ]
     },
     {
-      "rank": 168,
+      "rank": 178,
       "name": "Roto-Rooter Plumbing & Drain Service",
       "city": "Aiken",
       "score": 88,
@@ -2724,7 +2895,7 @@
       ]
     },
     {
-      "rank": 169,
+      "rank": 179,
       "name": "Eric's Plumbing & Drain Cleaning",
       "city": "Provo",
       "score": 88,
@@ -2741,7 +2912,7 @@
       "redFlags": []
     },
     {
-      "rank": 170,
+      "rank": 180,
       "name": "Champion Plumbing",
       "city": "Yukon",
       "score": 88,
@@ -2761,7 +2932,7 @@
       ]
     },
     {
-      "rank": 171,
+      "rank": 181,
       "name": "Fly Plumbing & HVAC",
       "city": "St. Charles",
       "score": 88,
@@ -2774,7 +2945,7 @@
       "redFlags": []
     },
     {
-      "rank": 172,
+      "rank": 182,
       "name": "River City Plumbing, LLC",
       "city": "Geneva",
       "score": 88,
@@ -2787,7 +2958,7 @@
       "redFlags": []
     },
     {
-      "rank": 173,
+      "rank": 183,
       "name": "The Fair Plumber LLC",
       "city": "South Elgin",
       "score": 88,
@@ -2800,7 +2971,7 @@
       "redFlags": []
     },
     {
-      "rank": 174,
+      "rank": 184,
       "name": "Bulldog Plumbing, Inc.",
       "city": "Batavia",
       "score": 88,
@@ -2817,7 +2988,7 @@
       "redFlags": []
     },
     {
-      "rank": 175,
+      "rank": 185,
       "name": "PlumbCrazy",
       "city": "Aberdeen",
       "score": 88,
@@ -2835,7 +3006,7 @@
       ]
     },
     {
-      "rank": 176,
+      "rank": 186,
       "name": "Jim Wagner Plumbing, Inc.",
       "city": "Geneva",
       "score": 88,
@@ -2852,7 +3023,7 @@
       "redFlags": []
     },
     {
-      "rank": 177,
+      "rank": 187,
       "name": "1-Tom-Plumber",
       "city": "Huntsville",
       "score": 88,
@@ -2869,7 +3040,7 @@
       "redFlags": []
     },
     {
-      "rank": 178,
+      "rank": 188,
       "name": "Service Force Plumbing",
       "city": "Bethesda",
       "score": 88,
@@ -2885,7 +3056,7 @@
       ]
     },
     {
-      "rank": 179,
+      "rank": 189,
       "name": "MPT Plumbing Inc",
       "city": "Algonquin",
       "score": 88,
@@ -2902,7 +3073,7 @@
       "redFlags": []
     },
     {
-      "rank": 180,
+      "rank": 190,
       "name": "H. Jack's Plumbing and Heating Akron",
       "city": "Stow",
       "score": 88,
@@ -2919,7 +3090,7 @@
       "redFlags": []
     },
     {
-      "rank": 181,
+      "rank": 191,
       "name": "Rooter Man",
       "city": "Stow",
       "score": 88,
@@ -2936,7 +3107,7 @@
       "redFlags": []
     },
     {
-      "rank": 182,
+      "rank": 192,
       "name": "The Drain Surgeon",
       "city": "Aiken",
       "score": 88,
@@ -2952,7 +3123,7 @@
       ]
     },
     {
-      "rank": 183,
+      "rank": 193,
       "name": "Maston's Plumbing & Drain",
       "city": "Muskogee",
       "score": 88,
@@ -2969,7 +3140,7 @@
       "redFlags": []
     },
     {
-      "rank": 184,
+      "rank": 194,
       "name": "Clear Creek Plumbing & Gas | Plumbers Tahlequah",
       "city": "Muskogee",
       "score": 88,
@@ -2986,7 +3157,7 @@
       "redFlags": []
     },
     {
-      "rank": 185,
+      "rank": 195,
       "name": "H.R. Stewart Inc",
       "city": "Cary",
       "score": 88,
@@ -3003,7 +3174,7 @@
       "redFlags": []
     },
     {
-      "rank": 186,
+      "rank": 196,
       "name": "Montani Mechanical Group",
       "city": "Hurricane",
       "score": 88,
@@ -3020,7 +3191,7 @@
       "redFlags": []
     },
     {
-      "rank": 187,
+      "rank": 197,
       "name": "All Clear Plumbing & Drain Service, LLC",
       "city": "Aberdeen",
       "score": 88,
@@ -3036,7 +3207,7 @@
       ]
     },
     {
-      "rank": 188,
+      "rank": 198,
       "name": "J. Blanton Plumbing, Sewer & Drain",
       "city": "McHenry",
       "score": 88,
@@ -3053,7 +3224,7 @@
       "redFlags": []
     },
     {
-      "rank": 189,
+      "rank": 199,
       "name": "Royal Services Plumbing, Heating, & Air",
       "city": "Westminster",
       "score": 88,
@@ -3070,7 +3241,7 @@
       "redFlags": []
     },
     {
-      "rank": 190,
+      "rank": 200,
       "name": "Ken's Plumbing",
       "city": "Greer",
       "score": 88,
@@ -3087,7 +3258,7 @@
       "redFlags": []
     },
     {
-      "rank": 191,
+      "rank": 201,
       "name": "Tom's Plumbing Inc",
       "city": "Elgin",
       "score": 88,
@@ -3104,7 +3275,7 @@
       "redFlags": []
     },
     {
-      "rank": 192,
+      "rank": 202,
       "name": "Modern Heating & Plumbing Co.",
       "city": "Gurnee",
       "score": 88,
@@ -3121,7 +3292,7 @@
       "redFlags": []
     },
     {
-      "rank": 193,
+      "rank": 203,
       "name": "Nearby Plumbing",
       "city": "Provo",
       "score": 88,
@@ -3138,7 +3309,7 @@
       "redFlags": []
     },
     {
-      "rank": 194,
+      "rank": 204,
       "name": "A&W Plumbing, Inc.",
       "city": "Algonquin",
       "score": 88,
@@ -3155,7 +3326,7 @@
       "redFlags": []
     },
     {
-      "rank": 195,
+      "rank": 205,
       "name": "Capelli Plumbing",
       "city": "San Leandro",
       "score": 88,
@@ -3163,16 +3334,16 @@
       "googleRating": 4.9,
       "reviewCount": 386,
       "phone": "(510) 969-4358",
-      "summary": "Capelli Plumbing consistently delivers professional, knowledgeable service with excellent communication and thorough problem-solving. While emergency availability is unclear, their track record shows reliable next-day scheduling and technicians who take time to educate customers and ensure complete job satisfaction.",
-      "bestFor": [
-        "Garbage disposal installation",
-        "Drain cleaning",
-        "Electrical-plumbing issues"
-      ],
-      "redFlags": []
+      "summary": "They show up fast, fix it right, and won't try to upsell you on stuff you don't need.",
+      "bestFor": [],
+      "redFlags": [
+        "Sporadic service quality: Different technicians produce vastly different results (compare detailed praise for Edward/Preston/Jesse vs. harsh complaints about Dave and unnamed technician in 2026)",
+        "Communication breakdowns: Owner James not returning calls in 2-3 instances despite promises; estimates not sent after diagnostic visits",
+        "One catastrophic job in 2026: Multiple failed attempts to locate clog, broken oven, forced tenant evacuation for weeks, drywall repairs needed twice"
+      ]
     },
     {
-      "rank": 196,
+      "rank": 206,
       "name": "H2Flow Plumbing",
       "city": "Greer",
       "score": 88,
@@ -3189,7 +3360,7 @@
       "redFlags": []
     },
     {
-      "rank": 197,
+      "rank": 207,
       "name": "C. Lee Plumbing Services",
       "city": "Stow",
       "score": 88,
@@ -3206,7 +3377,7 @@
       "redFlags": []
     },
     {
-      "rank": 198,
+      "rank": 208,
       "name": "BMS Heating and Cooling",
       "city": "Hurricane",
       "score": 88,
@@ -3223,7 +3394,7 @@
       "redFlags": []
     },
     {
-      "rank": 199,
+      "rank": 209,
       "name": "Domination Plumbing and Heating",
       "city": "Worcester",
       "score": 88,
@@ -3239,7 +3410,7 @@
       ]
     },
     {
-      "rank": 200,
+      "rank": 210,
       "name": "Crystal Clear Plumbing",
       "city": "Algonquin",
       "score": 88,
@@ -3256,7 +3427,7 @@
       "redFlags": []
     },
     {
-      "rank": 201,
+      "rank": 211,
       "name": "LePrevost Plumbing Heating & Cooling",
       "city": "Pittsfield",
       "score": 88,
@@ -3273,7 +3444,7 @@
       "redFlags": []
     },
     {
-      "rank": 202,
+      "rank": 212,
       "name": "Affordable Plumbing and Heat",
       "city": "Westminster",
       "score": 88,
@@ -3290,7 +3461,7 @@
       "redFlags": []
     },
     {
-      "rank": 203,
+      "rank": 213,
       "name": "Morning Noon Night Plumbing & Sewer",
       "city": "Montgomery",
       "score": 88,
@@ -3307,7 +3478,7 @@
       "redFlags": []
     },
     {
-      "rank": 204,
+      "rank": 214,
       "name": "Air Man Heating, Cooling & Plumbing (Air Management Services Inc)",
       "city": "Marengo",
       "score": 88,
@@ -3324,7 +3495,7 @@
       "redFlags": []
     },
     {
-      "rank": 205,
+      "rank": 215,
       "name": "Thomas E Clark Inc",
       "city": "Bethesda",
       "score": 88,
@@ -3341,7 +3512,7 @@
       ]
     },
     {
-      "rank": 206,
+      "rank": 216,
       "name": "Benjamin Franklin Plumbing of Oklahoma City",
       "city": "Yukon",
       "score": 88,
@@ -3358,7 +3529,7 @@
       "redFlags": []
     },
     {
-      "rank": 207,
+      "rank": 217,
       "name": "Local Plumber and HVAC",
       "city": "Greer",
       "score": 88,
@@ -3375,7 +3546,7 @@
       "redFlags": []
     },
     {
-      "rank": 208,
+      "rank": 218,
       "name": "Journeymen Plumbing and Sewer LLC",
       "city": "Aurora",
       "score": 88,
@@ -3392,7 +3563,7 @@
       "redFlags": []
     },
     {
-      "rank": 209,
+      "rank": 219,
       "name": "Eagle Heat, Air and Plumbing; Septic and Shelters",
       "city": "Ardmore",
       "score": 88,
@@ -3409,7 +3580,7 @@
       "redFlags": []
     },
     {
-      "rank": 210,
+      "rank": 220,
       "name": "Daniel & Donna Plumbing Service, Inc - Broomfield, CO",
       "city": "Westminster",
       "score": 88,
@@ -3426,7 +3597,7 @@
       "redFlags": []
     },
     {
-      "rank": 211,
+      "rank": 221,
       "name": "J. Blanton Plumbing, Sewer & Drain",
       "city": "Algonquin",
       "score": 88,
@@ -3443,7 +3614,7 @@
       "redFlags": []
     },
     {
-      "rank": 212,
+      "rank": 222,
       "name": "The Neighborly Plumber",
       "city": "Acworth",
       "score": 88,
@@ -3459,7 +3630,7 @@
       ]
     },
     {
-      "rank": 213,
+      "rank": 223,
       "name": "Alexander Plumbing Services Inc.",
       "city": "Aberdeen",
       "score": 88,
@@ -3472,7 +3643,7 @@
       "redFlags": []
     },
     {
-      "rank": 214,
+      "rank": 224,
       "name": "Superior Plumbing Services",
       "city": "Greer",
       "score": 88,
@@ -3489,7 +3660,7 @@
       "redFlags": []
     },
     {
-      "rank": 215,
+      "rank": 225,
       "name": "Ability Septic",
       "city": "Batavia",
       "score": 88,
@@ -3506,7 +3677,7 @@
       "redFlags": []
     },
     {
-      "rank": 216,
+      "rank": 226,
       "name": "Lieber Mechanical: Plumbing Heating Air Conditioning",
       "city": "Yukon",
       "score": 88,
@@ -3523,7 +3694,7 @@
       "redFlags": []
     },
     {
-      "rank": 217,
+      "rank": 227,
       "name": "Maryland Sewer & Plumbing Service Inc",
       "city": "Aberdeen",
       "score": 88,
@@ -3536,7 +3707,7 @@
       "redFlags": []
     },
     {
-      "rank": 218,
+      "rank": 228,
       "name": "Helton Plumbing Hero",
       "city": "Woodstock",
       "score": 88,
@@ -3553,7 +3724,7 @@
       "redFlags": []
     },
     {
-      "rank": 219,
+      "rank": 229,
       "name": "U.S. Allied Plumbing & HVAC",
       "city": "North Aurora",
       "score": 88,
@@ -3570,7 +3741,7 @@
       "redFlags": []
     },
     {
-      "rank": 220,
+      "rank": 230,
       "name": "J. Blanton Plumbing, Sewer & Drain",
       "city": "Elgin",
       "score": 88,
@@ -3587,7 +3758,7 @@
       "redFlags": []
     },
     {
-      "rank": 221,
+      "rank": 231,
       "name": "Dean Plumbing Company Inc.",
       "city": "Huntsville",
       "score": 88,
@@ -3604,7 +3775,7 @@
       "redFlags": []
     },
     {
-      "rank": 222,
+      "rank": 232,
       "name": "J. Henry Plumbing, LLC",
       "city": "Huntsville",
       "score": 88,
@@ -3621,7 +3792,7 @@
       "redFlags": []
     },
     {
-      "rank": 223,
+      "rank": 233,
       "name": "Frecka Plumbing",
       "city": "Stow",
       "score": 88,
@@ -3638,7 +3809,7 @@
       "redFlags": []
     },
     {
-      "rank": 224,
+      "rank": 234,
       "name": "City Wide Plumbing",
       "city": "Acworth",
       "score": 88,
@@ -3655,7 +3826,7 @@
       ]
     },
     {
-      "rank": 225,
+      "rank": 235,
       "name": "Garabedian Plumbing & Heating Inc.",
       "city": "Worcester",
       "score": 88,
@@ -3663,16 +3834,17 @@
       "googleRating": 4.2,
       "reviewCount": 205,
       "phone": "(508) 757-4803",
-      "summary": "Garabedian Plumbing consistently delivers professional, efficient service with excellent communication and fair pricing. Multiple reviewers highlight their quick response times and ability to handle emergency situations like water heater failures immediately.",
-      "bestFor": [
-        "emergency repairs",
-        "water heater replacement",
-        "drain cleaning and pipe repairs"
-      ],
-      "redFlags": []
+      "summary": "They'll drop everything on a Sunday evening to help you, and Rick will even FaceTime you through a fix if it saves you money.",
+      "bestFor": [],
+      "redFlags": [
+        "Three separate complaints about hourly rates being doubled or quotes changing after work completion",
+        "One 1-star review: plumber forgot to shut off water, flooded home",
+        "One 1-star review: no-call no-show that delayed customer's process",
+        "One customer waited 4+ months for manager callback; another had 5 service visits over 3+ months without resolution to heating issue"
+      ]
     },
     {
-      "rank": 226,
+      "rank": 236,
       "name": "Cherokee Plumbing Heat and Air LLC",
       "city": "Edmond",
       "score": 88,
@@ -3689,7 +3861,7 @@
       "redFlags": []
     },
     {
-      "rank": 227,
+      "rank": 237,
       "name": "Plumbtastic Solutions LLC",
       "city": "Edmond",
       "score": 88,
@@ -3706,7 +3878,7 @@
       "redFlags": []
     },
     {
-      "rank": 228,
+      "rank": 238,
       "name": "Vermillion Plumbing LLC",
       "city": "Duncan",
       "score": 88,
@@ -3723,7 +3895,7 @@
       "redFlags": []
     },
     {
-      "rank": 229,
+      "rank": 239,
       "name": "Bevills Plumbing, Heating & Air Conditioning",
       "city": "Abilene",
       "score": 88,
@@ -3741,7 +3913,7 @@
       ]
     },
     {
-      "rank": 230,
+      "rank": 240,
       "name": "Skyline Plumbing and Mechanical, Inc.",
       "city": "Provo",
       "score": 88,
@@ -3758,7 +3930,7 @@
       "redFlags": []
     },
     {
-      "rank": 231,
+      "rank": 241,
       "name": "Bryant's Plumbing",
       "city": "Abilene",
       "score": 88,
@@ -3774,7 +3946,7 @@
       ]
     },
     {
-      "rank": 232,
+      "rank": 242,
       "name": "Arrow Plumbing",
       "city": "Libertyville",
       "score": 88,
@@ -3791,7 +3963,7 @@
       "redFlags": []
     },
     {
-      "rank": 233,
+      "rank": 243,
       "name": "Family Rooter Plumbing and Sewer IL",
       "city": "Fox River Grove",
       "score": 88,
@@ -3808,7 +3980,7 @@
       "redFlags": []
     },
     {
-      "rank": 234,
+      "rank": 244,
       "name": "Drain & Plumbing Services",
       "city": "Libertyville",
       "score": 88,
@@ -3825,7 +3997,7 @@
       "redFlags": []
     },
     {
-      "rank": 235,
+      "rank": 245,
       "name": "Accurate Plumbing Pros, Inc",
       "city": "Woodstock",
       "score": 88,
@@ -3842,7 +4014,7 @@
       "redFlags": []
     },
     {
-      "rank": 236,
+      "rank": 246,
       "name": "NexAir Heating & AC Repair",
       "city": "Hurricane",
       "score": 88,
@@ -3859,7 +4031,7 @@
       "redFlags": []
     },
     {
-      "rank": 237,
+      "rank": 247,
       "name": "Dream Home Plumbing",
       "city": "Montgomery",
       "score": 88,
@@ -3876,7 +4048,7 @@
       "redFlags": []
     },
     {
-      "rank": 238,
+      "rank": 248,
       "name": "Jack Ward & Sons Plumbing Company",
       "city": "Nashville",
       "score": 88,
@@ -3894,7 +4066,7 @@
       ]
     },
     {
-      "rank": 239,
+      "rank": 249,
       "name": "Unique Plumbing & Drain, Inc.",
       "city": "Stow",
       "score": 88,
@@ -3911,7 +4083,7 @@
       "redFlags": []
     },
     {
-      "rank": 240,
+      "rank": 250,
       "name": "Ernie Peterson Plumbing, Inc.",
       "city": "Gurnee",
       "score": 88,
@@ -3928,7 +4100,7 @@
       "redFlags": []
     },
     {
-      "rank": 241,
+      "rank": 251,
       "name": "Rescue Plumbing",
       "city": "Geneva",
       "score": 88,
@@ -3945,7 +4117,7 @@
       "redFlags": []
     },
     {
-      "rank": 242,
+      "rank": 252,
       "name": "Eric's Plumbing and Drain Cleaning",
       "city": "Provo",
       "score": 88,
@@ -3962,7 +4134,7 @@
       "redFlags": []
     },
     {
-      "rank": 243,
+      "rank": 253,
       "name": "Clog Hunter",
       "city": "Muskogee",
       "score": 88,
@@ -3979,7 +4151,7 @@
       "redFlags": []
     },
     {
-      "rank": 244,
+      "rank": 254,
       "name": "K.B.I Sewer & Drainage",
       "city": "McHenry",
       "score": 88,
@@ -3996,7 +4168,7 @@
       "redFlags": []
     },
     {
-      "rank": 245,
+      "rank": 255,
       "name": "Plumbing Masters LLC",
       "city": "Edmond",
       "score": 88,
@@ -4013,7 +4185,7 @@
       "redFlags": []
     },
     {
-      "rank": 246,
+      "rank": 256,
       "name": "A-MAC'S Plumbing & Rooter Services",
       "city": "Yukon",
       "score": 88,
@@ -4030,7 +4202,7 @@
       "redFlags": []
     },
     {
-      "rank": 247,
+      "rank": 257,
       "name": "Rooter Man",
       "city": "Huntsville",
       "score": 88,
@@ -4047,7 +4219,7 @@
       "redFlags": []
     },
     {
-      "rank": 248,
+      "rank": 258,
       "name": "Dundee Services Inc",
       "city": "Carpentersville",
       "score": 88,
@@ -4064,7 +4236,7 @@
       "redFlags": []
     },
     {
-      "rank": 249,
+      "rank": 259,
       "name": "JTS Plumbing Services LLC",
       "city": "Huntsville",
       "score": 88,
@@ -4081,7 +4253,7 @@
       "redFlags": []
     },
     {
-      "rank": 250,
+      "rank": 260,
       "name": "Absten Services LLC",
       "city": "Hurricane",
       "score": 88,
@@ -4098,7 +4270,7 @@
       "redFlags": []
     },
     {
-      "rank": 251,
+      "rank": 261,
       "name": "Mark's Plumbing Inc.",
       "city": "Batavia",
       "score": 88,
@@ -4115,7 +4287,7 @@
       "redFlags": []
     },
     {
-      "rank": 252,
+      "rank": 262,
       "name": "Good Bro's Plumbing",
       "city": "Yukon",
       "score": 88,
@@ -4132,7 +4304,7 @@
       "redFlags": []
     },
     {
-      "rank": 253,
+      "rank": 263,
       "name": "NA Plumbing LLC",
       "city": "Huntsville",
       "score": 88,
@@ -4149,7 +4321,7 @@
       "redFlags": []
     },
     {
-      "rank": 254,
+      "rank": 264,
       "name": "Good Call Plumbing",
       "city": "Batavia",
       "score": 88,
@@ -4166,7 +4338,7 @@
       "redFlags": []
     },
     {
-      "rank": 255,
+      "rank": 265,
       "name": "MenWon Plumbing & Drain Services",
       "city": "Worcester",
       "score": 88,
@@ -4183,7 +4355,7 @@
       ]
     },
     {
-      "rank": 256,
+      "rank": 266,
       "name": "KT Plumbing",
       "city": "Greer",
       "score": 88,
@@ -4200,7 +4372,7 @@
       "redFlags": []
     },
     {
-      "rank": 257,
+      "rank": 267,
       "name": "Doctor Drain & Sewer Cleaning",
       "city": "Aurora",
       "score": 88,
@@ -4217,7 +4389,7 @@
       "redFlags": []
     },
     {
-      "rank": 258,
+      "rank": 268,
       "name": "Intelligent Service: Plumbing, Heating, Cooling & Drain Cleaning",
       "city": "Mundelein",
       "score": 88,
@@ -4234,7 +4406,7 @@
       "redFlags": []
     },
     {
-      "rank": 259,
+      "rank": 269,
       "name": "Wendricks-White Plumbing",
       "city": "Gurnee",
       "score": 88,
@@ -4251,7 +4423,7 @@
       "redFlags": []
     },
     {
-      "rank": 260,
+      "rank": 270,
       "name": "Clog Doc",
       "city": "Stow",
       "score": 88,
@@ -4268,7 +4440,7 @@
       "redFlags": []
     },
     {
-      "rank": 261,
+      "rank": 271,
       "name": "Pacific Plumbing Systems",
       "city": "San Leandro",
       "score": 88,
@@ -4285,7 +4457,7 @@
       ]
     },
     {
-      "rank": 262,
+      "rank": 272,
       "name": "WB Plumbing",
       "city": "Worcester",
       "score": 88,
@@ -4301,7 +4473,7 @@
       ]
     },
     {
-      "rank": 263,
+      "rank": 273,
       "name": "Justus Plumbing",
       "city": "Duncan",
       "score": 88,
@@ -4318,7 +4490,7 @@
       "redFlags": []
     },
     {
-      "rank": 264,
+      "rank": 274,
       "name": "Clarksville Plumbing, LLC",
       "city": "Aberdeen",
       "score": 88,
@@ -4331,7 +4503,7 @@
       "redFlags": []
     },
     {
-      "rank": 265,
+      "rank": 275,
       "name": "Punneo Plumbing",
       "city": "Duncan",
       "score": 88,
@@ -4348,7 +4520,7 @@
       "redFlags": []
     },
     {
-      "rank": 266,
+      "rank": 276,
       "name": "Victory Plumbing Services, LLC",
       "city": "Aberdeen",
       "score": 88,
@@ -4363,7 +4535,7 @@
       ]
     },
     {
-      "rank": 267,
+      "rank": 277,
       "name": "FJ Bero & Co. Plumbing",
       "city": "Elgin",
       "score": 88,
@@ -4380,7 +4552,7 @@
       "redFlags": []
     },
     {
-      "rank": 268,
+      "rank": 278,
       "name": "Costello's Plumbing",
       "city": "San Leandro",
       "score": 88,
@@ -4395,7 +4567,7 @@
       ]
     },
     {
-      "rank": 269,
+      "rank": 279,
       "name": "Rescue Plumbing",
       "city": "Libertyville",
       "score": 88,
@@ -4412,7 +4584,7 @@
       "redFlags": []
     },
     {
-      "rank": 270,
+      "rank": 280,
       "name": "A&P Plumbing LLC",
       "city": "Hurricane",
       "score": 88,
@@ -4429,7 +4601,7 @@
       "redFlags": []
     },
     {
-      "rank": 271,
+      "rank": 281,
       "name": "CORE Plumbing & Drain Cleaning",
       "city": "Nashville",
       "score": 88,
@@ -4442,7 +4614,7 @@
       "redFlags": []
     },
     {
-      "rank": 272,
+      "rank": 282,
       "name": "Plumbing Pros Llc",
       "city": "Greer",
       "score": 88,
@@ -4459,7 +4631,7 @@
       "redFlags": []
     },
     {
-      "rank": 273,
+      "rank": 283,
       "name": "Blue Whale Backflow, Plumbing, & Excavating",
       "city": "Geneva",
       "score": 88,
@@ -4476,7 +4648,7 @@
       "redFlags": []
     },
     {
-      "rank": 274,
+      "rank": 284,
       "name": "Orem Plumbers & Drain Cleaning",
       "city": "Provo",
       "score": 88,
@@ -4493,7 +4665,7 @@
       "redFlags": []
     },
     {
-      "rank": 275,
+      "rank": 285,
       "name": "Adams Plumbing & Heating",
       "city": "Abilene",
       "score": 88,
@@ -4511,7 +4683,7 @@
       ]
     },
     {
-      "rank": 276,
+      "rank": 286,
       "name": "Ron-Co Rooter And Plumbing Co",
       "city": "Muskogee",
       "score": 88,
@@ -4528,7 +4700,7 @@
       "redFlags": []
     },
     {
-      "rank": 277,
+      "rank": 287,
       "name": "McNeill Plumbing Inc.",
       "city": "Aiken",
       "score": 88,
@@ -4545,7 +4717,7 @@
       "redFlags": []
     },
     {
-      "rank": 278,
+      "rank": 288,
       "name": "BEI Plumbing & Heating",
       "city": "Worcester",
       "score": 88,
@@ -4561,7 +4733,7 @@
       ]
     },
     {
-      "rank": 279,
+      "rank": 289,
       "name": "A&T Plumbing Inc.& Son",
       "city": "Algonquin",
       "score": 88,
@@ -4578,7 +4750,7 @@
       "redFlags": []
     },
     {
-      "rank": 280,
+      "rank": 290,
       "name": "Yohe Plumbing Inc of Aiken",
       "city": "Aiken",
       "score": 88,
@@ -4595,7 +4767,7 @@
       ]
     },
     {
-      "rank": 281,
+      "rank": 291,
       "name": "Big State Plumbing",
       "city": "Edmond",
       "score": 88,
@@ -4612,7 +4784,7 @@
       "redFlags": []
     },
     {
-      "rank": 282,
+      "rank": 292,
       "name": "Plumb Xpress Plumbing & Drain, LLC",
       "city": "Acworth",
       "score": 88,
@@ -4628,7 +4800,7 @@
       ]
     },
     {
-      "rank": 283,
+      "rank": 293,
       "name": "GUSTAFSON PLUMBERS",
       "city": "Worcester",
       "score": 88,
@@ -4645,7 +4817,7 @@
       "redFlags": []
     },
     {
-      "rank": 284,
+      "rank": 294,
       "name": "Staggs Plumbing Co",
       "city": "Greer",
       "score": 88,
@@ -4662,7 +4834,7 @@
       "redFlags": []
     },
     {
-      "rank": 285,
+      "rank": 295,
       "name": "J & M Rooter",
       "city": "Muskogee",
       "score": 88,
@@ -4679,7 +4851,7 @@
       "redFlags": []
     },
     {
-      "rank": 286,
+      "rank": 296,
       "name": "Robinson & Son Plumbing & Mechanical",
       "city": "Hurricane",
       "score": 88,
@@ -4696,7 +4868,7 @@
       "redFlags": []
     },
     {
-      "rank": 287,
+      "rank": 297,
       "name": "Expert Plumber Provo",
       "city": "Provo",
       "score": 88,
@@ -4713,7 +4885,7 @@
       "redFlags": []
     },
     {
-      "rank": 288,
+      "rank": 298,
       "name": "ProFix Plumber Westminster",
       "city": "Westminster",
       "score": 88,
@@ -4730,7 +4902,7 @@
       "redFlags": []
     },
     {
-      "rank": 289,
+      "rank": 299,
       "name": "Dickinson Commercial & Residential Plumbing",
       "city": "Acworth",
       "score": 88,
@@ -4743,7 +4915,7 @@
       "redFlags": []
     },
     {
-      "rank": 290,
+      "rank": 300,
       "name": "Lindenhurst Plumbing Inc.",
       "city": "Gurnee",
       "score": 88,
@@ -4760,7 +4932,7 @@
       "redFlags": []
     },
     {
-      "rank": 291,
+      "rank": 301,
       "name": "Albion Plumbing Rooter Inc - Plumber in Alameda, CA",
       "city": "San Leandro",
       "score": 88,
@@ -4782,7 +4954,7 @@
       ]
     },
     {
-      "rank": 292,
+      "rank": 302,
       "name": "Hara Plumbing Co.",
       "city": "Libertyville",
       "score": 88,
@@ -4799,7 +4971,7 @@
       "redFlags": []
     },
     {
-      "rank": 293,
+      "rank": 303,
       "name": "No Xcuses - Remodeling and Plumbing Contractors",
       "city": "Libertyville",
       "score": 88,
@@ -4816,7 +4988,7 @@
       "redFlags": []
     },
     {
-      "rank": 294,
+      "rank": 304,
       "name": "Cherokee Plumbing and Drains llc",
       "city": "Acworth",
       "score": 88,
@@ -4829,7 +5001,7 @@
       "redFlags": []
     },
     {
-      "rank": 295,
+      "rank": 305,
       "name": "Schambach Plumbing & Heating",
       "city": "Elgin",
       "score": 88,
@@ -4846,7 +5018,7 @@
       "redFlags": []
     },
     {
-      "rank": 296,
+      "rank": 306,
       "name": "Hagerty & Son Inc. Plumbing Contractors and Services",
       "city": "Montgomery",
       "score": 88,
@@ -4863,7 +5035,7 @@
       "redFlags": []
     },
     {
-      "rank": 297,
+      "rank": 307,
       "name": "Superior Rooter Plumbing Elgin",
       "city": "Elgin",
       "score": 88,
@@ -4880,7 +5052,7 @@
       "redFlags": []
     },
     {
-      "rank": 298,
+      "rank": 308,
       "name": "Padula Plumbing Inc.",
       "city": "Gurnee",
       "score": 88,
@@ -4897,7 +5069,7 @@
       "redFlags": []
     },
     {
-      "rank": 299,
+      "rank": 309,
       "name": "Able Plumbing & Drain Service Inc.",
       "city": "Mundelein",
       "score": 88,
@@ -4914,7 +5086,7 @@
       "redFlags": []
     },
     {
-      "rank": 300,
+      "rank": 310,
       "name": "Afternoon Plumbing",
       "city": "Aberdeen",
       "score": 88,
@@ -4927,7 +5099,7 @@
       "redFlags": []
     },
     {
-      "rank": 301,
+      "rank": 311,
       "name": "Wendling Sewer Service of the Berkshires LLC",
       "city": "Pittsfield",
       "score": 88,
@@ -4944,7 +5116,7 @@
       "redFlags": []
     },
     {
-      "rank": 302,
+      "rank": 312,
       "name": "Express Air and Plumbing",
       "city": "Abilene",
       "score": 88,
@@ -4957,7 +5129,7 @@
       "redFlags": []
     },
     {
-      "rank": 303,
+      "rank": 313,
       "name": "RB Plumbing and Remodeling",
       "city": "Stow",
       "score": 88,
@@ -4974,7 +5146,7 @@
       "redFlags": []
     },
     {
-      "rank": 304,
+      "rank": 314,
       "name": "Total Underground Construction",
       "city": "San Leandro",
       "score": 88,
@@ -4987,7 +5159,7 @@
       "redFlags": []
     },
     {
-      "rank": 305,
+      "rank": 315,
       "name": "Dorr Plumbing & Heating LLC",
       "city": "St. Charles",
       "score": 88,
@@ -5004,7 +5176,7 @@
       "redFlags": []
     },
     {
-      "rank": 306,
+      "rank": 316,
       "name": "GK Plumbing",
       "city": "Northglenn",
       "score": 88,
@@ -5021,7 +5193,7 @@
       "redFlags": []
     },
     {
-      "rank": 307,
+      "rank": 317,
       "name": "Parker's Emergency Plumbing",
       "city": "Northglenn",
       "score": 88,
@@ -5038,7 +5210,7 @@
       "redFlags": []
     },
     {
-      "rank": 308,
+      "rank": 318,
       "name": "Rooter Brothers Plumbing LLC",
       "city": "Northglenn",
       "score": 88,
@@ -5055,7 +5227,92 @@
       "redFlags": []
     },
     {
-      "rank": 309,
+      "rank": 319,
+      "name": "Complete Care Plumbing Electric & AC",
+      "city": "Marble Falls",
+      "score": 88,
+      "trustLevel": "high",
+      "googleRating": 4.9,
+      "reviewCount": 84,
+      "phone": "(325) 240-6446",
+      "summary": "Complete Care Plumbing Electric & AC appears to be a highly reliable company with strong emergency response capabilities, as evidenced by their Friday evening service call and holiday weekend repairs. With a 4.9/5 rating and consistent praise for professionalism and efficiency, they seem well-suited for emergency plumbing needs in the Marble Falls area.",
+      "bestFor": [
+        "emergency repairs",
+        "bathroom remodels",
+        "HVAC services"
+      ],
+      "redFlags": []
+    },
+    {
+      "rank": 320,
+      "name": "TD Plumbing",
+      "city": "Marble Falls",
+      "score": 88,
+      "trustLevel": "high",
+      "googleRating": 5,
+      "reviewCount": 17,
+      "phone": "(512) 577-9461",
+      "summary": "TD Plumbing appears to be an exceptionally reliable and honest plumbing service with a strong track record of customer satisfaction. Multiple reviews highlight their thorough diagnostic approach, fair pricing, and willingness to go above and beyond - including sometimes refusing payment for minor fixes.",
+      "bestFor": [
+        "Complex diagnostic problems",
+        "Water system installations",
+        "General plumbing repairs"
+      ],
+      "redFlags": []
+    },
+    {
+      "rank": 321,
+      "name": "Wilcoxen Plumbing",
+      "city": "Marble Falls",
+      "score": 88,
+      "trustLevel": "high",
+      "googleRating": 4.6,
+      "reviewCount": 74,
+      "phone": "(830) 637-9314",
+      "summary": "Wilcoxen Plumbing consistently delivers fast, professional service with multiple customers reporting same-day or 2-hour response times. They demonstrate expertise in complex repairs like slab leaks and water heater issues, with fair pricing and courteous technicians who respect customers' homes.",
+      "bestFor": [
+        "emergency repairs",
+        "water leak repairs",
+        "water heater services"
+      ],
+      "redFlags": []
+    },
+    {
+      "rank": 322,
+      "name": "Absolute Plumbing",
+      "city": "Marble Falls",
+      "score": 88,
+      "trustLevel": "high",
+      "googleRating": 5,
+      "reviewCount": 34,
+      "phone": "(830) 385-1706",
+      "summary": "Absolute Plumbing has earned consistently excellent reviews for their skilled work, reasonable pricing, and professional service. Multiple customers highlight their ability to handle complex custom work and respond quickly to issues, making them a solid choice for emergency plumbing needs.",
+      "bestFor": [
+        "emergency repairs",
+        "custom plumbing installations",
+        "general plumbing maintenance"
+      ],
+      "redFlags": []
+    },
+    {
+      "rank": 323,
+      "name": "Trinity Services",
+      "city": "Marble Falls",
+      "score": 88,
+      "trustLevel": "high",
+      "googleRating": 4.9,
+      "reviewCount": 191,
+      "phone": "(512) 970-1919",
+      "summary": "Trinity Services shows excellent emergency responsiveness with technicians available on weekends and holidays. Customers consistently praise their prompt service, fair pricing, and honest recommendations, making them a reliable choice for urgent plumbing needs.",
+      "bestFor": [
+        "emergency repairs",
+        "weekend/holiday service calls",
+        "HVAC maintenance and repair"
+      ],
+      "redFlags": []
+    },
+    {
+      "rank": 324,
       "name": "TopTec Heating, Cooling, Plumbing & Electrical",
       "city": "Libertyville",
       "score": 87,
@@ -5068,7 +5325,7 @@
       "redFlags": []
     },
     {
-      "rank": 310,
+      "rank": 325,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Bethesda",
       "score": 87,
@@ -5076,16 +5333,19 @@
       "googleRating": 4.8,
       "reviewCount": 1258,
       "phone": "(301) 235-9817",
-      "summary": "Roto-Rooter Bethesda demonstrates excellent emergency responsiveness with multiple customers praising 4-hour completion times and immediate dispatch. Their technicians are consistently described as professional, transparent with pricing, and skilled at both routine plumbing and complex water restoration work.",
-      "bestFor": [
-        "emergency repairs",
-        "water heater replacement",
-        "water damage restoration"
-      ],
-      "redFlags": []
+      "summary": "They'll get to you fast, but expect to pay two to three times what competitors charge for the same work.",
+      "bestFor": [],
+      "redFlags": [
+        "Systematic overcharging: 10 of 13 reviews explicitly complain about prices 3-10x typical market rates",
+        "Questionable diagnostic practices: Techs recommend expensive repairs without thorough inspection; one reviewer caught tech contradicting themselves",
+        "Refusal to provide documentation: One reviewer denied video copy of sewer camera inspection, claimed it was 'proprietary'",
+        "Pressure sales tactics: High-pressure contracts offered during emergencies (sewage backup); misrepresentations about insurance coverage",
+        "Poor follow-through: One reviewer reports supervisor disappeared after contract signed; another notes incomplete cleanup after sewage work",
+        "Scheduling unreliability: 2-4 hour delays despite confirmed time windows; poor call-back responsiveness"
+      ]
     },
     {
-      "rank": 311,
+      "rank": 326,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Lake in the Hills",
       "score": 87,
@@ -5098,7 +5358,7 @@
       "redFlags": []
     },
     {
-      "rank": 312,
+      "rank": 327,
       "name": "Roto-Rooter Plumbing Muskogee",
       "city": "Muskogee",
       "score": 87,
@@ -5115,7 +5375,7 @@
       "redFlags": []
     },
     {
-      "rank": 313,
+      "rank": 328,
       "name": "Doctor Drips Plumbing - Nashville",
       "city": "Nashville",
       "score": 87,
@@ -5128,7 +5388,7 @@
       "redFlags": []
     },
     {
-      "rank": 314,
+      "rank": 329,
       "name": "J. Blanton Plumbing, Sewer and Drain",
       "city": "St. Charles",
       "score": 87,
@@ -5145,7 +5405,7 @@
       "redFlags": []
     },
     {
-      "rank": 315,
+      "rank": 330,
       "name": "Plumbers of Greenville",
       "city": "Greer",
       "score": 87,
@@ -5162,39 +5422,39 @@
       "redFlags": []
     },
     {
-      "rank": 316,
+      "rank": 331,
       "name": "Len The Plumber Heating & Air, LLC",
       "city": "Aberdeen",
       "score": 85,
       "trustLevel": "high",
       "googleRating": 4.7,
-      "reviewCount": 16471,
+      "reviewCount": 16481,
       "phone": "(410) 324-3635",
-      "summary": "They'll get someone out fast and fix your problem the same day, but you'll pay premium prices for it.",
+      "summary": "They'll get to you fast and fix it right, but expect to pay a premium for the service.",
       "bestFor": [],
       "redFlags": [
-        "Pricing structure appears designed to surprise customers - charges accumulate ($49 arrival fee, labor charges, parts markups) beyond initial quoted estimates",
-        "One documented case of incomplete work with poor follow-up communication before eventual resolution"
+        "Potential for hidden/unexpected charges - reviewers note expensive parts markup and labor overages after price approval",
+        "One severe service abandonment case where technician left job incomplete for 2 weeks with poor communication"
       ]
     },
     {
-      "rank": 317,
+      "rank": 332,
       "name": "Len The Plumber Heating & Air, LLC",
       "city": "Bethesda",
       "score": 85,
       "trustLevel": "high",
       "googleRating": 4.6,
-      "reviewCount": 8360,
+      "reviewCount": 8364,
       "phone": "(704) 275-5185",
-      "summary": "They'll send someone out same-day or next-day even on weekends and snow, but you're paying premium prices for it.",
+      "summary": "They'll show up same-day or next-day for emergencies and actually fix the problem right, but you're going to pay a premium for it.",
       "bestFor": [],
       "redFlags": [
-        "One customer waited 34+ hours for a commercial job they don't perform, then was charged a diagnostic fee—suggests poor pre-screening",
-        "Service quality may depend heavily on individual technician—some named technicians praised repeatedly, but two low ratings suggest inconsistency exists"
+        "Diagnostic fee charged ($45+) then told they cannot perform the work (commercial plumbing case), resulting in wasted customer time and frustration",
+        "Service window commitment failures: Multiple mentions of missing 4-hour service windows despite advance scheduling; subscription customers deprioritized"
       ]
     },
     {
-      "rank": 318,
+      "rank": 333,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Aberdeen",
       "score": 85,
@@ -5202,14 +5462,15 @@
       "googleRating": 4.8,
       "reviewCount": 4085,
       "phone": "(410) 864-3030",
-      "summary": "They show up fast for emergencies and most techs do solid work, but one customer paid $860 for a failed diagnostic with no resolution—and that's the only complaint in 72 reviews, which is suspicious.",
+      "summary": "They'll show up on a Saturday night within an hour and actually fix your problem instead of recommending a $3000 replacement you don't need.",
       "bestFor": [],
       "redFlags": [
-        "1 of 72 total reviews (1.4%) alleges $860 diagnostic charge with incomplete work, failed camera inspection (supervisor only spent 1 minute), and pipes left disconnected by supervisor—isolated but severe complaint involving billing dispute and incomplete service that suggests potential quality variance or supervisor accountability gap"
+        "One 1-star review alleges fake 5-star reviews on website, incomplete diagnostic work, and unwillingness to troubleshoot thoroughly—charges $860 without resolution",
+        "One review (0-star) appears to be scraped website content, not an actual review"
       ]
     },
     {
-      "rank": 319,
+      "rank": 334,
       "name": "Mr. Rooter Plumbing of Huntsville",
       "city": "Huntsville",
       "score": 85,
@@ -5226,7 +5487,7 @@
       "redFlags": []
     },
     {
-      "rank": 320,
+      "rank": 335,
       "name": "Midway Plumbing",
       "city": "Abilene",
       "score": 85,
@@ -5244,7 +5505,7 @@
       ]
     },
     {
-      "rank": 321,
+      "rank": 336,
       "name": "Mr. Rooter Plumbing of Abilene",
       "city": "Abilene",
       "score": 85,
@@ -5263,7 +5524,7 @@
       ]
     },
     {
-      "rank": 322,
+      "rank": 337,
       "name": "Tim Whistler Plumbing, Gas Fitting, HVAC, and Electrical",
       "city": "Bethesda",
       "score": 85,
@@ -5282,7 +5543,7 @@
       ]
     },
     {
-      "rank": 323,
+      "rank": 338,
       "name": "Command Plumbing Inc.",
       "city": "Gurnee",
       "score": 85,
@@ -5299,7 +5560,7 @@
       "redFlags": []
     },
     {
-      "rank": 324,
+      "rank": 339,
       "name": "Plumb It Best, LLC",
       "city": "Aurora",
       "score": 85,
@@ -5316,7 +5577,7 @@
       "redFlags": []
     },
     {
-      "rank": 325,
+      "rank": 340,
       "name": "Star Plumbing & Drains, LLC",
       "city": "Muskogee",
       "score": 85,
@@ -5333,7 +5594,7 @@
       "redFlags": []
     },
     {
-      "rank": 326,
+      "rank": 341,
       "name": "Charge Construction & Plumbing LLC",
       "city": "Montgomery",
       "score": 85,
@@ -5352,7 +5613,7 @@
       ]
     },
     {
-      "rank": 327,
+      "rank": 342,
       "name": "B & C Plumbing",
       "city": "Huntsville",
       "score": 85,
@@ -5369,7 +5630,7 @@
       "redFlags": []
     },
     {
-      "rank": 328,
+      "rank": 343,
       "name": "HD Plumbing and Heating Inc.",
       "city": "Elgin",
       "score": 85,
@@ -5386,7 +5647,7 @@
       "redFlags": []
     },
     {
-      "rank": 329,
+      "rank": 344,
       "name": "Patriot Trenchless Plumbing",
       "city": "Montgomery",
       "score": 85,
@@ -5403,7 +5664,7 @@
       "redFlags": []
     },
     {
-      "rank": 330,
+      "rank": 345,
       "name": "Elgin Plumbing & Drain Services",
       "city": "Elgin",
       "score": 85,
@@ -5420,7 +5681,7 @@
       "redFlags": []
     },
     {
-      "rank": 331,
+      "rank": 346,
       "name": "Complete Plumbing Services, Inc.",
       "city": "Marengo",
       "score": 85,
@@ -5437,7 +5698,7 @@
       "redFlags": []
     },
     {
-      "rank": 332,
+      "rank": 347,
       "name": "Bentley's Plumbing & Electrical Co",
       "city": "Aiken",
       "score": 85,
@@ -5450,7 +5711,7 @@
       "redFlags": []
     },
     {
-      "rank": 333,
+      "rank": 348,
       "name": "Brothers Plumbing | Abilene",
       "city": "Abilene",
       "score": 85,
@@ -5463,7 +5724,7 @@
       "redFlags": []
     },
     {
-      "rank": 334,
+      "rank": 349,
       "name": "SCA Plumbing LLC",
       "city": "Duncan",
       "score": 85,
@@ -5480,7 +5741,7 @@
       "redFlags": []
     },
     {
-      "rank": 335,
+      "rank": 350,
       "name": "Un stop drains llc",
       "city": "Aberdeen",
       "score": 85,
@@ -5493,24 +5754,7 @@
       "redFlags": []
     },
     {
-      "rank": 336,
-      "name": "Mullin Plumbing, HVAC & Septic",
-      "city": "Muskogee",
-      "score": 82,
-      "trustLevel": "high",
-      "googleRating": 4.6,
-      "reviewCount": 4438,
-      "phone": "(918) 265-4271",
-      "summary": "Mullin Plumbing shows excellent technical skills and customer service with experienced technicians who can handle complex jobs like slab leaks and emergency repairs. They offer same-day service and 24-hour availability, though their pricing is consistently described as high.",
-      "bestFor": [
-        "emergency repairs",
-        "slab leak repairs",
-        "water heater replacement"
-      ],
-      "redFlags": []
-    },
-    {
-      "rank": 337,
+      "rank": 351,
       "name": "Hill & Company Service, Inc.",
       "city": "Yukon",
       "score": 82,
@@ -5527,7 +5771,7 @@
       ]
     },
     {
-      "rank": 338,
+      "rank": 352,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Nashville",
       "score": 82,
@@ -5535,18 +5779,19 @@
       "googleRating": 4.7,
       "reviewCount": 787,
       "phone": "(615) 230-0504",
-      "summary": "Roto-Rooter Nashville shows strong emergency response capabilities with quick arrival times and skilled technicians who handle water damage and plumbing repairs effectively. Most customers praise their professionalism and reliability, though there's some inconsistency in technician behavior and preparation.",
-      "bestFor": [
-        "emergency water damage",
-        "burst pipe repairs",
-        "sump pump installation"
-      ],
+      "summary": "They'll get to you fast and usually fix the problem right, but you might pay 2-3x what you'd expect and discover surprise charges after they're done.",
+      "bestFor": [],
       "redFlags": [
-        "One technician displayed unprofessional behavior including scolding customer and using profanity"
+        "Bait-and-switch pricing: Quote given is often not the final price; numerous reviews of $70–$1,153 overages and surprise charges",
+        "Aggressive upselling: Multiple complaints about techs recommending expensive solutions ($3,000–$5,000+) without second opinions, later found unnecessary or inflated by customers' independent contractors",
+        "Warranty disputes: At least 3 reviews describe guarantee clauses being voided or denied post-service, with company blaming fine print",
+        "Quality variance by technician: Same company receives both 5-star and 1-star reviews often on the same issue type; outcomes heavily dependent on which technician arrives",
+        "Damage liability: Two reviews mention pipe damage caused by Roto-Rooter technicians, with company refusing to cover costs (one cited contract fine print)",
+        "Communication failures: Complaints about rude dispatch staff, difficulty reaching management, ghosting after promising callback, and one documented double-charge to bank account"
       ]
     },
     {
-      "rank": 339,
+      "rank": 353,
       "name": "Jastal Plumbing",
       "city": "Stow",
       "score": 82,
@@ -5565,7 +5810,7 @@
       ]
     },
     {
-      "rank": 340,
+      "rank": 354,
       "name": "Champion Plumbing",
       "city": "Yukon",
       "score": 82,
@@ -5585,7 +5830,7 @@
       ]
     },
     {
-      "rank": 341,
+      "rank": 355,
       "name": "Holt Plumbing Company",
       "city": "Nashville",
       "score": 82,
@@ -5603,7 +5848,7 @@
       ]
     },
     {
-      "rank": 342,
+      "rank": 356,
       "name": "Ethical Plumbing",
       "city": "Greer",
       "score": 82,
@@ -5622,7 +5867,7 @@
       ]
     },
     {
-      "rank": 343,
+      "rank": 357,
       "name": "Excellent Plumbing",
       "city": "Fox River Grove",
       "score": 82,
@@ -5639,7 +5884,7 @@
       "redFlags": []
     },
     {
-      "rank": 344,
+      "rank": 358,
       "name": "Service Force Plumbing",
       "city": "Bethesda",
       "score": 82,
@@ -5658,7 +5903,7 @@
       ]
     },
     {
-      "rank": 345,
+      "rank": 359,
       "name": "Plumbers Westminster | My Buddy",
       "city": "Westminster",
       "score": 82,
@@ -5675,7 +5920,7 @@
       "redFlags": []
     },
     {
-      "rank": 346,
+      "rank": 360,
       "name": "Serv'All Plumbing & Rooter Service",
       "city": "Acworth",
       "score": 82,
@@ -5691,7 +5936,7 @@
       ]
     },
     {
-      "rank": 347,
+      "rank": 361,
       "name": "Beehive Plumbing Orem",
       "city": "Provo",
       "score": 82,
@@ -5710,7 +5955,7 @@
       ]
     },
     {
-      "rank": 348,
+      "rank": 362,
       "name": "To the T Plumbing Heating & Air",
       "city": "Westminster",
       "score": 82,
@@ -5727,7 +5972,7 @@
       "redFlags": []
     },
     {
-      "rank": 349,
+      "rank": 363,
       "name": "Brown Plumbing - Abilene, TX",
       "city": "Abilene",
       "score": 82,
@@ -5745,7 +5990,7 @@
       ]
     },
     {
-      "rank": 350,
+      "rank": 364,
       "name": "Dave's Plumbing & Repair Service, Inc.",
       "city": "Fox River Grove",
       "score": 82,
@@ -5762,7 +6007,7 @@
       "redFlags": []
     },
     {
-      "rank": 351,
+      "rank": 365,
       "name": "Plumbing Aurora & Drain Clean Expert",
       "city": "Aurora",
       "score": 82,
@@ -5779,7 +6024,7 @@
       "redFlags": []
     },
     {
-      "rank": 352,
+      "rank": 366,
       "name": "T&T Plumbing",
       "city": "Abilene",
       "score": 82,
@@ -5795,7 +6040,7 @@
       ]
     },
     {
-      "rank": 353,
+      "rank": 367,
       "name": "First Response Plumbing",
       "city": "Fox River Grove",
       "score": 82,
@@ -5812,7 +6057,7 @@
       "redFlags": []
     },
     {
-      "rank": 354,
+      "rank": 368,
       "name": "Yetti Plumbing",
       "city": "Algonquin",
       "score": 82,
@@ -5829,7 +6074,7 @@
       "redFlags": []
     },
     {
-      "rank": 355,
+      "rank": 369,
       "name": "DG's Plumbing Co",
       "city": "Worcester",
       "score": 82,
@@ -5849,7 +6094,7 @@
       ]
     },
     {
-      "rank": 356,
+      "rank": 370,
       "name": "Vip PlumbingOk",
       "city": "Yukon",
       "score": 82,
@@ -5866,7 +6111,7 @@
       "redFlags": []
     },
     {
-      "rank": 357,
+      "rank": 371,
       "name": "Elite Rooter Plumbers",
       "city": "Westminster",
       "score": 78,
@@ -5886,7 +6131,7 @@
       ]
     },
     {
-      "rank": 358,
+      "rank": 372,
       "name": "Flatirons Plumbing",
       "city": "Westminster",
       "score": 78,
@@ -5906,7 +6151,7 @@
       ]
     },
     {
-      "rank": 359,
+      "rank": 373,
       "name": "Big Blue Plumbing",
       "city": "Alameda",
       "score": 78,
@@ -5925,7 +6170,7 @@
       ]
     },
     {
-      "rank": 360,
+      "rank": 374,
       "name": "Greer Plumbing & Water Heater Repair",
       "city": "Aberdeen",
       "score": 78,
@@ -5940,7 +6185,7 @@
       ]
     },
     {
-      "rank": 361,
+      "rank": 375,
       "name": "Prime Plumbing & Heating",
       "city": "Westminster",
       "score": 78,
@@ -5959,7 +6204,7 @@
       ]
     },
     {
-      "rank": 362,
+      "rank": 376,
       "name": "Hansen Heating, Plumbing & Air",
       "city": "Marengo",
       "score": 78,
@@ -5979,7 +6224,7 @@
       ]
     },
     {
-      "rank": 363,
+      "rank": 377,
       "name": "Five Star Plumbing Services",
       "city": "Aberdeen",
       "score": 78,
@@ -5994,7 +6239,7 @@
       ]
     },
     {
-      "rank": 364,
+      "rank": 378,
       "name": "The Drain Guys",
       "city": "Bethesda",
       "score": 78,
@@ -6013,7 +6258,7 @@
       ]
     },
     {
-      "rank": 365,
+      "rank": 379,
       "name": "Expert Services - Plumbing, Heating, Air & Electrical",
       "city": "Provo",
       "score": 78,
@@ -6032,7 +6277,7 @@
       ]
     },
     {
-      "rank": 366,
+      "rank": 380,
       "name": "SPG Plumbing, Drain and Sewer Gurnee",
       "city": "Gurnee",
       "score": 78,
@@ -6051,7 +6296,7 @@
       ]
     },
     {
-      "rank": 367,
+      "rank": 381,
       "name": "Rescue Plumbing",
       "city": "Geneva",
       "score": 78,
@@ -6071,7 +6316,7 @@
       ]
     },
     {
-      "rank": 368,
+      "rank": 382,
       "name": "JVS Plumbing Co",
       "city": "Woodstock",
       "score": 78,
@@ -6090,7 +6335,7 @@
       ]
     },
     {
-      "rank": 369,
+      "rank": 383,
       "name": "Reliable HVAC & Plumbing",
       "city": "Worcester",
       "score": 78,
@@ -6107,7 +6352,7 @@
       ]
     },
     {
-      "rank": 370,
+      "rank": 384,
       "name": "Friendly Plumbing",
       "city": "Algonquin",
       "score": 78,
@@ -6126,7 +6371,7 @@
       ]
     },
     {
-      "rank": 371,
+      "rank": 385,
       "name": "All Suburban Plumbing & Sewer Service Inc.",
       "city": "Montgomery",
       "score": 78,
@@ -6146,7 +6391,7 @@
       ]
     },
     {
-      "rank": 372,
+      "rank": 386,
       "name": "Suburban Sewer & Septic Inc.",
       "city": "Marengo",
       "score": 78,
@@ -6165,7 +6410,7 @@
       ]
     },
     {
-      "rank": 373,
+      "rank": 387,
       "name": "Dismuke Plumbing",
       "city": "Duncan",
       "score": 78,
@@ -6185,7 +6430,7 @@
       ]
     },
     {
-      "rank": 374,
+      "rank": 388,
       "name": "Walker Tradesman Plumbing",
       "city": "Abilene",
       "score": 78,
@@ -6203,7 +6448,7 @@
       ]
     },
     {
-      "rank": 375,
+      "rank": 389,
       "name": "Oakland Plumbing Experts",
       "city": "Alameda",
       "score": 78,
@@ -6219,7 +6464,7 @@
       ]
     },
     {
-      "rank": 376,
+      "rank": 390,
       "name": "Watson's Plumbing & Heating",
       "city": "Aberdeen",
       "score": 78,
@@ -6238,7 +6483,7 @@
       ]
     },
     {
-      "rank": 377,
+      "rank": 391,
       "name": "All Family Plumbing And Remodeling",
       "city": "Fox River Grove",
       "score": 78,
@@ -6255,7 +6500,7 @@
       "redFlags": []
     },
     {
-      "rank": 378,
+      "rank": 392,
       "name": "Thorpe Sheet Metal",
       "city": "Natchez",
       "score": 78,
@@ -6274,7 +6519,7 @@
       ]
     },
     {
-      "rank": 379,
+      "rank": 393,
       "name": "Montgomery Plumbing & Heating",
       "city": "Montgomery",
       "score": 78,
@@ -6293,7 +6538,7 @@
       ]
     },
     {
-      "rank": 380,
+      "rank": 394,
       "name": "McHenry Plumbing, Inc.",
       "city": "McHenry",
       "score": 78,
@@ -6310,7 +6555,7 @@
       "redFlags": []
     },
     {
-      "rank": 381,
+      "rank": 395,
       "name": "Aurora Plumber & Drainage Clean",
       "city": "Aurora",
       "score": 78,
@@ -6327,7 +6572,7 @@
       "redFlags": []
     },
     {
-      "rank": 382,
+      "rank": 396,
       "name": "413 Plumbing & Heating, Inc.",
       "city": "Pittsfield",
       "score": 78,
@@ -6346,7 +6591,7 @@
       ]
     },
     {
-      "rank": 383,
+      "rank": 397,
       "name": "Allegiance Service Group, Inc",
       "city": "Algonquin",
       "score": 78,
@@ -6363,7 +6608,7 @@
       "redFlags": []
     },
     {
-      "rank": 384,
+      "rank": 398,
       "name": "Yunke's Plumbing",
       "city": "Algonquin",
       "score": 78,
@@ -6380,7 +6625,7 @@
       "redFlags": []
     },
     {
-      "rank": 385,
+      "rank": 399,
       "name": "Provo Plumbing Drain Services",
       "city": "Provo",
       "score": 78,
@@ -6397,7 +6642,7 @@
       "redFlags": []
     },
     {
-      "rank": 386,
+      "rank": 400,
       "name": "Reiche Plumbing",
       "city": "McHenry",
       "score": 78,
@@ -6414,7 +6659,7 @@
       "redFlags": []
     },
     {
-      "rank": 387,
+      "rank": 401,
       "name": "Valley Plumbing Co",
       "city": "Hurricane",
       "score": 78,
@@ -6433,7 +6678,7 @@
       ]
     },
     {
-      "rank": 388,
+      "rank": 402,
       "name": "Storybook Plumbing Solutions",
       "city": "Abilene",
       "score": 78,
@@ -6446,7 +6691,7 @@
       "redFlags": []
     },
     {
-      "rank": 389,
+      "rank": 403,
       "name": "JB Plumbing",
       "city": "Woodstock",
       "score": 78,
@@ -6463,7 +6708,7 @@
       "redFlags": []
     },
     {
-      "rank": 390,
+      "rank": 404,
       "name": "Toppel Plumbing Inc",
       "city": "Marengo",
       "score": 78,
@@ -6480,7 +6725,7 @@
       "redFlags": []
     },
     {
-      "rank": 391,
+      "rank": 405,
       "name": "Trusted Aurora Plumbers",
       "city": "Aurora",
       "score": 78,
@@ -6499,7 +6744,7 @@
       ]
     },
     {
-      "rank": 392,
+      "rank": 406,
       "name": "A Best Plumbing & 24 Hour",
       "city": "Ardmore",
       "score": 78,
@@ -6518,7 +6763,7 @@
       ]
     },
     {
-      "rank": 393,
+      "rank": 407,
       "name": "D & D Plumbing Company",
       "city": "Crystal Lake",
       "score": 78,
@@ -6533,7 +6778,7 @@
       ]
     },
     {
-      "rank": 394,
+      "rank": 408,
       "name": "Shuman Plumbing & Heating Inc",
       "city": "Stow",
       "score": 78,
@@ -6550,7 +6795,7 @@
       "redFlags": []
     },
     {
-      "rank": 395,
+      "rank": 409,
       "name": "On Point Plumbing",
       "city": "Marengo",
       "score": 78,
@@ -6567,7 +6812,7 @@
       "redFlags": []
     },
     {
-      "rank": 396,
+      "rank": 410,
       "name": "Bill's Backflow & Plumbing Services",
       "city": "Stow",
       "score": 78,
@@ -6584,7 +6829,7 @@
       "redFlags": []
     },
     {
-      "rank": 397,
+      "rank": 411,
       "name": "Westminster Plumbing",
       "city": "Westminster",
       "score": 78,
@@ -6601,7 +6846,7 @@
       "redFlags": []
     },
     {
-      "rank": 398,
+      "rank": 412,
       "name": "Metro Plumbing and Drains",
       "city": "Acworth",
       "score": 78,
@@ -6614,7 +6859,7 @@
       "redFlags": []
     },
     {
-      "rank": 399,
+      "rank": 413,
       "name": "Storey Plumbing",
       "city": "Abilene",
       "score": 78,
@@ -6629,7 +6874,7 @@
       ]
     },
     {
-      "rank": 400,
+      "rank": 414,
       "name": "Roto-Rooter",
       "city": "Muskogee",
       "score": 78,
@@ -6646,7 +6891,7 @@
       "redFlags": []
     },
     {
-      "rank": 401,
+      "rank": 415,
       "name": "Schmid Plumbing Services",
       "city": "Algonquin",
       "score": 78,
@@ -6663,7 +6908,7 @@
       "redFlags": []
     },
     {
-      "rank": 402,
+      "rank": 416,
       "name": "Amazing Plumbing Solutions LLC",
       "city": "Northglenn",
       "score": 78,
@@ -6682,20 +6927,24 @@
       ]
     },
     {
-      "rank": 403,
-      "name": "Any Hour Services - Electric, Plumbing, Heating & Air",
-      "city": "Provo",
-      "score": 75,
-      "trustLevel": "high",
-      "googleRating": 4.8,
-      "reviewCount": 27017,
-      "phone": "(385) 832-6519",
-      "summary": "They send out techs who actually explain what's wrong and stick with you through the whole process, even when it takes longer than expected.",
-      "bestFor": [],
+      "rank": 417,
+      "name": "ZK Plumbing, LLC",
+      "city": "Marble Falls",
+      "score": 78,
+      "trustLevel": "moderate",
+      "googleRating": 5,
+      "reviewCount": 15,
+      "phone": "(830) 953-0714",
+      "summary": "ZK Plumbing shows strong professionalism and quality work based on limited reviews, with particular strength in custom home building partnerships. However, with only 15 reviews and no confirmed 24-hour service, their emergency response capability remains uncertain.",
+      "bestFor": [
+        "residential plumbing repairs",
+        "toilet installations",
+        "new construction plumbing"
+      ],
       "redFlags": []
     },
     {
-      "rank": 404,
+      "rank": 418,
       "name": "Precision Today Plumbing Heating Cooling Electrical",
       "city": "South Elgin",
       "score": 75,
@@ -6703,97 +6952,49 @@
       "googleRating": 4.8,
       "reviewCount": 7767,
       "phone": "(630) 326-7850",
-      "summary": "They've got great techs like Carlos and Ray who fix things right the first time, but you might need to stay on top of them about maintenance visits.",
+      "summary": "They've got excellent technicians who actually solve problems, but their account management and follow-through on contracted services can be spotty.",
       "bestFor": [],
       "redFlags": [
-        "Missed contracted maintenance visits with poor initial response to customer complaint",
-        "Technician potentially caused furnace malfunction — unit stopped heating immediately after service",
-        "Inconsistent quality control — some technicians excellent, others skip documented tasks"
+        "Missed contracted maintenance visits with dismissive initial response ('you could have called us')",
+        "Furnace malfunction immediately after service visit raises questions about workmanship quality control",
+        "Discrepancy between technician documentation (everything functioning fine) and customer report (furnace broken after visit)"
       ]
     },
     {
-      "rank": 405,
-      "name": "Wilson Plumbing, Heating, Cooling and Electric",
-      "city": "Stow",
-      "score": 75,
-      "trustLevel": "high",
-      "googleRating": 4.8,
-      "reviewCount": 4372,
-      "phone": "(234) 255-3315",
-      "summary": "They actually fix small issues on the spot without charging you extra, which honestly doesn't happen very often.",
-      "bestFor": [],
-      "redFlags": []
-    },
-    {
-      "rank": 406,
-      "name": "J&J Plumbing, Heating, Cooling, & Electric",
-      "city": "Stow",
-      "score": 75,
-      "trustLevel": "high",
-      "googleRating": 4.8,
-      "reviewCount": 3816,
-      "phone": "(330) 967-0147",
-      "summary": "They showed up the same day for our emergency and actually fixed it right instead of just patching it temporarily.",
-      "bestFor": [],
-      "redFlags": []
-    },
-    {
-      "rank": 407,
+      "rank": 419,
       "name": "WyattWorks Plumbing",
       "city": "Stow",
       "score": 75,
       "trustLevel": "high",
       "googleRating": 4.9,
-      "reviewCount": 3388,
+      "reviewCount": 3393,
       "phone": "(216) 302-3400",
-      "summary": "They do great work when they show up, but don't count on them in a real emergency.",
-      "bestFor": [
-        "Scheduled drain cleaning and fixture repairs during business hours (excellent technician skill and communication).",
-        "Non-emergency valve replacement and diagnostics requiring detailed explanation and fair pricing."
-      ],
+      "summary": "They show up when they say they will and actually take time to explain what's happening so you feel informed, not sold.",
+      "bestFor": [],
       "redFlags": [
-        "Emergency response failure on record — promised same-morning service for basement flooding, delivered 4-day delay.",
-        "Small sample size (5 reviews total) — single negative review carries heavy weight; cannot assume it's an outlier.",
-        "No 24/7 or after-hours availability advertised — closed Sundays, standard weekday hours inconsistent with emergency plumbing needs."
+        "Emergency response failure: Promised same-day service for severe basement flooding emergency but delayed 4 days, damaging customer trust despite prior relationship"
       ]
     },
     {
-      "rank": 408,
-      "name": "Hiller Plumbing, Heating, Cooling & Electrical",
-      "city": "Huntsville",
-      "score": 75,
-      "trustLevel": "high",
-      "googleRating": 4.9,
-      "reviewCount": 3313,
-      "phone": "(256) 298-8821",
-      "summary": "They show up when they say they will and actually finish on time, which is rare for contractors.",
-      "bestFor": [],
-      "redFlags": []
-    },
-    {
-      "rank": 409,
+      "rank": 420,
       "name": "Hi-Tech Plumbing & Leak Detect",
       "city": "Edmond",
       "score": 75,
       "trustLevel": "high",
       "googleRating": 4.8,
-      "reviewCount": 3318,
+      "reviewCount": 3323,
       "phone": "(405) 251-2127",
-      "summary": "They'll get to you fast, but expect to pay surgeon prices for plumber work.",
-      "bestFor": [
-        "Emergency response when you have no other option and can afford premium pricing.",
-        "Large, complex jobs (if you obtain independent quotes first)."
-      ],
+      "summary": "They'll get to you fast and do quality work, but they might try to sell you a $10,000 solution when you need a $230 fix.",
+      "bestFor": [],
       "redFlags": [
-        "CRITICAL — Systematic overcharging pattern: $1,100 quote for <$10 repair (5-min job); $10,000 upsell that failed and required competitor fix for $230. Two independent reviewers describe this behavior.",
-        "CRITICAL — Alleged review manipulation: reviewer claims technicians receive $25 per 5-star review, creating artificial 4.8/5 rating and explaining gap between glowing reviews and devastating service complaints.",
-        "Unethical sales tactics: reviewer reports company 'preyed on fear and ignorance' to sell unnecessary major service; another notes $800/hour rate regardless of job complexity is not transparent on website.",
-        "No management accountability: complainant reports zero follow-up after raising overcharging concerns despite explicit request for staff response.",
-        "Small sample size (5 reviews) with polarized distribution (three 5-stars, two 1-2 stars) is consistent with review incentive manipulation."
+        "Commission-based pay structure explicitly mentioned as driving overcharges on simple jobs",
+        "One reviewer alleges unethical practice of incentivizing 5-star reviews with $25 payments to technicians",
+        "Pattern of high-pressure sales tactics — reviewer describes being 'preyed on' fear and sold expensive solution that failed and caused property damage",
+        "Company failed to resolve or respond to documented overcharging complaint"
       ]
     },
     {
-      "rank": 410,
+      "rank": 421,
       "name": "Benjamin Franklin Plumbing of Nashville",
       "city": "Nashville",
       "score": 75,
@@ -6808,7 +7009,7 @@
       ]
     },
     {
-      "rank": 411,
+      "rank": 422,
       "name": "Mendel Plumbing, Heating & Electric",
       "city": "St. Charles",
       "score": 75,
@@ -6823,7 +7024,7 @@
       ]
     },
     {
-      "rank": 412,
+      "rank": 423,
       "name": "Bailey Brothers Plumbing, Heating and Air Conditioning",
       "city": "Yukon",
       "score": 75,
@@ -6841,7 +7042,7 @@
       ]
     },
     {
-      "rank": 413,
+      "rank": 424,
       "name": "J. Blanton Plumbing, Sewer & Drain",
       "city": "Aurora",
       "score": 75,
@@ -6862,7 +7063,7 @@
       ]
     },
     {
-      "rank": 414,
+      "rank": 425,
       "name": "McAdams Plumbing, Heating & Cooling",
       "city": "Westminster",
       "score": 75,
@@ -6882,7 +7083,7 @@
       ]
     },
     {
-      "rank": 415,
+      "rank": 426,
       "name": "Jeff The Plumber",
       "city": "Stow",
       "score": 75,
@@ -6902,7 +7103,7 @@
       ]
     },
     {
-      "rank": 416,
+      "rank": 427,
       "name": "A&P Grease Trappers, Inc",
       "city": "Batavia",
       "score": 75,
@@ -6920,7 +7121,7 @@
       ]
     },
     {
-      "rank": 417,
+      "rank": 428,
       "name": "Mastermind Plumbing",
       "city": "Greer",
       "score": 75,
@@ -6941,7 +7142,7 @@
       ]
     },
     {
-      "rank": 418,
+      "rank": 429,
       "name": "24 HR Emergency Plumber Chicago INC",
       "city": "Geneva",
       "score": 75,
@@ -6958,7 +7159,7 @@
       "redFlags": []
     },
     {
-      "rank": 419,
+      "rank": 430,
       "name": "Plumbing Pros of Provo",
       "city": "Provo",
       "score": 75,
@@ -6975,7 +7176,7 @@
       "redFlags": []
     },
     {
-      "rank": 420,
+      "rank": 431,
       "name": "Pipe Works Inc",
       "city": "Aiken",
       "score": 75,
@@ -6993,7 +7194,7 @@
       ]
     },
     {
-      "rank": 421,
+      "rank": 432,
       "name": "Nashville Plumbing and Drain Services",
       "city": "Nashville",
       "score": 75,
@@ -7008,7 +7209,7 @@
       ]
     },
     {
-      "rank": 422,
+      "rank": 433,
       "name": "M J Plumbing",
       "city": "Woodstock",
       "score": 75,
@@ -7027,7 +7228,7 @@
       ]
     },
     {
-      "rank": 423,
+      "rank": 434,
       "name": "Avantel Plumber of Nashville TN",
       "city": "Nashville",
       "score": 75,
@@ -7040,7 +7241,7 @@
       "redFlags": []
     },
     {
-      "rank": 424,
+      "rank": 435,
       "name": "Ace Plumbing Solutions",
       "city": "Worcester",
       "score": 75,
@@ -7057,7 +7258,7 @@
       "redFlags": []
     },
     {
-      "rank": 425,
+      "rank": 436,
       "name": "Service Master Plumbers",
       "city": "Gurnee",
       "score": 75,
@@ -7074,7 +7275,7 @@
       "redFlags": []
     },
     {
-      "rank": 426,
+      "rank": 437,
       "name": "A Plumber - Huntsville",
       "city": "Huntsville",
       "score": 75,
@@ -7090,7 +7291,7 @@
       "redFlags": []
     },
     {
-      "rank": 427,
+      "rank": 438,
       "name": "Miller's Plumbing",
       "city": "Duncan",
       "score": 75,
@@ -7107,7 +7308,7 @@
       "redFlags": []
     },
     {
-      "rank": 428,
+      "rank": 439,
       "name": "To the T Plumbing Heating and Air",
       "city": "Northglenn",
       "score": 75,
@@ -7128,7 +7329,7 @@
       ]
     },
     {
-      "rank": 429,
+      "rank": 440,
       "name": "Western Heating, Air & Plumbing",
       "city": "Provo",
       "score": 72,
@@ -7149,7 +7350,7 @@
       ]
     },
     {
-      "rank": 430,
+      "rank": 441,
       "name": "Flow Right Plumbing",
       "city": "Carpentersville",
       "score": 72,
@@ -7170,7 +7371,7 @@
       ]
     },
     {
-      "rank": 431,
+      "rank": 442,
       "name": "Drain Go Plumbing",
       "city": "Huntsville",
       "score": 72,
@@ -7190,7 +7391,7 @@
       ]
     },
     {
-      "rank": 432,
+      "rank": 443,
       "name": "ABC Plumbing, Sewer, Heating, Cooling & Electric",
       "city": "Gurnee",
       "score": 72,
@@ -7211,7 +7412,7 @@
       ]
     },
     {
-      "rank": 433,
+      "rank": 444,
       "name": "1-800-PLUMBER +AIR",
       "city": "Yukon",
       "score": 72,
@@ -7232,7 +7433,7 @@
       ]
     },
     {
-      "rank": 434,
+      "rank": 445,
       "name": "Affordable Plumbing, LLC",
       "city": "Aiken",
       "score": 72,
@@ -7249,7 +7450,7 @@
       ]
     },
     {
-      "rank": 435,
+      "rank": 446,
       "name": "Prestige Plumbing, Heating & Cooling",
       "city": "Batavia",
       "score": 72,
@@ -7270,7 +7471,7 @@
       ]
     },
     {
-      "rank": 436,
+      "rank": 447,
       "name": "Told Plumbing",
       "city": "Provo",
       "score": 72,
@@ -7290,7 +7491,7 @@
       ]
     },
     {
-      "rank": 437,
+      "rank": 448,
       "name": "RJ Kuhn Plumbing Heating Cooling Inc.",
       "city": "Montgomery",
       "score": 72,
@@ -7309,7 +7510,7 @@
       ]
     },
     {
-      "rank": 438,
+      "rank": 449,
       "name": "Cork's Plumbing, Heating, & Cooling",
       "city": "Marengo",
       "score": 72,
@@ -7330,7 +7531,7 @@
       ]
     },
     {
-      "rank": 439,
+      "rank": 450,
       "name": "Above All Plumbing",
       "city": "Edmond",
       "score": 72,
@@ -7349,7 +7550,7 @@
       ]
     },
     {
-      "rank": 440,
+      "rank": 451,
       "name": "R.J. O'Neil Inc. Mechanical Contractors",
       "city": "Montgomery",
       "score": 72,
@@ -7371,7 +7572,7 @@
       ]
     },
     {
-      "rank": 441,
+      "rank": 452,
       "name": "Rescue Plumbing & Piping",
       "city": "Hurricane",
       "score": 72,
@@ -7390,7 +7591,7 @@
       ]
     },
     {
-      "rank": 442,
+      "rank": 453,
       "name": "Norman Mechanical Inc",
       "city": "Elgin",
       "score": 72,
@@ -7410,7 +7611,7 @@
       ]
     },
     {
-      "rank": 443,
+      "rank": 454,
       "name": "Boston Plumbing Inc",
       "city": "Mundelein",
       "score": 72,
@@ -7430,28 +7631,25 @@
       ]
     },
     {
-      "rank": 444,
+      "rank": 455,
       "name": "Pro Rooter Inc",
       "city": "San Leandro",
       "score": 72,
-      "trustLevel": "moderate",
+      "trustLevel": "high",
       "googleRating": 4.1,
       "reviewCount": 25,
       "phone": "(510) 670-1115",
-      "summary": "Pro Rooter Inc shows strong potential with excellent work from technicians Richard and Hector, earning praise for reliability and professionalism. However, concerning reports of overcharging and incomplete work create trust issues that are problematic for emergency situations.",
-      "bestFor": [
-        "Major sewer line repairs",
-        "Routine maintenance",
-        "Shut-off valve installation"
-      ],
+      "summary": "Richard shows up on time and fixes your problem without nickel-and-diming you, but Hector and Chilo are hit-or-miss—they might not show up at all, or they might try to upsell you on work you don't need.",
+      "bestFor": [],
       "redFlags": [
-        "Price changes mid-job ($300 became $400)",
-        "Attempted upselling for unnecessary $900 repair",
-        "Left job incomplete with roots still clogged"
+        "Hector: 5+ documented no-shows or severe tardiness with zero follow-up communication",
+        "Chilo: systematic pattern of scope creep, price changes mid-job, and suggesting unnecessary expensive repairs",
+        "Bait-and-switch pricing: multiple reviews cite lower phone quotes that spike significantly upon arrival",
+        "Quality variance: same company has done excellent large jobs and caused damage requiring additional repairs"
       ]
     },
     {
-      "rank": 445,
+      "rank": 456,
       "name": "Foster Plumbing",
       "city": "Hurricane",
       "score": 72,
@@ -7471,7 +7669,7 @@
       ]
     },
     {
-      "rank": 446,
+      "rank": 457,
       "name": "Craig’s Handyman and Service",
       "city": "Aiken",
       "score": 72,
@@ -7491,7 +7689,7 @@
       ]
     },
     {
-      "rank": 447,
+      "rank": 458,
       "name": "Mullin Plumbing",
       "city": "Muskogee",
       "score": 72,
@@ -7508,7 +7706,7 @@
       "redFlags": []
     },
     {
-      "rank": 448,
+      "rank": 459,
       "name": "Arvada Emergency Drain Repair",
       "city": "Westminster",
       "score": 72,
@@ -7525,7 +7723,7 @@
       "redFlags": []
     },
     {
-      "rank": 449,
+      "rank": 460,
       "name": "24/7 Emergency Plumber Nashville",
       "city": "Nashville",
       "score": 72,
@@ -7540,7 +7738,7 @@
       ]
     },
     {
-      "rank": 450,
+      "rank": 461,
       "name": "Zenks Plumbing LLC",
       "city": "Marengo",
       "score": 72,
@@ -7559,7 +7757,7 @@
       ]
     },
     {
-      "rank": 451,
+      "rank": 462,
       "name": "1896 Plumbing & Heating Inc.",
       "city": "Worcester",
       "score": 72,
@@ -7574,7 +7772,7 @@
       ]
     },
     {
-      "rank": 452,
+      "rank": 463,
       "name": "Elite Plumbing and Piping Inc.",
       "city": "Lake in the Hills",
       "score": 72,
@@ -7591,7 +7789,7 @@
       "redFlags": []
     },
     {
-      "rank": 453,
+      "rank": 464,
       "name": "Ellison Plumbing & Heating, Inc.",
       "city": "Harvard",
       "score": 72,
@@ -7607,7 +7805,7 @@
       "redFlags": []
     },
     {
-      "rank": 454,
+      "rank": 465,
       "name": "Andersen Drain & Sewer Cleaning",
       "city": "North Aurora",
       "score": 72,
@@ -7624,7 +7822,7 @@
       "redFlags": []
     },
     {
-      "rank": 455,
+      "rank": 466,
       "name": "Huffman Plumbing Inc.",
       "city": "Stow",
       "score": 72,
@@ -7640,7 +7838,7 @@
       "redFlags": []
     },
     {
-      "rank": 456,
+      "rank": 467,
       "name": "Keener Co Plumbing",
       "city": "Ardmore",
       "score": 72,
@@ -7656,7 +7854,7 @@
       "redFlags": []
     },
     {
-      "rank": 457,
+      "rank": 468,
       "name": "24/7 Thornton Plumbers",
       "city": "Northglenn",
       "score": 72,
@@ -7673,7 +7871,28 @@
       "redFlags": []
     },
     {
-      "rank": 458,
+      "rank": 469,
+      "name": "OnCall Plumbing",
+      "city": "Marble Falls",
+      "score": 72,
+      "trustLevel": "moderate",
+      "googleRating": 4.9,
+      "reviewCount": 642,
+      "phone": "(512) 288-1564",
+      "summary": "OnCall Plumbing shows strong technical skills and professionalism in most cases, but has concerning communication issues and potential reliability problems with warranty work. While many customers praise their quality and efficiency, one detailed negative experience reveals serious gaps in follow-through and customer service.",
+      "bestFor": [
+        "Standard plumbing repairs",
+        "Toilet installations",
+        "Water system upgrades"
+      ],
+      "redFlags": [
+        "Warranty company reportedly no longer works with them",
+        "Extended delays on complex repairs (23 days for one job)",
+        "Poor communication during multi-visit repairs"
+      ]
+    },
+    {
+      "rank": 470,
       "name": "Able Plumbing",
       "city": "Muskogee",
       "score": 68,
@@ -7689,7 +7908,7 @@
       "redFlags": []
     },
     {
-      "rank": 459,
+      "rank": 471,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Aurora",
       "score": 65,
@@ -7706,7 +7925,7 @@
       ]
     },
     {
-      "rank": 460,
+      "rank": 472,
       "name": "Emergency Plumbing service",
       "city": "Fox River Grove",
       "score": 65,
@@ -7727,7 +7946,7 @@
       ]
     },
     {
-      "rank": 461,
+      "rank": 473,
       "name": "Benjamin Franklin Plumbing of Harford County",
       "city": "Aberdeen",
       "score": 65,
@@ -7746,7 +7965,7 @@
       ]
     },
     {
-      "rank": 462,
+      "rank": 474,
       "name": "Amped Plumbing Heating Air Conditioning and Security",
       "city": "Edmond",
       "score": 65,
@@ -7768,7 +7987,7 @@
       ]
     },
     {
-      "rank": 463,
+      "rank": 475,
       "name": "Gladiator Rooter and Plumbing",
       "city": "Alameda",
       "score": 65,
@@ -7787,7 +8006,7 @@
       ]
     },
     {
-      "rank": 464,
+      "rank": 476,
       "name": "TJM Sewer and Plumbing",
       "city": "South Elgin",
       "score": 65,
@@ -7808,7 +8027,7 @@
       ]
     },
     {
-      "rank": 465,
+      "rank": 477,
       "name": "Drew's Plumbing",
       "city": "Muskogee",
       "score": 65,
@@ -7827,7 +8046,7 @@
       ]
     },
     {
-      "rank": 466,
+      "rank": 478,
       "name": "Affordable Plumbing Solutions, Inc.",
       "city": "Aurora",
       "score": 65,
@@ -7848,7 +8067,7 @@
       ]
     },
     {
-      "rank": 467,
+      "rank": 479,
       "name": "A&P Plumbing and Sewer",
       "city": "Geneva",
       "score": 65,
@@ -7867,7 +8086,7 @@
       ]
     },
     {
-      "rank": 468,
+      "rank": 480,
       "name": "A T Weber Plumbing",
       "city": "Alameda",
       "score": 65,
@@ -7875,20 +8094,17 @@
       "googleRating": 4.2,
       "reviewCount": 30,
       "phone": "(510) 523-0628",
-      "summary": "A T Weber Plumbing shows strong technical skills and professionalism based on positive reviews, but concerning billing disputes raise questions about transparency. With only 30 reviews and mixed feedback on pricing, they may be worth considering for non-emergency work but proceed with caution.",
-      "bestFor": [
-        "routine maintenance",
-        "heating system service",
-        "water leak repairs"
-      ],
+      "summary": "They show up when they say they will and actually fix the problem right, but you'll pay a premium for it.",
+      "bestFor": [],
       "redFlags": [
-        "Customer charged for 2 plumbers when only 1 was present",
-        "Extremely high labor rates at $200/hour",
-        "Invoicing with no detail breakdown"
+        "Recurring complaints about invoice/estimate mismatches and defensive billing conversations (3 instances of management pushback or deflection)",
+        "Two 1-star reviews citing dangerous mistakes: loose gas line creating unventilated garage gas leak, and thermocouple misinstallation—plus poor office follow-up on urgent callbacks",
+        "Scheduler reliability issues: 3 reviews mention cancelled appointments and multi-week delays; one customer reported no-show and took deposit in September with work not starting by January",
+        "Front desk communication problems: one 1-star review details rude and dismissive phone interaction with staff member 'Jody'"
       ]
     },
     {
-      "rank": 469,
+      "rank": 481,
       "name": "Community Plumbing Company",
       "city": "Woodstock",
       "score": 65,
@@ -7907,7 +8123,7 @@
       ]
     },
     {
-      "rank": 470,
+      "rank": 482,
       "name": "Family Plumbing Services LLC",
       "city": "Bethesda",
       "score": 65,
@@ -7925,7 +8141,7 @@
       ]
     },
     {
-      "rank": 471,
+      "rank": 483,
       "name": "The Plumbing Doctor",
       "city": "Abilene",
       "score": 65,
@@ -7942,7 +8158,7 @@
       ]
     },
     {
-      "rank": 472,
+      "rank": 484,
       "name": "artisan water group",
       "city": "Algonquin",
       "score": 65,
@@ -7959,7 +8175,7 @@
       "redFlags": []
     },
     {
-      "rank": 473,
+      "rank": 485,
       "name": "Tom Sewer Water Plumbing",
       "city": "Mundelein",
       "score": 65,
@@ -7979,7 +8195,7 @@
       ]
     },
     {
-      "rank": 474,
+      "rank": 486,
       "name": "The Oakland Plumber | Emergency Plumbing Service",
       "city": "San Leandro",
       "score": 65,
@@ -7999,7 +8215,7 @@
       ]
     },
     {
-      "rank": 475,
+      "rank": 487,
       "name": "1st Choice Plumbing, LLC",
       "city": "Ardmore",
       "score": 65,
@@ -8015,7 +8231,7 @@
       "redFlags": []
     },
     {
-      "rank": 476,
+      "rank": 488,
       "name": "American Plumbing",
       "city": "Muskogee",
       "score": 65,
@@ -8031,7 +8247,7 @@
       "redFlags": []
     },
     {
-      "rank": 477,
+      "rank": 489,
       "name": "Greenville Plumbing Pros",
       "city": "Greer",
       "score": 65,
@@ -8047,7 +8263,7 @@
       "redFlags": []
     },
     {
-      "rank": 478,
+      "rank": 490,
       "name": "Hartwig Plumbing & Heating",
       "city": "Harvard",
       "score": 65,
@@ -8062,7 +8278,7 @@
       "redFlags": []
     },
     {
-      "rank": 479,
+      "rank": 491,
       "name": "Top Northglenn Plumbers",
       "city": "Northglenn",
       "score": 65,
@@ -8082,7 +8298,7 @@
       ]
     },
     {
-      "rank": 480,
+      "rank": 492,
       "name": "911 Rooter And Plumbing",
       "city": "Northglenn",
       "score": 65,
@@ -8103,7 +8319,42 @@
       ]
     },
     {
-      "rank": 481,
+      "rank": 493,
+      "name": "Economy Plumbing Services of Marble Falls",
+      "city": "Marble Falls",
+      "score": 65,
+      "trustLevel": "moderate",
+      "googleRating": 4.7,
+      "reviewCount": 15,
+      "phone": "(830) 460-3565",
+      "summary": "Economy Plumbing has mixed reviews with excellent emergency response times but concerning pricing and quality issues. While they respond quickly to calls and have professional technicians, one customer experienced a failed repair and extremely high pricing that raises reliability concerns.",
+      "bestFor": [
+        "emergency repairs",
+        "initial assessments"
+      ],
+      "redFlags": [
+        "$500 repair that failed after 2 days with no credit given",
+        "Extremely high estimates ($3000 for two faucets, $1500 for single faucet installation)"
+      ]
+    },
+    {
+      "rank": 494,
+      "name": "J & M Kinsey Plumbing, Inc.",
+      "city": "Marble Falls",
+      "score": 65,
+      "trustLevel": "moderate",
+      "googleRating": 5,
+      "reviewCount": 3,
+      "phone": "(830) 596-9018",
+      "summary": "J & M Kinsey Plumbing has excellent customer feedback but only 3 reviews, making it hard to assess reliability for emergencies. The technicians appear knowledgeable and punctual, but there's no confirmation of 24-hour availability.",
+      "bestFor": [
+        "water heater replacement",
+        "scheduled plumbing repairs"
+      ],
+      "redFlags": []
+    },
+    {
+      "rank": 495,
       "name": "Roto-Rooter Plumbing & Water Cleanup",
       "city": "Stow",
       "score": 62,
@@ -8123,7 +8374,7 @@
       ]
     },
     {
-      "rank": 482,
+      "rank": 496,
       "name": "1-Tom-Plumber",
       "city": "Nashville",
       "score": 45,
@@ -8140,7 +8391,7 @@
       ]
     },
     {
-      "rank": 483,
+      "rank": 497,
       "name": "Rooter Hero Plumbing & Air of San Lorenzo",
       "city": "San Leandro",
       "score": 45,
@@ -8158,7 +8409,7 @@
       ]
     },
     {
-      "rank": 484,
+      "rank": 498,
       "name": "JF Plumbing & Heating",
       "city": "Bethesda",
       "score": 45,
@@ -8171,7 +8422,7 @@
       "redFlags": []
     },
     {
-      "rank": 485,
+      "rank": 499,
       "name": "All Star Plumbing",
       "city": "Abilene",
       "score": 45,
@@ -8187,7 +8438,7 @@
       ]
     },
     {
-      "rank": 486,
+      "rank": 500,
       "name": "Chasteen Plumbing",
       "city": "Duncan",
       "score": 45,
@@ -8208,7 +8459,7 @@
       ]
     },
     {
-      "rank": 487,
+      "rank": 501,
       "name": "Matt Krell Plumbing",
       "city": "Pittsfield",
       "score": 45,
@@ -8226,7 +8477,7 @@
       ]
     },
     {
-      "rank": 488,
+      "rank": 502,
       "name": "Best Zion Emergency Plumber",
       "city": "Mundelein",
       "score": 45,
@@ -8247,7 +8498,7 @@
       ]
     },
     {
-      "rank": 489,
+      "rank": 503,
       "name": "Acworth Plumbing LLC",
       "city": "Acworth",
       "score": 45,
@@ -8260,7 +8511,7 @@
       "redFlags": []
     },
     {
-      "rank": 490,
+      "rank": 504,
       "name": "Triplett's Plumbing",
       "city": "Muskogee",
       "score": 45,
@@ -8277,7 +8528,7 @@
       ]
     },
     {
-      "rank": 491,
+      "rank": 505,
       "name": "Duvall Plumbing Company",
       "city": "Edmond",
       "score": 35,
@@ -8296,7 +8547,7 @@
       ]
     },
     {
-      "rank": 492,
+      "rank": 506,
       "name": "Hartwig Mechanical",
       "city": "Harvard",
       "score": 35,
@@ -8315,7 +8566,7 @@
       ]
     },
     {
-      "rank": 493,
+      "rank": 507,
       "name": "Karls Plumbing",
       "city": "Duncan",
       "score": 35,
@@ -8336,7 +8587,7 @@
       ]
     },
     {
-      "rank": 494,
+      "rank": 508,
       "name": "Reliable Plumbing & Heating",
       "city": "Pittsfield",
       "score": 35,
@@ -8355,7 +8606,7 @@
       ]
     },
     {
-      "rank": 495,
+      "rank": 509,
       "name": "Plumbing Systems LLC",
       "city": "Huntley",
       "score": 35,
@@ -8371,7 +8622,7 @@
       ]
     },
     {
-      "rank": 496,
+      "rank": 510,
       "name": "PLUMB GENIUS",
       "city": "Edmond",
       "score": 25,
@@ -8390,7 +8641,7 @@
       ]
     },
     {
-      "rank": 497,
+      "rank": 511,
       "name": "The Plumbing Ministry",
       "city": "San Leandro",
       "score": 25,
@@ -8408,7 +8659,7 @@
       ]
     },
     {
-      "rank": 498,
+      "rank": 512,
       "name": "Clement Plumbing Alameda CA",
       "city": "Alameda",
       "score": 25,
@@ -8424,7 +8675,7 @@
       ]
     },
     {
-      "rank": 499,
+      "rank": 513,
       "name": "Triplett Plumbing",
       "city": "Muskogee",
       "score": 25,
@@ -8442,7 +8693,7 @@
       ]
     },
     {
-      "rank": 500,
+      "rank": 514,
       "name": "Cool Plumbing - Woodstock",
       "city": "Woodstock",
       "score": 25,
@@ -8459,7 +8710,7 @@
       ]
     },
     {
-      "rank": 501,
+      "rank": 515,
       "name": "CHIEF'S AFFORDABLE PLUMBING AND HANDYMAN SERVICES",
       "city": "Acworth",
       "score": 25,
@@ -8478,7 +8729,7 @@
       ]
     },
     {
-      "rank": 502,
+      "rank": 516,
       "name": "Sheehy Plumbing",
       "city": "Ardmore",
       "score": 25,
@@ -8494,7 +8745,7 @@
       ]
     },
     {
-      "rank": 503,
+      "rank": 517,
       "name": "Jim Michael Plumbing",
       "city": "Ardmore",
       "score": 25,
@@ -8510,7 +8761,7 @@
       ]
     },
     {
-      "rank": 504,
+      "rank": 518,
       "name": "Charlies Plumbing Heating & A Conditi",
       "city": "Muskogee",
       "score": 25,
@@ -8525,7 +8776,7 @@
       ]
     },
     {
-      "rank": 505,
+      "rank": 519,
       "name": "Roto-Rooter",
       "city": "Natchez",
       "score": 15,
@@ -8542,7 +8793,7 @@
       ]
     },
     {
-      "rank": 506,
+      "rank": 520,
       "name": "Greylock Plumbing & Heating",
       "city": "Pittsfield",
       "score": 15,
@@ -8559,7 +8810,7 @@
       ]
     },
     {
-      "rank": 507,
+      "rank": 521,
       "name": "24/7 Plumbers",
       "city": "Worcester",
       "score": 15,

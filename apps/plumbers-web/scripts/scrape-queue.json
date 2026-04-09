@@ -1,8 +1,71 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 359,
+  "usedThisMonth": 374,
   "queue": [
+    {
+      "city": "West Jordan",
+      "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Lampasas",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Abingdon",
+      "state": "VA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Hanover Park",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Lawrenceville",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Fairfield",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Commerce City",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
     {
       "city": "Ken Caryl",
       "state": "CO",
@@ -213,6 +276,16 @@
       "actualCalls": 17,
       "plumbersFound": 16,
       "completedAt": "2026-04-08"
+    },
+    {
+      "city": "Marble Falls",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-04-09"
     }
   ]
 }
