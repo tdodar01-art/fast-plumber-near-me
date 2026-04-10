@@ -1,8 +1,8 @@
 # Diagnosis: Marble Falls showing 0 plumbers
 
-*Task: fpnm-001 | Date: 2026-04-09 | Migrated to real repo: 2026-04-10*
+*Task: fpnm-001 | Date: 2026-04-09 | Migrated to real repo: 2026-04-10 | Fixed: 2026-04-10*
 
-> **Migration note:** Original investigation was performed in a stale iCloud clone at `~/Desktop/My Apps/Directory Website/Fast Plumber Near Me`. That clone had `page.tsx` and `loading.tsx` staged for deletion in its working tree, which led to a misdiagnosis. This document reflects the **corrected** analysis after verifying state in the real repo at `~/code/directory-sites/fastplumbernearme.com`.
+> **History:** Original investigation was performed in a stale iCloud clone at `~/Desktop/My Apps/Directory Website/Fast Plumber Near Me`. That clone had `page.tsx` and `loading.tsx` staged for deletion in its working tree, which led to a misdiagnosis. A second-pass diagnosis (the migrated version of this doc) then incorrectly fingered `cities-data.ts` as the missing piece. **This is the third and final pass against the real repo at `~/code/directory-sites/fastplumbernearme.com` (monorepo path: `apps/plumbers-web`).**
 
 ---
 
@@ -12,85 +12,105 @@ Marble Falls city page at `/emergency-plumbers/texas/marble-falls` displays "0 p
 
 ---
 
-## What the Stale Clone Showed (Phantom Issues)
+## False leads (ruled out)
 
-The original investigation in the iCloud clone reported these as bugs. **None of these are real production issues** — they were artifacts of an out-of-sync working tree:
-
-| "Issue" | Reality |
+| Hypothesis | Reality |
 |---|---|
-| `page.tsx` and `loading.tsx` deleted from `[state]/[city]/` | EXISTS in real repo at HEAD — file is 18,625 bytes |
-| Marble Falls coordinates missing from `city-coords.ts` | EXISTS in real repo |
-| 14 plumbers missing from `plumbers-synthesized.json` | EXISTS in real repo (verified: 14 hits for "Marble" in JSON) |
+| `page.tsx` and `loading.tsx` deleted from `[state]/[city]/` | EXISTS in real repo at HEAD |
+| Marble Falls missing from `plumbers-synthesized.json` | EXISTS — 14 plumbers, all with `serviceCities: ["marble-falls"]` and lat/lng around (30.58, -98.24) |
+| Marble Falls missing from `cities-data.ts` | EXISTS — `cities-data.ts:511-512` calls `registerGeneratedCities(CITY_DATA)`, and `cities-generated.ts:2011` defines `marble-falls` under TX. So `getCityData("texas","marble-falls")` returns a valid `CityInfo` and the route renders. |
 
-The iCloud clone had been abandoned and never pulled the daily-scrape commits that landed in the real repo (e.g., `7449825 Daily scrape: +14 plumbers from Marble Falls`).
-
----
-
-## Real Root Cause (still present in production)
-
-**Marble Falls is missing from `cities-data.ts`** — the curated city registry that the page actually imports from.
-
-| Data source | Has Marble Falls? | Used by city page? |
-|---|---|---|
-| `cities-generated.ts` | YES (slug: marble-falls, state: TX, county: Burnet) | NO |
-| `cities-data.ts` | NO | YES — `getCityData()` and `getAllCityParams()` import from here |
-| `city-coords.ts` | YES | YES |
-| `plumbers-synthesized.json` | YES (14 plumbers) | YES |
-| Firestore | YES | Runtime only |
-
-**What happens on page load:**
-1. Next.js looks for the route via `getAllCityParams()` → returns Texas city slugs from `cities-data.ts` → Marble Falls not in list → page is not pre-rendered
-2. If accessed directly: `getCityData("texas", "marble-falls")` → `null` → page calls `notFound()` → 404
-
-The 14 plumbers are sitting in the JSON and Firestore with nowhere to render.
+The page renders. The plumber list inside it is what's empty.
 
 ---
 
-## Why This Happens (Systemic Issue)
+## Real root cause
 
-`cities-generated.ts` and `cities-data.ts` are two separate files that have diverged:
+**`apps/plumbers-web/src/lib/city-coords.ts` is missing `TX:marble-falls`** (and also `CO:northglenn`).
 
-- `cities-generated.ts` — output of `scripts/generate-cities-data.mjs`, contains 2250+ cities including Marble Falls
-- `cities-data.ts` — curated city registry, contains only ~16 cities per state, used by all the page components
+`city-coords.ts` is a hand-curated map of `"<STATE>:<citySlug>"` → `[lat, lng]`. It is the **only** lookup the build-time fallback path uses to compute distance to plumbers.
 
-When a new city gets scraped via the GSC expansion pipeline (e.g., Marble Falls), it gets added to:
-- ✅ Firestore `cities` collection
-- ✅ `cities-generated.ts` (next time the generator runs)
-- ✅ `city-coords.ts` (geocoding step)
-- ✅ `plumbers-synthesized.json` (export step)
-- ❌ NOT `cities-data.ts` — no automated step adds it here
+### What happens on page load
 
-This means **every new city added via GSC expansion is invisible to the page renderer** until someone manually adds it to `cities-data.ts`.
+`apps/plumbers-web/src/app/emergency-plumbers/[state]/[city]/page.tsx` runs two paths in sequence:
 
----
+**Path A — Firestore (lines 82–122):**
+1. `getPlumbersByCity("marble-falls-tx")` then `getPlumbersByCity("marble-falls")`
+2. If Firebase isn't configured at build time, the entire `try` block is swallowed by the `catch` and `plumbers` stays `[]`.
 
-## Recommended Fix
-
-Two options, both require Tim's input on direction:
-
-### Option A: Make the page import from `cities-generated.ts` (fastest, may need shape adapter)
-Swap the imports in `[state]/[city]/page.tsx` and `[state]/page.tsx`:
+**Path B — static JSON fallback (lines 127–129):**
 ```ts
-// Before
-import { getAllCityParams, getCityData } from "@/lib/cities-data";
-// After
-import { getAllCityParams, getCityData } from "@/lib/cities-generated";
+if (plumbers.length === 0) {
+  plumbers = getPlumbersNearCity(city.state, citySlug);
+}
 ```
-Risk: data shapes may differ — `cities-generated.ts` might not have `getCityData()` or `getAllCityParams()` exported, may need a shim.
+And in `lib/plumber-data.ts:218`:
+```ts
+export function getPlumbersNearCity(stateAbbr, citySlug, radius=20) {
+  const coord = getCityCoordBySlug(stateAbbr, citySlug);
+  if (!coord) return [];   // ← WE EXIT HERE FOR MARBLE FALLS
+  ...
+}
+```
 
-### Option B: Add an export step that syncs `cities-data.ts` from Firestore (cleanest long-term)
-Create `scripts/sync-cities-data.js` that reads the `cities` Firestore collection and writes a fresh `cities-data.ts`. Wire it into the daily-scrape workflow as the final step. This makes Firestore the single source of truth (consistent with existing data pipeline invariants).
+`getCityCoordBySlug("TX","marble-falls")` looks up `COORDS["TX:marble-falls"]`, which doesn't exist, so it returns `null`. The function bails immediately and returns `[]`. The page renders "0 plumbers available."
 
-### Option C: One-shot patch for Marble Falls
-Manually add Marble Falls to `cities-data.ts` to unblock the immediate page. Doesn't fix the systemic issue, but gets the 14 plumbers showing up TODAY.
+The 14 plumbers are sitting in the JSON with valid coordinates — the page just has no anchor point to measure from.
 
-**Recommendation:** Option C as an immediate hotfix, then Option B as the durable solution. Option A is risky if the data shapes don't line up.
+---
+
+## Scope (the "and possibly other cities" question)
+
+Scanned `plumbers-synthesized.json` for every unique `serviceCities[]` entry and cross-checked against `city-coords.ts`. Two cities are missing:
+
+| Slug | State | Plumbers in JSON | Approx. center |
+|---|---|---|---|
+| `marble-falls` | TX | 14 | 30.58, -98.27 |
+| `northglenn` | CO | 10 | 39.89, -104.98 |
+
+Both were added by the GSC expansion pipeline (commits `7449825 Daily scrape: +14 plumbers from Marble Falls` and `e683f4d Daily scrape: +16 plumbers from Northglenn`). All other cities in the JSON have an entry in `city-coords.ts`.
+
+**No other cities are affected today.** But the systemic issue (below) means new GSC-discovered cities will keep slipping through unless `gsc-prepend-queue.js` is verified to be running its `city-coords.ts` patch step on every scrape.
+
+---
+
+## Why this slipped through the pipeline
+
+`scripts/gsc-prepend-queue.js` is supposed to geocode every new GSC-discovered city and inject a coord entry into `city-coords.ts` (see `CITY_COORDS_PATH` on line 25 and the `writeFileSync` on line 182). It does the work by finding a `// <StateName>` comment line and inserting a new entry just below.
+
+Two ways this can silently fail:
+1. **Section header mismatch.** The script searches for the string `// ${stateName}` in `city-coords.ts`. If a state is missing that exact comment, the script logs a warning and skips — but the pipeline does not fail.
+2. **Step skipped entirely.** If the daily-scrape workflow ran the scrape phase but skipped or crashed during `gsc-prepend-queue.js` (e.g., Geocoding API quota exhausted, transient error), the new cities would be in `cities` Firestore + `plumbers-synthesized.json` but not in `city-coords.ts`.
+
+Either way, this is silent: the pipeline reports success and the next morning the city page is empty.
+
+---
+
+## Fix applied
+
+**Immediate (this commit):** added two entries to `apps/plumbers-web/src/lib/city-coords.ts`:
+
+```ts
+// Colorado section
+"CO:northglenn": [39.89, -104.98],
+
+// Texas section
+"TX:marble-falls": [30.58, -98.27],
+```
+
+Verified locally with a Haversine simulation: Marble Falls now resolves to 13 plumbers within 20 miles, Northglenn to 31 (its own 10 + nearby Denver/Thornton/Westminster).
+
+**Not in this commit (follow-up backlog):**
+- Audit `gsc-prepend-queue.js` to make the `city-coords.ts` patch step **fail loudly** (non-zero exit) when the section header isn't found. Silent skips are how this happened.
+- Consider sourcing coords from Firestore `cities` collection instead of a hand-curated TypeScript file. The geocode results already live in Firestore — `city-coords.ts` is just a stale snapshot of that data and a single point of failure for build-time fallback rendering.
+- Add a CI assertion: every unique `serviceCities[]` value in `plumbers-synthesized.json` must have a matching entry in `city-coords.ts`. This would have caught both Marble Falls and Northglenn the morning after they were scraped.
 
 ---
 
 ## Status
 
-- [x] Diagnosis written
-- [x] Migrated to real repo (`~/code/directory-sites/fastplumbernearme.com`)
-- [ ] Fix not applied — requires Tim's decision on Option A/B/C
-- [ ] Review item: `~/code/control-center/reviews/2026-04-09-fpnm-001.md` (needs update with corrected analysis)
+- [x] Real root cause identified (third pass)
+- [x] Scope confirmed: 2 cities affected (Marble Falls, Northglenn)
+- [x] Fix applied to `city-coords.ts`
+- [x] Verified locally — 13 / 31 plumbers respectively now resolve within 20 miles
+- [ ] Pipeline hardening (loud-fail in `gsc-prepend-queue.js`, CI assertion) — left as backlog item
