@@ -51,6 +51,7 @@ const COORDS: Record<string, [number, number]> = {
   "CO:boulder": [40.01, -105.27], "CO:greeley": [40.42, -104.71], "CO:longmont": [40.17, -105.10],
   "CO:loveland": [40.40, -105.07], "CO:grand-junction": [39.07, -108.55],
   "CO:castle-rock": [39.37, -104.86], "CO:broomfield": [39.92, -105.09],
+  "CO:northglenn": [39.89, -104.98],
   // Connecticut
   "CT:bridgeport": [41.18, -73.19], "CT:new-haven": [41.31, -72.92], "CT:stamford": [41.05, -73.54],
   "CT:hartford": [41.76, -72.68], "CT:waterbury": [41.56, -73.04], "CT:norwalk": [41.12, -73.41],
@@ -294,6 +295,7 @@ const COORDS: Record<string, [number, number]> = {
   "TX:cedar-park": [30.51, -97.82], "TX:georgetown": [30.63, -97.68],
   "TX:katy": [29.79, -95.82], "TX:galveston": [29.30, -94.79],
   "TX:brownsville": [25.90, -97.50], "TX:harlingen": [26.19, -97.70],
+  "TX:marble-falls": [30.58, -98.27],
   // Utah
   "UT:salt-lake-city": [40.76, -111.89], "UT:west-valley-city": [40.69, -112.00],
   "UT:provo": [40.23, -111.66], "UT:west-jordan": [40.61, -111.94],
