@@ -1,8 +1,26 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 374,
+  "usedThisMonth": 392,
   "queue": [
+    {
+      "city": "Canal Winchester",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Wadsworth",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
     {
       "city": "West Jordan",
       "state": "UT",
@@ -286,6 +304,16 @@
       "actualCalls": 15,
       "plumbersFound": 14,
       "completedAt": "2026-04-09"
+    },
+    {
+      "city": "Bethlehem",
+      "state": "PA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 18,
+      "plumbersFound": 17,
+      "completedAt": "2026-04-10"
     }
   ]
 }
