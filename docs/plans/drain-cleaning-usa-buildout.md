@@ -1,0 +1,192 @@
+# Drain Cleaning USA Buildout — Plan
+
+*Task: fpnm-004 | Date: 2026-04-10 | Status: planning, not implementation*
+
+> **Scope:** Define how to roll out drain cleaning city pages across the entire USA, riding the same Firestore-as-source / GSC-driven enrichment pipeline that already powers the emergency plumbing buildout. This is a plan, not code.
+
+---
+
+## TL;DR
+
+1. **Cities:** reuse the existing 2,300+ city universe in `cities-generated.ts`. No new geocoding work.
+2. **URL:** new parallel route `/drain-cleaning/[state]/[city]`. Do NOT bolt drain cleaning into the emergency-plumbing route — they need separate `<title>`, `<h1>`, schema, and copy or they cannibalize each other in SERPs.
+3. **Data:** reuse the existing `plumbers` Firestore collection. Add an opt-in `services.drainCleaning: { eligible: true, signalStrength: "strong"|"weak", topQuotes: [...] }` field, populated by extending the existing review synthesis script — not a new collection, not a new scraper.
+4. **GSC pipeline:** publish all 2,300 stub pages day one with low-effort copy. Let GSC tell us which slugs get impressions. Tier them via the same `gscTier` field already on `cities` Firestore docs. Promote winning slugs to Level 1 then Level 2 enrichment, exactly like the plumbing pipeline.
+5. **Synthesis trigger:** drain-cleaning city pages re-render when ≥2 plumbers in that city have `services.drainCleaning.eligible: true`. Below that threshold, page falls back to a generic state-level "what to do about a clogged drain" copy block + nearest-city outbound links.
+6. **Tier eligibility:** Level 1 unlocks any plumber whose 5 Places-API reviews mention drain cleaning at least once. Level 2 (Outscraper) unlocks the city when GSC tier reaches medium (≥10 impressions / 90d).
+
+Roughly **5–10 follow-up tasks** detailed at the bottom.
+
+---
+
+## 1. City list — where it comes from
+
+**Reuse `apps/plumbers-web/src/lib/cities-generated.ts`** as-is. It already contains 2,308 cities, every state has coverage, the `CityInfo` shape is locked, and `registerGeneratedCities()` already merges into `CITY_DATA`. Drain cleaning gets the same universe of slugs the plumbing route uses.
+
+Three reasons not to source a new list:
+- Geocoding is the bottleneck. `city-coords.ts` already has the centers we need for radius matching.
+- A second city universe means two sources of truth, two divergence risks (see fpnm-001 for what divergence costs us).
+- Drain cleaning demand lives where plumbing demand lives. The same cities are valid candidates.
+
+**Open question for Tim:** is there a tier-1 cutoff (top 500 metros) we want to bias toward, or do we publish all 2,300 day one and let GSC sort it? Recommendation below assumes "publish all."
+
+---
+
+## 2. URL slug structure
+
+### Three options
+
+**Option A — Parallel top-level route**
+`/drain-cleaning/[state]/[city]`
+e.g. `/drain-cleaning/texas/marble-falls`
+
+**Option B — Nested under emergency-plumbers**
+`/emergency-plumbers/[state]/[city]/drain-cleaning`
+e.g. `/emergency-plumbers/texas/marble-falls/drain-cleaning`
+
+**Option C — Service-keyed URL**
+`/services/drain-cleaning/[state]/[city]`
+e.g. `/services/drain-cleaning/texas/marble-falls`
+
+### Tradeoffs
+
+| Concern | A (parallel) | B (nested) | C (service-keyed) |
+|---|---|---|---|
+| SEO keyword in URL | "drain cleaning [city]" matches well | drain cleaning is the *4th* path segment — diluted | matches, but `/services/` is a junk word |
+| Cannibalization vs plumbing route | Clean separation, distinct ranking signal | Children inherit parent — Google may see them as duplicates | Clean separation |
+| Internal linking from plumbing pages | Easy: cross-link side cards | Awkward: child link to itself | Easy |
+| Sitemap clarity | Two clean trees | One tree with nested branches | Two trees, one with junk parent |
+| Future verticals (water heater, sewer, etc.) | Parallel routes scale cleanly | Nesting under plumbing forever locks the hierarchy | `/services/` becomes the dumping ground |
+| Existing route reuse | Need a near-twin of `[state]/[city]/page.tsx` | Inherits parent's `generateStaticParams`, `getCityData`, schema | Same as A |
+
+### Recommendation: **Option A — `/drain-cleaning/[state]/[city]`**
+
+- It's the cleanest SEO match.
+- It scales: when we add water heater repair, we add `/water-heater-repair/[state]/[city]`, not nest one more level deep.
+- The cost is real: we need a near-twin of the city page. Mitigate by extracting the shared parts (hero, JSON-LD builders, plumber list, sort logic) into `apps/plumbers-web/src/components/CityServicePage.tsx` and passing a `service` prop. Both routes become ~30-line wrappers around it.
+
+---
+
+## 3. Page copy template
+
+Sections, in order (this maps directly to the template component):
+
+1. **`<h1>` — Emergency Drain Cleaning in [City], [State]**
+   Variant per page; do not template the whole H1 string (Google penalizes templated H1s at scale).
+2. **City-specific intro (150–300 words)**
+   Generated by Claude Haiku, region-aware (uses the same `region` detection from existing blog generator: northern → frozen-pipe-related drain freezing, southern → root-intrusion in clay soil, coastal → storm-related backups).
+3. **"When to call now" red bar** — three bullets that make the call decision obvious (sewage backup, multiple drains backed up, water rising).
+4. **Plumber list** — same `PlumberListWithSort` component as the plumbing route, but **filtered** to plumbers where `services.drainCleaning.eligible === true`.
+5. **Common drain cleaning emergencies in [City]** — region-aware list (kitchen line clogs, main sewer line, storm drain, sump-pump-discharge clog, etc.), 3–5 entries.
+6. **What it costs in [City]** — short pricing context block (snake / cable / hydro-jet / camera inspection price ranges, regional adjustment if known, "ask for written estimate before work starts" line).
+7. **FAQ block (6 questions)** — drain-cleaning-specific, JSON-LD `FAQPage` schema. Mirror the existing emergency plumbing FAQ structure but with drain-relevant questions.
+8. **Nearby cities** — same component as plumbing route, sourced from the same `nearbyCities` array on `CityInfo`.
+9. **Footer / sticky CTA** — same as plumbing route.
+
+### Schema
+
+- `BreadcrumbList` (Home → Drain Cleaning → State → City)
+- `Service` schema with `serviceType: "Drain Cleaning"` and `areaServed: City`
+- `ItemList` of plumbers (same shape as plumbing route — they're the same `Plumber` records)
+- `FAQPage` from the FAQ block
+- One `Review` per plumber with `positiveNotes`/`negativeNotes` drawn from the drain-cleaning-specific synthesis (see §5)
+
+### Empty-state fallback
+
+If `<2` eligible plumbers in the city, the plumber list is replaced by:
+- A "we're still building drain cleaning coverage in [City]" callout
+- A nearest-city link list (5 cities within 30mi that DO have eligible plumbers)
+- The general plumbing CTA, since any of the city's plumbing entries can probably handle a clogged drain
+
+This is the key trick: every page is publishable day one even with zero drain-cleaning data. GSC needs the URL to exist to start measuring impressions.
+
+---
+
+## 4. GSC pipeline integration
+
+Reuse the existing two-stage pipeline. **Zero new infrastructure.** Two small additions:
+
+1. **`gsc-expansion.js`** — extend the page-data query with a path filter so it captures both `/emergency-plumbers/...` and `/drain-cleaning/...`. Same query, broader filter.
+2. **`cities` Firestore collection** — add a parallel field `gscTierDrainCleaning: "high"|"medium"|"low"|"none"` alongside the existing `gscTier`. The plumbing pipeline keeps reading `gscTier`; the drain pipeline reads the new one. They never collide.
+
+The GSC tier thresholds stay the same (50+ = high, 10–49 = medium, 1–9 = low, 0 = none). Drain cleaning queries get the same priority weighting as plumbing queries — no special-casing.
+
+The deep-review-pull workflow already targets cities by `gscTier`. Add a one-line change so it also queues cities where `gscTierDrainCleaning >= medium`, even if the plumbing tier is none. This is the only behavioral change.
+
+---
+
+## 5. Synthesis trigger — how a city becomes "drain-eligible"
+
+The synthesis trigger lives in two places:
+
+**Per-plumber eligibility (runs in `synthesize-reviews.ts`):**
+When the existing review synthesizer runs on a plumber, it already extracts `servicesMentioned`. Add `drain-cleaning` to the existing service categories (it's actually already in the list — see CLAUDE.md servicesMentioned section). Promote it to a top-level field on the plumber doc:
+
+```
+services.drainCleaning = {
+  eligible: servicesMentioned['drain-cleaning']?.count >= 1,
+  signalStrength: count >= 3 ? 'strong' : count >= 1 ? 'weak' : 'none',
+  topQuotes: top 3 review snippets that triggered the match,
+  avgRating: avg star rating across drain-cleaning-mentioning reviews,
+  lastSynthesizedAt: timestamp,
+}
+```
+
+This is additive on the existing plumber doc — no new collection, no new writer, doesn't violate the data pipeline invariants.
+
+**Per-city eligibility (build-time):**
+The drain cleaning city page renders the plumber list by filtering on `services.drainCleaning.eligible === true`. If 2+ qualify, the page is "live" — meaningful content. If <2, the empty-state fallback (§3) renders. No flag on the city doc, no second writer to the JSON.
+
+**Re-trigger:** synthesis re-runs whenever new reviews land via the existing 30-day refresh cycle. Drain eligibility updates as a free side effect. We don't add a new cron.
+
+---
+
+## 6. Level 1 vs Level 2 tiers — drain cleaning specifics
+
+| Tier | Source | Cost | Trigger | What it unlocks for drain cleaning |
+|---|---|---|---|---|
+| Level 1 | Google Places API (5 reviews) | $0 (free credits) | Plumber enters our system | If any of the 5 reviews mentions drain cleaning, plumber becomes drain-eligible with `signalStrength: weak`. |
+| Level 2 | Outscraper (100+ reviews) | ~$0.05/plumber | City reaches `gscTier: medium` OR `gscTierDrainCleaning: medium` | Re-runs synthesis with deeper review corpus. Most "weak" plumbers become "strong" or get downgraded to `eligible: false`. Drain-specific top quotes get populated. |
+
+**Cost note:** because the trigger is shared with plumbing-tier promotion, drain cleaning rides on top of the existing Outscraper budget. The only new spend is from cities that have drain cleaning impressions but zero plumbing impressions — likely a small set. Budget guard is unchanged.
+
+**Promotion rule:** a plumber doesn't need a separate Outscraper run for drain cleaning. Their existing review corpus is re-analyzed by the next synthesis pass.
+
+---
+
+## Follow-up tasks this plan generates
+
+Estimated 5–10:
+
+1. **fpnm-???** — Build the shared `CityServicePage` component (extract from existing `[state]/[city]/page.tsx`, parameterize on `service`).
+2. **fpnm-???** — Create the `/drain-cleaning/[state]/[city]` route as a thin wrapper around `CityServicePage`.
+3. **fpnm-???** — Extend `synthesize-reviews.ts` to write `services.drainCleaning` field on each plumber doc. Backfill once across the existing 392 plumbers.
+4. **fpnm-???** — Add `gscTierDrainCleaning` field to the `cities` Firestore docs. One-time migration: copy `gscTier` value into the new field as a starting point (or leave null and let the pipeline populate).
+5. **fpnm-???** — Update `gsc-expansion.js` to query both URL patterns and write both tier fields.
+6. **fpnm-???** — Update the deep-review-pull workflow to also queue cities by `gscTierDrainCleaning`.
+7. **fpnm-???** — Write the drain-cleaning Claude synthesis prompt (separate from the plumbing one — different signals matter: hydro-jetting capability, camera inspections, root removal, after-hours availability for sewage backups).
+8. **fpnm-???** — Update sitemap generation in `apps/plumbers-web/src/app/sitemap.ts` to include all 2,300 drain cleaning URLs.
+9. **fpnm-???** — Write the city-page FAQ generator for drain cleaning (6 questions, region-aware).
+10. **fpnm-???** — Internal linking pass: every emergency plumbing city page gets a "Need just drain cleaning?" cross-link to its drain cleaning twin, and vice versa.
+
+Tasks 1–5 are blocking; tasks 6–10 can land later in the rollout.
+
+---
+
+## Open questions for Tim
+
+1. **Day-one publish-all vs phased rollout?** Recommendation is publish all 2,300 immediately to start collecting GSC signal. The downside is sitemap churn and a brief period where many pages are thin-content. Confirm or override.
+2. **Cannibalization risk:** Google may rank our plumbing page above our drain cleaning page for "drain cleaning [city]" queries even after both exist. Are we OK accepting that for the first 90 days while drain pages accumulate signal?
+3. **Drain-only plumber concept?** Right now every plumber serves both verticals. Do we want a future "drain-only specialist" badge, or stay agnostic and let the synthesis decide per-page?
+4. **Naming:** "drain cleaning" vs "drain repair" vs "clogged drain service"? The slug locks one canonical phrase. Recommendation: `drain-cleaning` because it's the highest-volume search term per consensus SEO data — but Tim should validate against GSC if any drain-related queries are already showing up on the plumbing pages.
+5. **Pricing block (§3.6):** do we want real per-region price data, or is a generic "$150–$500 typical, ask for written estimate" sufficient for v1? The first option means a new data source.
+
+---
+
+## What this plan deliberately does NOT do
+
+- Does not introduce a second writer to `plumbers-synthesized.json` (invariant #2)
+- Does not add merge logic to ingestion scripts (invariant #4)
+- Does not create a separate "drain plumbers" Firestore collection — same plumbers, additive field
+- Does not block on Outscraper coverage — Level 1 alone unlocks meaningful pages
+- Does not require a new cron, new scraper, or new geocoding pass
