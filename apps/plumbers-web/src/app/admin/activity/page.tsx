@@ -90,7 +90,13 @@ function getRunSummaryLine(run: PipelineRun): string {
     if (s.urlsRequested != null) parts.push(`URLs: ${s.urlsRequested}`);
     if (s.quotaExhausted) parts.push("Quota exhausted");
   } else if (run.script === "outscraper-reviews") {
+    if (s.creditsExhausted) parts.push("⚠ OUT OF CREDITS");
+    else if (s.outscraperStatus === "all_failed") parts.push("⚠ ALL FAILED");
+    else if (s.outscraperStatus === "fatal_error") parts.push("⚠ FATAL ERROR");
     if (s.plumbersProcessed != null) parts.push(`Plumbers: ${s.plumbersProcessed}`);
+    if (s.outscraperAttemptCount != null) {
+      parts.push(`Attempts: ${s.outscraperAttemptCount} (${s.outscraperSuccessCount || 0} ok / ${s.outscraperFailureCount || 0} fail)`);
+    }
     if (s.newReviews != null) parts.push(`New reviews: ${s.newReviews}`);
     const sources = [
       s.googleReviews ? `G:${s.googleReviews}` : "",
@@ -101,6 +107,7 @@ function getRunSummaryLine(run: PipelineRun): string {
     if (s.synthesized != null) parts.push(`Synthesized: ${s.synthesized}`);
     if (s.estimatedCost) parts.push(`Cost: ${s.estimatedCost}`);
     if (s.citySlugs) parts.push(`Cities: ${(s.citySlugs as string[]).join(", ")}`);
+    if (s.fatalError) parts.push(`Error: ${String(s.fatalError).slice(0, 80)}`);
   } else if (run.script === "bbb-lookup") {
     if (s.plumbersLookedUp != null) parts.push(`Looked up: ${s.plumbersLookedUp}`);
     if (s.matchedOnBBB != null) parts.push(`Matched: ${s.matchedOnBBB}`);
@@ -214,10 +221,14 @@ function RunDetails({ run }: { run: PipelineRun }) {
   const synthesizedPlumbers = (s.synthesizedPlumbers || []) as Record<string, any>[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const errors = (s.errors || []) as Record<string, any>[];
+  // fpnm-002: per-attempt outscraper log
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const outscraperAttempts = (s.outscraperAttempts || []) as Record<string, any>[];
 
   const hasContent = details.length > 0 || urls.length > 0 || cities.length > 0 ||
     newPlumberDetails.length > 0 || createdPlumbers.length > 0 ||
-    refreshedPlumbers.length > 0 || synthesizedPlumbers.length > 0 || errors.length > 0;
+    refreshedPlumbers.length > 0 || synthesizedPlumbers.length > 0 || errors.length > 0 ||
+    outscraperAttempts.length > 0;
 
   if (!hasContent) return null;
 
@@ -319,6 +330,40 @@ function RunDetails({ run }: { run: PipelineRun }) {
               <span className="text-red-500">{e.error}</span>
             </div>
           )}
+        />
+      )}
+
+      {/* fpnm-002: outscraper per-attempt log */}
+      {outscraperAttempts.length > 0 && (
+        <ExpandableList
+          items={outscraperAttempts}
+          label="Outscraper attempts"
+          initialShow={10}
+          renderItem={(a) => {
+            const statusColor =
+              a.status === "out_of_credits" ? "text-red-600 font-semibold" :
+              a.status === "error" ? "text-red-500" :
+              a.status === "no_reviews" ? "text-gray-400" :
+              "text-green-600";
+            const statusLabel =
+              a.status === "out_of_credits" ? "out of credits" :
+              a.status === "no_reviews" ? "no reviews" :
+              a.status;
+            return (
+              <div className="flex items-center gap-2 text-[11px] py-0.5 flex-wrap">
+                <span className="text-gray-400 uppercase text-[10px] min-w-[40px]">{a.source}</span>
+                <span className="text-gray-700">{a.plumberName || "(unknown)"}</span>
+                {a.citySlug && <span className="text-gray-400">{a.citySlug}</span>}
+                <span className={statusColor}>{statusLabel}</span>
+                {a.reviewsPulled > 0 && <span className="text-gray-500">+{a.reviewsPulled}</span>}
+                {a.errorMessage && (
+                  <span className="text-red-500 truncate max-w-[400px]" title={a.errorMessage}>
+                    {a.errorMessage}
+                  </span>
+                )}
+              </div>
+            );
+          }}
         />
       )}
 
@@ -454,7 +499,10 @@ export default function AdminActivityPage() {
                         (run.summary.createdPlumbers as unknown[])?.length > 0 ||
                         (run.summary.refreshedPlumbers as unknown[])?.length > 0 ||
                         (run.summary.synthesizedPlumbers as unknown[])?.length > 0 ||
-                        (run.summary.errors as unknown[])?.length > 0;
+                        (run.summary.errors as unknown[])?.length > 0 ||
+                        (run.summary.outscraperAttempts as unknown[])?.length > 0;
+                      // fpnm-002: surface credit exhaustion at-a-glance
+                      const creditsOut = run.summary.creditsExhausted === true;
                       const isExpanded = expandedRuns.has(run.id);
 
                       return (
@@ -484,6 +532,11 @@ export default function AdminActivityPage() {
                             {run.status === "success" && <CheckCircle className="w-3.5 h-3.5 text-green-500" />}
                             {run.status === "error" && <XCircle className="w-3.5 h-3.5 text-red-500" />}
                             {run.status === "partial" && <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />}
+                            {creditsOut && (
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 border border-red-200">
+                                OUT OF CREDITS
+                              </span>
+                            )}
                             {run.triggeredBy === "github-actions" && (
                               <span className="text-[10px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">auto</span>
                             )}

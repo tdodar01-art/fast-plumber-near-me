@@ -88,6 +88,47 @@ const db = admin.firestore();
 const outscraper = new Outscraper(OUTSCRAPER_API_KEY);
 
 // ---------------------------------------------------------------------------
+// Outscraper attempt tracking (for activity feed visibility — fpnm-002)
+//
+// We record every Google/Yelp pull attempt with status + error reason so the
+// admin activity feed can surface credit exhaustion and silent failures.
+// The Outscraper API call functions themselves are unchanged — they accept
+// an optional attemptLog object and write the error message to it on failure.
+// ---------------------------------------------------------------------------
+
+const outscraperAttempts = [];
+let creditsExhausted = false;
+
+function detectCreditError(message) {
+  if (!message) return false;
+  const lower = String(message).toLowerCase();
+  return (
+    lower.includes("credit") ||
+    lower.includes("balance") ||
+    lower.includes("payment required") ||
+    lower.includes(" 402") ||
+    lower.includes("quota") ||
+    lower.includes("subscription") ||
+    lower.includes("insufficient funds")
+  );
+}
+
+function recordOutscraperAttempt(entry) {
+  const isCreditError = entry.status === "error" && detectCreditError(entry.errorMessage);
+  if (isCreditError) creditsExhausted = true;
+  outscraperAttempts.push({
+    timestamp: new Date().toISOString(),
+    source: entry.source,
+    plumberName: entry.plumberName || null,
+    plumberId: entry.plumberId || null,
+    citySlug: entry.citySlug || null,
+    reviewsPulled: entry.reviewsPulled || 0,
+    status: isCreditError ? "out_of_credits" : entry.status,
+    errorMessage: entry.errorMessage || null,
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -151,7 +192,7 @@ async function outscraperRequest(path, params) {
 // Google Reviews via Outscraper
 // ---------------------------------------------------------------------------
 
-async function pullGoogleReviews(placeId, businessName, cutoffTimestamp) {
+async function pullGoogleReviews(placeId, businessName, cutoffTimestamp, attemptLog = {}) {
   console.log(`    [Google] Pulling reviews for ${placeId}...`);
 
   const params = {
@@ -181,6 +222,7 @@ async function pullGoogleReviews(placeId, businessName, cutoffTimestamp) {
     }));
   } catch (err) {
     console.error(`    [Google] Error: ${err.message}`);
+    attemptLog.error = err.message;
     return [];
   }
 }
@@ -215,7 +257,7 @@ async function fetchYelpReviews(yelpUrl) {
   return reviews.filter((r) => r.review_id !== "__NO_REVIEWS_FOUND__" && r.review_text);
 }
 
-async function pullYelpReviews(businessName, city, state) {
+async function pullYelpReviews(businessName, city, state, attemptLog = {}) {
   console.log(`    [Yelp] Looking up "${businessName}" in ${city}, ${state}...`);
 
   try {
@@ -282,6 +324,7 @@ async function pullYelpReviews(businessName, city, state) {
     }));
   } catch (err) {
     console.error(`    [Yelp] Error: ${err.message}`);
+    attemptLog.error = err.message;
     return [];
   }
 }
@@ -645,13 +688,33 @@ async function main() {
         // 1. Google reviews
         await sleep(OUTSCRAPER_QPS_DELAY_MS);
         const cutoff = data.lastOutscraperPull || null;
-        const googleReviews = await pullGoogleReviews(placeId, data.businessName, cutoff);
+        const googleAttemptLog = {};
+        const googleReviews = await pullGoogleReviews(placeId, data.businessName, cutoff, googleAttemptLog);
+        recordOutscraperAttempt({
+          source: "google",
+          plumberName: data.businessName,
+          plumberId: doc.id,
+          citySlug,
+          reviewsPulled: googleReviews.length,
+          status: googleAttemptLog.error ? "error" : (googleReviews.length > 0 ? "success" : "no_reviews"),
+          errorMessage: googleAttemptLog.error || null,
+        });
         allReviews.push(...googleReviews);
 
         if (!googleOnly) {
           // 2. Yelp reviews
           await sleep(OUTSCRAPER_QPS_DELAY_MS);
-          const yelpReviews = await pullYelpReviews(data.businessName, city, state);
+          const yelpAttemptLog = {};
+          const yelpReviews = await pullYelpReviews(data.businessName, city, state, yelpAttemptLog);
+          recordOutscraperAttempt({
+            source: "yelp",
+            plumberName: data.businessName,
+            plumberId: doc.id,
+            citySlug,
+            reviewsPulled: yelpReviews.length,
+            status: yelpAttemptLog.error ? "error" : (yelpReviews.length > 0 ? "success" : "no_reviews"),
+            errorMessage: yelpAttemptLog.error || null,
+          });
           if (yelpReviews.length > 0) {
             // Compute average Yelp rating from the reviews we pulled
             const yelpRatings = yelpReviews.filter((r) => r.rating > 0);
@@ -763,6 +826,17 @@ async function main() {
   console.log(`  Estimated Outscraper cost: $${estCost}`);
   console.log(`  Duration: ${elapsed}s`);
 
+  // Compute outscraper attempt status rollup (fpnm-002)
+  const failedAttempts = outscraperAttempts.filter((a) => a.status === "error" || a.status === "out_of_credits").length;
+  const successAttempts = outscraperAttempts.filter((a) => a.status === "success").length;
+  let outscraperStatus = "no_attempts";
+  if (creditsExhausted) outscraperStatus = "credits_exhausted";
+  else if (outscraperAttempts.length > 0 && failedAttempts === outscraperAttempts.length) outscraperStatus = "all_failed";
+  else if (failedAttempts > 0) outscraperStatus = "partial";
+  else if (successAttempts > 0) outscraperStatus = "success";
+
+  console.log(`  Outscraper attempts: ${outscraperAttempts.length} (${successAttempts} ok, ${failedAttempts} failed${creditsExhausted ? " — OUT OF CREDITS" : ""})`);
+
   // Log to pipelineRuns
   if (!dryRun) {
     try {
@@ -771,7 +845,9 @@ async function main() {
         startedAt: admin.firestore.Timestamp.fromDate(startedAt),
         completedAt: admin.firestore.Timestamp.now(),
         durationSeconds: elapsed,
-        status: totalErrors > 0 ? "partial" : "success",
+        status: creditsExhausted || outscraperStatus === "all_failed"
+          ? "error"
+          : (totalErrors > 0 || failedAttempts > 0 ? "partial" : "success"),
         summary: {
           citySlugs,
           plumbersProcessed: totalPlumbers,
@@ -783,12 +859,47 @@ async function main() {
           errors: totalErrors,
           estimatedCost: `$${estCost}`,
           plumberDetails,
+          // fpnm-002: outscraper attempt visibility
+          outscraperStatus,
+          creditsExhausted,
+          outscraperAttempts,
+          outscraperAttemptCount: outscraperAttempts.length,
+          outscraperSuccessCount: successAttempts,
+          outscraperFailureCount: failedAttempts,
         },
         triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
       });
     } catch { /* */ }
   }
 }
+
+// fpnm-002: write a pipelineRuns entry on fatal failure so silent crashes are visible
+async function logFatalFailure(startedAt, errorMessage) {
+  try {
+    const elapsed = Math.round((Date.now() - startedAt.getTime()) / 1000);
+    const isCreditError = detectCreditError(errorMessage);
+    if (isCreditError) creditsExhausted = true;
+    await db.collection("pipelineRuns").add({
+      script: "outscraper-reviews",
+      startedAt: admin.firestore.Timestamp.fromDate(startedAt),
+      completedAt: admin.firestore.Timestamp.now(),
+      durationSeconds: elapsed,
+      status: "error",
+      error: errorMessage,
+      summary: {
+        outscraperStatus: isCreditError ? "credits_exhausted" : "fatal_error",
+        creditsExhausted: isCreditError,
+        outscraperAttempts,
+        outscraperAttemptCount: outscraperAttempts.length,
+        fatalError: errorMessage,
+      },
+      triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+    });
+  } catch { /* */ }
+}
+
+// fpnm-002: track start time at module scope so the catch handler can use it
+const __scriptStartedAt = new Date();
 
 main()
   .then(() => {
@@ -850,7 +961,9 @@ main()
       console.error("Export failed:", err.message);
     }
   })
-  .catch((err) => {
+  .catch(async (err) => {
     console.error("Fatal error:", err);
+    // fpnm-002: ensure even fatal failures appear in the admin activity feed
+    await logFatalFailure(__scriptStartedAt, err && err.message ? err.message : String(err));
     process.exit(1);
   });
