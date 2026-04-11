@@ -214,17 +214,53 @@ function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { d
 /**
  * Get plumbers near a city from the static synthesized JSON.
  * Uses 20-mile radius matching via Haversine distance.
+ *
+ * Anchor resolution:
+ *   1. `city-coords.ts` hand-curated map (primary — stable town-center coord).
+ *   2. Fallback: derive an anchor from plumbers whose `serviceCities` includes
+ *      this slug. Prefer a plumber whose own `city` field matches the slug
+ *      (office in-town), else take the centroid of tagged plumbers.
+ *
+ * The fallback exists because `gsc-prepend-queue.js` can silently fail to
+ * write new GSC-discovered cities into `city-coords.ts` (continue-on-error in
+ * the daily-scrape workflow + geocoding API failures), which previously
+ * caused city pages to render "0 plumbers available" even though the data
+ * was present in the JSON. See docs/diagnostics/marble-falls-zero-plumbers.md.
  */
 export function getPlumbersNearCity(
   stateAbbr: string,
   citySlug: string,
   radiusMiles: number = 20,
 ): (Plumber & { distanceMiles?: number; latestReviewAt?: string })[] {
-  const coord = getCityCoordBySlug(stateAbbr, citySlug);
-  if (!coord) return [];
-  const [cityLat, cityLng] = coord;
-
   const allPlumbers = loadData().plumbers;
+
+  let coord = getCityCoordBySlug(stateAbbr, citySlug);
+
+  if (!coord) {
+    // Fallback: anchor on plumbers explicitly tagged to this serviceCities slug.
+    const tagged = allPlumbers.filter(
+      (p) =>
+        p.state === stateAbbr &&
+        (p.serviceCities || []).includes(citySlug) &&
+        p.location?.lat != null &&
+        p.location?.lng != null &&
+        (!p.businessStatus || p.businessStatus === "OPERATIONAL"),
+    );
+    if (tagged.length === 0) return [];
+
+    const normalizeCity = (s: string) =>
+      s.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const inTown = tagged.find((p) => p.city && normalizeCity(p.city) === citySlug);
+    if (inTown?.location) {
+      coord = [inTown.location.lat, inTown.location.lng];
+    } else {
+      const avgLat = tagged.reduce((s, p) => s + p.location!.lat, 0) / tagged.length;
+      const avgLng = tagged.reduce((s, p) => s + p.location!.lng, 0) / tagged.length;
+      coord = [avgLat, avgLng];
+    }
+  }
+
+  const [cityLat, cityLng] = coord;
   const results: (Plumber & { distanceMiles?: number; latestReviewAt?: string })[] = [];
 
   for (const p of allPlumbers) {
