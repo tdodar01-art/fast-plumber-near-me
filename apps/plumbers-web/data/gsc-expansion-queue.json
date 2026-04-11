@@ -1,13 +1,35 @@
 {
-  "generatedAt": "2026-04-10T11:51:18.385Z",
+  "generatedAt": "2026-04-11T11:31:48.750Z",
   "dateRange": {
-    "start": "2026-01-10",
-    "end": "2026-04-10"
+    "start": "2026-01-11",
+    "end": "2026-04-11"
   },
-  "totalGscPages": 42,
-  "alreadyScraped": 25,
-  "needsScraping": 17,
+  "totalGscPages": 43,
+  "alreadyScraped": 27,
+  "needsScraping": 16,
   "cities": [
+    {
+      "city": "Wadsworth",
+      "state": "OH",
+      "citySlug": "wadsworth",
+      "stateSlug": "ohio",
+      "impressions": 44,
+      "clicks": 0,
+      "avgPosition": 10,
+      "source": "gsc",
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
+    },
+    {
+      "city": "Lampasas",
+      "state": "TX",
+      "citySlug": "lampasas",
+      "stateSlug": "texas",
+      "impressions": 39,
+      "clicks": 0,
+      "avgPosition": 11.1,
+      "source": "gsc",
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
+    },
     {
       "city": "Fairfield",
       "state": "OH",
@@ -17,29 +39,7 @@
       "clicks": 0,
       "avgPosition": 10.2,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
-    },
-    {
-      "city": "Wadsworth",
-      "state": "OH",
-      "citySlug": "wadsworth",
-      "stateSlug": "ohio",
-      "impressions": 25,
-      "clicks": 0,
-      "avgPosition": 9.2,
-      "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
-    },
-    {
-      "city": "Lampasas",
-      "state": "TX",
-      "citySlug": "lampasas",
-      "stateSlug": "texas",
-      "impressions": 25,
-      "clicks": 0,
-      "avgPosition": 11.8,
-      "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Sanford",
@@ -50,7 +50,7 @@
       "clicks": 0,
       "avgPosition": 25.4,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Lawrenceville",
@@ -61,7 +61,7 @@
       "clicks": 0,
       "avgPosition": 43.7,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Brooklyn Park",
@@ -72,7 +72,7 @@
       "clicks": 0,
       "avgPosition": 20.8,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Commerce City",
@@ -83,7 +83,7 @@
       "clicks": 0,
       "avgPosition": 25.8,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Canal Winchester",
@@ -94,18 +94,18 @@
       "clicks": 0,
       "avgPosition": 10.4,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Abingdon",
       "state": "VA",
       "citySlug": "abingdon",
       "stateSlug": "virginia",
-      "impressions": 7,
+      "impressions": 10,
       "clicks": 0,
-      "avgPosition": 50.6,
+      "avgPosition": 40.4,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Hanover Park",
@@ -116,7 +116,7 @@
       "clicks": 0,
       "avgPosition": 7.3,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "West Jordan",
@@ -127,7 +127,7 @@
       "clicks": 0,
       "avgPosition": 66.6,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Ken Caryl",
@@ -138,7 +138,7 @@
       "clicks": 0,
       "avgPosition": 32.8,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Pigeon Forge",
@@ -149,7 +149,7 @@
       "clicks": 0,
       "avgPosition": 6,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Box Elder",
@@ -160,7 +160,7 @@
       "clicks": 1,
       "avgPosition": 8.3,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Trumbull",
@@ -171,7 +171,7 @@
       "clicks": 0,
       "avgPosition": 46.5,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     },
     {
       "city": "Wasilla",
@@ -182,18 +182,7 @@
       "clicks": 0,
       "avgPosition": 49,
       "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
-    },
-    {
-      "city": "Bethlehem",
-      "state": "PA",
-      "citySlug": "bethlehem",
-      "stateSlug": "pennsylvania",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 9,
-      "source": "gsc",
-      "discoveredAt": "2026-04-10T11:51:18.385Z"
+      "discoveredAt": "2026-04-11T11:31:48.750Z"
     }
   ]
 }

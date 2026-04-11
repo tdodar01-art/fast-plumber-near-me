@@ -1,17 +1,8 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 392,
+  "usedThisMonth": 404,
   "queue": [
-    {
-      "city": "Canal Winchester",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Wadsworth",
       "state": "OH",
@@ -314,6 +305,16 @@
       "actualCalls": 18,
       "plumbersFound": 17,
       "completedAt": "2026-04-10"
+    },
+    {
+      "city": "Canal Winchester",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-04-11"
     }
   ]
 }
