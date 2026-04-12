@@ -17,6 +17,7 @@ import {
   MIN_SPECIALTY_SCORE,
   MIN_PLUMBERS_FOR_PAGE,
 } from "@/lib/services-config";
+import { CITY_COVERAGE } from "@/lib/city-coverage";
 import type { Plumber } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -30,6 +31,11 @@ export function generateStaticParams() {
 
   for (const svc of serviceSlugs) {
     for (const { state, city } of cityParams) {
+      // Only generate service pages for cities with plumber data
+      const stateInfo = getStateBySlug(state);
+      if (!stateInfo) continue;
+      const key = `${stateInfo.abbreviation}:${city}`;
+      if (!CITY_COVERAGE[key]) continue;
       params.push({ service: svc, state, city });
     }
   }

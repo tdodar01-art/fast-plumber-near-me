@@ -1,8 +1,9 @@
 import { MetadataRoute } from "next";
 import { getAllCityParams, getStatesWithCities } from "@/lib/cities-data";
-import { STATES_DATA } from "@/lib/states-data";
+import { STATES_DATA, getStateBySlug } from "@/lib/states-data";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { getAllServiceSlugs } from "@/lib/services-config";
+import { CITY_COVERAGE } from "@/lib/city-coverage";
 
 const BASE_URL = "https://fastplumbernearme.com";
 
@@ -40,15 +41,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  // Service × city pages (Track A)
+  // Service × city pages (Track A) — only for cities with plumber data
   const serviceSlugs = getAllServiceSlugs();
   const servicePages: MetadataRoute.Sitemap = serviceSlugs.flatMap((svc) =>
-    cityParams.map(({ state, city }) => ({
-      url: `${BASE_URL}/${svc}/${state}/${city}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })),
+    cityParams
+      .filter(({ state, city }) => {
+        const stateInfo = getStateBySlug(state);
+        return stateInfo && CITY_COVERAGE[`${stateInfo.abbreviation}:${city}`];
+      })
+      .map(({ state, city }) => ({
+        url: `${BASE_URL}/${svc}/${state}/${city}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      })),
   );
 
   // Blog posts
