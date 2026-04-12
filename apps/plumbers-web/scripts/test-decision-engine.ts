@@ -19,6 +19,7 @@ import {
   computeAvoidIf,
   computeCautionIf,
   computeHireIf,
+  overallComposite,
   type Scores,
   type CityRankEntry,
 } from "../src/lib/decision-engine.js";
@@ -126,13 +127,57 @@ test("boundary: percentile 40 -> caution", () => {
   assert.equal(v, "caution");
 });
 
-test("percentile 39 -> avoid", () => {
+test("percentile 39 + composite >= 65 -> caution (absolute floor)", () => {
+  // All dims at 75 -> composite = 75, above the 65 floor
   const v = computeVerdict(makeScores(), makeRank({ overall_percentile: 39 }));
+  assert.equal(v, "caution");
+});
+
+test("percentile 0 + composite >= 65 -> caution (absolute floor)", () => {
+  const v = computeVerdict(makeScores(), makeRank({ overall_percentile: 0 }));
+  assert.equal(v, "caution");
+});
+
+test("percentile 39 + composite < 65 -> avoid (below floor)", () => {
+  const v = computeVerdict(
+    makeScores({
+      reliability: 50,
+      pricing_fairness: 50,
+      workmanship: 50,
+      responsiveness: 50,
+      communication: 50,
+    }),
+    makeRank({ overall_percentile: 39 }),
+  );
   assert.equal(v, "avoid");
 });
 
-test("percentile 0 -> avoid", () => {
-  const v = computeVerdict(makeScores(), makeRank({ overall_percentile: 0 }));
+test("percentile 0 + composite exactly 65 -> caution (floor boundary)", () => {
+  const v = computeVerdict(
+    makeScores({
+      reliability: 65,
+      pricing_fairness: 65,
+      workmanship: 65,
+      responsiveness: 65,
+      communication: 65,
+    }),
+    makeRank({ overall_percentile: 0 }),
+  );
+  assert.equal(v, "caution");
+});
+
+test("percentile 0 + composite 64.9 -> avoid (just below floor)", () => {
+  // Mean of 60,65,65,65,69 = 64.8
+  const v = computeVerdict(
+    makeScores({
+      reliability: 60,
+      pricing_fairness: 65,
+      workmanship: 65,
+      responsiveness: 65,
+      communication: 69,
+    }),
+    makeRank({ overall_percentile: 0 }),
+  );
   assert.equal(v, "avoid");
 });
 
@@ -258,6 +303,39 @@ test("both avoid rules fire when both thresholds crossed", () => {
   assert.equal(out.length, 2);
 });
 
+test("relative pricing rule fires when dim_percentiles.pricing_fairness <= 25", () => {
+  const rank = makeRank({
+    dim_percentiles: { pricing_fairness: 20 },
+  });
+  const out = computeAvoidIf(makeScores({ pricing_fairness: 70 }), rank);
+  assert.ok(out.some((s) => s.includes("better-priced")));
+});
+
+test("relative pricing rule does NOT fire when pricing_fairness < 60 (no double-up)", () => {
+  const rank = makeRank({
+    dim_percentiles: { pricing_fairness: 10 },
+  });
+  const out = computeAvoidIf(makeScores({ pricing_fairness: 55 }), rank);
+  assert.ok(out.some((s) => s.includes("price-sensitive"))); // absolute fires
+  assert.ok(!out.some((s) => s.includes("better-priced"))); // relative suppressed
+});
+
+test("relative pricing rule does NOT fire when percentile > 25", () => {
+  const rank = makeRank({
+    dim_percentiles: { pricing_fairness: 30 },
+  });
+  const out = computeAvoidIf(makeScores({ pricing_fairness: 70 }), rank);
+  assert.equal(out.length, 0);
+});
+
+test("relative pricing rule fires at boundary percentile 25", () => {
+  const rank = makeRank({
+    dim_percentiles: { pricing_fairness: 25 },
+  });
+  const out = computeAvoidIf(makeScores({ pricing_fairness: 65 }), rank);
+  assert.ok(out.some((s) => s.includes("better-priced")));
+});
+
 // ---------------------------------------------------------------------------
 // computeCautionIf
 // ---------------------------------------------------------------------------
@@ -381,6 +459,7 @@ test("weak plumber -> avoid verdict + avoid_if + caution_if populated", () => {
     communication: 45,
     variance: 35,
   });
+  // composite = (40+45+50+42+45)/5 = 44.4, below 65 floor -> avoid stands
   const rank = makeRank({ overall_percentile: 20 });
   const d = computeDecision(scores, rank);
   assert.equal(d.verdict, "avoid");

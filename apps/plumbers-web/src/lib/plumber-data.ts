@@ -3,6 +3,12 @@ import path from "path";
 import { calculateDistance } from "./geo";
 import { getCityCoordBySlug } from "./city-coords";
 import type { Plumber } from "./types";
+import type {
+  Scores,
+  CityRank,
+  DecisionCore,
+  EvidenceQuote,
+} from "./decision-engine";
 
 export interface PlumberReview {
   author: string;
@@ -73,6 +79,11 @@ export interface SynthesizedPlumber {
     yearsInBusiness: number | null;
     bbbUrl: string | null;
   } | null;
+  /** Decision layer fields — populated by score-plumbers.ts, exported via copyDecisionLayer(). */
+  scores?: Scores;
+  city_rank?: CityRank;
+  decision?: DecisionCore;
+  evidence_quotes?: EvidenceQuote[];
 }
 
 interface SynthesizedData {

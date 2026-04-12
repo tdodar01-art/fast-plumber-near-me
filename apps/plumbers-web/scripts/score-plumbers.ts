@@ -195,21 +195,41 @@ function slugify(text: string): string {
 }
 
 /**
- * Effective service-city list for a plumber doc. Most existing plumber docs
- * have `serviceCities: []` and rely on their primary address for city
- * placement — fall back to `{slug(address.city)}-{state}` so Pass 2 ranking
- * and the --city filter don't silently skip them.
+ * Bridges a convention mismatch between two Firestore collections:
+ *
+ * - Plumber docs store serviceCities as plain slugs: "provo", "crystal-lake"
+ *   (written by scripts/upload-to-firestore.js)
+ * - The cities/ collection keys docs with state-suffixed slugs: "provo-ut",
+ *   "crystal-lake-il"
+ *
+ * The decision layer needs the suffixed form so city_rank keys match cities/
+ * entries (Pass 2 looks up city display names from cities/ docs). This
+ * function always emits the suffixed form — even when serviceCities already
+ * has plain entries — by deriving it from address.state on the plumber doc.
+ *
+ * If ingestion ever standardizes on the suffixed form, this bridge (and the
+ * dedup below) can be deleted.
  */
 function effectiveServiceCities(
   data: admin.firestore.DocumentData,
 ): string[] {
-  if (Array.isArray(data.serviceCities) && data.serviceCities.length > 0) {
-    return data.serviceCities;
-  }
-  const city: string | undefined = data.address?.city;
   const state: string | undefined = data.address?.state;
-  if (!city || !state) return [];
-  return [`${slugify(city)}-${state.toLowerCase()}`];
+  const stateLower = state?.toLowerCase();
+
+  if (Array.isArray(data.serviceCities) && data.serviceCities.length > 0) {
+    if (!stateLower) return data.serviceCities;
+
+    const out = new Set<string>(data.serviceCities);
+    for (const slug of data.serviceCities) {
+      const suffixed = `${slug}-${stateLower}`;
+      if (slug !== suffixed) out.add(suffixed);
+    }
+    return Array.from(out);
+  }
+
+  const city: string | undefined = data.address?.city;
+  if (!city || !stateLower) return [];
+  return [`${slugify(city)}-${stateLower}`];
 }
 
 // ---------------------------------------------------------------------------
@@ -675,16 +695,38 @@ async function runPass2(
     if (members.length === 0) continue;
     members.sort((a, b) => b.overall - a.overall);
     const n = members.length;
+
+    // Pre-compute per-dimension sorted ranks for percentile calculation
+    const dimSorted: Record<DimensionKey, string[]> = {} as Record<
+      DimensionKey,
+      string[]
+    >;
+    for (const dim of DIMENSION_KEYS) {
+      dimSorted[dim] = [...members]
+        .sort((a, b) => b.scores[dim] - a.scores[dim])
+        .map((m) => m.id);
+    }
+
     for (let i = 0; i < n; i++) {
       const rank = i + 1;
       const percentile =
         n <= 1 ? 100 : Math.round((100 * (n - rank)) / (n - 1));
       const { best, worst } = bestWorstDim(members[i].scores);
+
+      // Per-dimension percentiles within this city
+      const dimPercentiles: Partial<Record<DimensionKey, number>> = {};
+      for (const dim of DIMENSION_KEYS) {
+        const dimRank = dimSorted[dim].indexOf(members[i].id) + 1;
+        dimPercentiles[dim] =
+          n <= 1 ? 100 : Math.round((100 * (n - dimRank)) / (n - 1));
+      }
+
       const entry: CityRankEntry = {
         rank: `#${rank} of ${n} in ${cityLabels.get(slug) ?? slug}`,
         overall_percentile: percentile,
         best_dimension: best,
         worst_dimension: worst,
+        dim_percentiles: dimPercentiles,
       };
       const existing = cityRankUpdates.get(members[i].id) ?? {};
       existing[slug] = entry;

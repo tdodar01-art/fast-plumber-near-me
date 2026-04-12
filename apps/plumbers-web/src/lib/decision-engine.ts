@@ -46,6 +46,8 @@ export type CityRankEntry = {
   overall_percentile: number;
   best_dimension: DimensionKey;
   worst_dimension: DimensionKey;
+  /** Per-dimension percentile within this city (0-100). Added in Pass 2. */
+  dim_percentiles?: Partial<Record<DimensionKey, number>>;
 };
 
 export type CityRank = Record<string, CityRankEntry>;
@@ -96,12 +98,27 @@ export function computeDecision(
 ): DecisionCore {
   return {
     best_for: computeBestFor(scores),
-    avoid_if: computeAvoidIf(scores),
+    avoid_if: computeAvoidIf(scores, cityRank),
     hire_if: computeHireIf(scores),
     caution_if: computeCautionIf(scores),
     verdict: computeVerdict(scores, cityRank),
   };
 }
+
+/** Mean of the 5 core dimension scores. */
+export function overallComposite(scores: Scores): number {
+  const dims = DIMENSION_KEYS.map((k) => scores[k]);
+  return dims.reduce((a, b) => a + b, 0) / dims.length;
+}
+
+/**
+ * Absolute floor: a plumber with an overall composite >= 65 cannot receive
+ * "avoid". In a city of uniformly good plumbers, percentile ranking alone
+ * would label the bottom half "avoid" even when every plumber has 4.8+ stars.
+ * The floor caps the worst possible verdict at "caution" for plumbers whose
+ * absolute quality is still reasonable.
+ */
+const AVOID_COMPOSITE_FLOOR = 65;
 
 export function computeVerdict(
   scores: Scores,
@@ -111,6 +128,8 @@ export function computeVerdict(
   if (p >= 80 && scores.variance < 20) return "strong_hire";
   if (p >= 60) return "conditional_hire";
   if (p >= 40) return "caution";
+  // Absolute floor: demote "avoid" to "caution" if composite is strong enough
+  if (overallComposite(scores) >= AVOID_COMPOSITE_FLOOR) return "caution";
   return "avoid";
 }
 
@@ -134,13 +153,27 @@ export function computeBestFor(scores: Scores): string[] {
   return out;
 }
 
-export function computeAvoidIf(scores: Scores): string[] {
+export function computeAvoidIf(
+  scores: Scores,
+  cityRank?: CityRankEntry,
+): string[] {
   const out: string[] = [];
   if (scores.pricing_fairness < 60) {
     out.push("You're highly price-sensitive");
   }
   if (scores.workmanship < 65) {
     out.push("You need this for a complex or high-stakes install");
+  }
+  // Relative rule: if pricing is in the bottom quartile for this city,
+  // surface that better-priced options exist locally — even when the absolute
+  // score is above the hard threshold.
+  const pricingPct = cityRank?.dim_percentiles?.pricing_fairness;
+  if (
+    pricingPct !== undefined &&
+    pricingPct <= 25 &&
+    scores.pricing_fairness >= 60 // don't double up with the absolute rule
+  ) {
+    out.push("You can find better-priced options nearby");
   }
   return out;
 }

@@ -21,6 +21,7 @@ import { QuoteCard, GoogleReviewCard } from "@/components/profile/ReviewCard";
 import StickyBottomBar from "@/components/profile/StickyBottomBar";
 import { CallButton, WebsiteButton, ProfileReportButton } from "@/components/profile/ProfileActions";
 import BounceTracker from "@/components/profile/BounceTracker";
+import DecisionPanel from "@/components/profile/DecisionPanel";
 import { calculateDistance } from "@/lib/geo";
 import { getCityCoords } from "@/lib/city-coords";
 
@@ -374,6 +375,26 @@ export default async function PlumberProfilePage({
             </div>
           )}
         </div>
+
+        {/* ============================================================= */}
+        {/* DECISION LAYER — verdict, best_for, avoid_if, hire/caution */}
+        {/* ============================================================= */}
+        {(() => {
+          if (!plumber.decision || !plumber.city_rank) return null;
+          // Find the best matching city_rank entry for this plumber's primary city
+          const citySlug = `${plumber.city.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}-${plumber.state.toLowerCase()}`;
+          const rankEntry = plumber.city_rank[citySlug]
+            ?? Object.values(plumber.city_rank)[0];
+          if (!rankEntry) return null;
+          return (
+            <DecisionPanel
+              decision={plumber.decision}
+              cityRankEntry={rankEntry}
+              evidenceQuotes={plumber.evidence_quotes}
+              plumberName={plumber.name}
+            />
+          );
+        })()}
 
         {/* ============================================================= */}
         {/* REVIEW SYNTHESIS — priority ordered */}
