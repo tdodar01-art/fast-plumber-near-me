@@ -1,5 +1,37 @@
 @ROADMAP.md
 
+## Start Here
+- **Strategy:** Read `docs/plans/STRATEGY-BRIEF.md` first — it defines the three active tracks, what's shipped, and what's next.
+- **Cross-project status and session logs:** Live in `~/code/control-center/`, not here.
+- **Archived plans:** `docs/plans/archive/` — superseded by the strategy brief.
+
+## Monorepo Extensibility Principle
+
+This app is the first of multiple directory sites planned under `~/code/directory-sites/`. Future directories include HVAC, electricians, handyman, and other local service verticals. All core architecture must be built with eventual extraction to shared packages in mind.
+
+When building anything, classify it in your head:
+
+- **SHARED** (future `packages/directory-core` or `packages/directory-ui`): city activation engine, scoring pipeline, template renderer, GSC activation watcher, admin panels, pipeline orchestration, internal linking logic, CityServicePage component. These are vertical-agnostic. Do not bake plumbing-specific assumptions into them.
+
+- **VERTICAL** (stays in `apps/fast-plumber-near-me`): plumbing-specific Claude prompts, plumbing service list, plumbing FAQ content, plumbing cost ranges, plumbing brand copy.
+
+- **CONFIG** (shared schema, per-app values): service registry entries, scoring dimension keys, schema.org types, template configs, industry vocabulary.
+
+Guidelines:
+- Do NOT extract to `packages/` prematurely. Build in the plumbing app first. The second directory reveals whether abstractions are right.
+- DO avoid baking "plumber" into variable names, types, or file paths when the concept is generic. Use "business" or "listing" for generic concepts; reserve "plumber" for plumbing-specific code.
+- DO keep plumbing-specific prompts, service lists, and config values in named config files that another directory could easily swap out.
+- DO flag when you're about to build something that feels generic but is being built inside the plumbing app — note it in `docs/plans/monorepo-extraction-notes.md` so we have a map when extraction time comes.
+- DO NOT refactor existing code just to make it generic. Only new code follows this principle.
+
+When in doubt: would this logic work identically for HVAC or electrical directories? If yes, it's SHARED — name and structure it accordingly. If no, it's VERTICAL.
+
+See `docs/plans/monorepo-extraction-notes.md` for the full scouting doc classifying each major component.
+
+## SEO Doctrine
+
+All SEO decisions must follow the standing doctrine at `~/code/control-center/doctrines/seo.md`. Read it before building any new page type, changing metadata, or modifying URL structure. Do not reinvent SEO patterns per page — consult the doctrine and apply.
+
 ## Deploys To
 - **Platform:** Vercel
 - **Production URL:** https://fastplumbernearme.com
