@@ -27,17 +27,21 @@ export async function generateMetadata({
   const city = getCityData(stateSlug, citySlug);
   if (!city) return {};
 
+  const plumbers = getPlumbersNearCity(city.state, citySlug);
+  const count = plumbers.length;
+  const year = new Date().getFullYear();
+
   const ogUrl = new URL("https://fastplumbernearme.com/api/og");
   ogUrl.searchParams.set("city", city.name);
   ogUrl.searchParams.set("state", city.state);
   ogUrl.searchParams.set("county", city.county);
 
   return {
-    title: `Emergency Plumbers in ${city.name}, ${city.state} — 24/7 Verified`,
-    description: `Find verified 24/7 emergency plumbers in ${city.name}, ${city.state}. AI-verified for responsiveness. Burst pipes, water heaters, sewers & drains. Call now.`,
+    title: `${count} Emergency Plumbers in ${city.name}, ${city.state} — Rated & Reviewed (${year})`,
+    description: `Compare ${count} emergency plumbers in ${city.name}, ${city.state} with real Google reviews, honest strengths & weaknesses, and 24-hour availability. Find who actually picks up.`,
     openGraph: {
-      title: `Emergency Plumbers in ${city.name}, ${city.state}`,
-      description: `Verified 24/7 emergency plumbers in ${city.name}. We call them so you don't have to wonder if they'll pick up.`,
+      title: `${count} Emergency Plumbers in ${city.name}, ${city.state} — Rated & Reviewed (${year})`,
+      description: `Compare ${count} emergency plumbers in ${city.name}, ${city.state} with real Google reviews, honest strengths & weaknesses, and 24-hour availability. Find who actually picks up.`,
       images: [{ url: ogUrl.toString(), width: 1200, height: 630 }],
     },
   };
@@ -57,6 +61,7 @@ function getCityFaqs(cityName: string, stateName: string, county: string) {
     { question: `What should I do during a plumbing emergency in ${cityName}?`, answer: `Shut off the main water valve to stop water flow. If there's standing water, turn off electricity to affected areas. Move valuables away from water and take photos for insurance. Then call a verified emergency plumber in ${cityName} immediately.` },
     { question: `How quickly can an emergency plumber arrive in ${cityName}?`, answer: `Most emergency plumbers in ${cityName}, ${stateName} aim to arrive within 30-60 minutes depending on your location in ${county} County. Our verified plumbers are tested for response time and confirmed to dispatch quickly.` },
     { question: `Should I attempt DIY plumbing repairs in ${cityName}?`, answer: `Only take immediate steps like shutting off water valves and containing water damage. DIY repairs on pressurized water lines or sewer systems can make the problem worse, cause additional damage, and void insurance claims. Call a licensed plumber in ${cityName} instead.` },
+    { question: `Can I get a same-day plumber in ${cityName}?`, answer: `Yes — many plumbers serving ${cityName} and ${county} County offer same-day service for urgent repairs. Plumbers listed here are rated for responsiveness, so you can see which ones consistently arrive quickly. For true emergencies like burst pipes or sewer backups, most can dispatch within 30-60 minutes.` },
     { question: `Are emergency plumbers in ${cityName} available 24/7?`, answer: `Yes — the emergency plumbers listed on Fast Plumber Near Me serving ${cityName} and ${county} County offer 24/7 availability. We verify that they actually answer emergency calls at all hours, including nights, weekends, and holidays.` },
     { question: `What are the most common plumbing emergencies in ${cityName}?`, answer: `The most common plumbing emergencies in ${cityName}, ${stateName} include burst or frozen pipes, water heater failures, sewer line backups, clogged drains, and gas line issues. ${county} County homes may be especially susceptible depending on the age and type of construction.` },
   ];
@@ -284,7 +289,7 @@ export default async function CityPage({
           <h1 className="text-3xl sm:text-4xl font-extrabold mb-2">
             Emergency Plumbers in {city.name}, {city.state}
           </h1>
-          <p className="text-lg text-blue-200">Verified 24/7 plumbers ready to help right now</p>
+          <p className="text-lg text-blue-200">24/7 and same-day plumbers ready to help right now</p>
           <div className="flex items-center gap-4 mt-4 text-sm text-blue-300">
             <span className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
