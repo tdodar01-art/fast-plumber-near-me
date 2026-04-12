@@ -28,9 +28,32 @@ export const SPECIALTY_KEYS = [
   "repipe",
   "emergency",
   "remodel",
+  "sewer",
+  "toilet",
+  "fixture",
+  "sump_pump",
+  "gas_line",
+  "slab_leak",
+  "water_line",
 ] as const;
 
 export type SpecialtyKey = (typeof SPECIALTY_KEYS)[number];
+
+/** Display names for specialty keys — used by computeBestFor and service pages */
+export const SPECIALTY_DISPLAY_NAMES: Record<SpecialtyKey, string> = {
+  water_heater: "Water heater install/repair",
+  drain: "Drain and sewer work",
+  repipe: "Whole-house repiping",
+  emergency: "Emergency and burst pipe repair",
+  remodel: "Bathroom and kitchen remodel plumbing",
+  sewer: "Sewer line repair and replacement",
+  toilet: "Toilet repair and installation",
+  fixture: "Faucet and fixture work",
+  sump_pump: "Sump pump repair and installation",
+  gas_line: "Gas line repair",
+  slab_leak: "Slab leak detection and repair",
+  water_line: "Water line repair and replacement",
+};
 
 export type SpecialtyStrength = Record<SpecialtyKey, number>;
 
@@ -144,11 +167,11 @@ export function computeBestFor(scores: Scores): string[] {
   if (scores.workmanship >= 90 && scores.communication >= 85) {
     out.push("Complex installs and remodels");
   }
-  if (scores.specialty_strength.water_heater >= 85) {
-    out.push("Water heater install/repair");
-  }
-  if (scores.specialty_strength.drain >= 85) {
-    out.push("Drain and sewer work");
+  // Check all specialty keys dynamically
+  for (const key of SPECIALTY_KEYS) {
+    if ((scores.specialty_strength[key] ?? 0) >= 85) {
+      out.push(SPECIALTY_DISPLAY_NAMES[key]);
+    }
   }
   return out;
 }
