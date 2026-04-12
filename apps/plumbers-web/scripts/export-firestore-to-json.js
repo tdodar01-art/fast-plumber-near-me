@@ -144,9 +144,13 @@ async function main() {
     // Also merge if Firestore has fields the JSON doesn't
     const hasBBB = fd.bbb && !existing.bbb;
     const hasNewSynthesis = fd.reviewSynthesis?.aiSynthesizedAt;
+    const hasNewScoring =
+      fd.scores &&
+      (!existing.scores ||
+        fd.scores.last_scored_at !== existing.scores.last_scored_at);
     const isNewer = fsUpdated > jsonSynthAt;
 
-    if (!isNewer && !hasBBB && !hasNewSynthesis) {
+    if (!isNewer && !hasBBB && !hasNewSynthesis && !hasNewScoring) {
       unchanged++;
       continue;
     }
@@ -336,6 +340,7 @@ function buildJsonEntry(fd, placeId, reviews) {
     synthesis: buildSynthesis(fd),
     serviceCities: fd.serviceCities || [],
     ...(fd.bbb && { bbb: cleanBBB(fd.bbb) }),
+    ...copyDecisionLayer(fd),
   };
 }
 
@@ -367,10 +372,28 @@ function mergeFirestoreData(existing, fd, reviews) {
     existing.reviews = selectTopReviews(reviews);
   }
 
+  // Decision Layer pass-through (scores, city_rank, decision, evidence_quotes).
+  // These are the only place these fields enter the committed JSON — keep the
+  // single-writer invariant intact.
+  Object.assign(existing, copyDecisionLayer(fd));
+
   // Update scrapedAt
   if (fd.updatedAt?.toDate) {
     existing.scrapedAt = fd.updatedAt.toDate().toISOString();
   }
+}
+
+// ---------------------------------------------------------------------------
+// Decision Layer pass-through
+// ---------------------------------------------------------------------------
+
+function copyDecisionLayer(fd) {
+  const out = {};
+  if (fd.scores) out.scores = fd.scores;
+  if (fd.city_rank) out.city_rank = fd.city_rank;
+  if (fd.decision) out.decision = fd.decision;
+  if (Array.isArray(fd.evidence_quotes)) out.evidence_quotes = fd.evidence_quotes;
+  return out;
 }
 
 // ---------------------------------------------------------------------------
