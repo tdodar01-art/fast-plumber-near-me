@@ -1,7 +1,7 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 404,
+  "usedThisMonth": 424,
   "queue": [
     {
       "city": "Wadsworth",
@@ -315,6 +315,16 @@
       "actualCalls": 12,
       "plumbersFound": 11,
       "completedAt": "2026-04-11"
+    },
+    {
+      "city": "Lompoc",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 20,
+      "plumbersFound": 18,
+      "completedAt": "2026-04-12"
     }
   ]
 }
