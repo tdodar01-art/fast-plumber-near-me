@@ -2,6 +2,7 @@ import { MetadataRoute } from "next";
 import { getAllCityParams, getStatesWithCities } from "@/lib/cities-data";
 import { STATES_DATA } from "@/lib/states-data";
 import { BLOG_POSTS } from "@/lib/blog-data";
+import { getAllServiceSlugs } from "@/lib/services-config";
 
 const BASE_URL = "https://fastplumbernearme.com";
 
@@ -29,13 +30,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     }));
 
+  const cityParams = getAllCityParams();
+
   // City pages — highest priority after homepage
-  const cityPages: MetadataRoute.Sitemap = getAllCityParams().map(({ state, city }) => ({
+  const cityPages: MetadataRoute.Sitemap = cityParams.map(({ state, city }) => ({
     url: `${BASE_URL}/emergency-plumbers/${state}/${city}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
+
+  // Service × city pages (Track A)
+  const serviceSlugs = getAllServiceSlugs();
+  const servicePages: MetadataRoute.Sitemap = serviceSlugs.flatMap((svc) =>
+    cityParams.map(({ state, city }) => ({
+      url: `${BASE_URL}/${svc}/${state}/${city}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
+  );
 
   // Blog posts
   const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
@@ -45,5 +59,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...statePages, ...cityPages, ...blogPages];
+  return [...staticPages, ...statePages, ...cityPages, ...servicePages, ...blogPages];
 }
