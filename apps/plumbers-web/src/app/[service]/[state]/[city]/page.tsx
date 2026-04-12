@@ -13,6 +13,7 @@ import { getDistanceWeight } from "@/lib/geo";
 import {
   SERVICE_CONFIGS,
   getServiceConfig,
+  getSpecialtyKeyFromConfig,
   getAllServiceSlugs,
   MIN_SPECIALTY_SCORE,
   MIN_PLUMBERS_FOR_PAGE,
@@ -57,7 +58,7 @@ export async function generateMetadata({
   if (!config || !city) return {};
 
   const year = new Date().getFullYear();
-  const qualified = getQualifiedPlumbers(city.state, citySlug, config.specialtyKey);
+  const qualified = getQualifiedPlumbers(city.state, citySlug, getSpecialtyKeyFromConfig(config)!);
 
   const title = `${config.displayName} in ${city.name}, ${city.state} — Top Rated (${year})`;
   const description = `Compare ${qualified.length} ${config.displayName.toLowerCase()} pros in ${city.name}, ${city.state} rated on quality, pricing, and responsiveness from real Google reviews. See who to call.`;
@@ -125,7 +126,7 @@ export default async function ServiceCityPage({
   const stateInfo = getStateBySlug(stateSlug);
   if (!config || !city || !stateInfo) notFound();
 
-  const qualified = getQualifiedPlumbers(city.state, citySlug, config.specialtyKey);
+  const qualified = getQualifiedPlumbers(city.state, citySlug, getSpecialtyKeyFromConfig(config)!);
   const year = new Date().getFullYear();
 
   // Prepare FAQs with city substitution

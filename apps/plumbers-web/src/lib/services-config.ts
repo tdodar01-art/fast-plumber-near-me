@@ -695,3 +695,24 @@ export function getAllServiceSlugs(): string[] {
 export function getSlugsByType(type: PageType): string[] {
   return PAGE_CONFIGS.filter((p) => p.type === type).map((p) => p.slug);
 }
+
+/**
+ * Extract the primary specialty key from a PageConfig's scoring strategy.
+ * For "specialty" → the key directly.
+ * For "mapped" → the first mapped service key.
+ * For "dimension" / "signal" → undefined (these don't filter by specialty).
+ *
+ * Used by the page component for backward compat until Phase 3 rewrites
+ * getQualifiedPlumbers() to handle all scoring strategy types.
+ */
+export function getSpecialtyKeyFromConfig(config: PageConfig): string | undefined {
+  switch (config.scoring.kind) {
+    case "specialty":
+      return config.scoring.key;
+    case "mapped":
+      return config.scoring.serviceKeys[0];
+    case "dimension":
+    case "signal":
+      return undefined;
+  }
+}
