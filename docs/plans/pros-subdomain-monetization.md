@@ -1,3 +1,5 @@
+> **Status: Deferred to Month 3.** Revisit after traffic milestones in STRATEGY-BRIEF.md are hit.
+
 # pros.fastplumbernearme.com — Monetization Subdomain Plan
 
 *Task: fpnm-005 | Date: 2026-04-10 | Status: planning, not implementation*

@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-04-12:** Partially superseded. CityServicePage architecture was extracted and used for Track A. The "publish all 2,300 thin pages" approach was rejected in favor of data-threshold gating.
+
 # Drain Cleaning USA Buildout — Plan
 
 *Task: fpnm-004 | Date: 2026-04-10 | Status: planning, not implementation*
