@@ -1,8 +1,17 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 424,
+  "usedThisMonth": 445,
   "queue": [
+    {
+      "city": "Prescott Valley",
+      "state": "AZ",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
     {
       "city": "Wadsworth",
       "state": "OH",
@@ -325,6 +334,16 @@
       "actualCalls": 20,
       "plumbersFound": 18,
       "completedAt": "2026-04-12"
+    },
+    {
+      "city": "Brandon",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 21,
+      "plumbersFound": 19,
+      "completedAt": "2026-04-13"
     }
   ]
 }
