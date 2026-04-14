@@ -14,6 +14,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { google } = require("googleapis");
 
 // ---------------------------------------------------------------------------
@@ -94,6 +95,10 @@ const db = admin.firestore();
 
 function slugify(text) {
   return text.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function sha1Short(value) {
+  return crypto.createHash("sha1").update(value).digest("hex").slice(0, 12);
 }
 
 function deslugify(slug) {
@@ -266,6 +271,385 @@ async function main() {
   }
 
   console.log(`Updated GSC metrics + history for ${metricsUpdated} cities\n`);
+
+  // =========================================================================
+  // Extended GSC captures — page+country+device and query+page+country
+  // =========================================================================
+
+  const GSC_FILTER = {
+    filters: [{ dimension: "page", operator: "contains", expression: "/emergency-plumbers/" }],
+  };
+  const BATCH_SIZE = 400;
+  const ROW_LIMIT = 5000;
+
+  // --- Pull 1: page + country + device breakdown ---
+  console.log("Fetching page+country+device breakdown...");
+  const pcdResponse = await searchconsole.searchanalytics.query({
+    siteUrl: SITE_URL,
+    requestBody: {
+      startDate: startStr,
+      endDate: endStr,
+      dimensions: ["page", "country", "device", "date"],
+      dimensionFilterGroups: [GSC_FILTER],
+      rowLimit: ROW_LIMIT,
+      type: "web",
+    },
+  });
+
+  const pcdRows = pcdResponse.data.rows || [];
+  if (pcdRows.length === ROW_LIMIT) {
+    console.warn(`  WARNING: page+country+device pull returned exactly ${ROW_LIMIT} rows — data may be truncated.`);
+  }
+  console.log(`  GSC returned ${pcdRows.length} page+country+device rows`);
+
+  let pcdWritten = 0;
+  let batch = db.batch();
+  let batchCount = 0;
+
+  for (const row of pcdRows) {
+    const [pageUrl, country, device, date] = row.keys;
+    const parsed = parseCityUrl(pageUrl);
+    if (!parsed) continue;
+
+    const docId = `${parsed.citySlug}-${parsed.stateAbbr.toLowerCase()}`;
+    const subDocId = `${date}__${country}__${device}`;
+    const ref = db.collection("cities").doc(docId)
+      .collection("gscPageBreakdown").doc(subDocId);
+
+    batch.set(ref, {
+      date,
+      page: pageUrl,
+      country,
+      device,
+      impressions: row.impressions,
+      clicks: row.clicks,
+      ctr: Math.round((row.ctr || 0) * 10000) / 10000,
+      position: Math.round(row.position * 10) / 10,
+      capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    batchCount++;
+    if (batchCount >= BATCH_SIZE) {
+      await batch.commit();
+      batch = db.batch();
+      batchCount = 0;
+    }
+    pcdWritten++;
+  }
+
+  if (batchCount > 0) await batch.commit();
+  console.log(`  Wrote ${pcdWritten} rows to gscPageBreakdown subcollections\n`);
+
+  // --- Pull 2: query + page + country breakdown ---
+  console.log("Fetching query+page+country breakdown...");
+  const qpcResponse = await searchconsole.searchanalytics.query({
+    siteUrl: SITE_URL,
+    requestBody: {
+      startDate: startStr,
+      endDate: endStr,
+      dimensions: ["query", "page", "country", "date"],
+      dimensionFilterGroups: [GSC_FILTER],
+      rowLimit: ROW_LIMIT,
+      type: "web",
+    },
+  });
+
+  const qpcRows = qpcResponse.data.rows || [];
+  if (qpcRows.length === ROW_LIMIT) {
+    console.warn(`  WARNING: query+page+country pull returned exactly ${ROW_LIMIT} rows — data may be truncated.`);
+  }
+  console.log(`  GSC returned ${qpcRows.length} query+page+country rows`);
+
+  let qpcWritten = 0;
+  batch = db.batch();
+  batchCount = 0;
+
+  for (const row of qpcRows) {
+    const [query, pageUrl, country, date] = row.keys;
+    const parsed = parseCityUrl(pageUrl);
+    if (!parsed) continue;
+
+    const docId = `${parsed.citySlug}-${parsed.stateAbbr.toLowerCase()}`;
+    const subDocId = `${date}__${sha1Short(query)}__${sha1Short(pageUrl)}__${country}`;
+    const ref = db.collection("cities").doc(docId)
+      .collection("gscQueries").doc(subDocId);
+
+    batch.set(ref, {
+      date,
+      query,
+      page: pageUrl,
+      country,
+      impressions: row.impressions,
+      clicks: row.clicks,
+      ctr: Math.round((row.ctr || 0) * 10000) / 10000,
+      position: Math.round(row.position * 10) / 10,
+      capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    batchCount++;
+    if (batchCount >= BATCH_SIZE) {
+      await batch.commit();
+      batch = db.batch();
+      batchCount = 0;
+    }
+    qpcWritten++;
+  }
+
+  if (batchCount > 0) await batch.commit();
+  console.log(`  Wrote ${qpcWritten} rows to gscQueries subcollections\n`);
+
+  // --- Zero-fill: cities with no impressions on the target date ---
+  // Use the most recent date in our range as the "target date" for zero-fill
+  const targetDate = endStr;
+  const citiesWithImpressions = new Set();
+  for (const row of pcdRows) {
+    const [pageUrl, , , date] = row.keys;
+    if (date !== targetDate) continue;
+    const parsed = parseCityUrl(pageUrl);
+    if (parsed) citiesWithImpressions.add(`${parsed.citySlug}-${parsed.stateAbbr.toLowerCase()}`);
+  }
+
+  const allCityDocs = await db.collection("cities").get();
+  let zeroFilled = 0;
+  batch = db.batch();
+  batchCount = 0;
+
+  for (const doc of allCityDocs.docs) {
+    if (citiesWithImpressions.has(doc.id)) continue;
+
+    const ref = db.collection("cities").doc(doc.id)
+      .collection("gscPageBreakdown").doc(`${targetDate}__zero`);
+
+    batch.set(ref, {
+      date: targetDate,
+      page: null,
+      country: null,
+      device: null,
+      impressions: 0,
+      clicks: 0,
+      ctr: 0,
+      position: null,
+      zeroFilled: true,
+      capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    batchCount++;
+    if (batchCount >= BATCH_SIZE) {
+      await batch.commit();
+      batch = db.batch();
+      batchCount = 0;
+    }
+    zeroFilled++;
+  }
+
+  if (batchCount > 0) await batch.commit();
+  console.log(`Zero-filled ${zeroFilled} cities with no impressions on ${targetDate}\n`);
+
+  // =========================================================================
+  // Site-wide GSC captures — all pages, all queries, search appearance
+  // =========================================================================
+
+  // --- Pull 3: Site-wide query + page + country (no URL filter) ---
+  // Captures queries hitting non-emergency-plumber pages (homepage, blog, etc.)
+  console.log("Fetching site-wide query+page+country breakdown (no URL filter)...");
+  const siteQueryResponse = await searchconsole.searchanalytics.query({
+    siteUrl: SITE_URL,
+    requestBody: {
+      startDate: startStr,
+      endDate: endStr,
+      dimensions: ["query", "page", "country", "date"],
+      rowLimit: ROW_LIMIT,
+      type: "web",
+    },
+  });
+
+  const siteQueryRows = siteQueryResponse.data.rows || [];
+  if (siteQueryRows.length === ROW_LIMIT) {
+    console.warn(`  WARNING: site-wide query+page+country pull returned exactly ${ROW_LIMIT} rows — data may be truncated.`);
+  }
+  console.log(`  GSC returned ${siteQueryRows.length} site-wide query rows`);
+
+  let swqWritten = 0;
+  batch = db.batch();
+  batchCount = 0;
+
+  for (const row of siteQueryRows) {
+    const [query, pageUrl, country, date] = row.keys;
+    const subDocId = `${date}__${sha1Short(query)}__${sha1Short(pageUrl)}__${country}`;
+    const ref = db.collection("gscSiteQueries").doc(subDocId);
+
+    batch.set(ref, {
+      date,
+      query,
+      page: pageUrl,
+      country,
+      impressions: row.impressions,
+      clicks: row.clicks,
+      ctr: Math.round((row.ctr || 0) * 10000) / 10000,
+      position: Math.round(row.position * 10) / 10,
+      capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    batchCount++;
+    if (batchCount >= BATCH_SIZE) {
+      await batch.commit();
+      batch = db.batch();
+      batchCount = 0;
+    }
+    swqWritten++;
+  }
+
+  if (batchCount > 0) await batch.commit();
+  console.log(`  Wrote ${swqWritten} rows to gscSiteQueries\n`);
+
+  // --- Pull 4: Site-wide page + country + device (no URL filter) ---
+  console.log("Fetching site-wide page+country+device breakdown (no URL filter)...");
+  const sitePageResponse = await searchconsole.searchanalytics.query({
+    siteUrl: SITE_URL,
+    requestBody: {
+      startDate: startStr,
+      endDate: endStr,
+      dimensions: ["page", "country", "device", "date"],
+      rowLimit: ROW_LIMIT,
+      type: "web",
+    },
+  });
+
+  const sitePageRows = sitePageResponse.data.rows || [];
+  if (sitePageRows.length === ROW_LIMIT) {
+    console.warn(`  WARNING: site-wide page+country+device pull returned exactly ${ROW_LIMIT} rows — data may be truncated.`);
+  }
+  console.log(`  GSC returned ${sitePageRows.length} site-wide page rows`);
+
+  let swpWritten = 0;
+  batch = db.batch();
+  batchCount = 0;
+
+  for (const row of sitePageRows) {
+    const [pageUrl, country, device, date] = row.keys;
+    const subDocId = `${date}__${sha1Short(pageUrl)}__${country}__${device}`;
+    const ref = db.collection("gscSitePages").doc(subDocId);
+
+    batch.set(ref, {
+      date,
+      page: pageUrl,
+      country,
+      device,
+      impressions: row.impressions,
+      clicks: row.clicks,
+      ctr: Math.round((row.ctr || 0) * 10000) / 10000,
+      position: Math.round(row.position * 10) / 10,
+      capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    batchCount++;
+    if (batchCount >= BATCH_SIZE) {
+      await batch.commit();
+      batch = db.batch();
+      batchCount = 0;
+    }
+    swpWritten++;
+  }
+
+  if (batchCount > 0) await batch.commit();
+  console.log(`  Wrote ${swpWritten} rows to gscSitePages\n`);
+
+  // --- Pull 5: Search appearance ---
+  console.log("Fetching search appearance breakdown...");
+  const searchAppResponse = await searchconsole.searchanalytics.query({
+    siteUrl: SITE_URL,
+    requestBody: {
+      startDate: startStr,
+      endDate: endStr,
+      dimensions: ["searchAppearance", "page", "date"],
+      rowLimit: ROW_LIMIT,
+      type: "web",
+    },
+  });
+
+  const searchAppRows = searchAppResponse.data.rows || [];
+  if (searchAppRows.length === ROW_LIMIT) {
+    console.warn(`  WARNING: search appearance pull returned exactly ${ROW_LIMIT} rows — data may be truncated.`);
+  }
+  console.log(`  GSC returned ${searchAppRows.length} search appearance rows`);
+
+  let saWritten = 0;
+  batch = db.batch();
+  batchCount = 0;
+
+  for (const row of searchAppRows) {
+    const [appearance, pageUrl, date] = row.keys;
+    const subDocId = `${date}__${sha1Short(appearance)}__${sha1Short(pageUrl)}`;
+    const ref = db.collection("gscSearchAppearance").doc(subDocId);
+
+    batch.set(ref, {
+      date,
+      searchAppearance: appearance,
+      page: pageUrl,
+      impressions: row.impressions,
+      clicks: row.clicks,
+      ctr: Math.round((row.ctr || 0) * 10000) / 10000,
+      position: Math.round(row.position * 10) / 10,
+      capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    batchCount++;
+    if (batchCount >= BATCH_SIZE) {
+      await batch.commit();
+      batch = db.batch();
+      batchCount = 0;
+    }
+    saWritten++;
+  }
+
+  if (batchCount > 0) await batch.commit();
+  console.log(`  Wrote ${saWritten} rows to gscSearchAppearance\n`);
+
+  // --- Pull 6: Site-wide daily totals ---
+  // One row per date — dense time series for overall site health
+  console.log("Fetching site-wide daily totals...");
+  const dailyResponse = await searchconsole.searchanalytics.query({
+    siteUrl: SITE_URL,
+    requestBody: {
+      startDate: startStr,
+      endDate: endStr,
+      dimensions: ["date"],
+      rowLimit: ROW_LIMIT,
+      type: "web",
+    },
+  });
+
+  const dailyRows = dailyResponse.data.rows || [];
+  console.log(`  GSC returned ${dailyRows.length} daily total rows`);
+
+  let dailyWritten = 0;
+  batch = db.batch();
+  batchCount = 0;
+
+  for (const row of dailyRows) {
+    const [date] = row.keys;
+    const ref = db.collection("gscDailyTotals").doc(date);
+
+    batch.set(ref, {
+      date,
+      impressions: row.impressions,
+      clicks: row.clicks,
+      ctr: Math.round((row.ctr || 0) * 10000) / 10000,
+      position: Math.round(row.position * 10) / 10,
+      capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    batchCount++;
+    if (batchCount >= BATCH_SIZE) {
+      await batch.commit();
+      batch = db.batch();
+      batchCount = 0;
+    }
+    dailyWritten++;
+  }
+
+  if (batchCount > 0) await batch.commit();
+  console.log(`  Wrote ${dailyWritten} rows to gscDailyTotals\n`);
 
   // =========================================================================
   // Check Firestore cities collection for scrape status
