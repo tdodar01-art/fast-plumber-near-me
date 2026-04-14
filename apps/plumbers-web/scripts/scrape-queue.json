@@ -1,8 +1,44 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 445,
+  "usedThisMonth": 466,
   "queue": [
+    {
+      "city": "Sedona",
+      "state": "AZ",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Lafayette",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Stevens Point",
+      "state": "WI",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Glendale",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
     {
       "city": "Prescott Valley",
       "state": "AZ",
@@ -344,6 +380,16 @@
       "actualCalls": 21,
       "plumbersFound": 19,
       "completedAt": "2026-04-13"
+    },
+    {
+      "city": "Arlington",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 21,
+      "plumbersFound": 20,
+      "completedAt": "2026-04-14"
     }
   ]
 }
