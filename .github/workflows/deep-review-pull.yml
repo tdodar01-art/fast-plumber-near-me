@@ -90,13 +90,35 @@ jobs:
               const candidates = [];
               for (const cityDoc of snap.docs) {
                 const cityData = cityDoc.data();
-                const citySlug = cityDoc.id; // e.g. 'crystal-lake-il'
+                const fullSlug = cityDoc.id; // e.g. 'crystal-lake-il'
 
-                // Check if ALL plumbers in this city already have fresh Outscraper data
-                const plumberSnap = await db.collection('plumbers')
-                  .where('serviceCities', 'array-contains', citySlug)
+                // serviceCities stores city-only slugs (e.g. 'crystal-lake'), not 'crystal-lake-il'
+                // Strip the state suffix to match
+                const cityOnlySlug = fullSlug.replace(/-[a-z]{2}$/, '');
+
+                // Try serviceCities match first, fall back to state-based query
+                let plumberSnap = await db.collection('plumbers')
+                  .where('serviceCities', 'array-contains', cityOnlySlug)
                   .where('isActive', '==', true)
                   .get();
+
+                // Fallback: if serviceCities match is empty, query by state + active
+                // (many plumbers don't have serviceCities populated)
+                if (plumberSnap.empty) {
+                  const stateAbbr = (fullSlug.match(/-([a-z]{2})$/)?.[1] || '').toUpperCase();
+                  if (stateAbbr) {
+                    const stateSnap = await db.collection('plumbers')
+                      .where('address.state', '==', stateAbbr)
+                      .where('isActive', '==', true)
+                      .get();
+                    // Filter to plumbers near this city (we don't have coords here,
+                    // so just use all state plumbers — the outscraper script handles geo)
+                    plumberSnap = stateSnap;
+                    if (!stateSnap.empty) {
+                      console.error('  ' + fullSlug + ': 0 serviceCities matches, using ' + stateSnap.size + ' state-level plumbers');
+                    }
+                  }
+                }
 
                 if (plumberSnap.empty) continue;
 
