@@ -109,26 +109,33 @@ function deslugify(slug) {
 }
 
 /**
- * Parse a city page URL path into { stateSlug, stateAbbr, citySlug, cityName }.
- * Returns null if the URL doesn't match the expected pattern.
+ * Parse a city page URL path into { stateSlug, stateAbbr, citySlug, cityName, pageType }.
+ * Matches both:
+ *   /emergency-plumbers/{state}/{city}
+ *   /{service-slug}/{state}/{city}      (27 service page types)
+ * Returns null if the URL doesn't match any known city page pattern.
  */
 function parseCityUrl(url) {
   // Handle both full URLs and paths
   const pathStr = url.replace(/https?:\/\/[^/]+/, "").replace(/\/$/, "");
-  const match = pathStr.match(/^\/emergency-plumbers\/([^/]+)\/([^/]+)$/);
-  if (!match) return null;
 
-  const stateSlug = match[1];
-  const citySlug = match[2];
-  const stateAbbr = STATE_SLUG_TO_ABBR[stateSlug];
-  if (!stateAbbr) return null;
+  // Pattern 1: /emergency-plumbers/{state}/{city}
+  const epMatch = pathStr.match(/^\/emergency-plumbers\/([^/]+)\/([^/]+)$/);
+  if (epMatch) {
+    const stateAbbr = STATE_SLUG_TO_ABBR[epMatch[1]];
+    if (!stateAbbr) return null;
+    return { stateSlug: epMatch[1], stateAbbr, citySlug: epMatch[2], cityName: deslugify(epMatch[2]), pageType: "emergency-plumbers" };
+  }
 
-  return {
-    stateSlug,
-    stateAbbr,
-    citySlug,
-    cityName: deslugify(citySlug),
-  };
+  // Pattern 2: /{service}/{state}/{city} — 3-segment paths where segment 2 is a known state
+  const svcMatch = pathStr.match(/^\/([^/]+)\/([^/]+)\/([^/]+)$/);
+  if (svcMatch) {
+    const stateAbbr = STATE_SLUG_TO_ABBR[svcMatch[2]];
+    if (!stateAbbr) return null;
+    return { stateSlug: svcMatch[2], stateAbbr, citySlug: svcMatch[3], cityName: deslugify(svcMatch[3]), pageType: svcMatch[1] };
+  }
+
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -158,23 +165,14 @@ async function main() {
   console.log(`GSC date range: ${startStr} to ${endStr}`);
   console.log("Fetching page data...\n");
 
+  // Pull ALL pages — no URL filter — so we capture impressions on every page
+  // type: /emergency-plumbers/, /drain-cleaning/, /24-hour-plumber/, etc.
   const response = await searchconsole.searchanalytics.query({
     siteUrl: SITE_URL,
     requestBody: {
       startDate: startStr,
       endDate: endStr,
       dimensions: ["page"],
-      dimensionFilterGroups: [
-        {
-          filters: [
-            {
-              dimension: "page",
-              operator: "contains",
-              expression: "/emergency-plumbers/",
-            },
-          ],
-        },
-      ],
       rowLimit: 5000,
       type: "web",
     },
@@ -182,11 +180,11 @@ async function main() {
 
   const rows = response.data.rows || [];
   if (rows.length === 0) {
-    console.log("No GSC data returned for /emergency-plumbers/ pages.");
+    console.log("No GSC data returned for any pages.");
     return;
   }
 
-  console.log(`GSC returned ${rows.length} page URLs\n`);
+  console.log(`GSC returned ${rows.length} page URLs (all types)\n`);
 
   // Parse city/state from each URL
   const gscCities = new Map(); // key: "stateAbbr:citySlug"
@@ -205,6 +203,10 @@ async function main() {
       const totalImpr = existing.impressions;
       existing.avgPosition = ((existing.avgPosition * (totalImpr - row.impressions)) + (row.position * row.impressions)) / totalImpr;
       existing.ctr = totalImpr > 0 ? existing.clicks / totalImpr : 0;
+      // Track which page types have impressions
+      if (!existing.pageTypes.includes(parsed.pageType)) {
+        existing.pageTypes.push(parsed.pageType);
+      }
     } else {
       gscCities.set(key, {
         city: parsed.cityName,
@@ -215,6 +217,7 @@ async function main() {
         clicks: row.clicks,
         avgPosition: row.position,
         ctr: row.ctr,
+        pageTypes: [parsed.pageType],
       });
     }
   }
@@ -250,6 +253,7 @@ async function main() {
         lastGSCCTR: roundedCtr,
         gscLastUpdated: todayStr,
         gscTier: tier,
+        gscPageTypes: city.pageTypes || [],
       };
       await db.collection("cities").doc(docId).set(cityPayload, { merge: true });
 
@@ -285,9 +289,8 @@ async function main() {
   // Extended GSC captures — page+country+device and query+page+country
   // =========================================================================
 
-  const GSC_FILTER = {
-    filters: [{ dimension: "page", operator: "contains", expression: "/emergency-plumbers/" }],
-  };
+  // No URL filter for extended captures — pull all pages, parseCityUrl() filters
+  // to valid city pages when writing to city subcollections
   const BATCH_SIZE = 400;
   const ROW_LIMIT = 5000;
 
@@ -299,7 +302,7 @@ async function main() {
       startDate: startStr,
       endDate: endStr,
       dimensions: ["page", "country", "device", "date"],
-      dimensionFilterGroups: [GSC_FILTER],
+      // No URL filter — capture all page types
       rowLimit: ROW_LIMIT,
       type: "web",
     },
@@ -357,7 +360,7 @@ async function main() {
       startDate: startStr,
       endDate: endStr,
       dimensions: ["query", "page", "country", "date"],
-      dimensionFilterGroups: [GSC_FILTER],
+      // No URL filter — capture all page types
       rowLimit: ROW_LIMIT,
       type: "web",
     },
@@ -727,7 +730,13 @@ async function main() {
   // Tier breakdown
   const allCities = [...gscCities.values()];
   const tierCounts = { high: 0, medium: 0, low: 0 };
-  for (const c of allCities) tierCounts[getTier(c.impressions)]++;
+  const pageTypeCounts = {};
+  for (const c of allCities) {
+    tierCounts[getTier(c.impressions)]++;
+    for (const pt of (c.pageTypes || [])) {
+      pageTypeCounts[pt] = (pageTypeCounts[pt] || 0) + 1;
+    }
+  }
 
   // Summary
   console.log("=== SUMMARY ===");
@@ -736,6 +745,7 @@ async function main() {
   console.log(`  NEW — needs scraping:    ${needsScraping.length}`);
   console.log(`  GSC metrics updated:     ${metricsUpdated}`);
   console.log(`  Tiers — high (50+): ${tierCounts.high}, medium (10-49): ${tierCounts.medium}, low (1-9): ${tierCounts.low}`);
+  console.log(`  Page types with impressions: ${JSON.stringify(pageTypeCounts)}`);
   console.log("");
 
   if (needsScraping.length > 0) {
@@ -782,6 +792,7 @@ async function main() {
       impressions: c.impressions,
       clicks: c.clicks,
       avgPosition: parseFloat(c.avgPosition.toFixed(1)),
+      pageTypes: c.pageTypes || [],
       source: "gsc",
       discoveredAt: new Date().toISOString(),
     })),
