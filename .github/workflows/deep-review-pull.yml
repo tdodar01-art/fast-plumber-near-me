@@ -105,7 +105,8 @@ jobs:
                 // Fallback: if serviceCities match is empty, query by state + active
                 // (many plumbers don't have serviceCities populated)
                 if (plumberSnap.empty) {
-                  const stateAbbr = (fullSlug.match(/-([a-z]{2})$/)?.[1] || '').toUpperCase();
+                  const stateMatch = fullSlug.match(/-([a-z]{2})$/);
+                  const stateAbbr = (stateMatch ? stateMatch[1] : '').toUpperCase();
                   if (stateAbbr) {
                     const stateSnap = await db.collection('plumbers')
                       .where('address.state', '==', stateAbbr)
