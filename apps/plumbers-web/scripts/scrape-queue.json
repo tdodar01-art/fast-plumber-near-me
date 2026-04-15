@@ -1,17 +1,8 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 466,
+  "usedThisMonth": 475,
   "queue": [
-    {
-      "city": "Sedona",
-      "state": "AZ",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Lafayette",
       "state": "CO",
@@ -390,6 +381,16 @@
       "actualCalls": 21,
       "plumbersFound": 20,
       "completedAt": "2026-04-14"
+    },
+    {
+      "city": "Sedona",
+      "state": "AZ",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 9,
+      "plumbersFound": 8,
+      "completedAt": "2026-04-15"
     }
   ]
 }
