@@ -6,7 +6,7 @@
  * not in any experiment (use default behavior).
  */
 
-import { getActiveVariant } from "./activeExperiments.js";
+import { getActiveVariant } from "./activeExperiments";
 
 const DEFAULT_EXPERIMENT_KEY = "exp-001-nearby-cities-expansion";
 

@@ -11,7 +11,7 @@
 import fs from "fs";
 import path from "path";
 import { google } from "googleapis";
-import { getAllTrackedSlugs } from "./activeExperiments.js";
+import { getAllTrackedSlugs } from "./activeExperiments";
 
 // ─── Config ───────────────────────────────────────────────
 

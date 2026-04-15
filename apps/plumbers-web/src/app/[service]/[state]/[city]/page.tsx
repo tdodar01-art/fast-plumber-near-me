@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { MapPin, Clock, AlertTriangle, ArrowRight, Phone, HelpCircle, Star, ShieldCheck } from "lucide-react";
-import PlumberCard from "@/components/PlumberCard";
+import { MapPin, AlertTriangle, ArrowRight, Phone, HelpCircle, Star, ShieldCheck } from "lucide-react";
 import PlumberListWithSort from "@/components/PlumberListWithSort";
 import CallToAction from "@/components/CallToAction";
 import { getAllCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
-import { getPlumbersNearCity, type SynthesizedPlumber } from "@/lib/plumber-data";
+import { getPlumbersNearCity, getAllPlumbers, type SynthesizedPlumber } from "@/lib/plumber-data";
 import { calculateQualityScore } from "@/lib/scoring";
 import { getDistanceWeight } from "@/lib/geo";
 import {
@@ -17,6 +16,7 @@ import {
   getAllServiceSlugs,
   MIN_SPECIALTY_SCORE,
   MIN_PLUMBERS_FOR_PAGE,
+  type PageConfig,
 } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
 import type { Plumber } from "@/lib/types";
@@ -60,10 +60,10 @@ export async function generateMetadata({
   if (!config || !city) return {};
 
   const year = new Date().getFullYear();
-  const qualified = getQualifiedPlumbers(city.state, citySlug, getSpecialtyKeyFromConfig(config)!);
+  const { totalCount } = getTieredPlumbers(city.state, citySlug, config);
 
   const title = `${config.displayName} in ${city.name}, ${city.state} — Top Rated (${year})`;
-  const description = `Compare ${qualified.length} ${config.displayName.toLowerCase()} pros in ${city.name}, ${city.state} rated on quality, pricing, and responsiveness from real Google reviews. See who to call.`;
+  const description = `Compare ${totalCount} ${config.displayName.toLowerCase()} pros in ${city.name}, ${city.state} rated on quality, pricing, and responsiveness from real Google reviews. See who to call.`;
 
   return {
     title,
@@ -73,40 +73,105 @@ export async function generateMetadata({
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Tiered plumber resolution
 // ---------------------------------------------------------------------------
 
-interface QualifiedPlumber {
-  plumber: Plumber & { distanceMiles?: number };
-  specialtyScore: number;
-  synthesized: SynthesizedPlumber;
+type PlumberWithDist = Plumber & { distanceMiles?: number; latestReviewAt?: string };
+
+interface TieredPlumber {
+  plumber: PlumberWithDist;
+  tier: 1 | 2 | 3;
+  /** Tier 1: specialty score. Tier 2: servicesMentioned avgRating. Tier 3: undefined. */
+  specialtyScore?: number;
+  /** Tier 2: review count for this service. */
+  serviceMentionCount?: number;
+  synthesized?: SynthesizedPlumber;
 }
 
-function getQualifiedPlumbers(
+interface TieredResult {
+  tier1: TieredPlumber[];
+  tier2: TieredPlumber[];
+  tier3: TieredPlumber[];
+  /** Combined list ordered Tier 1 → Tier 2 → Tier 3 */
+  all: TieredPlumber[];
+  /** Tier 1 + Tier 2 (eligible for Top 3 cards) */
+  topPickEligible: TieredPlumber[];
+  totalCount: number;
+}
+
+function getTieredPlumbers(
   stateAbbr: string,
   citySlug: string,
-  specialtyKey: string,
-): QualifiedPlumber[] {
-  const { getAllPlumbers } = require("@/lib/plumber-data");
+  config: PageConfig,
+): TieredResult {
   const allSynthesized: SynthesizedPlumber[] = getAllPlumbers();
   const nearbyPlumbers = getPlumbersNearCity(stateAbbr, citySlug);
+  const specialtyKey = getSpecialtyKeyFromConfig(config);
 
-  const nearbyIds = new Set(nearbyPlumbers.map((p) => p.id));
-  const results: QualifiedPlumber[] = [];
+  const tier1: TieredPlumber[] = [];
+  const tier2: TieredPlumber[] = [];
+  const tier3: TieredPlumber[] = [];
+  const assignedIds = new Set<string>();
 
-  for (const plumber of nearbyPlumbers) {
-    const synth = allSynthesized.find((s) => s.placeId === plumber.id);
-    if (!synth?.scores?.specialty_strength) continue;
-
-    const score = (synth.scores.specialty_strength as Record<string, number>)[specialtyKey];
-    if (score == null || score < MIN_SPECIALTY_SCORE) continue;
-
-    results.push({ plumber, specialtyScore: score, synthesized: synth });
+  // --- Tier 1: scored plumbers with specialty_strength >= MIN_SPECIALTY_SCORE ---
+  if (specialtyKey) {
+    for (const plumber of nearbyPlumbers) {
+      const synth = allSynthesized.find((s) => s.placeId === plumber.id);
+      if (!synth?.scores?.specialty_strength) continue;
+      const score = (synth.scores.specialty_strength as Record<string, number>)[specialtyKey];
+      if (score == null || score < MIN_SPECIALTY_SCORE) continue;
+      tier1.push({ plumber, tier: 1, specialtyScore: score, synthesized: synth });
+      assignedIds.add(plumber.id);
+    }
+    tier1.sort((a, b) => (b.specialtyScore ?? 0) - (a.specialtyScore ?? 0));
   }
 
-  // Sort by specialty score descending
-  results.sort((a, b) => b.specialtyScore - a.specialtyScore);
-  return results;
+  // --- Tier 2: bridge-scored from servicesMentioned ---
+  const smKeys = config.serviceMentionedKeys;
+  if (smKeys.length > 0) {
+    for (const plumber of nearbyPlumbers) {
+      if (assignedIds.has(plumber.id)) continue;
+      const synth = allSynthesized.find((s) => s.placeId === plumber.id);
+      if (!synth?.synthesis?.servicesMentioned) continue;
+      const sm = synth.synthesis.servicesMentioned as Record<string, { count: number; avgRating: number; topQuote: string }>;
+      let bestCount = 0;
+      let bestRating = 0;
+      for (const key of smKeys) {
+        const mention = sm[key];
+        if (mention && mention.count >= 1) {
+          bestCount = Math.max(bestCount, mention.count);
+          bestRating = Math.max(bestRating, mention.avgRating);
+        }
+      }
+      if (bestCount >= 1) {
+        tier2.push({ plumber, tier: 2, specialtyScore: bestRating * 20, serviceMentionCount: bestCount, synthesized: synth });
+        assignedIds.add(plumber.id);
+      }
+    }
+    tier2.sort((a, b) => {
+      const ratingDiff = (b.specialtyScore ?? 0) - (a.specialtyScore ?? 0);
+      if (ratingDiff !== 0) return ratingDiff;
+      return (b.serviceMentionCount ?? 0) - (a.serviceMentionCount ?? 0);
+    });
+  }
+
+  // --- Tier 3: all remaining radius-matched plumbers, sorted by quality × distance ---
+  const maxReviewCount = Math.max(1, ...nearbyPlumbers.map((p) => p.googleReviewCount || 0));
+  for (const plumber of nearbyPlumbers) {
+    if (assignedIds.has(plumber.id)) continue;
+    tier3.push({ plumber, tier: 3 });
+    assignedIds.add(plumber.id);
+  }
+  tier3.sort((a, b) => {
+    const aQ = calculateQualityScore(a.plumber, maxReviewCount) * getDistanceWeight(a.plumber.distanceMiles ?? 0);
+    const bQ = calculateQualityScore(b.plumber, maxReviewCount) * getDistanceWeight(b.plumber.distanceMiles ?? 0);
+    return bQ - aQ;
+  });
+
+  const all = [...tier1, ...tier2, ...tier3];
+  const topPickEligible = [...tier1, ...tier2];
+
+  return { tier1, tier2, tier3, all, topPickEligible, totalCount: all.length };
 }
 
 function plumberSlug(name: string) {
@@ -128,8 +193,12 @@ export default async function ServiceCityPage({
   const stateInfo = getStateBySlug(stateSlug);
   if (!config || !city || !stateInfo) notFound();
 
-  const qualified = getQualifiedPlumbers(city.state, citySlug, getSpecialtyKeyFromConfig(config)!);
+  const tiered = getTieredPlumbers(city.state, citySlug, config);
   const year = new Date().getFullYear();
+
+  const hasAnyPlumbers = tiered.totalCount > 0;
+  const hasEnoughPlumbers = tiered.totalCount >= MIN_PLUMBERS_FOR_PAGE;
+  const hasTopPicks = tiered.topPickEligible.length >= MIN_PLUMBERS_FOR_PAGE;
 
   // Prepare FAQs with city substitution
   const faqs = config.faqTemplates.map((f) => ({
@@ -165,26 +234,26 @@ export default async function ServiceCityPage({
     })),
   };
 
-  const plumberListJsonLd = qualified.length >= MIN_PLUMBERS_FOR_PAGE ? {
+  const plumberListJsonLd = hasEnoughPlumbers ? {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: `${config.displayName} in ${city.name}, ${city.state}`,
-    itemListElement: qualified.map((q, i) => ({
+    itemListElement: tiered.all.map((t, i) => ({
       "@type": "ListItem",
       position: i + 1,
       item: {
         "@type": "Plumber",
-        name: q.plumber.businessName,
-        telephone: q.plumber.phone,
-        url: `https://fastplumbernearme.com/plumber/${plumberSlug(q.plumber.businessName)}`,
-        ...(q.plumber.address?.lat && q.plumber.address?.lng && {
-          geo: { "@type": "GeoCoordinates", latitude: q.plumber.address.lat, longitude: q.plumber.address.lng },
+        name: t.plumber.businessName,
+        telephone: t.plumber.phone,
+        url: `https://fastplumbernearme.com/plumber/${plumberSlug(t.plumber.businessName)}`,
+        ...(t.plumber.address?.lat && t.plumber.address?.lng && {
+          geo: { "@type": "GeoCoordinates", latitude: t.plumber.address.lat, longitude: t.plumber.address.lng },
         }),
-        ...(q.plumber.googleRating && {
+        ...(t.plumber.googleRating && {
           aggregateRating: {
             "@type": "AggregateRating",
-            ratingValue: q.plumber.googleRating,
-            reviewCount: q.plumber.googleReviewCount,
+            ratingValue: t.plumber.googleRating,
+            reviewCount: t.plumber.googleReviewCount,
             bestRating: 5,
             worstRating: 1,
           },
@@ -193,14 +262,16 @@ export default async function ServiceCityPage({
     })),
   } : null;
 
-  const hasEnoughPlumbers = qualified.length >= MIN_PLUMBERS_FOR_PAGE;
-
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       {plumberListJsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(plumberListJsonLd) }} />
+      )}
+      {/* noindex if fewer than MIN_PLUMBERS_FOR_PAGE plumbers across all tiers */}
+      {!hasEnoughPlumbers && (
+        <meta name="robots" content="noindex" />
       )}
 
       {/* Hero */}
@@ -222,10 +293,10 @@ export default async function ServiceCityPage({
               <MapPin className="w-4 h-4" />
               {city.county} County
             </span>
-            {hasEnoughPlumbers && (
+            {hasAnyPlumbers && (
               <span className="flex items-center gap-1">
                 <ShieldCheck className="w-4 h-4" />
-                {qualified.length} qualified pro{qualified.length !== 1 ? "s" : ""}
+                {tiered.totalCount} plumber{tiered.totalCount !== 1 ? "s" : ""} available
               </span>
             )}
           </div>
@@ -234,23 +305,28 @@ export default async function ServiceCityPage({
 
       <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
 
-        {/* Top 3 picks (if we have enough plumbers) */}
-        {hasEnoughPlumbers && (
+        {/* Top 3 picks — only from Tier 1 + Tier 2 (scored or bridge-scored) */}
+        {hasTopPicks && (
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Best {config.displayName} Pros in {city.name}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-              {qualified.slice(0, 3).map((q, i) => {
-                const verdict = q.synthesized.decision?.verdict;
+              {tiered.topPickEligible.slice(0, 3).map((t, i) => {
+                const verdict = t.synthesized?.decision?.verdict;
                 const verdictLabel = verdict === "strong_hire" ? "Strong Hire" : verdict === "conditional_hire" ? "Conditional Hire" : verdict === "caution" ? "Caution" : null;
                 const verdictColor = verdict === "strong_hire" ? "bg-green-100 text-green-800" : verdict === "conditional_hire" ? "bg-yellow-100 text-yellow-800" : verdict === "caution" ? "bg-amber-100 text-amber-800" : "bg-gray-100 text-gray-600";
-                const evidenceQuote = q.synthesized.evidence_quotes?.find(
+                const evidenceQuote = t.synthesized?.evidence_quotes?.find(
                   (eq) => eq.dimension === "workmanship" || eq.dimension === "reliability"
                 );
 
+                // Badge: Tier 1 shows specialty score, Tier 2 shows "Reviewed for {service}"
+                const badge = t.tier === 1
+                  ? { text: `${config.displayName}: ${t.specialtyScore}/100`, className: "bg-blue-50 text-blue-700" }
+                  : { text: `Reviewed for ${config.displayName.toLowerCase()}`, className: "bg-green-50 text-green-700" };
+
                 return (
-                  <div key={q.plumber.id} className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col">
+                  <div key={t.plumber.id} className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-lg font-bold text-primary">#{i + 1}</span>
                       {verdictLabel && (
@@ -259,16 +335,16 @@ export default async function ServiceCityPage({
                         </span>
                       )}
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{q.plumber.businessName}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{t.plumber.businessName}</h3>
                     <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                      {q.plumber.googleRating && (
+                      {t.plumber.googleRating && (
                         <span className="flex items-center gap-1">
                           <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-                          {q.plumber.googleRating}
+                          {t.plumber.googleRating}
                         </span>
                       )}
-                      <span className="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">
-                        {config.displayName}: {q.specialtyScore}/100
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${badge.className}`}>
+                        {badge.text}
                       </span>
                     </div>
                     {evidenceQuote && (
@@ -278,7 +354,7 @@ export default async function ServiceCityPage({
                     )}
                     <div className="mt-auto">
                       <a
-                        href={`tel:${q.plumber.phone}`}
+                        href={`tel:${t.plumber.phone}`}
                         className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-dark text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors w-full justify-center"
                       >
                         <Phone className="w-3.5 h-3.5" />
@@ -292,14 +368,14 @@ export default async function ServiceCityPage({
           </section>
         )}
 
-        {/* Full plumber list or empty state */}
-        {hasEnoughPlumbers ? (
+        {/* Full plumber list — all tiers combined */}
+        {hasAnyPlumbers ? (
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               All {config.displayName} Pros in {city.name}
             </h2>
             <PlumberListWithSort
-              plumbers={JSON.parse(JSON.stringify(qualified.map((q) => q.plumber)))}
+              plumbers={JSON.parse(JSON.stringify(tiered.all.map((t) => t.plumber)))}
               citySlug={citySlug}
               cityName={city.name}
             />
@@ -411,20 +487,20 @@ export default async function ServiceCityPage({
         })()}
 
         {/* Emergency CTA */}
-        {hasEnoughPlumbers && (
+        {hasAnyPlumbers && (
           <div className="bg-accent/5 border-2 border-accent/20 rounded-2xl p-6 sm:p-8 text-center">
             <h2 className="text-xl font-bold text-gray-900 mb-2">
               Need {config.displayName} Right Now?
             </h2>
             <p className="text-gray-600 mb-4">
-              Call our top-rated {config.displayName.toLowerCase()} pro in {city.name}.
+              Call a top-rated {config.displayName.toLowerCase()} pro in {city.name}.
             </p>
             <a
-              href={`tel:${qualified[0].plumber.phone}`}
+              href={`tel:${tiered.all[0].plumber.phone}`}
               className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white font-bold py-4 px-8 rounded-xl text-lg transition-colors shadow-lg shadow-accent/25"
             >
               <Phone className="w-5 h-5" />
-              Call #{"\u200B"}1 Rated Pro Now
+              Call Top-Rated Pro Now
             </a>
           </div>
         )}
