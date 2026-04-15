@@ -56,6 +56,9 @@ export const MIN_SPECIALTY_SCORE = 70;
 /** Minimum plumbers needed to render a full page (below this: noindex) */
 export const MIN_PLUMBERS_FOR_PAGE = 3;
 
+/** Maximum plumbers displayed on a service page (prevents spammy listings) */
+export const MAX_PLUMBERS_PER_PAGE = 15;
+
 // ---------------------------------------------------------------------------
 // Registry: 27 entries (16 service + 5 intent + 6 symptom)
 // ---------------------------------------------------------------------------

@@ -16,6 +16,7 @@ import {
   getAllServiceSlugs,
   MIN_SPECIALTY_SCORE,
   MIN_PLUMBERS_FOR_PAGE,
+  MAX_PLUMBERS_PER_PAGE,
   type PageConfig,
 } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
@@ -168,7 +169,8 @@ function getTieredPlumbers(
     return bQ - aQ;
   });
 
-  const all = [...tier1, ...tier2, ...tier3];
+  const allUncapped = [...tier1, ...tier2, ...tier3];
+  const all = allUncapped.slice(0, MAX_PLUMBERS_PER_PAGE);
   const topPickEligible = [...tier1, ...tier2];
 
   return { tier1, tier2, tier3, all, topPickEligible, totalCount: all.length };

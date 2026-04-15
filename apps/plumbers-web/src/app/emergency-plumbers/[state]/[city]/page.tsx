@@ -10,6 +10,7 @@ import { getStateBySlug } from "@/lib/states-data";
 import { getPlumbersByCity, getActivePlumbersByState } from "@/lib/firestore";
 import { getPlumbersNearCity } from "@/lib/plumber-data";
 import { calculateQualityScore } from "@/lib/scoring";
+import { MAX_PLUMBERS_PER_PAGE } from "@/lib/services-config";
 import { getCityCoordBySlug } from "@/lib/city-coords";
 import { calculateDistance, getDistanceWeight } from "@/lib/geo";
 import type { Plumber } from "@/lib/types";
@@ -30,7 +31,7 @@ export async function generateMetadata({
   if (!city) return {};
 
   const plumbers = getPlumbersNearCity(city.state, citySlug);
-  const count = plumbers.length;
+  const count = Math.min(plumbers.length, MAX_PLUMBERS_PER_PAGE);
   const year = new Date().getFullYear();
 
   const ogUrl = new URL("https://fastplumbernearme.com/api/og");
@@ -145,6 +146,9 @@ export default async function CityPage({
     const bQuality = calculateQualityScore(b, maxReviewCount) * getDistanceWeight(b.distanceMiles ?? 0);
     return bQuality - aQuality;
   });
+
+  // Cap displayed plumbers to prevent spammy listings
+  plumbers = plumbers.slice(0, MAX_PLUMBERS_PER_PAGE);
 
   const faqs = getCityFaqs(city.name, city.state, city.county);
 
