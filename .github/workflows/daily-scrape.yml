@@ -12,7 +12,7 @@ permissions:
 jobs:
   scrape-and-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/plumbers-web
@@ -89,6 +89,15 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: npx tsx scripts/synthesize-reviews.ts
         continue-on-error: true
+
+      # Phase 3b: Score plumbers — decision layer (scores, city rank, verdict)
+      # Runs all 3 passes on plumbers with 3+ cached reviews that haven't been scored in 30 days.
+      - name: Score plumbers (decision layer)
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx tsx scripts/score-plumbers.ts --pass all
 
       # Phase 4: Rebuild derived JSON from Firestore (single source of truth)
       # export-firestore-to-json.js is the SOLE writer to plumbers-synthesized.json.

@@ -27,7 +27,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install firebase-admin outscraper googleapis
+        run: npm install firebase-admin outscraper googleapis typescript tsx @anthropic-ai/sdk
 
       - name: Check secrets
         id: secrets
@@ -118,6 +118,15 @@ jobs:
             echo "Processing city 3: $SLUG"
             node scripts/outscraper-reviews.js "$SLUG"
           fi
+
+      # Score plumbers after deep review pull — Outscraper provides rich review data
+      # that makes scoring more accurate. Runs all 3 passes (score, rank, decide).
+      - name: Score plumbers (decision layer)
+        if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx tsx scripts/score-plumbers.ts --pass all
 
       # Export Firestore enrichment to static JSON → commit → push → Vercel rebuild
       - name: Git setup and pull
