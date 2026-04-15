@@ -567,13 +567,15 @@ async function main() {
   console.log(`  Wrote ${swpWritten} rows to gscSitePages\n`);
 
   // --- Pull 5: Search appearance ---
+  // Note: searchAppearance cannot be grouped with page dimension in the GSC API.
+  // Use searchAppearance + date only for site-wide rich snippet tracking.
   console.log("Fetching search appearance breakdown...");
   const searchAppResponse = await searchconsole.searchanalytics.query({
     siteUrl: SITE_URL,
     requestBody: {
       startDate: startStr,
       endDate: endStr,
-      dimensions: ["searchAppearance", "page", "date"],
+      dimensions: ["searchAppearance", "date"],
       rowLimit: ROW_LIMIT,
       type: "web",
     },
@@ -590,14 +592,13 @@ async function main() {
   batchCount = 0;
 
   for (const row of searchAppRows) {
-    const [appearance, pageUrl, date] = row.keys;
-    const subDocId = `${date}__${sha1Short(appearance)}__${sha1Short(pageUrl)}`;
+    const [appearance, date] = row.keys;
+    const subDocId = `${date}__${sha1Short(appearance)}`;
     const ref = db.collection("gscSearchAppearance").doc(subDocId);
 
     batch.set(ref, {
       date,
       searchAppearance: appearance,
-      page: pageUrl,
       impressions: row.impressions,
       clicks: row.clicks,
       ctr: Math.round((row.ctr || 0) * 10000) / 10000,
