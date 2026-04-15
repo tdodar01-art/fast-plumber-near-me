@@ -193,4 +193,21 @@ Rationale:
 3. The cost of extraction later is low for most pieces (registry types, decision engine, GSC watcher, linking logic = all Low effort).
 4. The cost of premature extraction is high (wrong abstractions, maintaining two packages while only one app uses them, slower iteration).
 
+---
+
+## Experiments System (`src/lib/experiments/`)
+
+**Classification: SHARED (engine in control-center) + CONFIG (per-site registry in each app)**
+
+The experiments system is already split brain/body across repos. The engine (judging, metrics pulling, notifications) lives in control-center and is fully vertical-agnostic. Per-site code lives in each site repo:
+- `activeExperiments.ts` — hardcoded registry (VERTICAL — experiment configs are site-specific)
+- `publishMetrics.ts` — metrics publisher (SHARED — same GSC→Firestore pattern for any site)
+- Variant helpers (e.g., `getNearbyCityCount.ts`, `expandNearbyCities.ts`) — CONFIG (shared pattern, per-experiment values)
+
+**Plumbing assumptions baked in:** None in the engine. The `activeExperiments.ts` and variant helpers are plumbing-specific by content, not by structure.
+
+**Extraction effort:** Already extraction-ready. Adding a second site means: (1) add entry to `sites.ts` in control-center, (2) create `activeExperiments.ts` + `publishMetrics.ts` in the new site's repo, (3) add a GitHub Action for the metrics cron.
+
+---
+
 **However:** Follow the Monorepo Extensibility Principle — avoid baking "plumber" into generic concepts, keep vertical-specific prompts/config in named files, and flag items for this doc as they're built. When the second directory arrives, this doc is the extraction map.

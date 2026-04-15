@@ -28,6 +28,17 @@ When in doubt: would this logic work identically for HVAC or electrical director
 
 See `docs/plans/monorepo-extraction-notes.md` for the full scouting doc classifying each major component.
 
+## Experiments
+
+This repo is the **body** in the brain/body experiments system. Control-center (brain) owns the ledger and judging; this repo owns variant rendering and metrics publishing. See `apps/plumbers-web/docs/EXPERIMENTS.md` for the full file map and active experiments.
+
+Key files:
+- `apps/plumbers-web/src/lib/experiments/activeExperiments.ts` — hardcoded experiment registry
+- `apps/plumbers-web/src/lib/experiments/publishMetrics.ts` — daily GSC metrics → Firestore
+- `.github/workflows/publish-experiment-metrics.yml` — 7:30 AM CT cron
+
+When adding experiment support to a page template, follow the pattern in `emergency-plumbers/[state]/[city]/page.tsx`: check `getExperimentNearbyCityCount()`, branch on result, render accordingly.
+
 ## SEO Doctrine
 
 All SEO decisions must follow the standing doctrine at `~/code/control-center/doctrines/seo.md`. Read it before building any new page type, changing metadata, or modifying URL structure. Do not reinvent SEO patterns per page — consult the doctrine and apply.

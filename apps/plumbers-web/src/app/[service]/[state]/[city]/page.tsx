@@ -20,6 +20,8 @@ import {
 } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
 import type { Plumber } from "@/lib/types";
+import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
+import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
 
 // ---------------------------------------------------------------------------
 // Static params: [service] × [state] × [city]
@@ -381,25 +383,32 @@ export default async function ServiceCityPage({
           </div>
         </section>
 
-        {/* Nearby cities */}
-        {city.nearbyCities.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              {config.displayName} in Nearby Cities
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {city.nearbyCities.map((nearby) => (
-                <Link
-                  key={`${nearby.stateSlug}-${nearby.citySlug}`}
-                  href={`/${serviceSlug}/${nearby.stateSlug}/${nearby.citySlug}`}
-                  className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors"
-                >
-                  {nearby.name} <ArrowRight className="w-3 h-3" />
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* Nearby cities (experiment-aware) */}
+        {(() => {
+          const expCount = getExperimentNearbyCityCount(stateSlug, citySlug);
+          const nearbyCities = expCount != null
+            ? getExpandedNearbyCities(stateSlug, citySlug, city.nearbyCities, expCount)
+            : city.nearbyCities;
+          if (nearbyCities.length === 0) return null;
+          return (
+            <section className="mb-12">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                {config.displayName} in Nearby Cities
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {nearbyCities.map((nearby) => (
+                  <Link
+                    key={`${nearby.stateSlug}-${nearby.citySlug}`}
+                    href={`/${serviceSlug}/${nearby.stateSlug}/${nearby.citySlug}`}
+                    className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors"
+                  >
+                    {nearby.name} <ArrowRight className="w-3 h-3" />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
 
         {/* Emergency CTA */}
         {hasEnoughPlumbers && (

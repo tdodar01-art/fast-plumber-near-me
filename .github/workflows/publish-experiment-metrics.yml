@@ -1,0 +1,63 @@
+name: Publish Experiment Metrics
+
+on:
+  schedule:
+    # 7:30 AM Central (CDT=UTC-5) → 12:30 UTC
+    # Runs BEFORE control-center's 8:00 AM judge cron
+    - cron: "30 12 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: experiment-metrics
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: apps/plumbers-web
+
+jobs:
+  publish-metrics:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check Firebase secret
+        id: firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "WARNING: FIREBASE_SERVICE_ACCOUNT secret not set"
+          fi
+
+      - name: Setup service account
+        if: steps.firebase.outputs.configured == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Publish experiment metrics
+        if: steps.firebase.outputs.configured == 'true'
+        env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
+        run: npx tsx scripts/experiments/publish-metrics-cron.ts
+
+      - name: Cleanup
+        if: always()
+        run: rm -f service-account.json
