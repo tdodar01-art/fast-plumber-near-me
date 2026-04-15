@@ -157,7 +157,7 @@ jobs:
               // Output space-separated slugs
               console.log(selected.map(c => c.slug).join(' '));
             }
-            main().catch(e => { console.error(e.message); process.exit(1); });
+            main().catch(e => { console.error('FATAL: ' + e.message); console.error(e.stack); process.exit(1); });
           " 2>&1)
 
           # Extract just the last line (stdout) as city slugs — stderr goes to log
