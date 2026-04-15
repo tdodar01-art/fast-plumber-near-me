@@ -243,14 +243,22 @@ async function main() {
 
     try {
       // Upsert latest GSC snapshot + tier on the city doc
-      await db.collection("cities").doc(docId).set({
+      const cityPayload = {
         lastGSCImpressions: city.impressions,
         lastGSCClicks: city.clicks,
         lastGSCPosition: roundedPos,
         lastGSCCTR: roundedCtr,
         gscLastUpdated: todayStr,
         gscTier: tier,
-      }, { merge: true });
+      };
+      await db.collection("cities").doc(docId).set(cityPayload, { merge: true });
+
+      // Verify the write persisted (debug — remove once confirmed working)
+      if (tier === "medium" || tier === "high") {
+        const verifySnap = await db.collection("cities").doc(docId).get();
+        const verifyData = verifySnap.data();
+        console.log(`  ✓ ${docId}: gscTier="${verifyData?.gscTier}" (wrote "${tier}", ${city.impressions} impr)`);
+      }
 
       // Write daily history to subcollection (date as doc ID = idempotent)
       await db.collection("cities").doc(docId)
@@ -266,7 +274,8 @@ async function main() {
 
       metricsUpdated++;
     } catch (metricErr) {
-      console.error(`  Warning: failed to update GSC metrics for ${docId}: ${metricErr.message}`);
+      console.error(`  WARNING: failed to update GSC metrics for ${docId}: ${metricErr.message}`);
+      console.error(`  Stack: ${metricErr.stack?.split("\n")[1]?.trim()}`);
     }
   }
 

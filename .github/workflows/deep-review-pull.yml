@@ -61,13 +61,26 @@ jobs:
             const db = admin.firestore();
 
             async function main() {
+              // Debug: log all cities and their gscTier values
+              const allCities = await db.collection('cities').get();
+              console.error('DEBUG: Total cities in Firestore: ' + allCities.size);
+              const tierCounts = {};
+              for (const d of allCities.docs) {
+                const tier = d.data().gscTier || '(missing)';
+                tierCounts[tier] = (tierCounts[tier] || 0) + 1;
+                if (tier === 'medium' || tier === 'high') {
+                  console.error('  ' + d.id + ' → gscTier=' + tier + ', impressions=' + (d.data().lastGSCImpressions || 0));
+                }
+              }
+              console.error('DEBUG: gscTier distribution: ' + JSON.stringify(tierCounts));
+
               // Get cities with medium or high GSC tier (10+ impressions)
               const snap = await db.collection('cities')
                 .where('gscTier', 'in', ['medium', 'high'])
                 .get();
 
               if (snap.empty) {
-                console.error('No medium/high tier cities found.');
+                console.error('No medium/high tier cities found. (See tier distribution above)');
                 process.exit(0);
               }
 
