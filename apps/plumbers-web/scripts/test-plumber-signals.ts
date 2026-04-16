@@ -327,9 +327,9 @@ test("premium pricing WITHOUT pricing red flag does NOT flag", () => {
 // pickTop — the honesty rule
 // ---------------------------------------------------------------------------
 
-section("pickTop honesty rule");
+section("pickTop honesty + verdict-first rules");
 
-test("top-3 always includes the most severe flag first", () => {
+test("top-3 WITHOUT verdict: most severe flag goes to slot 1 (honesty)", () => {
   const p = makePlumber({
     scores: {
       ...makePlumber().scores,
@@ -339,15 +339,37 @@ test("top-3 always includes the most severe flag first", () => {
       responsiveness: 80,
       communication: 78,
     },
+    // Intentionally no decision — ensures flag-first fallback kicks in
+    decision: undefined,
   });
   const signals = resolveSignals(p);
   const top3 = pickTop(signals, 3);
   assert.ok(top3.length >= 1);
-  assert.equal(top3[0].kind, "flag", "top slot must be a flag when any flag exists");
+  assert.equal(top3[0].kind, "flag", "top slot must be a flag when no verdict");
   assert.ok(top3[0].id.includes("pricing"));
 });
 
-test("top-3 returns all excels when no flags exist", () => {
+test("top-3 WITH verdict: verdict seal in slot 1, flag in slot 2", () => {
+  const p = makePlumber({
+    scores: {
+      ...makePlumber().scores,
+      reliability: 90,
+      pricing_fairness: 40, // flag
+      workmanship: 85,
+      responsiveness: 80,
+      communication: 78,
+    },
+    decision: { verdict: "caution", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
+  });
+  const signals = resolveSignals(p);
+  const top3 = pickTop(signals, 3);
+  assert.equal(top3[0].kind, "seal", "verdict seal claims slot 1");
+  assert.equal(top3[0].id, "verdict-caution");
+  assert.equal(top3[1].kind, "flag", "most severe flag claims slot 2");
+  assert.ok(top3[1].id.includes("pricing"));
+});
+
+test("top-3 returns verdict + excels when no flags exist", () => {
   const p = makePlumber({
     scores: {
       ...makePlumber().scores,
@@ -357,10 +379,13 @@ test("top-3 returns all excels when no flags exist", () => {
       responsiveness: 80,
       communication: 82,
     },
+    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
   });
   const signals = resolveSignals(p);
   const top3 = pickTop(signals, 3);
-  assert.ok(top3.every((s) => s.kind !== "flag"));
+  // No flags, so slot 1 = seal, slots 2-3 = excels
+  assert.equal(top3[0].kind, "seal");
+  assert.ok(top3.slice(1).every((s) => s.kind !== "flag"));
   assert.equal(top3.length, 3);
 });
 
@@ -412,9 +437,12 @@ test("Hiller-like plumber (high Google, low Yelp, many BBB complaints) surfaces 
   });
   const signals = resolveSignals(p);
   const top3 = pickTop(signals, 3);
-  // Top slot must be a flag (pricing is the big one)
-  assert.equal(top3[0].kind, "flag");
-  // At least one of top3 references pricing
+  // Verdict "caution" seal claims slot 1 (headline trust signal)
+  assert.equal(top3[0].kind, "seal");
+  assert.equal(top3[0].id, "verdict-caution");
+  // Flag claims slot 2 (honesty — user can't miss the concern)
+  assert.equal(top3[1].kind, "flag");
+  // At least one of top3 references pricing (the real Hiller headline)
   assert.ok(top3.some((s) => /pricing|premium/i.test(s.label)));
 });
 

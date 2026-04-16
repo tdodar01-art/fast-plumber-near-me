@@ -234,11 +234,44 @@ function resolveSampleSignals(plumber: PlumberLike): Signal[] {
 
 function resolveDecisionSignals(plumber: PlumberLike): Signal[] {
   const out: Signal[] = [];
+  // Emit the verdict itself as the highest-priority chip — this is the
+  // headline signal. Replaces the standalone VerdictSeal component; the
+  // verdict now flows through SignalRow like any other signal. Priority
+  // 10 ensures it always appears in slot 1 (above the flag-first rule
+  // in pickTop, which also peaks at priority 10 for major flags — tied
+  // values fall back to kind weight where verdicts/seals are ranked
+  // highest to win the tie).
+  const verdict = plumber.decision?.verdict;
+  if (verdict) {
+    const VERDICT_LABELS = {
+      strong_hire: { label: "Top Pick", detail: "Reviews confirm strong performance across reliability, workmanship, pricing, and response. Safe first call." },
+      conditional_hire: { label: "Solid Choice", detail: "Good in most areas with minor caveats. Worth calling — review the specifics below." },
+      caution: { label: "Use Caution", detail: "Reviews reveal real concerns in at least one area. Get a written quote and consider alternatives." },
+      avoid: { label: "Avoid", detail: "Multiple material concerns across reviews. Consider alternatives before calling." },
+    } as const;
+    const cfg = VERDICT_LABELS[verdict];
+    const iconSlug =
+      verdict === "strong_hire" ? "verdict-strong-hire" :
+      verdict === "conditional_hire" ? "verdict-conditional" :
+      verdict === "caution" ? "verdict-caution" :
+      "verdict-avoid";
+    out.push({
+      id: `verdict-${verdict}`,
+      // Verdicts render with their own color (gold/green/amber/red); "seal"
+      // kind ensures SignalChip applies the right styling.
+      kind: "seal",
+      priority: 10,
+      label: cfg.label,
+      detail: cfg.detail,
+      icon: icon(iconSlug),
+    });
+  }
+
   const rank = plumber.city_rank;
   if (!rank) return out;
 
-  // Find any city rank entry with a very high percentile → "top pick" info chip.
-  // (VerdictSeal handles the core verdict; this is extra flavor.)
+  // Extra flavor chip for truly top-ranked plumbers (90th percentile in city)
+  // — distinct from the verdict chip above.
   for (const key of Object.keys(rank)) {
     const entry = rank[key];
     if (entry?.overall_percentile != null && entry.overall_percentile >= 90) {
@@ -487,12 +520,13 @@ export function resolveSignals(plumber: PlumberLike): Signal[] {
     return true;
   });
 
-  // Sort priority desc, then flags before excels before info at the same priority.
+  // Sort priority desc. Ties break by kind weight: verdict seals outrank
+  // flags (headline), flags outrank excels (honesty), excels outrank info.
   const kindWeight: Record<SignalKind, number> = {
+    seal: 4,
     flag: 3,
     excel: 2,
     info: 1,
-    seal: 0,
   };
   deduped.sort((a, b) => {
     if (b.priority !== a.priority) return b.priority - a.priority;
@@ -503,18 +537,26 @@ export function resolveSignals(plumber: PlumberLike): Signal[] {
 }
 
 /**
- * Pick the top N signals to display. Honesty principle: if there are ANY
- * flags, the highest-priority flag ALWAYS takes slot 1 — the user must see
- * concerns first even when excels have nominally higher priority.
+ * Pick the top N signals to display.
+ *
+ * Slot rules:
+ *  1. Verdict seal (if present) ALWAYS slot 1 — the user's headline
+ *     question "is this plumber worth calling?" gets answered first.
+ *  2. Most severe flag (if any) ALWAYS slot 2 — honesty principle, user
+ *     cannot miss concerns even when excels outnumber them.
+ *  3. Remaining slots fill priority-desc from the rest.
  */
 export function pickTop(signals: Signal[], n = 3): Signal[] {
   if (n <= 0 || signals.length === 0) return [];
 
+  const verdict = signals.find((s) => s.kind === "seal");
   const flags = signals.filter((s) => s.kind === "flag");
-  const others = signals.filter((s) => s.kind !== "flag");
 
   const result: Signal[] = [];
-  if (flags.length > 0) result.push(flags[0]); // most severe flag first
+  if (verdict) result.push(verdict);
+  if (flags.length > 0 && !result.includes(flags[0])) {
+    result.push(flags[0]);
+  }
 
   // Fill remaining slots with priority-desc mix of everything not yet chosen.
   const remaining = signals.filter((s) => !result.includes(s));
@@ -522,7 +564,7 @@ export function pickTop(signals: Signal[], n = 3): Signal[] {
     if (result.length >= n) break;
     result.push(s);
   }
-  return result;
+  return result.slice(0, n);
 }
 
 /** Group signals by kind for structured display sections. */

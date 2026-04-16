@@ -10,9 +10,30 @@ import {
 import type { Plumber } from "@/lib/types";
 import { getScoreLabel } from "@/lib/scoring";
 import { getDistanceLabel } from "@/lib/geo";
-import VerdictSeal from "./VerdictSeal";
 import SignalRow from "./SignalRow";
 import PlatformAgreementStrip from "./PlatformAgreementStrip";
+
+// Deterministic initials + background color for the avatar circle.
+// Replaces the verdict-seal-as-avatar treatment that read as a profile
+// photo. Uses a hashed palette so the same plumber always gets the same
+// color.
+function getInitials(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return "?";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+const AVATAR_COLORS = [
+  "#1a365d", "#2563eb", "#7c3aed", "#c026d3",
+  "#db2777", "#dc2626", "#ea580c", "#ca8a04",
+  "#16a34a", "#0d9488", "#0891b2", "#4b5563",
+];
+function getInitialsBg(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 
 function slugify(text: string) {
   return text
@@ -258,75 +279,70 @@ export default function PlumberCard({
       onClick={handleCardClick}
       className={`rounded-xl border-2 p-4 sm:p-5 shadow-sm hover:shadow-md active:shadow-inner transition-shadow cursor-pointer ${borderClass}`}
     >
-      {/* === IDENTITY + TRUST LINE === */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
-        <div className="flex items-start gap-3 min-w-0 flex-1">
-          {verdict && (
-            <div className="mt-0.5 flex-shrink-0">
-              <VerdictSeal verdict={verdict} size="sm" />
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-bold text-gray-900 leading-tight truncate">{plumber.businessName}</h3>
+      {/* === HEADER: initials avatar, name + trust line, signals flow right === */}
+      <div className="flex items-start gap-3">
+        {/* Initials avatar — replaces the old verdict seal that read as a profile photo */}
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+          style={{ backgroundColor: getInitialsBg(plumber.businessName) }}
+          aria-hidden
+        >
+          {getInitials(plumber.businessName)}
+        </div>
 
-          {/* Trust line */}
-          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-1 text-sm text-gray-600">
-            {plumber.googleRating != null && (
-              <span className="inline-flex items-center gap-0.5 font-semibold text-gray-900">
-                <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-                {plumber.googleRating}
-              </span>
-            )}
-            {plumber.googleReviewCount != null && plumber.googleReviewCount > 0 && (
-              <>
+        {/* Name + trust line + signal chips.
+            On desktop (sm+) chips flow to the right of the name block.
+            On mobile the chips wrap below. */}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-start gap-x-3 gap-y-2 justify-between">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-lg font-bold text-gray-900 leading-tight truncate">{plumber.businessName}</h3>
+
+              {/* Trust line */}
+              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-1 text-sm text-gray-600">
+                {plumber.googleRating != null && (
+                  <span className="inline-flex items-center gap-0.5 font-semibold text-gray-900">
+                    <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                    {plumber.googleRating}
+                  </span>
+                )}
+                {plumber.googleReviewCount != null && plumber.googleReviewCount > 0 && (
+                  <>
+                    <span className="text-gray-400">·</span>
+                    <span className="font-medium">{formatReviewCount(plumber.googleReviewCount)} reviews</span>
+                  </>
+                )}
                 <span className="text-gray-400">·</span>
-                <span className="font-medium">{formatReviewCount(plumber.googleReviewCount)} reviews</span>
-              </>
-            )}
-            <span className="text-gray-400">·</span>
-            <SourceLogos googleReviewCount={plumber.googleReviewCount} />
-          </div>
+                <SourceLogos googleReviewCount={plumber.googleReviewCount} />
+              </div>
 
-          {/* Distance — below name on mobile */}
-          {distanceMiles != null && (
-            <p className={`flex items-center gap-1 text-xs mt-1 sm:hidden ${
-              getDistanceLabel(distanceMiles).color === "amber" ? "text-amber-600" : "text-gray-500"
-            }`}>
-              <MapPin className="w-3 h-3" />
-              {getDistanceLabel(distanceMiles, cityName).text}
-            </p>
-          )}
+              {/* Distance + Google verified on own line — unobtrusive meta */}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1 text-xs text-gray-500">
+                {distanceMiles != null && (
+                  <span className={`inline-flex items-center gap-1 ${
+                    getDistanceLabel(distanceMiles).color === "amber" ? "text-amber-600" : "text-gray-500"
+                  }`}>
+                    <MapPin className="w-3 h-3" />
+                    {getDistanceLabel(distanceMiles, cityName).text}
+                  </span>
+                )}
+                {plumber.googleVerified && (
+                  <span className="inline-flex items-center gap-1 text-blue-700">
+                    <BadgeCheck className="w-3 h-3" />
+                    Google Verified
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Signal chips — headline verdict + top flags/excels.
+                Flows right of the name on desktop, wraps below on mobile.
+                Verdict always slot 1, most severe flag slot 2 (if any). */}
+            <div className="flex-shrink-0 max-w-full sm:max-w-[55%]">
+              <SignalRow plumber={plumber} limit={4} />
+            </div>
           </div>
         </div>
-
-        {/* Desktop: distance + score on right */}
-        <div className="hidden sm:flex sm:flex-col sm:items-end sm:gap-1 sm:flex-shrink-0 sm:ml-4">
-          {distanceMiles != null && (
-            <p className={`flex items-center gap-1 text-xs ${
-              getDistanceLabel(distanceMiles).color === "amber" ? "text-amber-600" : "text-gray-500"
-            }`}>
-              <MapPin className="w-3 h-3" />
-              {getDistanceLabel(distanceMiles, cityName).text}
-            </p>
-          )}
-          {plumber.reliabilityScore > 0 && <TrustScore score={plumber.reliabilityScore} />}
-        </div>
-      </div>
-
-      {/* === BADGES — compact row (no 24/7 badge — moved to KPI) === */}
-      <div className="flex items-center gap-1.5 mt-2 overflow-x-auto scrollbar-hide">
-        {plumber.googleVerified && (
-          <span className="inline-flex items-center gap-1 text-xs font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full whitespace-nowrap">
-            <BadgeCheck className="w-3 h-3" />
-            Google Verified
-          </span>
-        )}
-        {/* Mobile trust score — inline with badges */}
-        {plumber.reliabilityScore > 0 && (
-          <span className="sm:hidden">
-            <TrustScore score={plumber.reliabilityScore} />
-          </span>
-        )}
       </div>
 
       {/* === KPI TILES === */}
@@ -346,9 +362,6 @@ export default function PlumberCard({
 
       {/* === PLATFORM DISAGREEMENT (only shows if Google vs Yelp differ) === */}
       <PlatformAgreementStrip plumber={plumber} cardMode />
-
-      {/* === SIGNAL CHIPS — top 3, flags first (honesty rule) === */}
-      <SignalRow plumber={plumber} limit={3} />
 
       {/* === FLAGGED WARNING === */}
       {plumber.status === "flagged" && (

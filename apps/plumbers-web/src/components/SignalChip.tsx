@@ -9,14 +9,22 @@ import type { Signal } from "@/lib/plumber-signals";
  * detail and any evidence quote. Click to toggle (for mobile); hover-only
  * tooltip on desktop also works via the browser's `title` attribute.
  *
- * Color keying per kind:
+ * Color keying:
  *   flag  — red tinted pill
  *   excel — green tinted pill
  *   info  — neutral gray
- *   seal  — should use VerdictSeal instead
+ *   seal  (verdict) — colored by verdict id: gold / green / amber / red
  */
 
-const KIND_STYLES = {
+type ChipStyle = {
+  bg: string;
+  text: string;
+  border: string;
+  ring: string;
+  bold?: boolean;
+};
+
+const KIND_STYLES: Record<string, ChipStyle> = {
   flag: {
     bg: "bg-red-50",
     text: "text-red-800",
@@ -35,13 +43,48 @@ const KIND_STYLES = {
     border: "border-gray-200",
     ring: "ring-gray-300",
   },
-  seal: {
-    bg: "bg-yellow-50",
-    text: "text-yellow-800",
-    border: "border-yellow-200",
-    ring: "ring-yellow-300",
+};
+
+// Verdict chips get per-verdict styling — these are HEADLINE signals, so
+// they're slightly bolder than regular chips (heavier weight + stronger
+// color) to draw the eye.
+const VERDICT_STYLES: Record<string, ChipStyle> = {
+  "verdict-strong_hire": {
+    bg: "bg-yellow-100",
+    text: "text-yellow-900",
+    border: "border-yellow-400",
+    ring: "ring-yellow-400",
+    bold: true,
   },
-} as const;
+  "verdict-conditional_hire": {
+    bg: "bg-green-100",
+    text: "text-green-900",
+    border: "border-green-400",
+    ring: "ring-green-400",
+    bold: true,
+  },
+  "verdict-caution": {
+    bg: "bg-amber-100",
+    text: "text-amber-900",
+    border: "border-amber-400",
+    ring: "ring-amber-400",
+    bold: true,
+  },
+  "verdict-avoid": {
+    bg: "bg-red-100",
+    text: "text-red-900",
+    border: "border-red-400",
+    ring: "ring-red-400",
+    bold: true,
+  },
+};
+
+function styleFor(signal: Signal): ChipStyle {
+  if (signal.kind === "seal") {
+    return VERDICT_STYLES[signal.id] ?? KIND_STYLES.info;
+  }
+  return KIND_STYLES[signal.kind] ?? KIND_STYLES.info;
+}
 
 export default function SignalChip({
   signal,
@@ -51,7 +94,7 @@ export default function SignalChip({
   compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const styles = KIND_STYLES[signal.kind];
+  const styles = styleFor(signal);
 
   const hasDetail = Boolean(signal.detail || signal.evidence);
 
@@ -60,6 +103,9 @@ export default function SignalChip({
     e.stopPropagation();
     setOpen((v) => !v);
   };
+
+  const weightClass = styles.bold ? "font-bold" : "font-medium";
+  const iconSize = signal.kind === "seal" ? (compact ? 16 : 20) : compact ? 14 : 18;
 
   return (
     <div
@@ -72,17 +118,17 @@ export default function SignalChip({
         title={`${signal.label} — ${signal.detail}`}
         className={`inline-flex items-center gap-1.5 ${styles.bg} ${styles.text} ${styles.border} border rounded-full ${
           compact ? "px-2 py-0.5" : "px-2.5 py-1"
-        } text-xs font-medium whitespace-nowrap transition-shadow cursor-help ${
+        } text-xs ${weightClass} whitespace-nowrap transition-shadow cursor-help ${
           open ? `ring-2 ${styles.ring}` : ""
         }`}
       >
         <Image
           src={signal.icon}
           alt=""
-          width={compact ? 14 : 18}
-          height={compact ? 14 : 18}
+          width={iconSize}
+          height={iconSize}
           className="flex-shrink-0"
-          style={{ width: compact ? 14 : 18, height: compact ? 14 : 18 }}
+          style={{ width: iconSize, height: iconSize }}
         />
         <span className="leading-none">{signal.label}</span>
       </button>

@@ -1,124 +1,132 @@
 {
-  "styleGuide": "Flat minimalist icon, 256x256, centered composition on a transparent or near-white background. Deep navy blue (#1a365d) as primary fill, with accent colors as specified per icon. Single focal symbol, clean 2-3px stroke weight where applicable, no textures, no shadows, no gradients. The icon must read clearly at both 32px and 128px. Think Material Icons or Phosphor Icons aesthetic, but slightly warmer and more human.",
+  "styleGuide": "Clean flat vector icon, 256x256 PNG, centered on transparent or near-white background. Must read INSTANTLY at 20-24px display size — no fine detail, no small text, no gradients, no shadows. Single bold focal subject. Use solid fills with 2-3 colors max per icon. Style should match Phosphor/Material/Iconify aesthetic. Every icon is paired with descriptive text in the UI, so the icon's job is to be a unmistakable symbol of the concept — literal and concrete, never abstract.",
+  "palette": {
+    "navy": "#1a365d",
+    "red": "#dc2626",
+    "amber": "#d97706",
+    "green": "#16a34a",
+    "gold": "#ca8a04",
+    "gray": "#6b7280"
+  },
   "icons": [
     {
       "name": "reliability-excel",
       "filename": "reliability-excel.png",
-      "prompt": "A clean flat icon: a simple round clock face with a checkmark in the center instead of clock hands. Deep navy blue (#1a365d) for the clock, fresh green (#059669) for the checkmark. Transparent background. Minimalist, no shadows, no textures. 256x256. Centered. Readable at small sizes.",
+      "prompt": "A wall calendar page with a large bold green checkmark (#16a34a) covering the center. Navy (#1a365d) calendar outline with visible grid squares. The checkmark is thick and confident. Symbolizes 'shows up when scheduled'. Flat vector, no shadows. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "reliability-flag",
       "filename": "reliability-flag.png",
-      "prompt": "A clean flat icon: a round clock face with a diagonal warning stripe through it. Muted red (#e53e3e) for the stripe, deep navy blue (#1a365d) for the clock. Transparent background. Minimalist, no shadows, no textures. 256x256. Centered. Readable at small sizes.",
+      "prompt": "A wall calendar page with a large bold red X (#dc2626) crossing through it. Navy (#1a365d) calendar outline. Symbolizes missed appointments and no-shows. Flat vector, no shadows. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "pricing-excel",
       "filename": "pricing-excel.png",
-      "prompt": "A clean flat icon: a simple receipt or bill with a checkmark inside it. Deep navy blue (#1a365d) for the receipt outline and lines, fresh green (#059669) for the checkmark. Transparent background. Minimalist flat design, no shadows, no gradients. 256x256. Centered.",
+      "prompt": "A bold dollar sign $ in navy (#1a365d) with a green checkmark (#16a34a) overlapping the bottom-right. The checkmark partially covers the lower portion of the dollar sign. Clean flat vector. Symbolizes fair, honest pricing. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "pricing-flag",
       "filename": "pricing-flag.png",
-      "prompt": "A clean flat icon: a receipt with a red upward-pointing arrow coming out of it, symbolizing inflated or surprise pricing. Muted red (#e53e3e) for the arrow, deep navy blue (#1a365d) for the receipt. Transparent background. Minimalist flat design, no shadows, no gradients. 256x256. Centered. Must read clearly at 32px.",
+      "prompt": "A bold dollar sign $ in navy (#1a365d) with a red up-arrow (#dc2626) behind or emerging from the top, indicating inflated prices. The arrow should be clearly pointing up. Flat vector style. Symbolizes overpriced, surprise fees. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "workmanship-excel",
       "filename": "workmanship-excel.png",
-      "prompt": "A clean flat icon: a perfectly joined pipe fitting (L-shape or T-shape pipe) with a small fresh green (#059669) checkmark accent. Deep navy blue (#1a365d) for the pipe. Transparent background. Flat minimalist style, no shadows, no textures, no gradients. 256x256. Centered.",
+      "prompt": "A chunky open-end wrench in navy (#1a365d) with a green checkmark (#16a34a) overlapping the handle end. The wrench is the dominant shape, recognizable as a plumbing tool. Flat vector, no shadows. Symbolizes quality work. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "workmanship-flag",
       "filename": "workmanship-flag.png",
-      "prompt": "A clean flat icon: a pipe with a visible crack and a single water drop falling from it, symbolizing quality issues. Muted red (#e53e3e) for the crack and drop, deep navy blue (#1a365d) for the pipe. Transparent background. Flat minimalist style, no shadows. 256x256. Centered.",
+      "prompt": "A chunky open-end wrench in navy (#1a365d) with a prominent red warning triangle (#dc2626) containing a white exclamation mark overlapping the wrench handle. The warning triangle should be clearly visible. Flat vector, no shadows. Symbolizes quality issues, botched work. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "responsiveness-excel",
       "filename": "responsiveness-excel.png",
-      "prompt": "A clean flat icon: a simple lightning bolt with a small fresh green (#059669) checkmark overlapping. Deep navy blue (#1a365d) for the bolt. Transparent background. Flat minimalist, no shadows. 256x256. Centered.",
+      "prompt": "A stopwatch or round analog timer showing a fast time, with a green checkmark (#16a34a) overlapping the face. Navy (#1a365d) outline of the stopwatch with a small button on top. Clean flat vector. Symbolizes quick response, fast arrival. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "responsiveness-flag",
       "filename": "responsiveness-flag.png",
-      "prompt": "A clean flat icon: an hourglass tipped on its side, suggesting wasted time or delay. Muted red (#e53e3e) for the hourglass outline and sand, with a subtle deep navy blue (#1a365d) supporting detail. Transparent background. Flat minimalist, no shadows. 256x256. Centered.",
+      "prompt": "A snail silhouette in amber (#d97706) with a navy (#1a365d) spiral shell. The snail is clearly recognizable. Flat vector, no shadows. Symbolizes slow response, long waits. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "communication-excel",
       "filename": "communication-excel.png",
-      "prompt": "A clean flat icon: a simple speech bubble with a checkmark inside it. Deep navy blue (#1a365d) for the bubble, fresh green (#059669) for the checkmark. Transparent background. Flat minimalist, no shadows, no gradients. 256x256. Centered.",
+      "prompt": "A rounded speech bubble (like SMS/chat bubble) in navy (#1a365d) with three thick horizontal text lines inside and a green checkmark (#16a34a) next to or inside the bubble. The text lines clearly suggest 'clear explanation'. Flat vector. Symbolizes good communication. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "communication-flag",
       "filename": "communication-flag.png",
-      "prompt": "A clean flat icon: a speech bubble with two question marks inside it. Muted red (#e53e3e) for the question marks, deep navy blue (#1a365d) for the bubble outline. Transparent background. Flat minimalist, no shadows. 256x256. Centered.",
+      "prompt": "A rounded speech bubble in navy (#1a365d) with a large bold red question mark (#dc2626) inside it. The question mark is the dominant internal element. Flat vector, no shadows. Symbolizes unclear or confusing communication. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "consistency-excel",
       "filename": "consistency-excel.png",
-      "prompt": "A clean flat icon: three identical checkmarks in a horizontal row, evenly spaced. All in fresh green (#059669). Transparent background. Flat minimalist, no shadows, no textures. 256x256. Centered.",
+      "prompt": "Three identical five-pointed stars in green (#16a34a), arranged in a horizontal row, all the same size and evenly spaced. Flat vector. Symbolizes consistent quality across visits. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "variance-flag",
       "filename": "variance-flag.png",
-      "prompt": "A clean flat icon: three vertical bars of notably different heights (tall, short, medium) suggesting uneven or inconsistent output. Amber (#d97706) color for the bars. Transparent background. Flat minimalist, no shadows. 256x256. Centered.",
+      "prompt": "Three five-pointed stars in a horizontal row of visibly different sizes (big, small, medium) in amber (#d97706), suggesting inconsistent quality. Flat vector, no shadows. Symbolizes hit-or-miss service. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "platform-mismatch",
       "filename": "platform-mismatch.png",
-      "prompt": "A clean flat icon: two five-pointed stars side by side at visibly different heights, with a short amber (#d97706) diagonal stripe between them suggesting a mismatch or gap. Deep navy blue (#1a365d) for the stars. Transparent background. Flat minimalist, no shadows. 256x256. Centered.",
+      "prompt": "Two review-star rating rows stacked vertically: top row shows 5 solid gold stars (#ca8a04), bottom row shows 3 solid gold stars followed by 2 empty outline stars. A small amber (#d97706) diagonal line or lightning-style arrow between the two rows emphasizing the mismatch. Flat vector. Symbolizes Google-vs-Yelp rating disagreement. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "bbb-accredited",
       "filename": "bbb-accredited.png",
-      "prompt": "A clean flat icon: a simple ribbon-style award seal with the letters 'A+' centered on it. Deep navy blue (#1a365d) for the ribbon, gold (#eab308) accent on the seal edge. Transparent background. Flat minimalist, no shadows, no textures. 256x256. Centered.",
+      "prompt": "A shield shape in navy (#1a365d) with the large bold letters 'A+' in white centered inside it. The shield is simple and official-looking. Flat vector, no shadows, no gradients. Symbolizes BBB A+ accreditation. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "bbb-concerns",
       "filename": "bbb-concerns.png",
-      "prompt": "A clean flat icon: a ribbon-style award seal with a single amber (#d97706) warning stripe diagonally across it. Deep navy blue (#1a365d) for the ribbon. Transparent background. Flat minimalist, no shadows. 256x256. Centered.",
+      "prompt": "A shield shape in navy (#1a365d) outline with a large red warning triangle (#dc2626) containing a white exclamation mark in the center of the shield. Flat vector, no shadows. Symbolizes BBB complaints on record. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "sample-warning",
       "filename": "sample-warning.png",
-      "prompt": "A clean flat icon: a small dotted meter or gauge with only one out of three segments filled, suggesting a small sample size. Amber (#d97706) for the filled segment, light gray (#9ca3af) for empty segments. Transparent background. Flat minimalist, no shadows. 256x256. Centered.",
+      "prompt": "A magnifying glass in navy (#1a365d) hovering over 3 small dots arranged in a triangle pattern, suggesting 'small sample size'. An amber question mark (#d97706) is near the magnifying glass. Flat vector, no shadows. Symbolizes limited review data. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "verdict-strong-hire",
       "filename": "verdict-strong-hire.png",
-      "prompt": "A flat minimalist circular seal or medallion: a gold (#eab308) ring with a small laurel wreath motif on either side and a clean checkmark in the center. Deep navy blue (#1a365d) for the checkmark and wreath. Transparent background. No shadows, no gradients, no textures. 256x256. Centered. Premium trust-mark feel but still flat and clean.",
+      "prompt": "A trophy cup in solid gold (#ca8a04) on a small base, with two small handles on either side of the cup. Simple, bold, unmistakable trophy shape. Flat vector, no shadows, no gradients. Symbolizes 'top pick' verdict. NOT a circular seal — it should look like a trophy award. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "verdict-conditional",
       "filename": "verdict-conditional.png",
-      "prompt": "A flat minimalist circular seal or medallion: a silver (#9ca3af) ring with a clean thumbs-up symbol in the center. Deep navy blue (#1a365d) for the thumbs-up. Transparent background. No shadows, no gradients. 256x256. Centered. Clean and approachable.",
+      "prompt": "A thumbs-up hand gesture in solid green (#16a34a). Simple, bold, clean silhouette of a thumb raised upward from a fist. Flat vector, no shadows, no fine details. Symbolizes 'solid choice' verdict. NOT a circular seal — just the thumbs-up shape standing alone. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "verdict-caution",
       "filename": "verdict-caution.png",
-      "prompt": "A flat minimalist circular seal or medallion: an amber (#d97706) ring with a clean single chevron (downward caret) in the center. Deep navy blue (#1a365d) for the chevron. Transparent background. No shadows, no gradients. 256x256. Centered. Conveys caution without alarm.",
+      "prompt": "A classic warning triangle in amber (#d97706) with a bold white exclamation mark centered inside. Equilateral triangle pointing up, thick amber border. Flat vector, no shadows, no gradients. Symbolizes 'proceed with caution' verdict. NOT a circular seal — it is a triangle. 256x256, centered, readable at 24px.",
       "aspect": "square"
     },
     {
       "name": "verdict-avoid",
       "filename": "verdict-avoid.png",
-      "prompt": "A flat minimalist circular seal or medallion: a muted red (#e53e3e) ring with a clean diagonal slash across the center. White and deep navy blue (#1a365d) inner fill. Transparent background. No shadows, no gradients. 256x256. Centered. Clear warning but not aggressive.",
+      "prompt": "An octagonal stop-sign shape in solid red (#dc2626) with bold white letters 'NO' centered inside. The octagon is chunky and recognizable like a road stop sign. Flat vector, no shadows, no gradients. Symbolizes 'avoid' verdict. NOT a circular seal — it is an octagon. 256x256, centered, readable at 24px.",
       "aspect": "square"
     }
   ]
