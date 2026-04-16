@@ -196,27 +196,41 @@ function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { d
     photoUrl: null,
     logoUrl: null,
     isActive: p.businessStatus === "OPERATIONAL" || !p.businessStatus,
+    // Bridge decision-layer fields directly from the JSON shape. Without
+    // this bridge, VerdictSeal + SignalRow + DimensionBars render empty on
+    // any city page that falls through to the static JSON fallback.
+    scores: p.scores,
+    city_rank: p.city_rank,
+    decision: p.decision,
+    evidence_quotes: p.evidence_quotes,
     reviewSynthesis: syn ? {
       strengths: syn.strengths || [],
       weaknesses: syn.weaknesses || [],
-      emergencySignals: [],
+      // Derive emergencySignals from emergencyNotes when readiness is
+      // non-unknown. Matches the Firestore-shape the old Haiku scripts wrote.
+      emergencySignals:
+        syn.emergencyReadiness && syn.emergencyReadiness !== "unknown" && syn.emergencyNotes
+          ? [syn.emergencyNotes]
+          : [],
       redFlags: syn.redFlags || [],
-      badges: [],
+      badges: Array.isArray((syn as unknown as { badges?: string[] }).badges)
+        ? ((syn as unknown as { badges: string[] }).badges)
+        : [],
+      bestFor: Array.isArray((syn as { bestFor?: string[] }).bestFor)
+        ? (syn as { bestFor: string[] }).bestFor
+        : [],
       reviewCount: p.reviews?.length || 0,
-      categories: {
-        emergency: { strengths: [], weaknesses: [] },
-        pricing: { strengths: [], weaknesses: [] },
-        quality: { strengths: [], weaknesses: [] },
-        communication: { strengths: [], weaknesses: [] },
-        homeRespect: { strengths: [], weaknesses: [] },
-        punctuality: { strengths: [], weaknesses: [] },
-      },
+      synthesizedAt: new Date().toISOString(),
       pricingTier: syn.priceSignal === "budget" || syn.priceSignal === "mid-range" || syn.priceSignal === "premium"
         ? syn.priceSignal : "unknown",
       summary: syn.summary || "",
       emergencyReadiness: syn.emergencyReadiness || "unknown",
+      emergencyNotes: syn.emergencyNotes || "",
+      platformDiscrepancy: (syn as { platformDiscrepancy?: string | null }).platformDiscrepancy ?? null,
+      servicesMentioned: (syn as { servicesMentioned?: Record<string, { count: number; avgRating: number; topQuote: string }> }).servicesMentioned,
+      sampleSizeWarning: (syn as { sampleSizeWarning?: string }).sampleSizeWarning,
       synthesisVersion: "json-static",
-    } : undefined,
+    } : null,
     distanceMiles,
     latestReviewAt,
   } as Plumber & { distanceMiles?: number; latestReviewAt?: string };
