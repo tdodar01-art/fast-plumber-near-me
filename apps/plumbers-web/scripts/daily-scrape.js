@@ -216,6 +216,61 @@ function transformPlace(place, city, state, region) {
 }
 
 // ---------------------------------------------------------------------------
+// Review hash (matches refresh-reviews.ts format for deduplication)
+// ---------------------------------------------------------------------------
+
+function hashReviewId(authorName, text) {
+  const input = `${authorName}::${(text || "").slice(0, 100)}`;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = ((hash << 5) - hash) + input.charCodeAt(i);
+    hash |= 0;
+  }
+  return `rev_${Math.abs(hash).toString(36)}`;
+}
+
+/**
+ * Store reviews from Google Places API into Firestore reviews collection.
+ * Uses the same dedup hash as refresh-reviews.ts so reviews are never
+ * double-counted. Tagged with source: "google-places-initial".
+ */
+async function storeReviewsInFirestore(plumber) {
+  const db = getFirestoreDb();
+  if (!db || !plumber.reviews || plumber.reviews.length === 0) return 0;
+
+  let stored = 0;
+  for (const r of plumber.reviews) {
+    const authorName = r.author || "Anonymous";
+    const text = r.text || "";
+    if (!text) continue;
+
+    const googleReviewId = hashReviewId(authorName, text);
+
+    // Dedup check
+    const dupeCheck = await db.collection("reviews")
+      .where("plumberId", "==", plumber.placeId)
+      .where("googleReviewId", "==", googleReviewId)
+      .limit(1)
+      .get();
+    if (!dupeCheck.empty) continue;
+
+    await db.collection("reviews").add({
+      plumberId: plumber.placeId,
+      googleReviewId,
+      authorName,
+      rating: r.rating || 0,
+      text,
+      relativeTimeDescription: r.relativeTime || "",
+      publishedAt: r.time || "",
+      cachedAt: new Date().toISOString(),
+      source: "google-places-initial",
+    });
+    stored++;
+  }
+  return stored;
+}
+
+// ---------------------------------------------------------------------------
 // Claude API for synthesis
 // ---------------------------------------------------------------------------
 
@@ -447,6 +502,14 @@ async function main() {
         cityNew++;
         totalNewPlumbers++;
         newPlumberDetails.push({ name: plumber.name, slug: slugify(plumber.name), city: cityName, state: cityState });
+
+        // Store reviews in Firestore immediately (same collection as refresh-reviews)
+        try {
+          const reviewsStored = await storeReviewsInFirestore(plumber);
+          if (reviewsStored > 0) log(`    + ${reviewsStored} reviews cached for ${plumber.name}`);
+        } catch (revErr) {
+          log(`    Warning: failed to cache reviews for ${plumber.name}: ${revErr.message}`);
+        }
       }
 
       const callsUsed = apiCallsMade - callsBefore;
@@ -527,37 +590,15 @@ async function main() {
   log(`\nRaw data saved: ${allPlumbersList.length} total plumbers`);
 
   // =========================================================================
-  // SYNTHESIZE NEW PLUMBERS
+  // SYNTHESIS SKIPPED — handled by unified scoring pipeline
   // =========================================================================
-
-  const needsSynthesis = allPlumbersList.filter(
-    (p) => !existingSynthesis[p.placeId] && p.reviews && p.reviews.length > 0
-  );
-
-  log(`\nPlumbers needing synthesis: ${needsSynthesis.length}`);
+  // Synthesis is now done by score-plumbers.ts (Sonnet) which runs as the
+  // next step in the daily workflow. No point synthesizing on 5 reviews here
+  // when the scoring pipeline will analyze all cached reviews and produce
+  // both dimensional scores AND display synthesis in one pass.
 
   let synthSuccess = 0;
   let synthFailed = 0;
-
-  for (let i = 0; i < needsSynthesis.length; i++) {
-    const plumber = needsSynthesis[i];
-    process.stdout.write(`  [${i + 1}/${needsSynthesis.length}] ${plumber.name}... `);
-
-    try {
-      await sleep(SYNTH_RATE_LIMIT_MS);
-      const prompt = buildSynthesisPrompt(plumber);
-      const response = await callClaude(prompt);
-      const synthesis = parseSynthesis(response);
-      existingSynthesis[plumber.placeId] = synthesis;
-      synthSuccess++;
-      console.log(`score=${synthesis.score} (${synthesis.trustLevel})`);
-      log(`  Synthesized: ${plumber.name} — score=${synthesis.score}`);
-    } catch (err) {
-      console.log(`FAILED: ${err.message}`);
-      log(`  Synthesis failed: ${plumber.name} — ${err.message}`);
-      synthFailed++;
-    }
-  }
 
   // =========================================================================
   // WRITE STAGING FILE FOR UPLOAD-TO-FIRESTORE
