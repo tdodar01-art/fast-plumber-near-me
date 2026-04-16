@@ -1,7 +1,16 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { MapPin, Clock, AlertTriangle, ArrowRight, Phone, HelpCircle, Star, Trophy } from "lucide-react";
+import Image from "next/image";
+import { MapPin, Clock, AlertTriangle, ArrowRight, Phone, HelpCircle, Star } from "lucide-react";
+
+// Podium icon set — gold/silver/bronze trophies with #1/#2/#3 baked in.
+// Used only in the Top 3 Plumbers section on city pages.
+const PODIUM_ICONS = [
+  "/icons/signals/podium-gold.png",   // index 0 = #1
+  "/icons/signals/podium-silver.png", // index 1 = #2
+  "/icons/signals/podium-bronze.png", // index 2 = #3
+];
 import PlumberCard from "@/components/PlumberCard";
 import PlumberListWithSort from "@/components/PlumberListWithSort";
 import CallToAction from "@/components/CallToAction";
@@ -387,8 +396,14 @@ export default async function CityPage({
         {/* Top 3 Plumbers — shown when 3+ plumbers have scoring data */}
         {hasTop3 && (
           <section className="mb-10">
-            <div className="flex items-center gap-2 mb-6">
-              <Trophy className="w-5 h-5 text-yellow-600" />
+            <div className="flex items-center gap-2.5 mb-6">
+              <Image
+                src="/icons/signals/podium-gold.png"
+                alt=""
+                width={32}
+                height={32}
+                style={{ width: 32, height: 32 }}
+              />
               <h2 className="text-2xl font-bold text-gray-900">
                 Top 3 Plumbers in {city.name}
               </h2>
@@ -403,19 +418,40 @@ export default async function CityPage({
                   : verdict === "conditional_hire" ? "bg-yellow-100 text-yellow-800 border-yellow-200"
                   : verdict === "caution" ? "bg-amber-100 text-amber-800 border-amber-200"
                   : "bg-gray-100 text-gray-600 border-gray-200";
-                const cardBorder = i === 0 ? "border-yellow-400 ring-1 ring-yellow-200" : "border-gray-200";
+                // Podium-aware styling: each medal position gets its own
+                // tinted border so the ranking is reinforced visually, not
+                // just by the trophy icon.
+                const cardBorder =
+                  i === 0 ? "border-yellow-400 ring-1 ring-yellow-200" :
+                  i === 1 ? "border-slate-300 ring-1 ring-slate-200" :
+                  i === 2 ? "border-amber-700/50 ring-1 ring-amber-200" :
+                  "border-gray-200";
                 const evidenceQuote = t.synthesized.evidence_quotes?.find(
                   (eq) => eq.dimension === "workmanship" || eq.dimension === "reliability"
                 );
                 const rank = t.synthesized.city_rank?.[`${citySlug}-${city.state.toLowerCase()}`]
                   ?? t.synthesized.city_rank?.[citySlug];
+                const podiumAlt =
+                  i === 0 ? "1st place" : i === 1 ? "2nd place" : i === 2 ? "3rd place" : `#${i + 1}`;
 
                 return (
                   <div key={t.plumber.id} className={`bg-white border ${cardBorder} rounded-xl p-5 flex flex-col`}>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`text-lg font-bold ${i === 0 ? "text-yellow-600" : "text-primary"}`}>
-                        #{i + 1}
-                      </span>
+                      {/* Medal trophy replaces the '#N' text — the icon IS
+                          the rank indicator. Gold/silver/bronze from
+                          PODIUM_ICONS so #1/#2/#3 read instantly. */}
+                      {i < PODIUM_ICONS.length ? (
+                        <Image
+                          src={PODIUM_ICONS[i]}
+                          alt={podiumAlt}
+                          width={36}
+                          height={36}
+                          className="flex-shrink-0"
+                          style={{ width: 36, height: 36 }}
+                        />
+                      ) : (
+                        <span className="text-lg font-bold text-primary">#{i + 1}</span>
+                      )}
                       {verdictLabel && (
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${verdictColor}`}>
                           {verdictLabel}
