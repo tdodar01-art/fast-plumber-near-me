@@ -57,6 +57,38 @@ export const SPECIALTY_DISPLAY_NAMES: Record<SpecialtyKey, string> = {
 
 export type SpecialtyStrength = Record<SpecialtyKey, number>;
 
+/**
+ * Service categories the synthesis pipeline extracts from review text.
+ * Hyphenated slugs — distinct from the underscored SpecialtyKey used
+ * for numeric specialty_strength scoring.
+ */
+export const SERVICE_CATEGORIES = [
+  "burst-pipe",
+  "flooding",
+  "sewer",
+  "gas-leak",
+  "water-heater",
+  "toilet",
+  "sump-pump",
+  "drain-cleaning",
+  "water-line",
+  "slab-leak",
+  "garbage-disposal",
+  "faucet-fixture",
+  "backflow",
+  "repiping",
+  "water-softener",
+  "bathroom-remodel",
+] as const;
+
+export type ServiceCategory = (typeof SERVICE_CATEGORIES)[number];
+
+export type ServiceMention = {
+  count: number;
+  avgRating: number;
+  topQuote: string;
+};
+
 export type Scores = DimensionScores & {
   specialty_strength: SpecialtyStrength;
   variance: number;

@@ -10,6 +10,9 @@ import {
 import type { Plumber } from "@/lib/types";
 import { getScoreLabel } from "@/lib/scoring";
 import { getDistanceLabel } from "@/lib/geo";
+import VerdictSeal from "./VerdictSeal";
+import SignalRow from "./SignalRow";
+import PlatformAgreementStrip from "./PlatformAgreementStrip";
 
 function slugify(text: string) {
   return text
@@ -239,19 +242,31 @@ export default function PlumberCard({
     });
   }
 
+  const verdict = plumber.decision?.verdict;
+  const borderClass =
+    verdict === "avoid"
+      ? "border-l-red-500 border-l-4 border-t-gray-200 border-r-gray-200 border-b-gray-200 bg-white"
+      : verdict === "caution" || hasRedFlags
+      ? "border-l-amber-500 border-l-4 border-t-gray-200 border-r-gray-200 border-b-gray-200 bg-white"
+      : verdict === "strong_hire"
+      ? "border-l-yellow-500 border-l-4 border-t-gray-200 border-r-gray-200 border-b-gray-200 bg-white"
+      : "border-gray-200 bg-white";
+
   return (
     <div
       ref={viewRef}
       onClick={handleCardClick}
-      className={`rounded-xl border-2 p-4 sm:p-5 shadow-sm hover:shadow-md active:shadow-inner transition-shadow cursor-pointer ${
-        hasRedFlags
-          ? "border-l-red-500 border-l-4 border-t-gray-200 border-r-gray-200 border-b-gray-200 bg-white"
-          : "border-gray-200 bg-white"
-      }`}
+      className={`rounded-xl border-2 p-4 sm:p-5 shadow-sm hover:shadow-md active:shadow-inner transition-shadow cursor-pointer ${borderClass}`}
     >
       {/* === IDENTITY + TRUST LINE === */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
-        <div className="min-w-0 flex-1">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          {verdict && (
+            <div className="mt-0.5 flex-shrink-0">
+              <VerdictSeal verdict={verdict} size="sm" />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
           <h3 className="text-lg font-bold text-gray-900 leading-tight truncate">{plumber.businessName}</h3>
 
           {/* Trust line */}
@@ -281,6 +296,7 @@ export default function PlumberCard({
               {getDistanceLabel(distanceMiles, cityName).text}
             </p>
           )}
+          </div>
         </div>
 
         {/* Desktop: distance + score on right */}
@@ -327,6 +343,12 @@ export default function PlumberCard({
           ))}
         </div>
       )}
+
+      {/* === PLATFORM DISAGREEMENT (only shows if Google vs Yelp differ) === */}
+      <PlatformAgreementStrip plumber={plumber} cardMode />
+
+      {/* === SIGNAL CHIPS — top 3, flags first (honesty rule) === */}
+      <SignalRow plumber={plumber} limit={3} />
 
       {/* === FLAGGED WARNING === */}
       {plumber.status === "flagged" && (

@@ -1,4 +1,10 @@
 import { Timestamp } from "firebase/firestore";
+import type {
+  Scores,
+  DecisionCore,
+  CityRank,
+  EvidenceQuote,
+} from "./decision-engine";
 
 export interface PlumberAddress {
   street: string;
@@ -69,6 +75,13 @@ export interface Plumber {
   reviewSynthesis: ReviewSynthesis | null;
   cachedFromGoogle: boolean;
 
+  // Decision layer (populated by scripts/score-plumbers.ts). Optional so
+  // legacy plumbers without Pass 2/3 data remain readable.
+  scores?: Scores;
+  city_rank?: CityRank;
+  decision?: (DecisionCore & { primary_city_slug?: string; decided_at?: string }) | null;
+  evidence_quotes?: EvidenceQuote[];
+
   // Review accumulation tracking
   cachedReviewCount?: number;
   lastRefreshNewCount?: number;
@@ -111,12 +124,32 @@ export interface ReviewSynthesis {
   // Sample size warning — when we have tiny fraction of total reviews
   sampleSizeWarning?: string;
 
-  // AI synthesis fields (ai-v1)
+  // AI synthesis fields
   summary?: string;
   emergencyReadiness?: "high" | "medium" | "low" | "unknown";
   emergencyNotes?: string;
   aiSynthesizedAt?: Timestamp;
-  synthesisVersion?: "ai-v1" | "keyword-fallback";
+  /**
+   * Marks which pipeline produced this synthesis:
+   * - "ai-v1" | "keyword-fallback" — legacy Haiku (deleted April 2026)
+   * - "ai-v2-services" — transitional outscraper-haiku shape
+   * - "unified-sonnet-v2" — current unified Sonnet pipeline
+   * - "json-static" — bridged from SynthesizedPlumber JSON via toPlumber()
+   * Widened to string so unknown historical values don't break readers.
+   */
+  synthesisVersion?: string;
+
+  // Platform-mismatch prose written by unified pipeline (Google vs Yelp gap)
+  platformDiscrepancy?: string | null;
+
+  // Services the plumber is mentioned doing in reviews, keyed by service slug
+  servicesMentioned?: Record<
+    string,
+    { count: number; avgRating: number; topQuote: string }
+  >;
+
+  // Scenarios this plumber is particularly good for, from decision engine
+  bestFor?: string[];
 }
 
 export interface VerificationCall {

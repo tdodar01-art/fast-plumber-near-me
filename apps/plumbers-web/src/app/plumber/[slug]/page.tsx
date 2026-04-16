@@ -22,6 +22,11 @@ import StickyBottomBar from "@/components/profile/StickyBottomBar";
 import { CallButton, WebsiteButton, ProfileReportButton } from "@/components/profile/ProfileActions";
 import BounceTracker from "@/components/profile/BounceTracker";
 import DecisionPanel from "@/components/profile/DecisionPanel";
+import VerdictSeal from "@/components/VerdictSeal";
+import SignalRow from "@/components/SignalRow";
+import DimensionBars from "@/components/DimensionBars";
+import ServiceCoverageGrid from "@/components/ServiceCoverageGrid";
+import PlatformAgreementStrip from "@/components/PlatformAgreementStrip";
 import { calculateDistance } from "@/lib/geo";
 import { getCityCoords } from "@/lib/city-coords";
 
@@ -377,6 +382,23 @@ export default async function PlumberProfilePage({
         </div>
 
         {/* ============================================================= */}
+        {/* VERDICT SEAL + PLATFORM STRIP — glanceable trust signals */}
+        {/* ============================================================= */}
+        {plumber.decision?.verdict && (
+          <div className="flex items-center justify-center gap-3 mb-4 py-3 border-y border-gray-200">
+            <VerdictSeal verdict={plumber.decision.verdict} size="md" showLabel />
+            <div className="flex-1 min-w-0">
+              <PlatformAgreementStrip plumber={plumber} />
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================= */}
+        {/* SIGNAL CHIPS — all qualifying, flags first (honesty rule) */}
+        {/* ============================================================= */}
+        <SignalRow plumber={plumber} showAll />
+
+        {/* ============================================================= */}
         {/* DECISION LAYER — verdict, best_for, avoid_if, hire/caution */}
         {/* ============================================================= */}
         {(() => {
@@ -395,6 +417,27 @@ export default async function PlumberProfilePage({
             />
           );
         })()}
+
+        {/* ============================================================= */}
+        {/* DIMENSION BARS + SERVICE COVERAGE — detailed breakdown */}
+        {/* ============================================================= */}
+        {plumber.scores && (
+          <div className="mt-6 mb-6">
+            <DimensionBars
+              plumber={plumber}
+              primaryCitySlug={
+                plumber.city_rank
+                  ? Object.keys(plumber.city_rank)[0]
+                  : undefined
+              }
+            />
+          </div>
+        )}
+        {plumber.scores?.specialty_strength && (
+          <div className="mb-6">
+            <ServiceCoverageGrid plumber={plumber} />
+          </div>
+        )}
 
         {/* ============================================================= */}
         {/* REVIEW SYNTHESIS — priority ordered */}
