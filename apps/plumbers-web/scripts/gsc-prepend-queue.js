@@ -204,7 +204,11 @@ async function main() {
     process.exit(0);
   }
 
-  console.log(`Found ${newCities.length} cities in expansion queue\n`);
+  // Sort new cities by impressions (highest first) so high-value cities
+  // get scraped before low-value ones
+  newCities.sort((a, b) => (b.impressions || 0) - (a.impressions || 0));
+
+  console.log(`Found ${newCities.length} cities in expansion queue (sorted by impressions)\n`);
 
   // Load scrape queue
   const scrapeQueue = JSON.parse(fs.readFileSync(SCRAPE_QUEUE_PATH, "utf-8"));
@@ -219,6 +223,7 @@ async function main() {
   let added = 0;
   let skipped = 0;
   let geocoded = 0;
+  let geocodeFailed = 0;
 
   for (const city of newCities) {
     const key = `${city.city}|${city.state}`;
@@ -254,9 +259,34 @@ async function main() {
       if (coords) {
         addCoordsToFile(city.state, citySlug, coords.lat, coords.lng);
         geocoded++;
+      } else {
+        geocodeFailed++;
+        console.error(`  ⚠️  MISSING COORDS: ${city.state}:${citySlug} — city page will show 0 plumbers until coords are added to city-coords.ts or city is scraped directly`);
       }
     }
   }
+
+  // Re-sort the entire pending queue by impressions (from GSC expansion data).
+  // Cities with GSC impression data get sorted highest-first; cities without
+  // impressions data (e.g. manually added) go to the end in original order.
+  const expansionLookup = new Map();
+  for (const city of newCities) {
+    expansionLookup.set(`${city.city}|${city.state}`, city.impressions || 0);
+  }
+  // Also check existing queue items that might have impression data from a
+  // previous run stored in the expansion queue
+  for (const city of expansion.cities || []) {
+    const key = `${city.city}|${city.state}`;
+    if (!expansionLookup.has(key)) {
+      expansionLookup.set(key, city.impressions || 0);
+    }
+  }
+
+  scrapeQueue.queue.sort((a, b) => {
+    const aImpr = expansionLookup.get(`${a.city}|${a.state}`) || 0;
+    const bImpr = expansionLookup.get(`${b.city}|${b.state}`) || 0;
+    return bImpr - aImpr;
+  });
 
   // Save scrape queue
   fs.writeFileSync(SCRAPE_QUEUE_PATH, JSON.stringify(scrapeQueue, null, 2));
@@ -265,6 +295,11 @@ async function main() {
   console.log(`  Added to scrape queue: ${added}`);
   console.log(`  Skipped (already in queue): ${skipped}`);
   console.log(`  Geocoded + coords added: ${geocoded}`);
+  if (geocodeFailed > 0) {
+    console.error(`  ⚠️  Geocode FAILED for ${geocodeFailed} cities — these need manual coords in city-coords.ts`);
+    console.error(`  ⚠️  Without coords, city pages show 0 plumbers (radius fallback cannot run)`);
+  }
+  console.log(`  Queue re-sorted by GSC impressions (highest first)`);
   console.log(`  Total queue size: ${scrapeQueue.queue.length}`);
 
   if (added > 0) {

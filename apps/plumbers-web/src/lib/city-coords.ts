@@ -20,6 +20,7 @@ const COORDS: Record<string, [number, number]> = {
   "AZ:surprise": [33.63, -112.37], "AZ:yuma": [32.69, -114.62], "AZ:flagstaff": [35.20, -111.65],
   "AZ:lake-havasu-city": [34.48, -114.32], "AZ:prescott": [34.54, -112.47],
   "AZ:sierra-vista": [31.55, -110.30], "AZ:casa-grande": [32.88, -111.76],
+  "AZ:prescott-valley": [34.61, -112.32], "AZ:sedona": [34.87, -111.76],
   // Arkansas
   "AR:little-rock": [34.75, -92.29], "AR:fort-smith": [35.39, -94.40], "AR:fayetteville": [36.06, -94.16],
   "AR:springdale": [36.19, -94.13], "AR:jonesboro": [35.84, -90.70], "AR:conway": [35.09, -92.44],
@@ -51,11 +52,13 @@ const COORDS: Record<string, [number, number]> = {
   "CO:boulder": [40.01, -105.27], "CO:greeley": [40.42, -104.71], "CO:longmont": [40.17, -105.10],
   "CO:loveland": [40.40, -105.07], "CO:grand-junction": [39.07, -108.55],
   "CO:castle-rock": [39.37, -104.86], "CO:broomfield": [39.92, -105.09],
-  "CO:northglenn": [39.89, -104.98],
+  "CO:northglenn": [39.89, -104.98], "CO:commerce-city": [39.81, -104.93],
+  "CO:ken-caryl": [39.58, -105.11], "CO:lafayette": [39.99, -105.09],
   // Connecticut
   "CT:bridgeport": [41.18, -73.19], "CT:new-haven": [41.31, -72.92], "CT:stamford": [41.05, -73.54],
   "CT:hartford": [41.76, -72.68], "CT:waterbury": [41.56, -73.04], "CT:norwalk": [41.12, -73.41],
   "CT:danbury": [41.40, -73.45], "CT:new-britain": [41.66, -72.78], "CT:meriden": [41.54, -72.81],
+  "CT:trumbull": [41.24, -73.20],
   // Delaware
   "DE:wilmington": [39.74, -75.55], "DE:dover": [39.16, -75.52], "DE:newark": [39.68, -75.75],
   // DC
@@ -75,11 +78,13 @@ const COORDS: Record<string, [number, number]> = {
   "FL:sarasota": [27.34, -82.53], "FL:pensacola": [30.42, -87.22],
   "FL:panama-city": [30.16, -85.66], "FL:naples": [26.14, -81.79],
   "FL:ocala": [29.19, -82.14], "FL:bradenton": [27.50, -82.57],
+  "FL:sanford": [28.80, -81.27], "FL:brandon": [27.94, -82.29],
   // Georgia
   "GA:atlanta": [33.75, -84.39], "GA:columbus": [32.46, -84.99], "GA:augusta": [33.47, -81.97],
   "GA:savannah": [32.08, -81.09], "GA:athens": [33.95, -83.38], "GA:sandy-springs": [33.93, -84.37],
   "GA:roswell": [34.02, -84.36], "GA:acworth": [34.07, -84.68], "GA:macon": [32.84, -83.63], "GA:marietta": [33.95, -84.55],
   "GA:alpharetta": [34.08, -84.29], "GA:valdosta": [30.83, -83.28],
+  "GA:lawrenceville": [33.96, -83.99],
   // Hawaii
   "HI:honolulu": [21.31, -157.86], "HI:pearl-city": [21.40, -157.97], "HI:hilo": [19.72, -155.08],
   "HI:kailua": [21.40, -157.74], "HI:kahului": [20.89, -156.47],
@@ -235,6 +240,7 @@ const COORDS: Record<string, [number, number]> = {
   "OH:canton": [40.80, -81.38], "OH:youngstown": [41.10, -80.65],
   "OH:lorain": [41.45, -82.18], "OH:springfield": [39.92, -83.81],
   "OH:dublin": [40.10, -83.11], "OH:westerville": [40.13, -82.93], "OH:stow": [41.17, -81.44],
+  "OH:wadsworth": [41.03, -81.73], "OH:fairfield": [39.35, -84.56], "OH:canal-winchester": [39.84, -82.80],
   // Oklahoma
   "OK:ardmore": [34.17, -97.13], "OK:oklahoma-city": [35.47, -97.52], "OK:tulsa": [36.15, -95.99],
   "OK:norman": [35.22, -97.44], "OK:broken-arrow": [36.06, -95.79],
@@ -268,12 +274,14 @@ const COORDS: Record<string, [number, number]> = {
   // South Dakota
   "SD:sioux-falls": [43.55, -96.73], "SD:rapid-city": [44.08, -103.23],
   "SD:aberdeen": [45.46, -98.49], "SD:brookings": [44.31, -96.80],
+  "SD:box-elder": [44.11, -103.07],
   // Tennessee
   "TN:nashville": [36.16, -86.78], "TN:memphis": [35.15, -90.05],
   "TN:knoxville": [35.96, -83.92], "TN:chattanooga": [35.05, -85.31],
   "TN:clarksville": [36.53, -87.36], "TN:murfreesboro": [35.85, -86.39],
   "TN:franklin": [35.93, -86.87], "TN:jackson": [35.61, -88.81],
   "TN:johnson-city": [36.31, -82.35], "TN:kingsport": [36.55, -82.56],
+  "TN:pigeon-forge": [35.79, -83.55],
   // Texas
   "TX:houston": [29.76, -95.37], "TX:san-antonio": [29.42, -98.49],
   "TX:dallas": [32.78, -96.80], "TX:austin": [30.27, -97.74],
@@ -295,7 +303,7 @@ const COORDS: Record<string, [number, number]> = {
   "TX:cedar-park": [30.51, -97.82], "TX:georgetown": [30.63, -97.68],
   "TX:katy": [29.79, -95.82], "TX:galveston": [29.30, -94.79],
   "TX:brownsville": [25.90, -97.50], "TX:harlingen": [26.19, -97.70],
-  "TX:marble-falls": [30.58, -98.27],
+  "TX:marble-falls": [30.58, -98.27], "TX:lampasas": [31.06, -98.18],
   // Utah
   "UT:salt-lake-city": [40.76, -111.89], "UT:west-valley-city": [40.69, -112.00],
   "UT:provo": [40.23, -111.66], "UT:west-jordan": [40.61, -111.94],
@@ -314,6 +322,7 @@ const COORDS: Record<string, [number, number]> = {
   "VA:harrisonburg": [38.45, -78.87], "VA:fredericksburg": [38.30, -77.46],
   "VA:woodbridge": [38.66, -77.25], "VA:ashburn": [39.04, -77.49],
   "VA:reston": [38.97, -77.34], "VA:fairfax": [38.85, -77.31],
+  "VA:abingdon": [36.71, -81.98],
   // Washington
   "WA:seattle": [47.61, -122.33], "WA:spokane": [47.66, -117.43],
   "WA:tacoma": [47.25, -122.44], "WA:vancouver": [45.64, -122.66],
@@ -334,7 +343,7 @@ const COORDS: Record<string, [number, number]> = {
   "WI:waukesha": [43.01, -88.23], "WI:eau-claire": [44.81, -91.50],
   "WI:oshkosh": [44.02, -88.54], "WI:janesville": [42.68, -89.02],
   "WI:la-crosse": [43.80, -91.24], "WI:sheboygan": [43.75, -87.71],
-  "WI:wausau": [44.96, -89.63],
+  "WI:wausau": [44.96, -89.63], "WI:stevens-point": [44.52, -89.57],
   // Wyoming
   "WY:cheyenne": [41.14, -104.82], "WY:casper": [42.87, -106.31],
   "WY:laramie": [41.31, -105.59], "WY:gillette": [44.29, -105.50],
