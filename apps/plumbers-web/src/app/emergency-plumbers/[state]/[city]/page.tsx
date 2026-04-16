@@ -1,16 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { MapPin, Clock, AlertTriangle, ArrowRight, Phone, HelpCircle } from "lucide-react";
+import { MapPin, Clock, AlertTriangle, ArrowRight, Phone, HelpCircle, Star, Trophy } from "lucide-react";
 import PlumberCard from "@/components/PlumberCard";
 import PlumberListWithSort from "@/components/PlumberListWithSort";
 import CallToAction from "@/components/CallToAction";
 import { getAllCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
 import { getPlumbersByCity, getActivePlumbersByState } from "@/lib/firestore";
-import { getPlumbersNearCity } from "@/lib/plumber-data";
+import { getPlumbersNearCity, getAllPlumbers, type SynthesizedPlumber } from "@/lib/plumber-data";
 import { calculateQualityScore } from "@/lib/scoring";
-import { MAX_PLUMBERS_PER_PAGE } from "@/lib/services-config";
+import { MAX_PLUMBERS_PER_PAGE, SERVICE_CONFIGS } from "@/lib/services-config";
+import { CITY_COVERAGE } from "@/lib/city-coverage";
 import { getCityCoordBySlug } from "@/lib/city-coords";
 import { calculateDistance, getDistanceWeight } from "@/lib/geo";
 import type { Plumber } from "@/lib/types";
@@ -68,6 +69,44 @@ function getCityFaqs(cityName: string, stateName: string, county: string) {
     { question: `Are emergency plumbers in ${cityName} available 24/7?`, answer: `Yes — the emergency plumbers listed on Fast Plumber Near Me serving ${cityName} and ${county} County offer 24/7 availability. We verify that they actually answer emergency calls at all hours, including nights, weekends, and holidays.` },
     { question: `What are the most common plumbing emergencies in ${cityName}?`, answer: `The most common plumbing emergencies in ${cityName}, ${stateName} include burst or frozen pipes, water heater failures, sewer line backups, clogged drains, and gas line issues. ${county} County homes may be especially susceptible depending on the age and type of construction.` },
   ];
+}
+
+// ---------------------------------------------------------------------------
+// Top 3 — scored plumbers with decision data, ranked by city percentile
+// ---------------------------------------------------------------------------
+
+interface TopPlumber {
+  plumber: Plumber;
+  synthesized: SynthesizedPlumber;
+  percentile: number;
+}
+
+function getTop3Plumbers(
+  plumbers: Plumber[],
+  stateAbbr: string,
+  citySlug: string,
+): TopPlumber[] {
+  const allSynthesized = getAllPlumbers();
+  const cityRankKey = `${citySlug}-${stateAbbr.toLowerCase()}`;
+  const candidates: TopPlumber[] = [];
+
+  for (const p of plumbers) {
+    // Match by placeId or slug
+    const synth = allSynthesized.find(
+      (s) => s.placeId === p.id || s.slug === p.slug
+    );
+    if (!synth?.decision?.verdict) continue;
+
+    // Get this plumber's percentile for the current city
+    const cityRank = synth.city_rank?.[cityRankKey] ?? synth.city_rank?.[citySlug];
+    const percentile = cityRank?.overall_percentile ?? 0;
+
+    candidates.push({ plumber: p, synthesized: synth, percentile });
+  }
+
+  // Sort by percentile (highest first), take top 3
+  candidates.sort((a, b) => b.percentile - a.percentile);
+  return candidates.slice(0, 3);
 }
 
 export default async function CityPage({
@@ -149,6 +188,10 @@ export default async function CityPage({
 
   // Cap displayed plumbers to prevent spammy listings
   plumbers = plumbers.slice(0, MAX_PLUMBERS_PER_PAGE);
+
+  // Top 3 scored plumbers for this city
+  const top3 = getTop3Plumbers(plumbers, city.state, citySlug);
+  const hasTop3 = top3.length >= 3;
 
   const faqs = getCityFaqs(city.name, city.state, city.county);
 
@@ -310,6 +353,84 @@ export default async function CityPage({
       </section>
 
       <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+        {/* Top 3 Plumbers — shown when 3+ plumbers have scoring data */}
+        {hasTop3 && (
+          <section className="mb-10">
+            <div className="flex items-center gap-2 mb-6">
+              <Trophy className="w-5 h-5 text-yellow-600" />
+              <h2 className="text-2xl font-bold text-gray-900">
+                Top 3 Plumbers in {city.name}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
+              {top3.map((t, i) => {
+                const verdict = t.synthesized.decision?.verdict;
+                const verdictLabel = verdict === "strong_hire" ? "Strong Hire"
+                  : verdict === "conditional_hire" ? "Conditional Hire"
+                  : verdict === "caution" ? "Caution" : null;
+                const verdictColor = verdict === "strong_hire" ? "bg-green-100 text-green-800 border-green-200"
+                  : verdict === "conditional_hire" ? "bg-yellow-100 text-yellow-800 border-yellow-200"
+                  : verdict === "caution" ? "bg-amber-100 text-amber-800 border-amber-200"
+                  : "bg-gray-100 text-gray-600 border-gray-200";
+                const cardBorder = i === 0 ? "border-yellow-400 ring-1 ring-yellow-200" : "border-gray-200";
+                const evidenceQuote = t.synthesized.evidence_quotes?.find(
+                  (eq) => eq.dimension === "workmanship" || eq.dimension === "reliability"
+                );
+                const rank = t.synthesized.city_rank?.[`${citySlug}-${city.state.toLowerCase()}`]
+                  ?? t.synthesized.city_rank?.[citySlug];
+
+                return (
+                  <div key={t.plumber.id} className={`bg-white border ${cardBorder} rounded-xl p-5 flex flex-col`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`text-lg font-bold ${i === 0 ? "text-yellow-600" : "text-primary"}`}>
+                        #{i + 1}
+                      </span>
+                      {verdictLabel && (
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${verdictColor}`}>
+                          {verdictLabel}
+                        </span>
+                      )}
+                    </div>
+                    <Link href={`/plumber/${plumberSlug(t.plumber.businessName)}`} className="hover:text-primary transition-colors">
+                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{t.plumber.businessName}</h3>
+                    </Link>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                      {t.plumber.googleRating && (
+                        <span className="flex items-center gap-1">
+                          <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                          {t.plumber.googleRating}
+                          {t.plumber.googleReviewCount > 0 && (
+                            <span className="text-gray-400">({t.plumber.googleReviewCount})</span>
+                          )}
+                        </span>
+                      )}
+                      {rank && (
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">
+                          {rank.rank}
+                        </span>
+                      )}
+                    </div>
+                    {evidenceQuote && (
+                      <p className="text-xs text-gray-500 italic mb-3 line-clamp-2">
+                        &ldquo;{evidenceQuote.quote}&rdquo;
+                      </p>
+                    )}
+                    <div className="mt-auto">
+                      <a
+                        href={`tel:${t.plumber.phone}`}
+                        className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-dark text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors w-full justify-center"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        Call Now
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         {/* Plumber listings */}
         {plumbers.length > 0 ? (
           <PlumberListWithSort
@@ -368,6 +489,24 @@ export default async function CityPage({
             ))}
           </div>
         </section>
+
+        {/* Service-specific pages — internal linking for SEO */}
+        {CITY_COVERAGE[`${city.state}:${citySlug}`] && plumbers.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Plumbing Services in {city.name}</h2>
+            <div className="flex flex-wrap gap-2">
+              {SERVICE_CONFIGS.filter((s) => s.type === "service").map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/${s.slug}/${stateSlug}/${citySlug}`}
+                  className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors"
+                >
+                  {s.displayName} <ArrowRight className="w-3 h-3" />
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Nearby cities — experiment-aware */}
         {(() => {
