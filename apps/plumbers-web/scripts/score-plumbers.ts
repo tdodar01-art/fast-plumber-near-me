@@ -28,6 +28,7 @@ import { fileURLToPath } from "url";
 
 import {
   computeDecision,
+  computeBestFor,
   DIMENSION_KEYS,
   SPECIALTY_KEYS,
   type DimensionKey,
@@ -76,6 +77,23 @@ const CLAUDE_MAX_TOKENS = 4096;
 
 const SKIP_IF_SCORED_WITHIN_MS = 30 * 24 * 60 * 60 * 1000;
 const MIN_REVIEWS_TO_SCORE = 3;
+
+// ---------------------------------------------------------------------------
+// Synthesis types (replaces Haiku synthesize-reviews.ts)
+// ---------------------------------------------------------------------------
+
+type SynthesisResult = {
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
+  redFlags: string[];
+  emergencyNotes: string;
+  badges: string[];
+  emergencyReadiness: "high" | "medium" | "low" | "unknown";
+  emergencySignals: string[];
+  pricingTier: "budget" | "mid-range" | "premium" | "unknown";
+  bestFor: string[];
+};
 
 // ---------------------------------------------------------------------------
 // CLI
@@ -541,6 +559,205 @@ function buildServicesMentioned(
 }
 
 // ---------------------------------------------------------------------------
+// Unified synthesis (replaces Haiku synthesize-reviews.ts)
+// ---------------------------------------------------------------------------
+
+/**
+ * After batch extraction + aggregation, make ONE Sonnet call with the full
+ * review set + aggregated scores to generate display copy. This replaces the
+ * separate Haiku synthesize-reviews.ts script — same model, same pipeline,
+ * no contradictions.
+ */
+function buildSynthesisPrompt(
+  plumberName: string,
+  reviews: ReviewInput[],
+  scores: Scores,
+  evidenceQuotes: EvidenceQuote[],
+): string {
+  // Include up to 30 reviews for synthesis context (sorted by recency)
+  const reviewsSorted = [...reviews].sort((a, b) => {
+    if (!a.publishedAt) return 1;
+    if (!b.publishedAt) return -1;
+    return b.publishedAt.localeCompare(a.publishedAt);
+  });
+  const reviewBlock = reviewsSorted
+    .slice(0, 30)
+    .map((r) => `[${r.rating}/5${r.publishedAt ? ` — ${r.publishedAt}` : ""}] ${r.text}`)
+    .join("\n\n---\n\n");
+
+  const quoteBlock = evidenceQuotes
+    .map((eq) => `${eq.dimension}: "${eq.quote}"`)
+    .join("\n");
+
+  return `You are synthesizing reviews for an emergency plumber directory. Your output helps homeowners decide who to call at 2am with a burst pipe.
+
+Plumber: ${plumberName}
+Reviews analyzed: ${reviews.length}
+Dimension scores (0-100): reliability=${scores.reliability}, pricing_fairness=${scores.pricing_fairness}, workmanship=${scores.workmanship}, responsiveness=${scores.responsiveness}, communication=${scores.communication}
+Score variance: ${scores.variance}
+
+Evidence quotes already extracted:
+${quoteBlock || "(none)"}
+
+Reviews:
+${reviewBlock}
+
+Respond in JSON only. No markdown, no preamble, no backticks.
+{
+  "summary": "One specific, punchy sentence a friend would say. NEVER say 'reliable and professional'. Reference actual patterns. Example: 'Responds fast to emergencies but pricing runs 20% above competitors'",
+  "strengths": ["2-3 specific strengths with evidence counts. e.g. '4 of 6 reviewers mention same-day arrival' or 'Multiple reviews praise thorough cleanup after work'"],
+  "weaknesses": ["1-2 specific weaknesses from reviews. e.g. 'Two reviews mention final bill exceeding initial quote by $200+'. Say 'Not enough data to identify weaknesses' ONLY if every review is positive."],
+  "redFlags": ["Concerning patterns with specifics. For <25 reviews, even 1-2 mentions of the same issue = pattern. e.g. '2 of 8 reviews report no-show on scheduled appointment'. Empty array [] if genuinely none."],
+  "emergencyNotes": "One sentence about emergency capability signals: after-hours mentions, response time, weekend/holiday availability, burst-pipe experience. If reviews mention fast response even during business hours, note it."
+}`;
+}
+
+function parseSynthesisResponse(text: string): {
+  summary: string;
+  strengths: string[];
+  weaknesses: string[];
+  redFlags: string[];
+  emergencyNotes: string;
+} {
+  const cleaned = text
+    .replace(/^```(?:json)?\s*\n?/i, "")
+    .replace(/\n?```\s*$/i, "")
+    .trim();
+  const parsed = JSON.parse(cleaned);
+  return {
+    summary: parsed.summary || "",
+    strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+    weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [],
+    redFlags: Array.isArray(parsed.redFlags) ? parsed.redFlags : [],
+    emergencyNotes: parsed.emergencyNotes || "",
+  };
+}
+
+/**
+ * Derive badges deterministically from dimension scores. No AI needed —
+ * thresholds are explicit and can never contradict the scores.
+ */
+function deriveBadges(scores: Scores, redFlags: string[]): string[] {
+  const badges: string[] = [];
+  const hasRedFlag = (keywords: string[]) =>
+    redFlags.some((rf) => keywords.some((kw) => rf.toLowerCase().includes(kw)));
+
+  // Fast Responder: high responsiveness AND no response-time complaints
+  if (scores.responsiveness >= 85 && !hasRedFlag(["slow", "late", "no-show", "didn't show", "waited", "response time"])) {
+    badges.push("Fast Responder");
+  }
+  // Fair Pricing: high pricing fairness AND no pricing complaints
+  if (scores.pricing_fairness >= 85 && !hasRedFlag(["price", "pricing", "overcharg", "surprise fee", "hidden fee", "bill", "quote"])) {
+    badges.push("Fair Pricing");
+  }
+  // 24/7 Available: emergency specialty + high responsiveness
+  if ((scores.specialty_strength.emergency ?? 0) >= 75 && scores.responsiveness >= 80) {
+    badges.push("24/7 Available");
+  }
+  // Clean & Professional: high workmanship AND no professionalism complaints
+  if (scores.workmanship >= 85 && !hasRedFlag(["unprofessional", "messy", "rude", "disrespect"])) {
+    badges.push("Clean & Professional");
+  }
+  // Great Communicator: high communication score
+  if (scores.communication >= 85 && !hasRedFlag(["communicat", "didn't explain", "no update", "ghosted"])) {
+    badges.push("Great Communicator");
+  }
+  return badges;
+}
+
+/**
+ * Derive emergency readiness from scores. Uses emergency specialty strength
+ * + responsiveness + business signals.
+ */
+function deriveEmergencyReadiness(
+  scores: Scores,
+  emergencyNotes: string,
+): { readiness: "high" | "medium" | "low" | "unknown"; signals: string[] } {
+  const emergScore = scores.specialty_strength.emergency ?? 0;
+  const respScore = scores.responsiveness;
+  const signals: string[] = [];
+
+  if (emergencyNotes) signals.push(emergencyNotes);
+
+  if (emergScore >= 75 && respScore >= 80) {
+    return { readiness: "high", signals };
+  }
+  if (emergScore >= 50 || respScore >= 75) {
+    return { readiness: "medium", signals };
+  }
+  if (respScore < 55) {
+    return { readiness: "low", signals };
+  }
+  return { readiness: "unknown", signals };
+}
+
+/**
+ * Derive pricing tier from pricing_fairness score.
+ */
+function derivePricingTier(scores: Scores): "budget" | "mid-range" | "premium" | "unknown" {
+  if (scores.pricing_fairness >= 85) return "budget";
+  if (scores.pricing_fairness >= 65) return "mid-range";
+  if (scores.pricing_fairness < 50 && scores.workmanship >= 80) return "premium";
+  return "unknown";
+}
+
+/**
+ * Keyword fallback for plumbers with < MIN_REVIEWS_TO_SCORE reviews.
+ * Moved from synthesize-reviews.ts — produces the same reviewSynthesis
+ * fields without a Claude call.
+ */
+const KW_FAST = ["fast", "quick", "rapid", "same day", "prompt", "responsive", "right away", "within an hour"];
+const KW_EMERGENCY = ["emergency", "burst", "after hours", "weekend", "24 hour", "24/7", "middle of the night"];
+const KW_PRICE_GOOD = ["fair price", "reasonable", "affordable", "upfront pricing", "transparent"];
+const KW_PRICE_BAD = ["expensive", "overcharged", "overpriced", "surprise fee", "hidden fee"];
+const KW_QUALITY = ["professional", "knowledgeable", "thorough", "expert", "excellent work"];
+
+function keywordFallback(reviews: ReviewInput[]): SynthesisResult {
+  const total = reviews.length;
+  const texts = reviews.map((r) => r.text.toLowerCase());
+  const countMatches = (kws: string[]) => texts.filter((t) => kws.some((k) => t.includes(k))).length;
+
+  const strengths: string[] = [];
+  const weaknesses: string[] = [];
+  const badges: string[] = [];
+  const emergencySignals: string[] = [];
+
+  const fastCount = countMatches(KW_FAST);
+  if (fastCount > 0) {
+    strengths.push("Quick response mentioned in reviews");
+    if (fastCount / total >= 0.3) badges.push("Fast Responder");
+  }
+  const qualCount = countMatches(KW_QUALITY);
+  if (qualCount > 0) strengths.push("Professional service noted by reviewers");
+  const priceGood = countMatches(KW_PRICE_GOOD);
+  if (priceGood > 0) { strengths.push("Fair pricing mentioned"); badges.push("Fair Pricing"); }
+
+  const priceBad = countMatches(KW_PRICE_BAD);
+  if (priceBad > 0) weaknesses.push("Pricing concerns noted");
+  if (total < 3) weaknesses.push(`Only ${total} review${total === 1 ? "" : "s"} — limited data`);
+
+  const emergCount = countMatches(KW_EMERGENCY);
+  if (emergCount > 0) emergencySignals.push("Emergency/after-hours work mentioned");
+
+  let pricingTier: "budget" | "mid-range" | "premium" | "unknown" = "unknown";
+  if (priceBad > priceGood) pricingTier = "premium";
+  else if (priceGood > 0) pricingTier = "mid-range";
+
+  return {
+    summary: "",
+    strengths: strengths.slice(0, 3),
+    weaknesses: weaknesses.slice(0, 3),
+    redFlags: [],
+    emergencyNotes: emergencySignals[0] || "",
+    badges: badges.slice(0, 3),
+    emergencyReadiness: emergCount > 0 ? "medium" : "unknown",
+    emergencySignals: emergencySignals.slice(0, 2),
+    pricingTier,
+    bestFor: [],
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Firestore helpers
 // ---------------------------------------------------------------------------
 
@@ -623,10 +840,31 @@ async function runPass1(
     }
 
     const reviews = await loadReviews(db, plumberDoc.id);
+
+    // Plumbers with < MIN_REVIEWS_TO_SCORE get keyword fallback synthesis
+    // (no Claude call) but still get reviewSynthesis written.
     if (reviews.length < MIN_REVIEWS_TO_SCORE) {
-      console.log(
-        `  - ${name}: skipped (only ${reviews.length} reviews, need ${MIN_REVIEWS_TO_SCORE})`,
-      );
+      if (reviews.length === 0) { skipped++; continue; }
+      const synth = keywordFallback(reviews);
+      if (!args.dryRun) {
+        await db.collection("plumbers").doc(plumberDoc.id).update({
+          "reviewSynthesis.summary": synth.summary,
+          "reviewSynthesis.strengths": synth.strengths,
+          "reviewSynthesis.weaknesses": synth.weaknesses,
+          "reviewSynthesis.redFlags": synth.redFlags,
+          "reviewSynthesis.badges": synth.badges,
+          "reviewSynthesis.emergencyReadiness": synth.emergencyReadiness,
+          "reviewSynthesis.emergencyNotes": synth.emergencyNotes,
+          "reviewSynthesis.emergencySignals": synth.emergencySignals,
+          "reviewSynthesis.pricingTier": synth.pricingTier,
+          "reviewSynthesis.bestFor": synth.bestFor,
+          "reviewSynthesis.reviewCount": reviews.length,
+          "reviewSynthesis.synthesisVersion": "keyword-fallback",
+          "reviewSynthesis.synthesizedAt": admin.firestore.Timestamp.now(),
+          updatedAt: admin.firestore.Timestamp.now(),
+        });
+      }
+      console.log(`  - ${name}: keyword fallback (${reviews.length} reviews)`);
       skipped++;
       continue;
     }
@@ -637,6 +875,7 @@ async function runPass1(
     }
 
     try {
+      // --- Step 1: Batch extraction (per-review dimensional scores) ---
       const batches: ReviewInput[][] = [];
       for (let i = 0; i < reviews.length; i += REVIEWS_PER_BATCH) {
         batches.push(reviews.slice(i, i + REVIEWS_PER_BATCH));
@@ -656,21 +895,51 @@ async function runPass1(
         continue;
       }
 
+      // --- Step 2: Aggregate scores ---
       const { scores, evidenceQuotes, servicesMentioned } = aggregate(extracted, ageByReviewId);
+
+      // --- Step 3: Sonnet synthesis call (replaces Haiku) ---
+      await sleep(RATE_LIMIT_MS);
+      const synthPrompt = buildSynthesisPrompt(name, reviews, scores, evidenceQuotes);
+      const synthRaw = await callClaude(synthPrompt);
+      const synthParsed = parseSynthesisResponse(synthRaw);
+
+      // --- Step 4: Derive deterministic fields from scores ---
+      const badges = deriveBadges(scores, synthParsed.redFlags);
+      const { readiness: emergencyReadiness, signals: emergencySignals } =
+        deriveEmergencyReadiness(scores, synthParsed.emergencyNotes);
+      const pricingTier = derivePricingTier(scores);
+
+      // bestFor: from decision engine (already imported at top)
+      const bestFor = computeBestFor(scores);
+
+      // --- Step 5: Write scores + unified synthesis to Firestore ---
       const updateData: Record<string, unknown> = {
         scores,
         evidence_quotes: evidenceQuotes,
+        // Unified synthesis — replaces Haiku's reviewSynthesis
+        "reviewSynthesis.summary": synthParsed.summary,
+        "reviewSynthesis.strengths": synthParsed.strengths,
+        "reviewSynthesis.weaknesses": synthParsed.weaknesses,
+        "reviewSynthesis.redFlags": synthParsed.redFlags,
+        "reviewSynthesis.badges": badges,
+        "reviewSynthesis.emergencyReadiness": emergencyReadiness,
+        "reviewSynthesis.emergencyNotes": synthParsed.emergencyNotes,
+        "reviewSynthesis.emergencySignals": emergencySignals,
+        "reviewSynthesis.pricingTier": pricingTier,
+        "reviewSynthesis.bestFor": bestFor,
+        "reviewSynthesis.reviewCount": reviews.length,
+        "reviewSynthesis.aiSynthesizedAt": admin.firestore.Timestamp.now(),
+        "reviewSynthesis.synthesisVersion": "unified-sonnet-v1",
         updatedAt: admin.firestore.Timestamp.now(),
       };
-      // Write servicesMentioned into reviewSynthesis so the export script
-      // picks it up and service pages can use it for Tier 2 eligibility.
       if (Object.keys(servicesMentioned).length > 0) {
         updateData["reviewSynthesis.servicesMentioned"] = servicesMentioned;
       }
       await db.collection("plumbers").doc(plumberDoc.id).update(updateData);
       scored++;
       console.log(
-        `  + ${name}: variance=${scores.variance} reviews_used=${scores.review_count_used}`,
+        `  + ${name}: variance=${scores.variance} badges=[${badges.join(",")}] emergency=${emergencyReadiness} redFlags=${synthParsed.redFlags.length}`,
       );
     } catch (err) {
       failed++;

@@ -119,9 +119,9 @@ jobs:
             node scripts/outscraper-reviews.js "$SLUG"
           fi
 
-      # Score plumbers after deep review pull — Outscraper provides rich review data
-      # that makes scoring more accurate. Runs all 3 passes (score, rank, decide).
-      - name: Score plumbers (decision layer)
+      # Score + synthesize plumbers after deep review pull — Outscraper provides
+      # rich review data. Unified pipeline: scoring + synthesis in one Sonnet pass.
+      - name: Score and synthesize plumbers
         if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
         continue-on-error: true
         env:

@@ -82,17 +82,10 @@ jobs:
         run: npx tsx scripts/refresh-reviews.ts --max 20
         continue-on-error: true
 
-      # Phase 3: AI synthesis -- analyze reviews for plumbers with new data
-      - name: Synthesize reviews
-        if: steps.firebase.outputs.configured == 'true'
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: npx tsx scripts/synthesize-reviews.ts
-        continue-on-error: true
-
-      # Phase 3b: Score plumbers — decision layer (scores, city rank, verdict)
-      # Runs all 3 passes on plumbers with 3+ cached reviews that haven't been scored in 30 days.
-      - name: Score plumbers (decision layer)
+      # Phase 3: Score + synthesize plumbers (unified Sonnet pipeline)
+      # Replaces the separate Haiku synthesize-reviews.ts — scoring now
+      # produces both dimensional scores AND display synthesis in one pass.
+      - name: Score and synthesize plumbers
         if: steps.firebase.outputs.configured == 'true'
         continue-on-error: true
         env:
