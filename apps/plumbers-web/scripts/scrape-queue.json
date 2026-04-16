@@ -1,7 +1,7 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 490,
+  "usedThisMonth": 510,
   "queue": [
     {
       "city": "Wadsworth",
@@ -34,6 +34,15 @@
       "priority": "high-impressions"
     },
     {
+      "city": "Abingdon",
+      "state": "VA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Sanford",
       "state": "FL",
       "county": "",
@@ -44,8 +53,8 @@
       "priority": "high-impressions"
     },
     {
-      "city": "Stevens Point",
-      "state": "WI",
+      "city": "Lawrenceville",
+      "state": "GA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -62,44 +71,8 @@
       "source": "gsc"
     },
     {
-      "city": "Prescott Valley",
-      "state": "AZ",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "West Jordan",
-      "state": "UT",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Abingdon",
-      "state": "VA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Hanover Park",
-      "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Lawrenceville",
-      "state": "GA",
+      "city": "Brooklyn Park",
+      "state": "MN",
       "county": "",
       "region": "",
       "status": "pending",
@@ -116,26 +89,35 @@
       "source": "gsc"
     },
     {
+      "city": "Hanover Park",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "West Jordan",
+      "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Stevens Point",
+      "state": "WI",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Ken Caryl",
       "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Wasilla",
-      "state": "AK",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Trumbull",
-      "state": "CT",
       "county": "",
       "region": "",
       "status": "pending",
@@ -161,8 +143,17 @@
       "source": "gsc"
     },
     {
-      "city": "Brooklyn Park",
-      "state": "MN",
+      "city": "Trumbull",
+      "state": "CT",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Wasilla",
+      "state": "AK",
       "county": "",
       "region": "",
       "status": "pending",
@@ -396,6 +387,16 @@
       "actualCalls": 15,
       "plumbersFound": 14,
       "completedAt": "2026-04-15"
+    },
+    {
+      "city": "Prescott Valley",
+      "state": "AZ",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 20,
+      "plumbersFound": 19,
+      "completedAt": "2026-04-16"
     }
   ]
 }
