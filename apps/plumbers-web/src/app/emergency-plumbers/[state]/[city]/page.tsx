@@ -5,7 +5,7 @@ import { MapPin, Clock, AlertTriangle, ArrowRight, Phone, HelpCircle, Star, Trop
 import PlumberCard from "@/components/PlumberCard";
 import PlumberListWithSort from "@/components/PlumberListWithSort";
 import CallToAction from "@/components/CallToAction";
-import { getAllCityParams, getCityData } from "@/lib/cities-data";
+import { getCoveredCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
 import { getPlumbersByCity, getActivePlumbersByState } from "@/lib/firestore";
 import { getPlumbersNearCity, getAllPlumbers, type SynthesizedPlumber } from "@/lib/plumber-data";
@@ -18,9 +18,15 @@ import type { Plumber } from "@/lib/types";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
 
+// Only prerender cities that have plumber data. Long-tail cities render
+// on-demand via dynamicParams (still SEO-indexable because they 200 on
+// first hit and get cached thereafter). This keeps the static output under
+// Vercel Hobby plan limits.
 export function generateStaticParams() {
-  return getAllCityParams();
+  return getCoveredCityParams();
 }
+
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,

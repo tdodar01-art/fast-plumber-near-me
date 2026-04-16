@@ -516,13 +516,39 @@ registerGeneratedCities(CITY_DATA);
 // ============================================================================
 
 import { getStateBySlug, getStateByAbbr, STATES_DATA } from "./states-data";
+import { CITY_COVERAGE } from "./city-coverage";
 
+/**
+ * Every city in the static registry (~2,300). Used for sitemap + internal
+ * linking; should NOT be used for generateStaticParams because it exceeds
+ * Vercel Hobby's file count and output size limits.
+ */
 export function getAllCityParams(): { state: string; city: string }[] {
   const params: { state: string; city: string }[] = [];
   for (const [stateAbbr, cities] of Object.entries(CITY_DATA)) {
     const stateInfo = getStateByAbbr(stateAbbr);
     if (!stateInfo) continue;
     for (const citySlug of Object.keys(cities)) {
+      params.push({ state: stateInfo.slug, city: citySlug });
+    }
+  }
+  return params;
+}
+
+/**
+ * Only cities that have actual plumber data in CITY_COVERAGE (~173). Use
+ * this for generateStaticParams on the city route — long-tail cities fall
+ * through to on-demand rendering. Keeps the deploy output within Vercel
+ * Hobby plan limits (100MB compressed, ~15k files).
+ */
+export function getCoveredCityParams(): { state: string; city: string }[] {
+  const params: { state: string; city: string }[] = [];
+  for (const [stateAbbr, cities] of Object.entries(CITY_DATA)) {
+    const stateInfo = getStateByAbbr(stateAbbr);
+    if (!stateInfo) continue;
+    for (const citySlug of Object.keys(cities)) {
+      const key = `${stateAbbr}:${citySlug}`;
+      if (!CITY_COVERAGE[key]) continue;
       params.push({ state: stateInfo.slug, city: citySlug });
     }
   }

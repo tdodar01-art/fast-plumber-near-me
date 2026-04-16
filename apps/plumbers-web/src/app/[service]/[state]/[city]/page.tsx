@@ -28,23 +28,22 @@ import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
 // Static params: [service] × [state] × [city]
 // ---------------------------------------------------------------------------
 
+// Service pages (Track A) render on-demand rather than being prerendered.
+// Why: 27 services × ~170 covered cities × Next.js's per-page artifacts
+// (html/rsc/meta/_full/_head/_tree/_index/segments) = ~51k files just for
+// services. That blows past Vercel Hobby's ~15k file limit.
+//
+// On-demand rendering: first request builds the page (~500ms), Vercel
+// caches it at the edge, subsequent requests are fast. SEO still works
+// because the page returns 200 with full HTML on first crawl.
+//
+// When we upgrade to Vercel Pro (100k file limit) we can flip this back
+// to pre-rendering for faster first-hit and better bundle predictability.
 export function generateStaticParams() {
-  const cityParams = getAllCityParams();
-  const serviceSlugs = getAllServiceSlugs();
-  const params: { service: string; state: string; city: string }[] = [];
-
-  for (const svc of serviceSlugs) {
-    for (const { state, city } of cityParams) {
-      // Only generate service pages for cities with plumber data
-      const stateInfo = getStateBySlug(state);
-      if (!stateInfo) continue;
-      const key = `${stateInfo.abbreviation}:${city}`;
-      if (!CITY_COVERAGE[key]) continue;
-      params.push({ service: svc, state, city });
-    }
-  }
-  return params;
+  return [];
 }
+
+export const dynamicParams = true;
 
 // ---------------------------------------------------------------------------
 // Metadata
