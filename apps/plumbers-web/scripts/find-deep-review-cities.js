@@ -41,7 +41,11 @@ async function main() {
   }
   console.error("DEBUG: gscTier distribution: " + JSON.stringify(tierCounts));
 
-  // Get cities with medium or high GSC tier (10+ impressions)
+  // Position-aware qualification (NEW):
+  //   PRIORITY 1: impressions >= 50 (any position) OR impressions >= 10 AND position <= 15
+  //   PRIORITY 2: impressions >= 10 AND position <= 30
+  //   SKIP:       impressions < 10 OR position > 30
+  // Replaces simple gscTier filter that didn't account for position.
   const snap = await db.collection("cities")
     .where("gscTier", "in", ["medium", "high"])
     .get();
@@ -51,6 +55,17 @@ async function main() {
     process.exit(0);
   }
 
+  function qualifyTier(impressions, position) {
+    if (impressions <= 0) return null;
+    // PRIORITY 1: high-value cities — clicks are likely
+    if (impressions >= 50) return 1;
+    if (impressions >= 10 && position > 0 && position <= 15) return 1;
+    // PRIORITY 2: worth pulling if budget allows
+    if (impressions >= 10 && position > 0 && position <= 30) return 2;
+    // SKIP: deep-page or too few impressions
+    return null;
+  }
+
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -58,6 +73,18 @@ async function main() {
   for (const cityDoc of snap.docs) {
     const cityData = cityDoc.data();
     const fullSlug = cityDoc.id; // e.g. 'crystal-lake-il'
+
+    const impressions = cityData.lastGSCImpressions || 0;
+    const position = cityData.lastGSCPosition || 999;
+    const priority = qualifyTier(impressions, position);
+
+    if (priority === null) {
+      console.error(
+        "  SKIP " + fullSlug + " — impressions=" + impressions +
+        ", position=" + position + " (not click-worthy)"
+      );
+      continue;
+    }
 
     // serviceCities stores city-only slugs (e.g. 'crystal-lake'), not 'crystal-lake-il'
     const stateMatch = fullSlug.match(/-([a-z]{2})$/);
@@ -99,15 +126,20 @@ async function main() {
     if (!allFresh) {
       candidates.push({
         slug: fullSlug,
-        impressions: cityData.lastGSCImpressions || 0,
+        impressions,
+        position,
+        priority,
         tier: cityData.gscTier,
         plumbers: plumberSnap.size,
       });
     }
   }
 
-  // Sort by impressions desc, cap at 3
-  candidates.sort((a, b) => b.impressions - a.impressions);
+  // Sort by priority (1 first), then impressions desc, cap at 3
+  candidates.sort((a, b) => {
+    if (a.priority !== b.priority) return a.priority - b.priority;
+    return b.impressions - a.impressions;
+  });
   const selected = candidates.slice(0, 3);
 
   if (selected.length === 0) {
@@ -117,8 +149,9 @@ async function main() {
 
   for (const c of selected) {
     console.error(
-      "Selected: " + c.slug + " (" + c.tier + ", " +
-      c.impressions + " impressions, " + c.plumbers + " plumbers)"
+      "Selected: " + c.slug + " (priority " + c.priority + ", " +
+      c.impressions + " impressions @ pos " + c.position +
+      ", " + c.plumbers + " plumbers)"
     );
   }
 

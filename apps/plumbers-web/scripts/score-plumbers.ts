@@ -573,6 +573,15 @@ function buildSynthesisPrompt(
   reviews: ReviewInput[],
   scores: Scores,
   evidenceQuotes: EvidenceQuote[],
+  platformContext?: {
+    googleRating?: number | null;
+    googleReviewCount?: number;
+    yelpRating?: number | null;
+    yelpReviewCount?: number;
+    bbbAccredited?: boolean;
+    bbbRating?: string | null;
+    bbbComplaintsPast3Years?: number | null;
+  },
 ): string {
   // Include up to 30 reviews for synthesis context (sorted by recency)
   const reviewsSorted = [...reviews].sort((a, b) => {
@@ -589,12 +598,23 @@ function buildSynthesisPrompt(
     .map((eq) => `${eq.dimension}: "${eq.quote}"`)
     .join("\n");
 
+  // Platform context block — for cross-platform discrepancy detection
+  // (replaces what outscraper-reviews.js used to do separately)
+  const platformBlock = platformContext
+    ? `Platform ratings:
+- Google: ${platformContext.googleRating ?? "N/A"}/5 (${platformContext.googleReviewCount ?? 0} reviews)
+- Yelp: ${platformContext.yelpRating ?? "N/A"}/5 (${platformContext.yelpReviewCount ?? 0} reviews)
+${platformContext.bbbAccredited != null ? `- BBB: ${platformContext.bbbRating ?? "Unrated"}, accredited=${platformContext.bbbAccredited}, complaints (past 3yr)=${platformContext.bbbComplaintsPast3Years ?? 0}` : ""}`
+    : "";
+
   return `You are synthesizing reviews for an emergency plumber directory. Your output helps homeowners decide who to call at 2am with a burst pipe.
 
 Plumber: ${plumberName}
 Reviews analyzed: ${reviews.length}
 Dimension scores (0-100): reliability=${scores.reliability}, pricing_fairness=${scores.pricing_fairness}, workmanship=${scores.workmanship}, responsiveness=${scores.responsiveness}, communication=${scores.communication}
 Score variance: ${scores.variance}
+
+${platformBlock}
 
 Evidence quotes already extracted:
 ${quoteBlock || "(none)"}
@@ -608,7 +628,8 @@ Respond in JSON only. No markdown, no preamble, no backticks.
   "strengths": ["2-3 specific strengths with evidence counts. e.g. '4 of 6 reviewers mention same-day arrival' or 'Multiple reviews praise thorough cleanup after work'"],
   "weaknesses": ["1-2 specific weaknesses from reviews. e.g. 'Two reviews mention final bill exceeding initial quote by $200+'. Say 'Not enough data to identify weaknesses' ONLY if every review is positive."],
   "redFlags": ["Concerning patterns with specifics. For <25 reviews, even 1-2 mentions of the same issue = pattern. e.g. '2 of 8 reviews report no-show on scheduled appointment'. Empty array [] if genuinely none."],
-  "emergencyNotes": "One sentence about emergency capability signals: after-hours mentions, response time, weekend/holiday availability, burst-pipe experience. If reviews mention fast response even during business hours, note it."
+  "emergencyNotes": "One sentence about emergency capability signals: after-hours mentions, response time, weekend/holiday availability, burst-pipe experience. If reviews mention fast response even during business hours, note it.",
+  "platformDiscrepancy": "If Google and Yelp ratings differ by 0.7+ stars OR if Yelp/BBB complaints contradict Google's positive picture, describe the gap in one sentence. e.g. 'Google rates 4.9 but Yelp shows 3.8 with multiple billing disputes'. Return null if ratings are consistent across platforms."
 }`;
 }
 
@@ -618,6 +639,7 @@ function parseSynthesisResponse(text: string): {
   weaknesses: string[];
   redFlags: string[];
   emergencyNotes: string;
+  platformDiscrepancy: string | null;
 } {
   const cleaned = text
     .replace(/^```(?:json)?\s*\n?/i, "")
@@ -630,6 +652,7 @@ function parseSynthesisResponse(text: string): {
     weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [],
     redFlags: Array.isArray(parsed.redFlags) ? parsed.redFlags : [],
     emergencyNotes: parsed.emergencyNotes || "",
+    platformDiscrepancy: parsed.platformDiscrepancy || null,
   };
 }
 
@@ -828,18 +851,31 @@ async function runPass1(
     const data = plumberDoc.data();
     const name = data.businessName ?? plumberDoc.id;
 
+    const reviews = await loadReviews(db, plumberDoc.id);
+
+    // Smart re-score trigger: skip if recently scored AND review count
+    // hasn't changed by 20%+. The 30-day timer is the fallback; the
+    // primary trigger is "review data changed meaningfully".
     if (!args.force && data.scores?.last_scored_at) {
       const last = Date.parse(data.scores.last_scored_at);
-      if (
-        !Number.isNaN(last) &&
-        Date.now() - last < SKIP_IF_SCORED_WITHIN_MS
-      ) {
+      const recentlyScored =
+        !Number.isNaN(last) && Date.now() - last < SKIP_IF_SCORED_WITHIN_MS;
+      const lastReviewCount = data.scores?.review_count_used || 0;
+      const reviewCountDelta = lastReviewCount > 0
+        ? Math.abs(reviews.length - lastReviewCount) / lastReviewCount
+        : 1;
+      const reviewsChangedSignificantly = reviewCountDelta >= 0.20;
+
+      if (recentlyScored && !reviewsChangedSignificantly) {
         skipped++;
         continue;
       }
+      if (recentlyScored && reviewsChangedSignificantly) {
+        console.log(
+          `  ! ${name}: recently scored but review count changed ${(reviewCountDelta * 100).toFixed(0)}% (${lastReviewCount} → ${reviews.length}) — re-scoring`,
+        );
+      }
     }
-
-    const reviews = await loadReviews(db, plumberDoc.id);
 
     // Plumbers with < MIN_REVIEWS_TO_SCORE get keyword fallback synthesis
     // (no Claude call) but still get reviewSynthesis written.
@@ -899,8 +935,20 @@ async function runPass1(
       const { scores, evidenceQuotes, servicesMentioned } = aggregate(extracted, ageByReviewId);
 
       // --- Step 3: Sonnet synthesis call (replaces Haiku) ---
+      // Pass platform context (Yelp/BBB ratings) so Sonnet can detect
+      // cross-platform discrepancies — replaces what outscraper-reviews.js
+      // used to do in a separate Haiku call.
+      const platformContext = {
+        googleRating: data.googleRating ?? null,
+        googleReviewCount: data.googleReviewCount ?? 0,
+        yelpRating: data.yelpRating ?? null,
+        yelpReviewCount: data.yelpReviewCount ?? 0,
+        bbbAccredited: data.bbb?.accredited,
+        bbbRating: data.bbb?.rating ?? null,
+        bbbComplaintsPast3Years: data.bbb?.complaintsPast3Years ?? null,
+      };
       await sleep(RATE_LIMIT_MS);
-      const synthPrompt = buildSynthesisPrompt(name, reviews, scores, evidenceQuotes);
+      const synthPrompt = buildSynthesisPrompt(name, reviews, scores, evidenceQuotes, platformContext);
       const synthRaw = await callClaude(synthPrompt);
       const synthParsed = parseSynthesisResponse(synthRaw);
 
@@ -928,9 +976,10 @@ async function runPass1(
         "reviewSynthesis.emergencySignals": emergencySignals,
         "reviewSynthesis.pricingTier": pricingTier,
         "reviewSynthesis.bestFor": bestFor,
+        "reviewSynthesis.platformDiscrepancy": synthParsed.platformDiscrepancy,
         "reviewSynthesis.reviewCount": reviews.length,
         "reviewSynthesis.aiSynthesizedAt": admin.firestore.Timestamp.now(),
-        "reviewSynthesis.synthesisVersion": "unified-sonnet-v1",
+        "reviewSynthesis.synthesisVersion": "unified-sonnet-v2",
         updatedAt: admin.firestore.Timestamp.now(),
       };
       if (Object.keys(servicesMentioned).length > 0) {
