@@ -1,17 +1,8 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 475,
+  "usedThisMonth": 490,
   "queue": [
-    {
-      "city": "Lafayette",
-      "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Stevens Point",
       "state": "WI",
@@ -390,6 +381,16 @@
       "status": "done",
       "actualCalls": 9,
       "plumbersFound": 8,
+      "completedAt": "2026-04-15"
+    },
+    {
+      "city": "Lafayette",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
       "completedAt": "2026-04-15"
     }
   ]
