@@ -353,6 +353,11 @@ function mergeFirestoreData(existing, fd, reviews) {
   if (fd.googleRating) existing.googleRating = fd.googleRating;
   if (fd.googleReviewCount) existing.googleReviewCount = fd.googleReviewCount;
 
+  // serviceCities — always take Firestore's version if it exists
+  if (fd.serviceCities && fd.serviceCities.length > 0) {
+    existing.serviceCities = fd.serviceCities;
+  }
+
   // Merge AI synthesis from Firestore if it exists
   if (fd.reviewSynthesis?.aiSynthesizedAt || fd.reviewSynthesis?.synthesisVersion?.includes("outscraper")) {
     existing.synthesis = buildSynthesis(fd);
