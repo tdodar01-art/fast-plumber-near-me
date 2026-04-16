@@ -396,6 +396,7 @@ type AggregationResult = {
 function aggregate(
   extracted: ExtractedReview[],
   ageByReviewId: Map<string, number>,
+  reviews: ReviewInput[],
 ): AggregationResult {
   // Per-dimension weighted mean and stddev
   const dimScores: Record<DimensionKey, number> = {
@@ -932,7 +933,7 @@ async function runPass1(
       }
 
       // --- Step 2: Aggregate scores ---
-      const { scores, evidenceQuotes, servicesMentioned } = aggregate(extracted, ageByReviewId);
+      const { scores, evidenceQuotes, servicesMentioned } = aggregate(extracted, ageByReviewId, reviews);
 
       // --- Step 3: Sonnet synthesis call (replaces Haiku) ---
       // Pass platform context (Yelp/BBB ratings) so Sonnet can detect
