@@ -175,12 +175,37 @@ export default async function CityPage({
     plumbers = getPlumbersNearCity(city.state, citySlug);
   }
 
-  // Sort: featured > premium > free, then by quality × distance weight
+  // Sort: featured > premium > free, then by decision engine percentile
+  // (with fallback to old quality score for unscored plumbers).
+  // This ensures the main list ordering agrees with the Top 3 section.
   const maxReviewCount = Math.max(1, ...plumbers.map((p) => p.googleReviewCount || 0));
+  const allSynth = getAllPlumbers();
+  const cityRankKey = `${citySlug}-${city.state.toLowerCase()}`;
   plumbers.sort((a, b) => {
     const tierOrder = { featured: 0, premium: 1, free: 2 };
     const tierDiff = tierOrder[a.listingTier] - tierOrder[b.listingTier];
     if (tierDiff !== 0) return tierDiff;
+
+    // Look up decision engine percentile for each plumber
+    const aSynth = allSynth.find((s) => s.placeId === a.id || s.slug === a.slug);
+    const bSynth = allSynth.find((s) => s.placeId === b.id || s.slug === b.slug);
+    const aRank = aSynth?.city_rank?.[cityRankKey] ?? aSynth?.city_rank?.[citySlug];
+    const bRank = bSynth?.city_rank?.[cityRankKey] ?? bSynth?.city_rank?.[citySlug];
+
+    // Scored plumbers always sort above unscored
+    const aScored = aRank != null;
+    const bScored = bRank != null;
+    if (aScored && !bScored) return -1;
+    if (!aScored && bScored) return 1;
+
+    // Both scored: sort by percentile (higher = better), weighted by distance
+    if (aScored && bScored) {
+      const aScore = (aRank!.overall_percentile) * getDistanceWeight(a.distanceMiles ?? 0);
+      const bScore = (bRank!.overall_percentile) * getDistanceWeight(b.distanceMiles ?? 0);
+      return bScore - aScore;
+    }
+
+    // Neither scored: fall back to old quality formula
     const aQuality = calculateQualityScore(a, maxReviewCount) * getDistanceWeight(a.distanceMiles ?? 0);
     const bQuality = calculateQualityScore(b, maxReviewCount) * getDistanceWeight(b.distanceMiles ?? 0);
     return bQuality - aQuality;

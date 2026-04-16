@@ -470,7 +470,74 @@ function aggregate(
     last_scored_at: new Date().toISOString(),
   };
 
-  return { scores, evidenceQuotes };
+  // Build servicesMentioned from extracted reviews: bridges scoring pipeline
+  // data into the format that service-specific city pages consume for Tier 2
+  // eligibility. Maps job_type → { count, avgRating, topQuote }.
+  const servicesMentioned = buildServicesMentioned(extracted, reviews);
+
+  return { scores, evidenceQuotes, servicesMentioned };
+}
+
+// ---------------------------------------------------------------------------
+// servicesMentioned bridge: job_type → service page keys
+// ---------------------------------------------------------------------------
+
+/** Map scoring job_type to the servicesMentioned keys used by service pages. */
+const JOB_TYPE_TO_SERVICE_KEYS: Record<string, string[]> = {
+  water_heater: ["water-heater"],
+  drain: ["drain-cleaning"],
+  repipe: ["repiping"],
+  emergency: ["burst-pipe", "flooding"],
+  remodel: ["bathroom-remodel"],
+  sewer: ["sewer"],
+  toilet: ["toilet"],
+  fixture: ["faucet-fixture"],
+  sump_pump: ["sump-pump"],
+  gas_line: ["gas-leak"],
+  slab_leak: ["slab-leak"],
+  water_line: ["water-line"],
+};
+
+function buildServicesMentioned(
+  extracted: ExtractedReview[],
+  reviews: ReviewInput[],
+): Record<string, { count: number; avgRating: number; topQuote: string }> {
+  const ratingByReviewId = new Map<string, number>();
+  for (const r of reviews) ratingByReviewId.set(r.review_id, r.rating);
+
+  // Group extracted reviews by job_type (skip general/unknown)
+  const groups = new Map<
+    string,
+    Array<{ rating: number; quote: string | null }>
+  >();
+  for (const ex of extracted) {
+    if (ex.job_type === "general" || ex.job_type === "unknown") continue;
+    const serviceKeys = JOB_TYPE_TO_SERVICE_KEYS[ex.job_type];
+    if (!serviceKeys) continue;
+    const rating = ratingByReviewId.get(ex.review_id) ?? 0;
+    for (const key of serviceKeys) {
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push({ rating, quote: ex.evidence_quote });
+    }
+  }
+
+  const result: Record<
+    string,
+    { count: number; avgRating: number; topQuote: string }
+  > = {};
+  for (const [key, entries] of groups) {
+    if (entries.length === 0) continue;
+    const avgRating =
+      Math.round(
+        (entries.reduce((s, e) => s + e.rating, 0) / entries.length) * 10,
+      ) / 10;
+    // Pick the best quote: prefer one from a high-rated review
+    const withQuotes = entries.filter((e) => e.quote);
+    withQuotes.sort((a, b) => b.rating - a.rating);
+    const topQuote = withQuotes[0]?.quote || "";
+    result[key] = { count: entries.length, avgRating, topQuote };
+  }
+  return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -589,12 +656,18 @@ async function runPass1(
         continue;
       }
 
-      const { scores, evidenceQuotes } = aggregate(extracted, ageByReviewId);
-      await db.collection("plumbers").doc(plumberDoc.id).update({
+      const { scores, evidenceQuotes, servicesMentioned } = aggregate(extracted, ageByReviewId);
+      const updateData: Record<string, unknown> = {
         scores,
         evidence_quotes: evidenceQuotes,
         updatedAt: admin.firestore.Timestamp.now(),
-      });
+      };
+      // Write servicesMentioned into reviewSynthesis so the export script
+      // picks it up and service pages can use it for Tier 2 eligibility.
+      if (Object.keys(servicesMentioned).length > 0) {
+        updateData["reviewSynthesis.servicesMentioned"] = servicesMentioned;
+      }
+      await db.collection("plumbers").doc(plumberDoc.id).update(updateData);
       scored++;
       console.log(
         `  + ${name}: variance=${scores.variance} reviews_used=${scores.review_count_used}`,
