@@ -1,18 +1,8 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 510,
+  "usedThisMonth": 527,
   "queue": [
-    {
-      "city": "Wadsworth",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc",
-      "priority": "high-impressions"
-    },
     {
       "city": "Lampasas",
       "state": "TX",
@@ -397,6 +387,16 @@
       "actualCalls": 20,
       "plumbersFound": 19,
       "completedAt": "2026-04-16"
+    },
+    {
+      "city": "Wadsworth",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 15,
+      "completedAt": "2026-04-17"
     }
   ]
 }
