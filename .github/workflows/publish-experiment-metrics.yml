@@ -47,7 +47,9 @@ jobs:
         if: steps.firebase.outputs.configured == 'true'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+        # publishMetrics.ts reads apps/service-account.json (one level up from
+        # apps/plumbers-web, which is this job's working-directory).
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > ../service-account.json
 
       - name: Install dependencies
         run: npm install
@@ -60,4 +62,4 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: rm -f service-account.json
+        run: rm -f ../service-account.json

@@ -567,55 +567,67 @@ async function main() {
   console.log(`  Wrote ${swpWritten} rows to gscSitePages\n`);
 
   // --- Pull 5: Search appearance ---
-  // Note: searchAppearance cannot be grouped with page dimension in the GSC API.
-  // Use searchAppearance + date only for site-wide rich snippet tracking.
-  console.log("Fetching search appearance breakdown...");
-  const searchAppResponse = await searchconsole.searchanalytics.query({
-    siteUrl: SITE_URL,
-    requestBody: {
-      startDate: startStr,
-      endDate: endStr,
-      dimensions: ["searchAppearance", "date"],
-      rowLimit: ROW_LIMIT,
-      type: "web",
-    },
-  });
-
-  const searchAppRows = searchAppResponse.data.rows || [];
-  if (searchAppRows.length === ROW_LIMIT) {
-    console.warn(`  WARNING: search appearance pull returned exactly ${ROW_LIMIT} rows — data may be truncated.`);
-  }
-  console.log(`  GSC returned ${searchAppRows.length} search appearance rows`);
-
+  // GSC API constraint: searchAppearance must be the ONLY dimension — cannot
+  // be grouped with date, page, or anything else. To preserve daily
+  // granularity we loop day-by-day, querying each date individually.
+  console.log("Fetching search appearance breakdown (per-day loop)...");
   let saWritten = 0;
+  let saTotalRows = 0;
   batch = db.batch();
   batchCount = 0;
 
-  for (const row of searchAppRows) {
-    const [appearance, date] = row.keys;
-    const subDocId = `${date}__${sha1Short(appearance)}`;
-    const ref = db.collection("gscSearchAppearance").doc(subDocId);
+  const dayMs = 24 * 60 * 60 * 1000;
+  const loopStart = new Date(startStr + "T00:00:00Z");
+  const loopEnd = new Date(endStr + "T00:00:00Z");
 
-    batch.set(ref, {
-      date,
-      searchAppearance: appearance,
-      impressions: row.impressions,
-      clicks: row.clicks,
-      ctr: Math.round((row.ctr || 0) * 10000) / 10000,
-      position: Math.round(row.position * 10) / 10,
-      capturedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    batchCount++;
-    if (batchCount >= BATCH_SIZE) {
-      await batch.commit();
-      batch = db.batch();
-      batchCount = 0;
+  for (let d = new Date(loopStart); d <= loopEnd; d = new Date(d.getTime() + dayMs)) {
+    const dayStr = d.toISOString().slice(0, 10);
+    let dayRows = [];
+    try {
+      const dayResp = await searchconsole.searchanalytics.query({
+        siteUrl: SITE_URL,
+        requestBody: {
+          startDate: dayStr,
+          endDate: dayStr,
+          dimensions: ["searchAppearance"],
+          rowLimit: ROW_LIMIT,
+          type: "web",
+        },
+      });
+      dayRows = dayResp.data.rows || [];
+    } catch (err) {
+      console.warn(`  WARN: searchAppearance query failed for ${dayStr}: ${err.message}`);
+      continue;
     }
-    saWritten++;
+    saTotalRows += dayRows.length;
+
+    for (const row of dayRows) {
+      const [appearance] = row.keys;
+      const subDocId = `${dayStr}__${sha1Short(appearance)}`;
+      const ref = db.collection("gscSearchAppearance").doc(subDocId);
+
+      batch.set(ref, {
+        date: dayStr,
+        searchAppearance: appearance,
+        impressions: row.impressions,
+        clicks: row.clicks,
+        ctr: Math.round((row.ctr || 0) * 10000) / 10000,
+        position: Math.round(row.position * 10) / 10,
+        capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      batchCount++;
+      if (batchCount >= BATCH_SIZE) {
+        await batch.commit();
+        batch = db.batch();
+        batchCount = 0;
+      }
+      saWritten++;
+    }
   }
 
   if (batchCount > 0) await batch.commit();
+  console.log(`  GSC returned ${saTotalRows} search appearance rows across the window`);
   console.log(`  Wrote ${saWritten} rows to gscSearchAppearance\n`);
 
   // --- Pull 6: Site-wide daily totals ---

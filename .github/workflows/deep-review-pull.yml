@@ -12,7 +12,10 @@ permissions:
 jobs:
   deep-reviews:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Per-plumber Yelp fallback (Google-search-for-Yelp → scrape) can take
+    # ~3 min each; at 20 plumbers × 3 cities the job regularly blew past 30.
+    # 120 gives room for all 3 cities to complete in the usual case.
+    timeout-minutes: 120
     defaults:
       run:
         working-directory: apps/plumbers-web
