@@ -1,18 +1,8 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 527,
+  "usedThisMonth": 532,
   "queue": [
-    {
-      "city": "Lampasas",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc",
-      "priority": "high-impressions"
-    },
     {
       "city": "Fairfield",
       "state": "OH",
@@ -397,6 +387,16 @@
       "actualCalls": 17,
       "plumbersFound": 15,
       "completedAt": "2026-04-17"
+    },
+    {
+      "city": "Lampasas",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 5,
+      "plumbersFound": 4,
+      "completedAt": "2026-04-18"
     }
   ]
 }
