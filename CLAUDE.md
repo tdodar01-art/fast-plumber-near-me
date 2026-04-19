@@ -94,3 +94,27 @@ Verify periodically (weekly or after pipeline changes):
 - [ ] Confirm the 6-hour safety rebuild GitHub Action (`rebuild-json.yml`) is still scheduled and its last 5 runs succeeded
 - [ ] Confirm every Firestore-mutating workflow still ends with a rebuild step
 - [ ] Spot-check 3 random plumbers: BBB fields, Yelp rating, and deep review data all present in JSON
+
+---
+
+## Error logging (shared control-center log)
+
+Every project — this repo included — logs errors to ONE shared file: `~/code/control-center/logs/errors.jsonl`. **Do not create a new error log for this repo.**
+
+Use the shared CLI:
+
+```
+node ~/code/control-center/scripts/log-error.mjs \
+  --project <project-key> \
+  --message "<text>" \
+  [--severity error|warn|info] \
+  [--entity <component>] \
+  [--context '<json>' | --context-file <path>]
+```
+
+- `--project` must match this repo's `key` in `~/code/control-center/projects/projects.json` (this repo: `plumber`).
+- CLI prints the new error id; resolve/dismiss later with `--resolve <id>` / `--dismiss <id>`.
+- The file is append-only. Never edit past lines.
+- UI: from `~/code/control-center`, `preview_start error-log` → http://localhost:4330.
+
+Full reference: `~/code/control-center/CLAUDE.md` and `STRUCTURE.md`.
