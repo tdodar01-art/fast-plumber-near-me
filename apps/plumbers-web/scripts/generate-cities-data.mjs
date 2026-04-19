@@ -1,18 +1,79 @@
 #!/usr/bin/env node
 /**
- * Generates src/lib/cities-generated.ts with 2,000+ US cities.
- * Each city gets: name, state, county, unique hero content, nearby cities.
- * The output file exports a registerGeneratedCities function that adds
- * cities to the CITY_DATA object from cities-data.ts.
+ * Generates src/lib/cities-generated.ts AND src/lib/city-coords.ts from a
+ * single seed (RAW_CITIES below). One script, two outputs — always in sync.
+ *
+ * - cities-generated.ts: 2,000+ city pages with hero content + nearby refs.
+ * - city-coords.ts:      lat/lng lookup table used for the 20-mile radius
+ *                        fallback when a plumber's serviceCities doesn't
+ *                        directly match a page's city slug.
+ *
+ * Coord backfill: any city in RAW_CITIES missing a coord is geocoded via the
+ * Google Geocoding API (GOOGLE_PLACES_API_KEY from .env.local). Results are
+ * cached in scripts/city-coords-cache.json so subsequent runs are zero-cost.
+ *
+ * Fails the build (exit 1) and logs to the control-center error log if any
+ * city ends up without coords — city pages without coords can't use the
+ * radius fallback and will render 0 plumbers. This is the contract.
  *
  * Run: node scripts/generate-cities-data.mjs
  */
 
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import { spawnSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// ---------------------------------------------------------------------------
+// Env + error-logging plumbing (shared across the pipeline)
+// ---------------------------------------------------------------------------
+
+function loadEnv() {
+  const envPath = resolve(__dirname, "../.env.local");
+  if (!existsSync(envPath)) return;
+  for (const line of readFileSync(envPath, "utf-8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const val = trimmed.slice(eqIdx + 1).trim();
+    if (!process.env[key]) process.env[key] = val;
+  }
+}
+loadEnv();
+
+const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
+
+// control-center log-error.mjs — append-only JSONL at logs/errors.jsonl,
+// surfaced via the /admin error-log UI on port 4330.
+const LOG_ERROR_CLI =
+  process.env.CONTROL_CENTER_LOG_ERROR_CLI ||
+  resolve(__dirname, "../../../../../control-center/scripts/log-error.mjs");
+
+function logErrorCLI({ entity, severity = "error", message, context }) {
+  if (!existsSync(LOG_ERROR_CLI)) {
+    console.error(`  [log-error] CLI not found at ${LOG_ERROR_CLI}`);
+    return;
+  }
+  const args = [
+    LOG_ERROR_CLI,
+    "--project", "plumber",
+    "--entity", entity,
+    "--severity", severity,
+    "--source", "generate-cities-data",
+    "--message", message,
+  ];
+  if (context) {
+    args.push("--context", JSON.stringify(context));
+  }
+  const res = spawnSync("node", args, { encoding: "utf-8" });
+  if (res.status !== 0) {
+    console.error(`  [log-error] CLI exited ${res.status}: ${res.stderr || res.stdout}`);
+  }
+}
 
 function slugify(name) {
   return name
@@ -222,6 +283,7 @@ const RAW_CITIES = {
     "Lathrop:San Joaquin","Laguna Niguel:Orange","San Jacinto:Riverside",
     "Coachella:Riverside","Wildomar:Riverside","Danville:Contra Costa",
     "El Cerrito:Contra Costa","Newark:Alameda","Campbell:Santa Clara",
+    "Visalia:Tulare",
   ],
   CO: [
     "Denver:Denver","Colorado Springs:El Paso","Aurora:Arapahoe","Fort Collins:Larimer",
@@ -348,6 +410,9 @@ const RAW_CITIES = {
     "Carbondale:Jackson","Urbana:Champaign","Danville:Vermilion",
     "Quincy:Adams","Decatur:Macon","Galesburg:Knox","Moline:Rock Island",
     "Rock Island:Rock Island","Kankakee:Kankakee","Romeoville:Will",
+    "Gurnee:Lake","Libertyville:Lake","Mundelein:Lake","Glenview:Cook",
+    "Round Lake:Lake","Vernon Hills:Lake","Lake Zurich:Lake","Wauconda:Lake",
+    "Island Lake:Lake","Fox Lake:Lake","Fox River Grove:McHenry",
   ],
   IN: [
     "Indianapolis:Marion","Fort Wayne:Allen","Evansville:Vanderburgh","South Bend:St. Joseph",
@@ -922,7 +987,10 @@ const HANDCRAFTED = new Set([
   "IL:rockford","IL:springfield","IL:peoria","IL:champaign",
   "CA:los-angeles","CA:san-diego","CA:san-jose","CA:san-francisco","CA:fresno",
   "CA:sacramento","CA:long-beach","CA:oakland","CA:bakersfield","CA:anaheim",
-  "CA:santa-ana","CA:riverside","CA:stockton","CA:irvine","CA:chula-vista",
+  "CA:santa-ana","CA:riverside","CA:stockton","CA:irvine",
+  // chula-vista intentionally NOT in HANDCRAFTED: no entry exists in cities-data.ts,
+  // so it must flow through the generated path from RAW_CITIES instead. Removing
+  // it here closes fpnm-009 (prior [fpnm-001] hotfix was wiped by generator re-runs).
   "TX:houston","TX:san-antonio","TX:dallas","TX:austin","TX:fort-worth","TX:el-paso",
   "TX:arlington","TX:corpus-christi","TX:plano","TX:laredo","TX:lubbock",
   "FL:jacksonville","FL:miami","FL:tampa","FL:orlando","FL:st-petersburg",
@@ -1098,3 +1166,374 @@ console.log(`Generated ${totalGenerated} new cities (excluding hand-crafted)`);
 const outPath = resolve(__dirname, "../src/lib/cities-generated.ts");
 writeFileSync(outPath, output);
 console.log(`Wrote ${outPath}`);
+
+// ===========================================================================
+// COORD BACKFILL — emit src/lib/city-coords.ts from the same RAW_CITIES seed
+// ===========================================================================
+
+const COORDS_CACHE_PATH = resolve(__dirname, "city-coords-cache.json");
+const COORDS_OUT_PATH = resolve(__dirname, "../src/lib/city-coords.ts");
+const US_CITIES_CSV_PATH = resolve(__dirname, "data/us-cities.csv");
+
+const STATE_NAMES = {
+  AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",
+  CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"DC",FL:"Florida",
+  GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",
+  IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",
+  MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",
+  MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",
+  NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",
+  NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",
+  OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",
+  SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",
+  VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",
+};
+
+// Every city in RAW_CITIES needs a coord (handcrafted + generated alike).
+const targetCities = [];
+for (const [state, pairs] of Object.entries(RAW_CITIES)) {
+  const seen = new Set();
+  for (const pair of pairs) {
+    const [name] = pair.split(":");
+    const slug = slugify(name);
+    if (seen.has(slug)) continue;
+    seen.add(slug);
+    targetCities.push({ state, slug, name });
+  }
+}
+
+// Seed the coord map from two sources, in order:
+//   1) existing src/lib/city-coords.ts (parse its COORDS literal)
+//   2) scripts/city-coords-cache.json (canonical; overrides existing)
+// After this run the cache is the source of truth — city-coords.ts is
+// regenerated deterministically from it.
+function parseExistingCoords() {
+  if (!existsSync(COORDS_OUT_PATH)) return {};
+  const text = readFileSync(COORDS_OUT_PATH, "utf-8");
+  const map = {};
+  const re = /"([A-Z]{2}):([a-z0-9-]+)":\s*\[(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\]/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const key = `${m[1]}:${m[2]}`;
+    if (!(key in map)) map[key] = [parseFloat(m[3]), parseFloat(m[4])];
+  }
+  return map;
+}
+
+function loadCache() {
+  if (!existsSync(COORDS_CACHE_PATH)) return {};
+  try {
+    return JSON.parse(readFileSync(COORDS_CACHE_PATH, "utf-8"));
+  } catch (err) {
+    console.error(`  [cache] failed to parse ${COORDS_CACHE_PATH}: ${err.message}`);
+    return {};
+  }
+}
+
+function saveCache(map) {
+  // Stable key order so diffs stay readable.
+  const sorted = {};
+  for (const key of Object.keys(map).sort()) sorted[key] = map[key];
+  writeFileSync(COORDS_CACHE_PATH, JSON.stringify(sorted, null, 2) + "\n");
+}
+
+function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+async function geocode(name, state) {
+  if (!GOOGLE_API_KEY) return { fatal: true, reason: "no-key" };
+  const address = `${name}, ${state}, USA`;
+  const url =
+    `https://maps.googleapis.com/maps/api/geocode/json` +
+    `?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.status === "REQUEST_DENIED" || data.status === "OVER_QUERY_LIMIT") {
+      return { fatal: true, reason: data.status, message: data.error_message };
+    }
+    if (data.status !== "OK" || !data.results || !data.results.length) {
+      return { ok: false, reason: data.status };
+    }
+    const loc = data.results[0].geometry.location;
+    return {
+      ok: true,
+      lat: parseFloat(loc.lat.toFixed(2)),
+      lng: parseFloat(loc.lng.toFixed(2)),
+    };
+  } catch (err) {
+    return { ok: false, reason: "fetch-error", message: err.message };
+  }
+}
+
+// Nominatim / OpenStreetMap — free, no API key. Usage policy: 1 req/sec max
+// and a descriptive User-Agent. Used as a fallback between the CSV and
+// Google Geocoding so we aren't blocked if a Google API isn't enabled.
+async function geocodeOsm(name, state) {
+  const q = `${name}, ${state}, USA`;
+  const url =
+    `https://nominatim.openstreetmap.org/search` +
+    `?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=us`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "fast-plumber-near-me/coord-backfill (contact: tim@fastplumbernearme.com)",
+      },
+    });
+    if (!res.ok) return { ok: false, reason: `http-${res.status}` };
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return { ok: false, reason: "no-results" };
+    const hit = data[0];
+    const lat = parseFloat(hit.lat);
+    const lng = parseFloat(hit.lon);
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return { ok: false, reason: "parse-error" };
+    return { ok: true, lat: parseFloat(lat.toFixed(4)), lng: parseFloat(lng.toFixed(4)) };
+  } catch (err) {
+    return { ok: false, reason: "fetch-error", message: err.message };
+  }
+}
+
+// Primary coord source: SimpleMaps-style CSV (scripts/data/us-cities.csv).
+// Free, offline, ~30k US cities — no API key needed for the bulk backfill.
+// Google Geocoding is the fallback for cities the CSV doesn't cover.
+function parseCsvLine(line) {
+  // Minimal CSV splitter that honors double-quoted fields (no escaped quotes).
+  const out = [];
+  let i = 0, field = "", inQuote = false;
+  while (i < line.length) {
+    const c = line[i];
+    if (inQuote) {
+      if (c === '"') inQuote = false;
+      else field += c;
+    } else {
+      if (c === '"') inQuote = true;
+      else if (c === ",") { out.push(field); field = ""; }
+      else field += c;
+    }
+    i++;
+  }
+  out.push(field);
+  return out;
+}
+
+function loadUsCitiesCsv() {
+  if (!existsSync(US_CITIES_CSV_PATH)) return null;
+  const text = readFileSync(US_CITIES_CSV_PATH, "utf-8");
+  const lines = text.split("\n");
+  // Index: "ST:slug" -> [lat, lng]. If a slug collides across counties, first
+  // one wins (the CSV is alphabetical by state/city, so this is stable).
+  const map = new Map();
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.trim()) continue;
+    const cols = parseCsvLine(line);
+    // cols: ID, STATE_CODE, STATE_NAME, CITY, COUNTY, LATITUDE, LONGITUDE
+    const state = cols[1];
+    const cityName = cols[3];
+    const lat = parseFloat(cols[5]);
+    const lng = parseFloat(cols[6]);
+    if (!state || !cityName || Number.isNaN(lat) || Number.isNaN(lng)) continue;
+    const slug = slugify(cityName);
+    const key = `${state}:${slug}`;
+    if (!map.has(key)) {
+      map.set(key, [parseFloat(lat.toFixed(4)), parseFloat(lng.toFixed(4))]);
+    }
+  }
+  return map;
+}
+
+const existingCoords = parseExistingCoords();
+const cache = loadCache();
+const csvIndex = loadUsCitiesCsv();
+const coordsMap = { ...existingCoords, ...cache };
+
+console.log(`\n=== Coord backfill ===`);
+console.log(`  Target cities: ${targetCities.length}`);
+console.log(`  From city-coords.ts: ${Object.keys(existingCoords).length}`);
+console.log(`  From cache JSON:     ${Object.keys(cache).length}`);
+console.log(`  CSV index size:      ${csvIndex ? csvIndex.size : "(CSV missing)"}`);
+
+// Phase 1: fill from the bundled CSV.
+let csvHits = 0;
+if (csvIndex) {
+  for (const c of targetCities) {
+    const key = `${c.state}:${c.slug}`;
+    if (coordsMap[key]) continue;
+    const hit = csvIndex.get(key);
+    if (hit) {
+      coordsMap[key] = hit;
+      csvHits++;
+    }
+  }
+  console.log(`  CSV backfilled: ${csvHits}`);
+}
+
+let missing = targetCities.filter((c) => !coordsMap[`${c.state}:${c.slug}`]);
+console.log(`  Still missing:  ${missing.length}`);
+
+const geocodeFailures = [];
+
+// Phase 2: OpenStreetMap / Nominatim (free, no key, 1 req/sec).
+if (missing.length > 0) {
+  console.log(`  Geocoding ${missing.length} residual cities via Nominatim (OSM)...`);
+  let done = 0;
+  let failed = 0;
+  for (const c of missing) {
+    const result = await geocodeOsm(c.name, c.state);
+    if (result.ok) {
+      coordsMap[`${c.state}:${c.slug}`] = [result.lat, result.lng];
+      done++;
+    } else {
+      failed++;
+    }
+    if ((done + failed) % 25 === 0) {
+      saveCache(coordsMap);
+      console.log(`    osm progress ${done + failed}/${missing.length} (ok=${done}, fail=${failed})`);
+    }
+    // Nominatim policy: max 1 req/sec.
+    await sleep(1100);
+  }
+  console.log(`  OSM backfilled: ${done}, failed: ${failed}`);
+  missing = targetCities.filter((c) => !coordsMap[`${c.state}:${c.slug}`]);
+  console.log(`  Still missing:  ${missing.length}`);
+}
+
+// Phase 3: Google Geocoding (if enabled) for anything OSM didn't cover.
+if (missing.length > 0 && GOOGLE_API_KEY) {
+  console.log(`  Geocoding ${missing.length} residual cities via Google Geocoding API...`);
+  let done = 0;
+  let failed = 0;
+  let fatalAbort = null;
+
+  for (const c of missing) {
+    const result = await geocode(c.name, c.state);
+    if (result.fatal) {
+      fatalAbort = result;
+      logErrorCLI({
+        entity: "coord-backfill",
+        severity: "warn",
+        message: `Google Geocoding fallback unavailable (${result.reason}) — ${missing.length - (done + failed)} cities still missing`,
+        context: { apiMessage: result.message, remaining: missing.length - (done + failed) },
+      });
+      break;
+    }
+    if (result.ok) {
+      coordsMap[`${c.state}:${c.slug}`] = [result.lat, result.lng];
+      done++;
+    } else {
+      failed++;
+      geocodeFailures.push({ state: c.state, slug: c.slug, name: c.name, reason: result.reason });
+    }
+    if ((done + failed) % 50 === 0) {
+      saveCache(coordsMap);
+      console.log(`    progress ${done + failed}/${missing.length} (ok=${done}, fail=${failed})`);
+    }
+    await sleep(40);
+  }
+
+  console.log(`  Geocoded: ${done}, failed: ${failed}`);
+  if (fatalAbort && fatalAbort.reason === "REQUEST_DENIED") {
+    console.error(`  Note: enable Geocoding at https://console.cloud.google.com/apis/library/geocoding-backend.googleapis.com`);
+  }
+}
+
+saveCache(coordsMap);
+
+// Recompute missing after both phases.
+missing = targetCities.filter((c) => !coordsMap[`${c.state}:${c.slug}`]);
+
+// Per-city geocode failures (soft — we still rewrite what we have, then exit
+// non-zero at the end if the target set isn't fully covered).
+for (const f of geocodeFailures) {
+  logErrorCLI({
+    entity: "coord-backfill",
+    message: `Geocoding returned no result for ${f.name}, ${f.state} (${f.reason})`,
+    context: f,
+  });
+}
+
+// Emit city-coords.ts, grouped by state (sorted alphabetically within a state).
+const stateOrderOut = Object.keys(STATE_NAMES).sort();
+let coordsOut = `/**
+ * Approximate city center coordinates for geolocation matching.
+ * GENERATED by scripts/generate-cities-data.mjs — do not edit by hand.
+ * Source of truth: scripts/city-coords-cache.json (+ RAW_CITIES in the
+ * generate script). Rerun the script to regenerate.
+ * Format: "stateAbbr:citySlug" -> [lat, lng]
+ */
+
+const COORDS: Record<string, [number, number]> = {
+`;
+
+for (const state of stateOrderOut) {
+  const entries = Object.entries(coordsMap)
+    .filter(([k]) => k.startsWith(`${state}:`))
+    .sort(([a], [b]) => a.localeCompare(b));
+  if (!entries.length) continue;
+  coordsOut += `  // ${STATE_NAMES[state]}\n`;
+  for (const [key, [lat, lng]] of entries) {
+    coordsOut += `  "${key}": [${lat}, ${lng}],\n`;
+  }
+}
+
+coordsOut += `};
+
+import { CITY_LIST } from "./city-list";
+
+export interface CityCoord {
+  name: string;
+  state: string;
+  stateSlug: string;
+  citySlug: string;
+  lat: number;
+  lng: number;
+}
+
+export function getCityCoordBySlug(stateAbbr: string, citySlug: string): [number, number] | null {
+  const key = \`\${stateAbbr}:\${citySlug}\`;
+  return COORDS[key] || null;
+}
+
+export function getCityCoords(): CityCoord[] {
+  const result: CityCoord[] = [];
+
+  for (const city of CITY_LIST) {
+    const key = \`\${city.state}:\${city.citySlug}\`;
+    const coord = COORDS[key];
+    if (coord) {
+      result.push({
+        name: city.name,
+        state: city.state,
+        stateSlug: city.stateSlug,
+        citySlug: city.citySlug,
+        lat: coord[0],
+        lng: coord[1],
+      });
+    }
+  }
+
+  return result;
+}
+`;
+writeFileSync(COORDS_OUT_PATH, coordsOut);
+console.log(`  Wrote ${COORDS_OUT_PATH} (${Object.keys(coordsMap).length} total coord entries)`);
+
+// Hard contract: every city in RAW_CITIES must have a coord. If any are
+// missing we log + fail so the CI run / developer sees it immediately.
+const stillMissing = targetCities.filter((c) => !coordsMap[`${c.state}:${c.slug}`]);
+if (stillMissing.length > 0) {
+  console.error(`\nERROR: ${stillMissing.length} cities still missing coords after backfill.`);
+  for (const c of stillMissing.slice(0, 20)) {
+    console.error(`  - ${c.state}:${c.slug} (${c.name})`);
+  }
+  if (stillMissing.length > 20) console.error(`  ... +${stillMissing.length - 20} more`);
+  logErrorCLI({
+    entity: "coord-backfill",
+    message: `${stillMissing.length} cities still missing coords after backfill`,
+    context: {
+      missingCount: stillMissing.length,
+      sample: stillMissing.slice(0, 10),
+    },
+  });
+  process.exit(1);
+}
+console.log(`  All ${targetCities.length} RAW_CITIES entries have coords ✓`);

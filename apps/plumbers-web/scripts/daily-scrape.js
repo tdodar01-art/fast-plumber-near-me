@@ -12,6 +12,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -31,6 +32,44 @@ const MIN_DAILY_CALLS = 20;
 const MONTHLY_BUFFER = 50; // stop at budget - 50
 const RATE_LIMIT_MS = 300;
 const SYNTH_RATE_LIMIT_MS = 500;
+
+// Thin-cities retry: if a primary search returns fewer than this many
+// candidates (new + deduped), try progressively broader queries. This
+// catches cases where "emergency plumber in X" returns 0-2 results but
+// "plumber in X" or "plumbing services X" returns more. Keeps pages from
+// rendering with 0 listings when the city actually has coverage.
+const THIN_THRESHOLD = 5;
+const RETRY_QUERY_TEMPLATES = [
+  (c, s) => `plumber in ${c}, ${s}`,
+  (c, s) => `24 hour plumber ${c} ${s}`,
+  (c, s) => `plumbing services ${c} ${s}`,
+];
+
+// ---------------------------------------------------------------------------
+// Error logging — append-only JSONL via control-center log-error.mjs.
+// Surfaced in the /admin error-log UI.
+// ---------------------------------------------------------------------------
+
+const LOG_ERROR_CLI =
+  process.env.CONTROL_CENTER_LOG_ERROR_CLI ||
+  path.resolve(__dirname, "..", "..", "..", "..", "..", "control-center", "scripts", "log-error.mjs");
+
+function logErrorCLI({ entity, severity = "error", message, context }) {
+  if (!fs.existsSync(LOG_ERROR_CLI)) return;
+  const args = [
+    LOG_ERROR_CLI,
+    "--project", "plumber",
+    "--entity", entity,
+    "--severity", severity,
+    "--source", "daily-scrape",
+    "--message", message,
+  ];
+  if (context) args.push("--context", JSON.stringify(context));
+  const res = spawnSync("node", args, { encoding: "utf-8" });
+  if (res.status !== 0) {
+    console.error(`  [log-error] CLI exited ${res.status}: ${res.stderr || res.stdout}`);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Load env
@@ -465,55 +504,97 @@ async function main() {
     log(`\nScraping: ${cityName}, ${cityState} (${region})`);
 
     try {
-      await sleep(RATE_LIMIT_MS);
-      const searchResults = await textSearch(`emergency plumber in ${cityName}, ${stateName}`);
-      log(`  Found ${searchResults.length} search results`);
+      // Primary query + thin-retry sequence. We try each query in order and
+      // stop as soon as cumulative candidates (new + deduped) clears the
+      // thin threshold. A "thin" city typically means the primary
+      // "emergency plumber" query hit 0-2 results even though general
+      // plumbers serve the area — the retries widen the net.
+      const queries = [
+        `emergency plumber in ${cityName}, ${stateName}`,
+        ...RETRY_QUERY_TEMPLATES.map((tpl) => tpl(cityName, stateName)),
+      ];
 
       let cityNew = 0;
       let cityDeduped = 0;
+      let queriesUsed = 0;
+      const seenInThisCity = new Set();
 
-      for (const sr of searchResults) {
-        const placeId = sr.place_id;
-
-        // DEDUP: skip Place Details API call if we already have this plumber
-        if (existingPlumbers[placeId]) {
-          cityDeduped++;
-          totalDeduped++;
-          continue;
-        }
-
-        // Hard stop: never exceed daily budget
-        if (apiCallsMade - callsBefore + 1 >= dailyBudget && todayCities.indexOf(cityEntry) < todayCities.length - 1) {
-          log(`  Approaching daily budget, stopping early for ${cityName}`);
-          break;
+      for (const query of queries) {
+        if (cityNew + cityDeduped >= THIN_THRESHOLD && queriesUsed > 0) break;
+        queriesUsed++;
+        const isRetry = queriesUsed > 1;
+        if (isRetry) {
+          log(`  [thin-retry ${queriesUsed - 1}] "${query}" (have ${cityNew + cityDeduped}/${THIN_THRESHOLD})`);
         }
 
         await sleep(RATE_LIMIT_MS);
-        const details = await getPlaceDetails(placeId);
-        if (!details) continue;
+        const searchResults = await textSearch(query);
+        if (!isRetry) log(`  Found ${searchResults.length} search results`);
+        else log(`  Retry found ${searchResults.length} search results`);
 
-        const plumber = transformPlace(details, cityName, cityState, region);
-        if (!plumber.phone) {
-          log(`  Skipping ${plumber.name} — no phone`);
-          continue;
-        }
+        for (const sr of searchResults) {
+          const placeId = sr.place_id;
 
-        existingPlumbers[plumber.placeId] = plumber;
-        cityNew++;
-        totalNewPlumbers++;
-        newPlumberDetails.push({ name: plumber.name, slug: slugify(plumber.name), city: cityName, state: cityState });
+          // Within-city dedup: ignore duplicates across the primary + retries
+          if (seenInThisCity.has(placeId)) continue;
+          seenInThisCity.add(placeId);
 
-        // Store reviews in Firestore immediately (same collection as refresh-reviews)
-        try {
-          const reviewsStored = await storeReviewsInFirestore(plumber);
-          if (reviewsStored > 0) log(`    + ${reviewsStored} reviews cached for ${plumber.name}`);
-        } catch (revErr) {
-          log(`    Warning: failed to cache reviews for ${plumber.name}: ${revErr.message}`);
+          // Cross-run dedup: skip Place Details if we already know this plumber
+          if (existingPlumbers[placeId]) {
+            cityDeduped++;
+            totalDeduped++;
+            continue;
+          }
+
+          // Hard stop: never exceed daily budget
+          if (apiCallsMade - callsBefore + 1 >= dailyBudget && todayCities.indexOf(cityEntry) < todayCities.length - 1) {
+            log(`  Approaching daily budget, stopping early for ${cityName}`);
+            break;
+          }
+
+          await sleep(RATE_LIMIT_MS);
+          const details = await getPlaceDetails(placeId);
+          if (!details) continue;
+
+          const plumber = transformPlace(details, cityName, cityState, region);
+          if (!plumber.phone) {
+            log(`  Skipping ${plumber.name} — no phone`);
+            continue;
+          }
+
+          existingPlumbers[plumber.placeId] = plumber;
+          cityNew++;
+          totalNewPlumbers++;
+          newPlumberDetails.push({ name: plumber.name, slug: slugify(plumber.name), city: cityName, state: cityState });
+
+          // Store reviews in Firestore immediately (same collection as refresh-reviews)
+          try {
+            const reviewsStored = await storeReviewsInFirestore(plumber);
+            if (reviewsStored > 0) log(`    + ${reviewsStored} reviews cached for ${plumber.name}`);
+          } catch (revErr) {
+            log(`    Warning: failed to cache reviews for ${plumber.name}: ${revErr.message}`);
+          }
         }
       }
 
       const callsUsed = apiCallsMade - callsBefore;
-      log(`  +${cityNew} new, ${cityDeduped} deduped, ${callsUsed} API calls`);
+      const totalCandidates = cityNew + cityDeduped;
+      log(`  +${cityNew} new, ${cityDeduped} deduped, ${callsUsed} API calls${queriesUsed > 1 ? ` (${queriesUsed} queries)` : ""}`);
+
+      // If the city came out thin even after retries, record it so the
+      // /admin error-log surfaces it. Coord-having thin cities usually just
+      // reflect low real coverage; coord-missing ones are the urgent class.
+      if (totalCandidates < THIN_THRESHOLD) {
+        logErrorCLI({
+          entity: "thin-city",
+          severity: "warn",
+          message: `${cityName}, ${cityState}: only ${totalCandidates} plumber candidates after ${queriesUsed} queries — page may render with few listings`,
+          context: {
+            city: cityName, state: cityState,
+            totalCandidates, cityNew, cityDeduped, queriesUsed,
+          },
+        });
+      }
 
       // Mark city as done in queue
       const queueEntry = queue.queue.find((c) => c.city === cityName && c.status === "pending");
@@ -558,6 +639,11 @@ async function main() {
       log(`  FAILED: ${err.message}`);
       const queueEntry = queue.queue.find((c) => c.city === cityName && c.status === "pending");
       if (queueEntry) queueEntry.status = "failed";
+      logErrorCLI({
+        entity: "scrape",
+        message: `Scrape failed for ${cityName}, ${cityState}: ${err.message}`,
+        context: { city: cityName, state: cityState, stack: err.stack },
+      });
     }
 
     // Update queue after every city

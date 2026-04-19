@@ -17,7 +17,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -25,6 +25,32 @@ const { execSync } = require("child_process");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 const JSON_PATH = path.join(__dirname, "..", "data", "synthesized", "plumbers-synthesized.json");
+
+// ---------------------------------------------------------------------------
+// Error logging — append-only JSONL via control-center log-error.mjs.
+// Surfaced in the /admin error-log UI.
+// ---------------------------------------------------------------------------
+
+const LOG_ERROR_CLI =
+  process.env.CONTROL_CENTER_LOG_ERROR_CLI ||
+  path.resolve(__dirname, "..", "..", "..", "..", "..", "control-center", "scripts", "log-error.mjs");
+
+function logErrorCLI({ entity, severity = "error", message, context }) {
+  if (!fs.existsSync(LOG_ERROR_CLI)) return;
+  const args = [
+    LOG_ERROR_CLI,
+    "--project", "plumber",
+    "--entity", entity,
+    "--severity", severity,
+    "--source", "export-firestore",
+    "--message", message,
+  ];
+  if (context) args.push("--context", JSON.stringify(context));
+  const res = spawnSync("node", args, { encoding: "utf-8" });
+  if (res.status !== 0) {
+    console.error(`  [log-error] CLI exited ${res.status}: ${res.stderr || res.stdout}`);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Load .env.local
@@ -230,6 +256,12 @@ async function main() {
     } catch (err) {
       console.error("Git commit/push failed:", err.message);
       // Non-fatal — data is still written locally
+      logErrorCLI({
+        entity: "git-push",
+        severity: "warn",
+        message: `Git commit/push failed during Firestore export: ${err.message}`,
+        context: { stderr: err.stderr && err.stderr.toString ? err.stderr.toString() : undefined },
+      });
     }
   }
 
@@ -254,6 +286,11 @@ async function main() {
       });
     } catch (e) {
       console.error("Failed to log pipelineRun:", e.message);
+      logErrorCLI({
+        entity: "pipeline-run",
+        severity: "warn",
+        message: `Failed to log pipelineRun for export-json: ${e.message}`,
+      });
     }
   }
 
@@ -459,5 +496,11 @@ main()
   })
   .catch((err) => {
     console.error("Fatal error:", err);
+    logErrorCLI({
+      entity: "export-fatal",
+      severity: "error",
+      message: `Fatal error in export-firestore-to-json: ${err.message || err}`,
+      context: { stack: err && err.stack ? err.stack : undefined },
+    });
     process.exit(1);
   });

@@ -99,13 +99,23 @@ jobs:
         continue-on-error: true
         run: node scripts/export-firestore-to-json.js --no-push
 
-      # Single commit: scrape queue, city coords, GSC queue, and rebuilt JSON
+      # Phase 4b: Regenerate city-coverage.ts so the sitemap picks up any new
+      # city × service combinations enabled by today's scrape. Depends on the
+      # freshly-rebuilt plumbers-synthesized.json + city-coords.ts.
+      - name: Regenerate city coverage
+        continue-on-error: true
+        run: node scripts/generate-city-coverage.js
+
+      # Single commit: scrape queue, city coords, cities registry, coverage map,
+      # GSC queue, and rebuilt JSON. cities-generated.ts + city-coverage.ts are
+      # included so the sitemap reflects newly-discovered cities and newly-
+      # covered city × service combos on the next Vercel rebuild.
       - name: Commit and push
         working-directory: .
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add apps/plumbers-web/data/synthesized/plumbers-synthesized.json apps/plumbers-web/data/synthesized/leaderboard.json apps/plumbers-web/data/raw/plumbers-latest.json apps/plumbers-web/scripts/scrape-queue.json apps/plumbers-web/data/gsc-expansion-queue.json apps/plumbers-web/src/lib/city-coords.ts
+          git add apps/plumbers-web/data/synthesized/plumbers-synthesized.json apps/plumbers-web/data/synthesized/leaderboard.json apps/plumbers-web/data/raw/plumbers-latest.json apps/plumbers-web/scripts/scrape-queue.json apps/plumbers-web/data/gsc-expansion-queue.json apps/plumbers-web/src/lib/city-coords.ts apps/plumbers-web/src/lib/cities-generated.ts apps/plumbers-web/src/lib/city-coverage.ts
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else

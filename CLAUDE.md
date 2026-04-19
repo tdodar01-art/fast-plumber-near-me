@@ -85,6 +85,12 @@ These rules are non-negotiable. If you feel the urge to violate them, the archit
 
 5. **Ingestion scripts write to Firestore or to staging files in `data/raw/`.** They never write to `data/synthesized/`. The staging file `data/raw/plumbers-with-synthesis.json` is an intermediate working file used by `upload-to-firestore.js` — it is gitignored and never committed.
 
+6. **Coord contract: `cities-generated.ts` ↔ `city-coords.ts` are regenerated together.** `scripts/generate-cities-data.mjs` is the single source of truth for both files. It reads from `scripts/city-coords-cache.json` (populated by the 3-phase resolver: kelvins CSV → OSM/Nominatim → Google Geocoding) and exits non-zero if any `targetCities` entry is still missing coords. Do NOT hand-edit `city-coords.ts`. Do NOT add a RAW_CITIES entry without its coords — the daily pipeline depends on this pair staying in sync for radius-fallback rendering during the 1–3 day GSC→scrape→rebuild race window.
+
+7. **`gsc-prepend-queue.js` resolves coords before queueing.** New cities discovered via GSC are geocoded via the same 3-phase chain, written to the cache, then `generate-cities-data.mjs` is re-invoked to rebuild the TS files. Coord misses are logged to `errors.jsonl` (severity: error) and the script exits non-zero — this is intentional. Never relax the exit code to make CI green; fix the coord gap instead.
+
+8. **Service pages and city pages share one plumber resolver.** Both `/emergency-plumbers/[state]/[city]` and `/[service]/[state]/[city]` call `resolvePlumbersForCity()` in `src/lib/firestore.ts`. Do not duplicate the fetch logic or drift the radius/threshold constants. If you need to add a third route that lists plumbers by city, extend the shared resolver.
+
 ## Recheck data pipeline integrity
 
 Verify periodically (weekly or after pipeline changes):
@@ -94,6 +100,9 @@ Verify periodically (weekly or after pipeline changes):
 - [ ] Confirm the 6-hour safety rebuild GitHub Action (`rebuild-json.yml`) is still scheduled and its last 5 runs succeeded
 - [ ] Confirm every Firestore-mutating workflow still ends with a rebuild step
 - [ ] Spot-check 3 random plumbers: BBB fields, Yelp rating, and deep review data all present in JSON
+- [ ] Confirm `RAW_CITIES` count in `cities-generated.ts` equals coord-key count in `city-coords.ts` (coord contract)
+- [ ] Scan `errors.jsonl` for recent `severity: error` entries from sources `gsc-prepend-queue`, `daily-scrape`, `export-firestore` — triage via the error-log UI (`preview_start error-log` → http://localhost:4330)
+- [ ] Check `/admin/activity` for recent `status: "error"` pipelineRuns
 
 ---
 

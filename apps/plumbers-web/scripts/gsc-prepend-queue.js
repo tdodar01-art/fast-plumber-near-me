@@ -15,6 +15,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -23,6 +24,12 @@ const path = require("path");
 const EXPANSION_QUEUE_PATH = path.join(__dirname, "..", "data", "gsc-expansion-queue.json");
 const SCRAPE_QUEUE_PATH = path.join(__dirname, "scrape-queue.json");
 const CITY_COORDS_PATH = path.join(__dirname, "..", "src", "lib", "city-coords.ts");
+const CITY_COORDS_CACHE_PATH = path.join(__dirname, "city-coords-cache.json");
+const US_CITIES_CSV_PATH = path.join(__dirname, "data", "us-cities.csv");
+const GENERATOR_SCRIPT = path.join(__dirname, "generate-cities-data.mjs");
+const LOG_ERROR_CLI =
+  process.env.CONTROL_CENTER_LOG_ERROR_CLI ||
+  path.resolve(__dirname, "..", "..", "..", "..", "..", "control-center", "scripts", "log-error.mjs");
 
 // ---------------------------------------------------------------------------
 // Load env
@@ -76,111 +83,181 @@ function slugify(text) {
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
 // ---------------------------------------------------------------------------
-// Geocoding
+// Error logging — append-only JSONL via control-center log-error.mjs.
+// Surfaced in the /admin error-log UI.
 // ---------------------------------------------------------------------------
 
-async function geocodeCity(city, state) {
-  if (!GOOGLE_API_KEY) {
-    console.log(`  Warning: No GOOGLE_PLACES_API_KEY — skipping geocode for ${city}, ${state}`);
-    return null;
+function logErrorCLI({ entity, severity = "error", message, context }) {
+  if (!fs.existsSync(LOG_ERROR_CLI)) {
+    console.error(`  [log-error] CLI not found at ${LOG_ERROR_CLI}`);
+    return;
   }
-
-  const address = `${city}, ${state}, USA`;
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`;
-
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (data.status === "REQUEST_DENIED") {
-      console.log(`  Warning: Geocoding API not enabled or key invalid — skipping coords`);
-      console.log(`  Enable at: https://console.cloud.google.com/apis/library/geocoding-backend.googleapis.com?project=fast-plumber-near-me`);
-      return null;
-    }
-
-    if (data.status !== "OK" || !data.results || data.results.length === 0) {
-      console.log(`  Warning: Geocoding returned ${data.status} for ${city}, ${state} — skipping coords`);
-      return null;
-    }
-
-    const loc = data.results[0].geometry.location;
-    return {
-      lat: parseFloat(loc.lat.toFixed(2)),
-      lng: parseFloat(loc.lng.toFixed(2)),
-    };
-  } catch (err) {
-    console.log(`  Warning: Geocoding failed for ${city}, ${state}: ${err.message}`);
-    return null;
+  const args = [
+    LOG_ERROR_CLI,
+    "--project", "plumber",
+    "--entity", entity,
+    "--severity", severity,
+    "--source", "gsc-prepend-queue",
+    "--message", message,
+  ];
+  if (context) {
+    args.push("--context", JSON.stringify(context));
+  }
+  const res = spawnSync("node", args, { encoding: "utf-8" });
+  if (res.status !== 0) {
+    console.error(`  [log-error] CLI exited ${res.status}: ${res.stderr || res.stdout}`);
   }
 }
 
 // ---------------------------------------------------------------------------
-// city-coords.ts manipulation
+// Coord resolution chain: cache → CSV (offline, ~30k US cities) → Nominatim
+// (OSM, free, 1 req/sec) → Google Geocoding (if API key works).
+// Writes every successful lookup to scripts/city-coords-cache.json so the
+// next run of generate-cities-data.mjs rebuilds city-coords.ts with the
+// new entry.
 // ---------------------------------------------------------------------------
 
-function addCoordsToFile(stateAbbr, citySlug, lat, lng) {
-  const content = fs.readFileSync(CITY_COORDS_PATH, "utf-8");
-  const key = `"${stateAbbr}:${citySlug}"`;
-
-  // Already exists?
-  if (content.includes(key)) {
-    console.log(`  Coords already exist for ${key} — skipping`);
-    return;
-  }
-
-  const entry = `${key}: [${lat}, ${lng}]`;
-  const stateName = STATE_COMMENTS[stateAbbr];
-  if (!stateName) {
-    console.log(`  Warning: Unknown state ${stateAbbr} — skipping coords`);
-    return;
-  }
-
-  // Find the state comment line
-  const stateComment = `  // ${stateName}`;
-  const lines = content.split("\n");
-  let stateLineIdx = -1;
-
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].trimEnd() === stateComment) {
-      stateLineIdx = i;
-      break;
+function parseCsvLine(line) {
+  const out = [];
+  let field = "", inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQuote) {
+      if (c === '"') inQuote = false;
+      else field += c;
+    } else {
+      if (c === '"') inQuote = true;
+      else if (c === ",") { out.push(field); field = ""; }
+      else field += c;
     }
   }
+  out.push(field);
+  return out;
+}
 
-  if (stateLineIdx === -1) {
-    console.log(`  Warning: Could not find "// ${stateName}" section in city-coords.ts — skipping`);
-    return;
-  }
-
-  // Find the last line of this state's entries (lines after comment that start with "  "STATE_ABBR:")
-  // State entries are on lines after the comment, before the next comment or closing brace
-  let insertLineIdx = stateLineIdx + 1;
-  const statePrefix = `"${stateAbbr}:`;
-
-  // Find all lines belonging to this state section
-  for (let i = stateLineIdx + 1; i < lines.length; i++) {
-    const trimmed = lines[i].trim();
-    if (trimmed.startsWith(statePrefix)) {
-      insertLineIdx = i + 1;
-    } else if (trimmed.startsWith("//") || trimmed === "}" || trimmed === "};") {
-      break;
+let _csvIndex = null;
+function csvLookup(state, slug) {
+  if (_csvIndex === null) {
+    _csvIndex = new Map();
+    if (fs.existsSync(US_CITIES_CSV_PATH)) {
+      const lines = fs.readFileSync(US_CITIES_CSV_PATH, "utf-8").split("\n");
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        const cols = parseCsvLine(line);
+        const st = cols[1];
+        const city = cols[3];
+        const lat = parseFloat(cols[5]);
+        const lng = parseFloat(cols[6]);
+        if (!st || !city || Number.isNaN(lat) || Number.isNaN(lng)) continue;
+        const key = `${st}:${slugify(city)}`;
+        if (!_csvIndex.has(key)) {
+          _csvIndex.set(key, [parseFloat(lat.toFixed(4)), parseFloat(lng.toFixed(4))]);
+        }
+      }
     }
   }
+  return _csvIndex.get(`${state}:${slug}`) || null;
+}
 
-  // Find the last entry on the last line of this state section to append after it
-  const lastStateLine = lines[insertLineIdx - 1];
+async function geocodeOsm(city, state) {
+  const q = `${city}, ${state}, USA`;
+  const url =
+    `https://nominatim.openstreetmap.org/search` +
+    `?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=us`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "fast-plumber-near-me/gsc-prepend-queue (contact: tim@fastplumbernearme.com)",
+      },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+    const lat = parseFloat(data[0].lat);
+    const lng = parseFloat(data[0].lon);
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+    return { lat: parseFloat(lat.toFixed(4)), lng: parseFloat(lng.toFixed(4)) };
+  } catch (err) {
+    console.log(`  [osm] fetch error: ${err.message}`);
+    return null;
+  }
+}
 
-  // Append to the end of the last line of this state's entries
-  if (lastStateLine.trim().endsWith(",")) {
-    // Line already ends with comma — add new entry with leading space
-    lines[insertLineIdx - 1] = lastStateLine + ` ${entry},`;
-  } else {
-    // Line doesn't end with comma (shouldn't happen, but handle it)
-    lines[insertLineIdx - 1] = lastStateLine + `, ${entry},`;
+async function geocodeGoogle(city, state) {
+  if (!GOOGLE_API_KEY) return null;
+  const address = `${city}, ${state}, USA`;
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.status === "REQUEST_DENIED" || data.status === "OVER_QUERY_LIMIT") {
+      console.log(`  [google] ${data.status} — Geocoding API not usable`);
+      return null;
+    }
+    if (data.status !== "OK" || !data.results || data.results.length === 0) return null;
+    const loc = data.results[0].geometry.location;
+    return { lat: parseFloat(loc.lat.toFixed(2)), lng: parseFloat(loc.lng.toFixed(2)) };
+  } catch (err) {
+    console.log(`  [google] fetch error: ${err.message}`);
+    return null;
+  }
+}
+
+// Public: resolve coords for a city using the whole fallback chain.
+async function resolveCoords(city, state, slug) {
+  // CSV — offline, instant
+  const csvHit = csvLookup(state, slug);
+  if (csvHit) return { lat: csvHit[0], lng: csvHit[1], source: "csv" };
+
+  // OSM — rate-limited
+  const osmHit = await geocodeOsm(city, state);
+  if (osmHit) {
+    await sleep(1100); // Nominatim policy: ≤1 req/sec
+    return { ...osmHit, source: "osm" };
   }
 
-  fs.writeFileSync(CITY_COORDS_PATH, lines.join("\n"));
-  console.log(`  Added coords: ${key}: [${lat}, ${lng}]`);
+  // Google — if the API is actually enabled on the project
+  const googHit = await geocodeGoogle(city, state);
+  if (googHit) return { ...googHit, source: "google" };
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Coord cache — single source of truth for city-coords.ts. This script only
+// appends to the cache; running generate-cities-data.mjs rebuilds the TS
+// file from the cache + RAW_CITIES. Keeping one write path prevents the
+// drift class of bugs where cities-generated.ts had pages but city-coords.ts
+// had no coord entry (radius fallback breaks → 0 plumbers).
+// ---------------------------------------------------------------------------
+
+function loadCoordsCache() {
+  if (!fs.existsSync(CITY_COORDS_CACHE_PATH)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(CITY_COORDS_CACHE_PATH, "utf-8"));
+  } catch (err) {
+    console.error(`  [cache] parse failed: ${err.message}`);
+    return {};
+  }
+}
+
+function saveCoordsCache(map) {
+  const sorted = {};
+  for (const key of Object.keys(map).sort()) sorted[key] = map[key];
+  fs.writeFileSync(CITY_COORDS_CACHE_PATH, JSON.stringify(sorted, null, 2) + "\n");
+}
+
+// Read existing city-coords.ts once so we can detect "already has coords"
+// without parsing the TS AST.
+function existingCoordKeys() {
+  if (!fs.existsSync(CITY_COORDS_PATH)) return new Set();
+  const text = fs.readFileSync(CITY_COORDS_PATH, "utf-8");
+  const set = new Set();
+  const re = /"([A-Z]{2}:[a-z0-9-]+)":\s*\[/g;
+  let m;
+  while ((m = re.exec(text)) !== null) set.add(m[1]);
+  return set;
 }
 
 // ---------------------------------------------------------------------------
@@ -217,8 +294,9 @@ async function main() {
     ...(scrapeQueue.completed || []).map((c) => `${c.city}|${c.state}`),
   ]);
 
-  // Read city-coords.ts content once to check existing entries
-  const coordsContent = fs.readFileSync(CITY_COORDS_PATH, "utf-8");
+  const knownCoordKeys = existingCoordKeys();
+  const coordsCache = loadCoordsCache();
+  const citiesMissingCoords = [];
 
   let added = 0;
   let skipped = 0;
@@ -228,6 +306,7 @@ async function main() {
   for (const city of newCities) {
     const key = `${city.city}|${city.state}`;
     const citySlug = slugify(city.city);
+    const coordKey = `${city.state}:${citySlug}`;
 
     if (existingSlugs.has(key)) {
       console.log(`  Skipping ${city.city}, ${city.state} — already in scrape queue`);
@@ -249,22 +328,32 @@ async function main() {
     });
     added++;
 
-    // Geocode and add coordinates
-    const coordKey = `"${city.state}:${citySlug}"`;
-    if (coordsContent.includes(coordKey)) {
-      console.log(`  Coords already exist for ${city.state}:${citySlug}`);
+    // Coord lookup: cache → CSV → OSM → Google. Any hit goes into the cache,
+    // and generate-cities-data.mjs will pick it up at end-of-run.
+    if (knownCoordKeys.has(coordKey) || coordsCache[coordKey]) {
+      console.log(`    coords present: ${coordKey}`);
+      continue;
+    }
+
+    const resolved = await resolveCoords(city.city, city.state, citySlug);
+    if (resolved) {
+      coordsCache[coordKey] = [resolved.lat, resolved.lng];
+      console.log(`    coords resolved (${resolved.source}): ${coordKey} = [${resolved.lat}, ${resolved.lng}]`);
+      geocoded++;
     } else {
-      await sleep(200); // rate limit
-      const coords = await geocodeCity(city.city, city.state);
-      if (coords) {
-        addCoordsToFile(city.state, citySlug, coords.lat, coords.lng);
-        geocoded++;
-      } else {
-        geocodeFailed++;
-        console.error(`  ⚠️  MISSING COORDS: ${city.state}:${citySlug} — city page will show 0 plumbers until coords are added to city-coords.ts or city is scraped directly`);
-      }
+      geocodeFailed++;
+      citiesMissingCoords.push({ state: city.state, slug: citySlug, city: city.city });
+      console.error(`    ⚠️  COORDS UNRESOLVED: ${coordKey}`);
+      logErrorCLI({
+        entity: "coord-resolution",
+        message: `Unable to resolve coords for ${city.city}, ${city.state} via CSV/OSM/Google — city page will show 0 plumbers until resolved`,
+        context: { city: city.city, state: city.state, slug: citySlug, impressions: city.impressions },
+      });
     }
   }
+
+  // Persist cache additions so the next generator run regenerates city-coords.ts
+  saveCoordsCache(coordsCache);
 
   // Re-sort the entire pending queue by impressions (from GSC expansion data).
   // Cities with GSC impression data get sorted highest-first; cities without
@@ -291,23 +380,56 @@ async function main() {
   // Save scrape queue
   fs.writeFileSync(SCRAPE_QUEUE_PATH, JSON.stringify(scrapeQueue, null, 2));
 
+  // If we resolved any new coords, regen city-coords.ts from the cache so
+  // the two TS outputs stay in sync. The generator is idempotent and fast
+  // when the cache already has everything it needs (no network calls).
+  if (geocoded > 0) {
+    console.log(`\nRegenerating city-coords.ts from cache...`);
+    const genRes = spawnSync("node", [GENERATOR_SCRIPT], { stdio: "inherit" });
+    if (genRes.status !== 0) {
+      logErrorCLI({
+        entity: "coord-resolution",
+        message: `generate-cities-data.mjs exited ${genRes.status} after coord-cache update — city-coords.ts may be stale`,
+        context: { exitCode: genRes.status },
+      });
+    }
+  }
+
   console.log(`\n=== Summary ===`);
   console.log(`  Added to scrape queue: ${added}`);
   console.log(`  Skipped (already in queue): ${skipped}`);
-  console.log(`  Geocoded + coords added: ${geocoded}`);
-  if (geocodeFailed > 0) {
-    console.error(`  ⚠️  Geocode FAILED for ${geocodeFailed} cities — these need manual coords in city-coords.ts`);
-    console.error(`  ⚠️  Without coords, city pages show 0 plumbers (radius fallback cannot run)`);
-  }
+  console.log(`  Coords resolved: ${geocoded}`);
   console.log(`  Queue re-sorted by GSC impressions (highest first)`);
   console.log(`  Total queue size: ${scrapeQueue.queue.length}`);
 
   if (added > 0) {
     console.log(`\nNext step: run 'node scripts/daily-scrape.js' to scrape these cities`);
   }
+
+  // Hard contract: fail non-zero if any newly-queued city is missing coords.
+  // Previous behavior (exit 0 with a warning) let this class of bug slip into
+  // production — city pages then rendered 0 plumbers for days.
+  if (citiesMissingCoords.length > 0) {
+    console.error(`\n⚠️  ${citiesMissingCoords.length} cities added to scrape queue without coords:`);
+    for (const c of citiesMissingCoords) {
+      console.error(`  - ${c.state}:${c.slug} (${c.city})`);
+    }
+    console.error(`Without coords the 20-mi radius fallback cannot run, so these city pages will show 0 plumbers until resolved.`);
+    logErrorCLI({
+      entity: "coord-resolution",
+      message: `gsc-prepend-queue added ${citiesMissingCoords.length} cities without coords — pipeline exit non-zero`,
+      context: { missing: citiesMissingCoords },
+    });
+    process.exit(1);
+  }
 }
 
 main().catch((err) => {
   console.error("Error:", err.message);
+  logErrorCLI({
+    entity: "gsc-prepend-queue",
+    message: `Unhandled error in gsc-prepend-queue: ${err.message}`,
+    context: { stack: err.stack },
+  });
   process.exit(1);
 });

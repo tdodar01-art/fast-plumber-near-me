@@ -7,6 +7,8 @@ import CallToAction from "@/components/CallToAction";
 import { getAllCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
 import { getPlumbersNearCity, getAllPlumbers, type SynthesizedPlumber } from "@/lib/plumber-data";
+import { resolvePlumbersForCity } from "@/lib/firestore";
+import { getCityCoordBySlug } from "@/lib/city-coords";
 import { calculateQualityScore } from "@/lib/scoring";
 import { getDistanceWeight } from "@/lib/geo";
 import {
@@ -60,7 +62,8 @@ export async function generateMetadata({
   if (!config || !city) return {};
 
   const year = new Date().getFullYear();
-  const { totalCount } = getTieredPlumbers(city.state, citySlug, config);
+  const plumbers = await resolveServiceCityPlumbers(city.state, citySlug);
+  const { totalCount } = getTieredPlumbers(plumbers, config);
 
   const title = `${config.displayName} in ${city.name}, ${city.state} — Top Rated (${year})`;
   const description = `Compare ${totalCount} ${config.displayName.toLowerCase()} pros in ${city.name}, ${city.state} rated on quality, pricing, and responsiveness from real Google reviews. See who to call.`;
@@ -70,6 +73,27 @@ export async function generateMetadata({
     description,
     openGraph: { title, description },
   };
+}
+
+// ---------------------------------------------------------------------------
+// Plumber resolution (shared across metadata + page body)
+// ---------------------------------------------------------------------------
+
+// Mirror /emergency-plumbers/[state]/[city]: prefer Firestore (live data +
+// 20-mi radius sweep), fall back to the static synthesized JSON. Previously
+// the service page only read the static JSON, so pages without static-JSON
+// coverage rendered 0 plumbers even when Firestore had active listings.
+async function resolveServiceCityPlumbers(
+  state: string,
+  citySlug: string,
+): Promise<PlumberWithDist[]> {
+  const coord = getCityCoordBySlug(state, citySlug);
+  const fromFirestore = await resolvePlumbersForCity(state, citySlug, coord);
+  if (fromFirestore.length > 0) return fromFirestore as PlumberWithDist[];
+  // Fallback: static JSON + 20-mi radius. Required when Firestore is
+  // unconfigured (local dev, Vercel previews without service account) or
+  // when a brand-new deploy hasn't hit Firestore yet.
+  return getPlumbersNearCity(state, citySlug) as PlumberWithDist[];
 }
 
 // ---------------------------------------------------------------------------
@@ -100,12 +124,10 @@ interface TieredResult {
 }
 
 function getTieredPlumbers(
-  stateAbbr: string,
-  citySlug: string,
+  nearbyPlumbers: PlumberWithDist[],
   config: PageConfig,
 ): TieredResult {
   const allSynthesized: SynthesizedPlumber[] = getAllPlumbers();
-  const nearbyPlumbers = getPlumbersNearCity(stateAbbr, citySlug);
   const specialtyKey = getSpecialtyKeyFromConfig(config);
 
   const tier1: TieredPlumber[] = [];
@@ -194,7 +216,8 @@ export default async function ServiceCityPage({
   const stateInfo = getStateBySlug(stateSlug);
   if (!config || !city || !stateInfo) notFound();
 
-  const tiered = getTieredPlumbers(city.state, citySlug, config);
+  const plumbers = await resolveServiceCityPlumbers(city.state, citySlug);
+  const tiered = getTieredPlumbers(plumbers, config);
   const year = new Date().getFullYear();
 
   const hasAnyPlumbers = tiered.totalCount > 0;

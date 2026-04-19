@@ -57,6 +57,74 @@ export async function getAllPlumbers(): Promise<Plumber[]> {
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Plumber);
 }
 
+/**
+ * Resolve plumbers for a city page from Firestore: serviceCities direct
+ * matches + a 20-mile radius sweep. Both the /emergency-plumbers/[state]/[city]
+ * page and the /[service]/[state]/[city] page call this so they render from
+ * the same source.
+ *
+ * Returns [] if Firestore is unconfigured, empty, or throws — callers should
+ * fall back to getPlumbersNearCity() (static synthesized JSON) in that case.
+ *
+ * NOTE: must receive a cityCoord; without one we can't run the radius sweep.
+ * The coord contract is enforced upstream in scripts/generate-cities-data.mjs
+ * and scripts/gsc-prepend-queue.js.
+ */
+const RADIUS_MILES = 20;
+function haversineMiles(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 3958.8;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+export async function resolvePlumbersForCity(
+  state: string,
+  citySlug: string,
+  cityCoord: [number, number] | null,
+): Promise<(Plumber & { distanceMiles?: number })[]> {
+  if (!isConfigured || !db) return [];
+  let plumbers: (Plumber & { distanceMiles?: number })[] = [];
+  const firestoreCitySlug = `${citySlug}-${state.toLowerCase()}`;
+
+  try {
+    const directMatch = await getPlumbersByCity(firestoreCitySlug);
+    const matched =
+      directMatch.length > 0 ? directMatch : await getPlumbersByCity(citySlug);
+    plumbers = matched.map((p) => ({ ...p }));
+
+    if (cityCoord) {
+      const [cityLat, cityLng] = cityCoord;
+      const statePlumbers = await getActivePlumbersByState(state);
+      const existingIds = new Set(plumbers.map((p) => p.id));
+      for (const p of statePlumbers) {
+        if (existingIds.has(p.id)) continue;
+        if (!p.address?.lat || !p.address?.lng) continue;
+        const dist = haversineMiles(cityLat, cityLng, p.address.lat, p.address.lng);
+        if (dist <= RADIUS_MILES) {
+          plumbers.push({ ...p, distanceMiles: dist });
+          existingIds.add(p.id);
+        }
+      }
+      for (const p of plumbers) {
+        if (p.distanceMiles == null && p.address?.lat && p.address?.lng) {
+          p.distanceMiles = haversineMiles(cityLat, cityLng, p.address.lat, p.address.lng);
+        }
+      }
+      plumbers = plumbers.filter(
+        (p) => p.distanceMiles == null || p.distanceMiles <= RADIUS_MILES,
+      );
+    }
+  } catch {
+    return [];
+  }
+  return plumbers;
+}
+
 // --- City helpers ---
 
 export async function getCityBySlug(slug: string): Promise<City | null> {

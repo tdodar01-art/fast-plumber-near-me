@@ -476,9 +476,14 @@ Two GitHub Actions workflows run daily with zero manual intervention:
 ```
 GSC API → gsc-expansion.js → find cities with impressions, set gscTier
     ↓
-gsc-prepend-queue.js → geocode, prepend to scrape queue
+gsc-prepend-queue.js → resolve coords (CSV → OSM → Google), update
+                       city-coords-cache.json, re-invoke generate-cities-data.mjs
+                       to rebuild cities-generated.ts + city-coords.ts from cache
+                       (exits non-zero if any city still missing coords — fail loud)
     ↓
-daily-scrape.js → Google Places API → Claude Sonnet synthesis
+daily-scrape.js → Google Places textSearch → if city < THIN_THRESHOLD (5),
+                  retry with "24 hour plumber" + "plumbing services" query
+                  variants (dedup within city) → Claude Sonnet synthesis
     ↓
 upload-to-firestore.js → upsert plumber docs
     ↓
@@ -486,10 +491,21 @@ refresh-reviews.ts → fetch new Google reviews for existing plumbers (30-day ca
     ↓
 synthesize-reviews.ts → Claude Haiku synthesis on plumbers with new reviews
     ↓
+export-firestore-to-json.js → merge enrichment into static JSON (JSON invariant
+                              in CLAUDE.md: this is the ONLY writer)
+    ↓
 git commit + push → Vercel rebuild
     ↓
 request-indexing.js → sitemap + URL indexing for scraped cities
 ```
+
+**Race window:** A city typically takes 1–3 days from GSC discovery → rendered plumbers on the live site. In the meantime, the page still renders via the 20-mile radius fallback in `resolvePlumbersForCity()` (Firestore) or `getPlumbersNearCity()` (static JSON), both keyed off `city-coords.ts`. Coord-missing cities are the urgent class — `gsc-prepend-queue.js` exits non-zero and logs to `errors.jsonl` if any new city can't be resolved.
+
+**Coord contract:** Every entry in `RAW_CITIES` in `cities-generated.ts` MUST have a matching coord in `city-coords.ts`. Both files are regenerated from `scripts/city-coords-cache.json` by `generate-cities-data.mjs`. Never hand-edit `city-coords.ts`. The cache is populated by the 3-phase resolver: (1) kelvins US-Cities CSV at `scripts/data/us-cities.csv` (offline, 30k cities), (2) Nominatim/OSM (free, 1.1s rate limit), (3) Google Geocoding (requires Geocoding API enablement separate from Places).
+
+**Unified Firestore plumber fetch:** Both `/emergency-plumbers/[state]/[city]` and `/[service]/[state]/[city]` call `resolvePlumbersForCity(state, citySlug, cityCoord)` from `lib/firestore.ts`, which checks direct `serviceCities` matches first, then sweeps a 20-mile haversine radius. Falls back to static JSON if Firestore is unconfigured or throws.
+
+**Thin-cities retry:** `daily-scrape.js` compares `cityNew + cityDeduped` against `THIN_THRESHOLD = 5`. Below threshold, it re-runs the textSearch with broader query templates (`"24 hour plumber"`, `"plumbing services"`) before giving up. Cities still below threshold after retries log a `severity: warn` entry to `errors.jsonl` — useful signal for underserved markets vs coverage bugs.
 
 ### Deep Review Pull (7:00 AM Central — `deep-review-pull.yml`)
 ```
