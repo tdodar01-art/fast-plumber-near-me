@@ -593,4 +593,4 @@ Google Search Console integration is live and running:
 
 *Last updated: April 6, 2026*
 *Owner: Tim Dodaro*
-*Contact: fastplumbernearme@gmail.com*
+*Contact: info@fastplumbernearme.com*

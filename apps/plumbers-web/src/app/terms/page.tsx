@@ -90,8 +90,8 @@ export default function TermsPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-3">8. Contact</h2>
           <p>
             Questions about these terms? Contact us at{" "}
-            <a href="mailto:fastplumbernearme@gmail.com" className="text-primary">
-              fastplumbernearme@gmail.com
+            <a href="mailto:info@fastplumbernearme.com" className="text-primary">
+              info@fastplumbernearme.com
             </a>
             .
           </p>

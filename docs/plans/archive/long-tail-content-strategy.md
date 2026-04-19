@@ -771,7 +771,7 @@ Track C (City Pages):
 **Risk:** Outreach emails land in spam or get ignored.
 
 **Mitigations:**
-- Use a dedicated sending domain (awards@fastplumbernearme.com) with proper SPF/DKIM/DMARC
+- Use a dedicated sending domain (info@fastplumbernearme.com) with proper SPF/DKIM/DMARC
 - Personalize: include plumber name, city, specific ranking data
 - Keep volume low (10/day) to maintain sender reputation
 - Provide value (badge + ranking) before asking for anything (backlink)

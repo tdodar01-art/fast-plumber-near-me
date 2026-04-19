@@ -89,8 +89,8 @@ export default function PrivacyPolicyPage() {
           </p>
           <p>
             <strong>Email:</strong>{" "}
-            <a href="mailto:fastplumbernearme@gmail.com" className="text-primary">
-              fastplumbernearme@gmail.com
+            <a href="mailto:info@fastplumbernearme.com" className="text-primary">
+              info@fastplumbernearme.com
             </a>
             <br />
             <strong>Address:</strong> 135 Erick St Unit F, Crystal Lake, IL 60014

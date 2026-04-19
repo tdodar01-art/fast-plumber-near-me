@@ -200,8 +200,8 @@ export default function HowWeVerifyPage() {
           </p>
           <p className="text-sm text-blue-300">
             Questions about our verification process? Email us at{" "}
-            <a href="mailto:fastplumbernearme@gmail.com" className="text-white underline">
-              fastplumbernearme@gmail.com
+            <a href="mailto:info@fastplumbernearme.com" className="text-white underline">
+              info@fastplumbernearme.com
             </a>
           </p>
         </div>

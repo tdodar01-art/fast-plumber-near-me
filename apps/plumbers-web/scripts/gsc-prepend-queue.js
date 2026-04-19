@@ -168,7 +168,7 @@ async function geocodeOsm(city, state) {
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "fast-plumber-near-me/gsc-prepend-queue (contact: tim@fastplumbernearme.com)",
+        "User-Agent": "fast-plumber-near-me/gsc-prepend-queue (contact: info@fastplumbernearme.com)",
       },
     });
     if (!res.ok) return null;

@@ -1276,7 +1276,7 @@ async function geocodeOsm(name, state) {
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "fast-plumber-near-me/coord-backfill (contact: tim@fastplumbernearme.com)",
+        "User-Agent": "fast-plumber-near-me/coord-backfill (contact: info@fastplumbernearme.com)",
       },
     });
     if (!res.ok) return { ok: false, reason: `http-${res.status}` };
