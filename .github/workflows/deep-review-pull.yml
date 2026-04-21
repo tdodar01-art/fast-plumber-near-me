@@ -56,6 +56,7 @@ jobs:
         if: steps.secrets.outputs.configured == 'true'
         id: cities
         run: |
+          echo "=== STAGE: FIND CITIES START ==="
           CITY_SLUGS=$(node scripts/find-deep-review-cities.js 2>&1)
           EXIT_CODE=$?
 
@@ -76,6 +77,7 @@ jobs:
         if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
         continue-on-error: true
         run: |
+          echo "=== STAGE: BBB LOOKUP START ==="
           for SLUG in ${{ steps.cities.outputs.slugs }}; do
             echo "BBB lookup for: $SLUG"
             node scripts/bbb-lookup.js "$SLUG" || true
@@ -90,6 +92,7 @@ jobs:
           OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          echo "=== STAGE: OUTSCRAPER CITY 1 START ==="
           SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $1}')
           if [ -n "$SLUG" ]; then
             echo "Processing city 1: $SLUG"
@@ -103,6 +106,7 @@ jobs:
           OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          echo "=== STAGE: OUTSCRAPER CITY 2 START ==="
           SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $2}')
           if [ -n "$SLUG" ]; then
             echo "Processing city 2: $SLUG"
@@ -116,20 +120,21 @@ jobs:
           OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          echo "=== STAGE: OUTSCRAPER CITY 3 START ==="
           SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $3}')
           if [ -n "$SLUG" ]; then
             echo "Processing city 3: $SLUG"
             node scripts/outscraper-reviews.js "$SLUG" --skip-synthesis
           fi
 
-      # Score + synthesize plumbers after deep review pull — Outscraper provides
-      # rich review data. Unified pipeline: scoring + synthesis in one Sonnet pass.
-      - name: Score and synthesize plumbers
-        if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
-        continue-on-error: true
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: npx tsx scripts/score-plumbers.ts --pass all
+      # ---------------------------------------------------------------------
+      # PUBLISH GATE — export/commit/indexing run BEFORE scoring.
+      # Phase 1 guarantee: the site MUST update daily even if scoring stalls.
+      # score-plumbers.ts was moved below this block; rebuild-json.yml picks
+      # up any scoring-only writes every 6 hours.
+      # Do NOT reorder these steps above scoring without reading
+      # docs/pipeline-audit-2026-04-20.md and CLAUDE.md first.
+      # ---------------------------------------------------------------------
 
       # Export Firestore enrichment to static JSON → commit → push → Vercel rebuild
       - name: Git setup and pull
@@ -141,11 +146,12 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git pull --rebase || true
 
+      # MUST RUN — no continue-on-error. Publishing must never silently fail.
       - name: Export Firestore to static JSON
         if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
-        continue-on-error: true
         id: export
         run: |
+          echo "=== STAGE: EXPORT START ==="
           node scripts/export-firestore-to-json.js | tee /tmp/export-output.txt
 
           # Parse affected cities for indexing step
@@ -159,6 +165,7 @@ jobs:
         env:
           GSC_SITE_URL: https://www.fastplumbernearme.com/
         run: |
+          echo "=== STAGE: INDEXING START ==="
           npm install googleapis 2>/dev/null
 
           URLS=$(node -e "
@@ -182,6 +189,21 @@ jobs:
             echo "Requesting indexing for: $URLS"
             node scripts/request-indexing.js $URLS
           fi
+
+      # ---------------------------------------------------------------------
+      # SCORING (best-effort, may cancel) — runs AFTER publishing.
+      # Outscraper provides the rich review data. Scoring writes scores/decision
+      # fields to Firestore; next rebuild-json.yml exports them into JSON.
+      # ---------------------------------------------------------------------
+      - name: Score and synthesize plumbers
+        if: steps.secrets.outputs.configured == 'true' && steps.cities.outputs.slugs != ''
+        continue-on-error: true
+        timeout-minutes: 30
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "=== STAGE: SCORING START ==="
+          npx tsx scripts/score-plumbers.ts --pass all
 
       - name: Cleanup service account
         if: always()

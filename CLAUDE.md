@@ -71,6 +71,19 @@ See ROADMAP.md → "Automated Pipeline Architecture" for the full flow and tier 
 - **Yelp coverage gap:** Outscraper returns 0 reviews for businesses with <20 Yelp reviews. Needs an alternative scraping path.
 - **SEO is a grind.** Emergency plumbing is one of the most competitive local SEO verticals — our edge must be speed, UX, trust signals (we show weaknesses, not just stars), and honest review synthesis.
 
+## Publishing vs. scoring (Phase 1 stabilization, 2026-04-20)
+
+**`score-plumbers.ts` MUST NEVER block publishing.** In both `daily-scrape.yml`
+and `deep-review-pull.yml`, the order is fixed: export → commit → request
+indexing → **then** score. If you modify either workflow, ensure export
+runs before scoring. `score-plumbers.ts` has a 30-minute per-step timeout and
+`continue-on-error: true`; it is allowed to cancel. The export step is not
+`continue-on-error` — if publishing fails, the workflow fails visibly.
+
+Scoring is best-effort and asynchronous. Any scoring-only Firestore writes
+that happen after the daily commit are exported to JSON by the next
+`rebuild-json.yml` run (every 6 hours).
+
 ## Data pipeline invariants
 
 These rules are non-negotiable. If you feel the urge to violate them, the architecture is being misused.

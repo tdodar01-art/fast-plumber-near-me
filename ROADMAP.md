@@ -1,5 +1,7 @@
 # Fast Plumber Near Me — ROADMAP
 
+> **Next step:** Phase 2 (score-plumbers optimization) — run after validating Phase 1 publishing stability. See `queue/today.md`.
+
 ## Vision
 
 An emergency plumber directory at fastplumbernearme.com that connects people with plumbers who actually pick up and show up. We synthesize real Google review data and display each plumber's strengths and weaknesses honestly — no fake badges, no pay-to-play rankings. When someone has a burst pipe at 2am, we help them find a plumber they can trust, fast.
@@ -87,15 +89,15 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - Firestore security rules (firestore.rules)
 
 **Data Pipeline:**
-- `scripts/daily-scrape.js` — scrapes new cities, synthesizes with Claude Sonnet, commits JSON to git
+- `scripts/daily-scrape.js` — scrapes new cities from `scrape-queue.json` via Google Places; writes staging JSON under `data/raw/`. Synthesis is no longer performed here — `score-plumbers.ts` owns synthesis via the unified Sonnet pass.
 - `scripts/upload-to-firestore.js` — uploads synthesized JSON to Firestore plumbers collection (firebase-admin SDK)
 - `scripts/refresh-reviews.ts` — review accumulation, closure detection, auto-flagging, reliability scoring (firebase-admin SDK)
-- `scripts/synthesize-reviews.ts` — Claude AI (Haiku) synthesis with keyword fallback for <3 reviews (firebase-admin SDK)
+- `scripts/synthesize-reviews.ts` — **deprecated**; superseded by `score-plumbers.ts` which produces both scores and display synthesis in one Sonnet pass. Not called by any workflow.
 - `scripts/outscraper-reviews.js` — multi-source deep review pull (Google + Yelp + Angi) via Outscraper API with async polling, Claude multi-source synthesis with cross-platform discrepancy detection
 - `scripts/bbb-lookup.js` — Better Business Bureau data: searches BBB API + scrapes profile pages for accreditation, rating, complaints, years in business; fuzzy name matching with bigram Jaccard
 - `scripts/export-firestore-to-json.js` — exports Firestore enrichment (synthesis, BBB, Yelp/Angi ratings) back to static JSON, commits + pushes to trigger Vercel rebuild
 - `scripts/request-indexing.js` — submits sitemap + URL indexing requests via Google Indexing API, 200/day quota guard, logs to Firestore `indexingRequests` collection
-- GitHub Actions daily pipeline fully operational — 5 phases: GSC expansion → scrape → Firestore upload → review refresh → AI synthesis → commit/push → re-index
+- GitHub Actions daily pipeline: GSC expansion → GSC prepend → scrape → Firestore upload → review refresh → **export JSON → commit/push → request indexing → score** (scoring runs LAST, after publishing is committed, so timeouts in scoring never block the site update)
 - GitHub Actions deep review pull — daily at 7 AM Central: GSC tier filtering → BBB lookup → Outscraper multi-source reviews → Claude synthesis → export JSON → Vercel rebuild → re-index ALL serviceCities
 - All scripts use firebase-admin SDK with service-account.json (bypasses Firestore security rules)
 - 392 plumbers scraped across 37 cities (IL + Aberdeen MD, Worcester MA, Abilene TX, San Leandro CA, Stow OH, Edmond OK, Huntsville AL, Nashville TN, Acworth GA, Alameda CA, Bethesda MD, Yukon OK, Aiken SC, Ardmore OK)
@@ -118,7 +120,7 @@ Directories die when they monetize too early (no traffic) or too late (no revenu
 - `daily-scrape.js` auto-updates Firestore `cities` collection after each successful scrape (non-blocking)
 - Firestore `cities` collection: 2257 docs total, 37 scraped, single source of truth for city tracking
 - First GSC-driven scrape completed: Ardmore, OK (found via impressions, scraped, live)
-- **GitHub Actions automated:** daily workflow runs GSC expansion → prepend → scrape → upload → refresh → synthesize → commit (all GSC steps continue-on-error so normal scrape is never blocked)
+- **GitHub Actions automated:** daily workflow runs GSC expansion → prepend → scrape → upload → refresh → **export → commit → indexing → score** (publishing runs BEFORE scoring; GSC and scoring steps are continue-on-error so they can never block the daily site update)
 
 **Review Synthesis:**
 - Claude AI (Haiku) multi-source synthesis engine: processes Google + Yelp + Angi reviews together with BBB data
@@ -472,6 +474,28 @@ Cron Job (scheduled) → Twilio Outbound Call → Plumber's Phone
 
 Two GitHub Actions workflows run daily with zero manual intervention:
 
+## Pipeline Execution Model (Updated)
+
+As of the 2026-04-20 Phase 1 stabilization:
+
+- **Firestore is source of truth.** All ingestion, enrichment, and scoring
+  write to Firestore first.
+- **JSON is a derived artifact.** `plumbers-synthesized.json` +
+  `leaderboard.json` exist solely to render the website at build time.
+  `export-firestore-to-json.js` is the sole writer.
+- **Publishing is guaranteed daily.** Export → commit → request indexing run
+  BEFORE scoring in every workflow. The export step is not
+  `continue-on-error` — if publishing fails, the workflow fails visibly.
+- **Scoring is best-effort and asynchronous.** `score-plumbers.ts --pass all`
+  runs LAST in both workflows with a 30-min per-step timeout and
+  `continue-on-error: true`. If scoring cancels, today's publish is already
+  in git; the next `rebuild-json.yml` run (every 6 hours) picks up any
+  scoring-only Firestore writes.
+- **Publishing (Firestore → JSON → site) occurs BEFORE scoring.** Scoring is
+  eventually consistent and may lag behind publishing by up to one cycle.
+
+Publishing must NEVER silently fail. Scoring must NEVER block publishing.
+
 ### Daily Scrape (6:00 AM Central — `daily-scrape.yml`)
 ```
 GSC API → gsc-expansion.js → find cities with impressions, set gscTier
@@ -483,21 +507,32 @@ gsc-prepend-queue.js → resolve coords (CSV → OSM → Google), update
     ↓
 daily-scrape.js → Google Places textSearch → if city < THIN_THRESHOLD (5),
                   retry with "24 hour plumber" + "plumbing services" query
-                  variants (dedup within city) → Claude Sonnet synthesis
+                  variants (dedup within city)
     ↓
 upload-to-firestore.js → upsert plumber docs
     ↓
 refresh-reviews.ts → fetch new Google reviews for existing plumbers (30-day cadence)
     ↓
-synthesize-reviews.ts → Claude Haiku synthesis on plumbers with new reviews
-    ↓
 export-firestore-to-json.js → merge enrichment into static JSON (JSON invariant
-                              in CLAUDE.md: this is the ONLY writer)
+                              in CLAUDE.md: this is the ONLY writer) [MUST RUN]
+    ↓
+generate-city-coverage.js → rebuild sitemap coverage map
     ↓
 git commit + push → Vercel rebuild
     ↓
 request-indexing.js → sitemap + URL indexing for scraped cities
+    ↓
+score-plumbers.ts --pass all → Sonnet scoring + synthesis (best-effort, 30-min
+                               step timeout; writes to Firestore; next
+                               rebuild-json.yml run exports those scores
+                               into JSON)
 ```
+
+**Publishing order guarantee (Phase 1 stabilization, 2026-04-20):** export →
+commit → indexing run BEFORE `score-plumbers.ts`. If scoring cancels at its
+per-step timeout, today's publish is already committed. The 6-hour
+`rebuild-json.yml` safety net exports any scoring-only Firestore writes into
+JSON in the following cycle. Do NOT reorder scoring above publishing.
 
 **Race window:** A city typically takes 1–3 days from GSC discovery → rendered plumbers on the live site. In the meantime, the page still renders via the 20-mile radius fallback in `resolvePlumbersForCity()` (Firestore) or `getPlumbersNearCity()` (static JSON), both keyed off `city-coords.ts`. Coord-missing cities are the urgent class — `gsc-prepend-queue.js` exits non-zero and logs to `errors.jsonl` if any new city can't be resolved.
 

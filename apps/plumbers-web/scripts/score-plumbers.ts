@@ -1220,10 +1220,32 @@ async function main(): Promise<void> {
     console.log("DRY RUN — no API calls or Firestore writes\n");
   }
   const db = initFirebase();
+  const startedAt = new Date();
 
   if (args.pass === "1" || args.pass === "all") await runPass1(db, args);
   if (args.pass === "2" || args.pass === "all") await runPass2(db, args);
   if (args.pass === "3" || args.pass === "all") await runPass3(db, args);
+
+  // Phase 1 stabilization: log a pipelineRuns entry so publish vs score
+  // behavior can be separated in Firestore. Wrapped in try/catch so this
+  // logging hook can never affect scoring outcomes.
+  if (!args.dryRun) {
+    try {
+      const durationSeconds = Math.round((Date.now() - startedAt.getTime()) / 1000);
+      await db.collection("pipelineRuns").add({
+        script: "score-plumbers",
+        phase: "score",
+        startedAt: admin.firestore.Timestamp.fromDate(startedAt),
+        completedAt: admin.firestore.Timestamp.now(),
+        durationSeconds,
+        status: "success",
+        summary: { pass: args.pass },
+        triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+      });
+    } catch (e) {
+      console.error("Failed to log pipelineRun for score-plumbers:", (e as Error).message);
+    }
+  }
 }
 
 main().catch((err) => {

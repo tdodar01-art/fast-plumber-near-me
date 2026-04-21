@@ -271,6 +271,7 @@ async function main() {
       const durationSeconds = Math.round((Date.now() - startedAt.getTime()) / 1000);
       await db.collection("pipelineRuns").add({
         script: "export-json",
+        phase: "publish",
         startedAt: admin.firestore.Timestamp.fromDate(startedAt),
         completedAt: admin.firestore.Timestamp.now(),
         durationSeconds,
