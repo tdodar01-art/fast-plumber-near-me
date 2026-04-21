@@ -94,6 +94,15 @@ export type Scores = DimensionScores & {
   variance: number;
   review_count_used: number;
   last_scored_at: string;
+  /**
+   * How the plumber was processed:
+   * - "sonnet": full Claude Sonnet extraction + synthesis (the normal path)
+   * - "keyword_fallback": 1–2 reviews, keyword-only synthesis, no dimension scores
+   * - "no_reviews": 0 reviews cached, nothing to synthesize
+   *
+   * Present from 2026-04-21 onward. Older records will not have this field.
+   */
+  method?: "sonnet" | "keyword_fallback" | "no_reviews";
 };
 
 export type CityRankEntry = {

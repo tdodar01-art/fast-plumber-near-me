@@ -70,10 +70,22 @@ const WEIGHT_MID = 0.5; // 12 months < age <= 24 months
 const WEIGHT_OLD = 0.25; // age > 24 months
 
 const CLAUDE_MODEL = "claude-sonnet-4-6";
-const REVIEWS_PER_BATCH = 15;
-const RATE_LIMIT_MS = 2000;
+// Batch sizing tuned 2026-04-21. Was 15; Sonnet handles 30 reviews per call
+// comfortably inside 4096 output tokens. Roughly halves call count on the
+// 327-plumber 200+ review bucket.
+const REVIEWS_PER_BATCH = 30;
+// Rate-limit sleep between Claude calls. Was 2000ms. Dropped to 500ms —
+// 2s was a safety-mode default, not an optimum. If we hit 429s in practice,
+// callClaude's existing retry-after backoff handles it.
+const RATE_LIMIT_MS = 500;
 const MAX_RETRIES = 3;
 const CLAUDE_MAX_TOKENS = 4096;
+
+// Cap reviews processed per plumber. The synthesis recency weighting already
+// discounts >24mo reviews to 0.25×, so extracting from older reviews is
+// low-ROI. Sort by publishedAt desc, take top N. Collapses the 200+ bucket
+// from 14+ batches to 3–5 at REVIEWS_PER_BATCH=30.
+const REVIEW_CAP = 75;
 
 const SKIP_IF_SCORED_WITHIN_MS = 30 * 24 * 60 * 60 * 1000;
 const MIN_REVIEWS_TO_SCORE = 3;
@@ -788,6 +800,7 @@ function keywordFallback(reviews: ReviewInput[]): SynthesisResult {
 async function loadPlumbers(
   db: admin.firestore.Firestore,
   args: CliArgs,
+  opts: { ordered?: boolean } = {},
 ): Promise<Array<admin.firestore.QueryDocumentSnapshot>> {
   if (args.plumber) {
     const doc = await db.collection("plumbers").doc(args.plumber).get();
@@ -806,6 +819,24 @@ async function loadPlumbers(
       effectiveServiceCities(d.data()).includes(args.city!),
     );
   }
+
+  // Ordered iteration (Pass 1 only): drain stale/unscored plumbers first
+  // so a timeout-bounded run makes monotonic progress, instead of always
+  // restarting from the top of doc-ID sort. Unscored go first (most urgent),
+  // then scored in ascending last_scored_at order (oldest score = most stale).
+  // 712-doc collection → client-side sort is cheap and avoids the Firestore
+  // "field missing" query limitation that would require a two-query dance.
+  if (opts.ordered) {
+    docs = docs.slice().sort((a, b) => {
+      const aTs: string | undefined = a.data().scores?.last_scored_at;
+      const bTs: string | undefined = b.data().scores?.last_scored_at;
+      if (!aTs && !bTs) return 0;
+      if (!aTs) return -1; // unscored → first
+      if (!bTs) return 1;
+      return aTs.localeCompare(bTs); // oldest scoring timestamp first
+    });
+  }
+
   if (args.limit && args.limit < docs.length) {
     docs = docs.slice(0, args.limit);
   }
@@ -841,8 +872,8 @@ async function runPass1(
   args: CliArgs,
 ): Promise<void> {
   console.log("\n=== Pass 1: Score ===");
-  const plumbers = await loadPlumbers(db, args);
-  console.log(`Loaded ${plumbers.length} plumber(s)`);
+  const plumbers = await loadPlumbers(db, args, { ordered: true });
+  console.log(`Loaded ${plumbers.length} plumber(s) (unscored first, then oldest-scored ascending)`);
 
   let scored = 0;
   let skipped = 0;
@@ -852,18 +883,22 @@ async function runPass1(
     const data = plumberDoc.data();
     const name = data.businessName ?? plumberDoc.id;
 
-    const reviews = await loadReviews(db, plumberDoc.id);
+    const allReviews = await loadReviews(db, plumberDoc.id);
+    const totalReviewCount = allReviews.length;
 
     // Smart re-score trigger: skip if recently scored AND review count
     // hasn't changed by 20%+. The 30-day timer is the fallback; the
     // primary trigger is "review data changed meaningfully".
+    //
+    // NOTE: compares TOTAL review count (not capped), so the cap below
+    // doesn't mask genuine review growth from the delta check.
     if (!args.force && data.scores?.last_scored_at) {
       const last = Date.parse(data.scores.last_scored_at);
       const recentlyScored =
         !Number.isNaN(last) && Date.now() - last < SKIP_IF_SCORED_WITHIN_MS;
       const lastReviewCount = data.scores?.review_count_used || 0;
       const reviewCountDelta = lastReviewCount > 0
-        ? Math.abs(reviews.length - lastReviewCount) / lastReviewCount
+        ? Math.abs(totalReviewCount - lastReviewCount) / lastReviewCount
         : 1;
       const reviewsChangedSignificantly = reviewCountDelta >= 0.20;
 
@@ -873,18 +908,55 @@ async function runPass1(
       }
       if (recentlyScored && reviewsChangedSignificantly) {
         console.log(
-          `  ! ${name}: recently scored but review count changed ${(reviewCountDelta * 100).toFixed(0)}% (${lastReviewCount} → ${reviews.length}) — re-scoring`,
+          `  ! ${name}: recently scored but review count changed ${(reviewCountDelta * 100).toFixed(0)}% (${lastReviewCount} → ${totalReviewCount}) — re-scoring`,
         );
       }
     }
 
+    // Cap reviews fed to Claude at REVIEW_CAP most recent. The recency
+    // weighting in aggregate() already discounts reviews >24mo to 0.25×,
+    // so extracting from older reviews is low-ROI. Nulls sort to end.
+    const reviews =
+      totalReviewCount > REVIEW_CAP
+        ? allReviews
+            .slice()
+            .sort((a, b) => {
+              if (!a.publishedAt && !b.publishedAt) return 0;
+              if (!a.publishedAt) return 1;
+              if (!b.publishedAt) return -1;
+              return b.publishedAt.localeCompare(a.publishedAt);
+            })
+            .slice(0, REVIEW_CAP)
+        : allReviews;
+
     // Plumbers with < MIN_REVIEWS_TO_SCORE get keyword fallback synthesis
     // (no Claude call) but still get reviewSynthesis written.
+    //
+    // Both the keyword-fallback and no-reviews branches now stamp
+    // scores.{last_scored_at, method, review_count_used}. Without this,
+    // these plumbers look "unscored" to the cursor ordering and get
+    // re-examined every run forever (cheap each, but wasteful).
     if (reviews.length < MIN_REVIEWS_TO_SCORE) {
-      if (reviews.length === 0) { skipped++; continue; }
+      const nowIso = new Date().toISOString();
+      if (reviews.length === 0) {
+        if (!args.dryRun) {
+          await db.collection("plumbers").doc(plumberDoc.id).update({
+            "scores.last_scored_at": nowIso,
+            "scores.method": "no_reviews",
+            "scores.review_count_used": 0,
+            updatedAt: admin.firestore.Timestamp.now(),
+          });
+        }
+        console.log(`  - ${name}: no reviews cached — stamped and skipped`);
+        skipped++;
+        continue;
+      }
       const synth = keywordFallback(reviews);
       if (!args.dryRun) {
         await db.collection("plumbers").doc(plumberDoc.id).update({
+          "scores.last_scored_at": nowIso,
+          "scores.method": "keyword_fallback",
+          "scores.review_count_used": totalReviewCount,
           "reviewSynthesis.summary": synth.summary,
           "reviewSynthesis.strengths": synth.strengths,
           "reviewSynthesis.weaknesses": synth.weaknesses,
@@ -934,6 +1006,13 @@ async function runPass1(
 
       // --- Step 2: Aggregate scores ---
       const { scores, evidenceQuotes, servicesMentioned } = aggregate(extracted, ageByReviewId, reviews);
+
+      // Override review_count_used with the TOTAL review count (not capped)
+      // so the 20%-delta skip check on the next run compares apples to apples.
+      // aggregate() sets this to extracted.length by default, which would
+      // equal the cap (75) and cause the delta check to always fire.
+      scores.review_count_used = totalReviewCount;
+      scores.method = "sonnet";
 
       // --- Step 3: Sonnet synthesis call (replaces Haiku) ---
       // Pass platform context (Yelp/BBB ratings) so Sonnet can detect
