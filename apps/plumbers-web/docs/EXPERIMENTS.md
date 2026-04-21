@@ -14,6 +14,7 @@ The **brain** (control-center repo) owns the experiment ledger, judging logic, a
 | ID | Hypothesis | Test Slugs | Status |
 |----|-----------|------------|--------|
 | exp-001-nearby-cities-expansion | More nearby city links → better GSC metrics | garland, mckinney, denton, round-rock, league-city | active |
+| exp-002-aberdeen-title-urgency | Urgency-led meta title ("24/7 — Fast, Local & Available Now") beats catalog-style title on GSC CTR | maryland/aberdeen | active (started 2026-04-21, ends 2026-06-20) |
 
 ## File map
 

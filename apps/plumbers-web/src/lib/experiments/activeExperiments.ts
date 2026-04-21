@@ -43,6 +43,17 @@ export const ACTIVE_EXPERIMENTS: Record<string, ExperimentEntry> = {
       control: { nearbyCityCount: 2 },
     },
   },
+  "exp-002-aberdeen-title-urgency": {
+    test_slugs: ["maryland/aberdeen"],
+    control_slugs: [],
+    variants: {
+      test: {
+        metaTitle:
+          "Emergency Plumber Aberdeen, MD (24/7) — Fast, Local & Available Now",
+      },
+      control: {},
+    },
+  },
 };
 
 /**

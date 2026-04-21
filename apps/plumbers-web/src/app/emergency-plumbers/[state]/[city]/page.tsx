@@ -26,6 +26,7 @@ import { calculateDistance, getDistanceWeight } from "@/lib/geo";
 import type { Plumber } from "@/lib/types";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
+import { getExperimentMetaTitle } from "@/lib/experiments/getExperimentMetaTitle";
 
 // Only prerender cities that have plumber data. Long-tail cities render
 // on-demand via dynamicParams (still SEO-indexable because they 200 on
@@ -55,12 +56,17 @@ export async function generateMetadata({
   ogUrl.searchParams.set("state", city.state);
   ogUrl.searchParams.set("county", city.county);
 
+  const defaultTitle = `${count} Emergency Plumbers in ${city.name}, ${city.state} — Rated & Reviewed (${year})`;
+  const experimentTitle = getExperimentMetaTitle(stateSlug, citySlug);
+  const title = experimentTitle ?? defaultTitle;
+  const description = `Compare ${count} emergency plumbers in ${city.name}, ${city.state} with real Google reviews, honest strengths & weaknesses, and 24-hour availability. Find who actually picks up.`;
+
   return {
-    title: `${count} Emergency Plumbers in ${city.name}, ${city.state} — Rated & Reviewed (${year})`,
-    description: `Compare ${count} emergency plumbers in ${city.name}, ${city.state} with real Google reviews, honest strengths & weaknesses, and 24-hour availability. Find who actually picks up.`,
+    title,
+    description,
     openGraph: {
-      title: `${count} Emergency Plumbers in ${city.name}, ${city.state} — Rated & Reviewed (${year})`,
-      description: `Compare ${count} emergency plumbers in ${city.name}, ${city.state} with real Google reviews, honest strengths & weaknesses, and 24-hour availability. Find who actually picks up.`,
+      title: defaultTitle,
+      description,
       images: [{ url: ogUrl.toString(), width: 1200, height: 630 }],
     },
   };
