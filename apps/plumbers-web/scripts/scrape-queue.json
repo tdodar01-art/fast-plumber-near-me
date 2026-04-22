@@ -1,35 +1,8 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 585,
+  "usedThisMonth": 600,
   "queue": [
-    {
-      "city": "Cicero",
-      "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Murfreesboro",
-      "state": "TN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Bartlett",
-      "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Cedar Park",
       "state": "TX",
@@ -49,8 +22,8 @@
       "source": "gsc"
     },
     {
-      "city": "Dallas",
-      "state": "TX",
+      "city": "Murfreesboro",
+      "state": "TN",
       "county": "",
       "region": "",
       "status": "pending",
@@ -58,8 +31,8 @@
       "source": "gsc"
     },
     {
-      "city": "Vallejo",
-      "state": "CA",
+      "city": "Georgetown",
+      "state": "TX",
       "county": "",
       "region": "",
       "status": "pending",
@@ -76,8 +49,17 @@
       "source": "gsc"
     },
     {
-      "city": "Arlington Heights",
-      "state": "IL",
+      "city": "Vallejo",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Dallas",
+      "state": "TX",
       "county": "",
       "region": "",
       "status": "pending",
@@ -103,7 +85,25 @@
       "source": "gsc"
     },
     {
-      "city": "Georgetown",
+      "city": "Evanston",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Arlington Heights",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Carrollton",
       "state": "TX",
       "county": "",
       "region": "",
@@ -130,7 +130,25 @@
       "source": "gsc"
     },
     {
-      "city": "Evanston",
+      "city": "Leander",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Pflugerville",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Mount Prospect",
       "state": "IL",
       "county": "",
       "region": "",
@@ -141,6 +159,33 @@
     {
       "city": "Clearwater",
       "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Cleveland",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "West Jordan",
+      "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Irving",
+      "state": "TX",
       "county": "",
       "region": "",
       "status": "pending",
@@ -166,24 +211,6 @@
       "source": "gsc"
     },
     {
-      "city": "Pflugerville",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Cleveland",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Germantown",
       "state": "MD",
       "county": "",
@@ -193,8 +220,8 @@
       "source": "gsc"
     },
     {
-      "city": "Leander",
-      "state": "TX",
+      "city": "Franklin",
+      "state": "TN",
       "county": "",
       "region": "",
       "status": "pending",
@@ -211,8 +238,8 @@
       "source": "gsc"
     },
     {
-      "city": "West Jordan",
-      "state": "UT",
+      "city": "Westerville",
+      "state": "OH",
       "county": "",
       "region": "",
       "status": "pending",
@@ -220,7 +247,7 @@
       "source": "gsc"
     },
     {
-      "city": "Westerville",
+      "city": "Cincinnati",
       "state": "OH",
       "county": "",
       "region": "",
@@ -239,35 +266,8 @@
       "priority": "high-impressions"
     },
     {
-      "city": "Franklin",
-      "state": "TN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "El Cajon",
       "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Irving",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Carrollton",
-      "state": "TX",
       "county": "",
       "region": "",
       "status": "pending",
@@ -284,8 +284,8 @@
       "source": "gsc"
     },
     {
-      "city": "Mount Prospect",
-      "state": "IL",
+      "city": "Smyrna",
+      "state": "TN",
       "county": "",
       "region": "",
       "status": "pending",
@@ -293,8 +293,8 @@
       "source": "gsc"
     },
     {
-      "city": "Smyrna",
-      "state": "TN",
+      "city": "Des Plaines",
+      "state": "IL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -330,35 +330,8 @@
       "source": "gsc"
     },
     {
-      "city": "Cincinnati",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Gaithersburg",
-      "state": "MD",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Wheat Ridge",
       "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Silver Spring",
-      "state": "MD",
       "county": "",
       "region": "",
       "status": "pending",
@@ -375,8 +348,8 @@
       "source": "gsc"
     },
     {
-      "city": "Lawrenceville",
-      "state": "GA",
+      "city": "Gaithersburg",
+      "state": "MD",
       "county": "",
       "region": "",
       "status": "pending",
@@ -384,17 +357,8 @@
       "source": "gsc"
     },
     {
-      "city": "St Petersburg",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "San Jose",
-      "state": "CA",
+      "city": "Silver Spring",
+      "state": "MD",
       "county": "",
       "region": "",
       "status": "pending",
@@ -411,26 +375,44 @@
       "source": "gsc"
     },
     {
-      "city": "Cleveland",
-      "state": "TN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Des Plaines",
-      "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Johns Creek",
       "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Lawrenceville",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "San Jose",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "St Petersburg",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Cleveland",
+      "state": "TN",
       "county": "",
       "region": "",
       "status": "pending",
@@ -474,6 +456,15 @@
       "source": "gsc"
     },
     {
+      "city": "Racine",
+      "state": "WI",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Brooklyn Park",
       "state": "MN",
       "county": "",
@@ -494,6 +485,15 @@
     {
       "city": "Moore",
       "state": "OK",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Buffalo Grove",
+      "state": "IL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -537,8 +537,8 @@
       "source": "gsc"
     },
     {
-      "city": "Buffalo Grove",
-      "state": "IL",
+      "city": "Encinitas",
+      "state": "CA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -573,17 +573,8 @@
       "source": "gsc"
     },
     {
-      "city": "Racine",
-      "state": "WI",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Encinitas",
-      "state": "CA",
+      "city": "Round Lake",
+      "state": "IL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -609,8 +600,8 @@
       "source": "gsc"
     },
     {
-      "city": "Round Lake",
-      "state": "IL",
+      "city": "Broken Arrow",
+      "state": "OK",
       "county": "",
       "region": "",
       "status": "pending",
@@ -636,8 +627,26 @@
       "source": "gsc"
     },
     {
-      "city": "Broken Arrow",
-      "state": "OK",
+      "city": "Spring",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Rockville",
+      "state": "MD",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Calumet City",
+      "state": "IL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -656,15 +665,6 @@
     {
       "city": "Simpsonville",
       "state": "SC",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Spring",
-      "state": "TX",
       "county": "",
       "region": "",
       "status": "pending",
@@ -735,15 +735,6 @@
       "source": "gsc"
     },
     {
-      "city": "Rockville",
-      "state": "MD",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Elk Grove Village",
       "state": "IL",
       "county": "",
@@ -755,6 +746,15 @@
     {
       "city": "Haverhill",
       "state": "MA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Island Lake",
+      "state": "IL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -870,7 +870,34 @@
       "source": "gsc"
     },
     {
-      "city": "Island Lake",
+      "city": "Clarendon Hills",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Prescott",
+      "state": "AZ",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Del City",
+      "state": "OK",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Berwyn",
       "state": "IL",
       "county": "",
       "region": "",
@@ -1256,6 +1283,26 @@
       "actualCalls": 6,
       "plumbersFound": 5,
       "completedAt": "2026-04-21"
+    },
+    {
+      "city": "Cicero",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-04-22"
+    },
+    {
+      "city": "Bartlett",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 3,
+      "plumbersFound": 2,
+      "completedAt": "2026-04-22"
     }
   ]
 }
