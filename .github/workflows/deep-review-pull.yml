@@ -1,10 +1,7 @@
 name: Deep Review Pull (Outscraper)
 
 on:
-  schedule:
-    # 7 AM Central = 12:00 UTC (CDT) — 1 hour after main daily scrape
-    - cron: '0 12 * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch: # Manual trigger only — cron disabled 2026-04-23
 
 permissions:
   contents: write

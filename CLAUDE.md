@@ -5,6 +5,48 @@
 - **Cross-project status and session logs:** Live in `~/code/control-center/`, not here.
 - **Archived plans:** `docs/plans/archive/` — superseded by the strategy brief.
 
+## Automation pause — manual-first process improvement (active as of 2026-04-23)
+
+We are DELIBERATELY running most of the pipeline manually right now. The goal
+is to rebuild each step by hand inside the Operator Console (`apps/operator/`)
+so we understand what each step does, what its outputs look like, and where
+the quality bar is — then re-automate with better guardrails. **Do not
+"helpfully" re-enable the cron schedules or stitch removed steps back into
+the workflows.** That undoes the work in progress.
+
+Current state of `.github/workflows/`:
+
+- **`daily-scrape.yml`** — STILL AUTOMATED (6 AM Central). Stripped to the
+  intake-only chain: GSC expansion → GSC prepend queue → daily-scrape
+  (Google Places) → upload-to-firestore → rebuild JSON from Firestore →
+  regenerate city coverage → commit & push. This chain is zero-dollar
+  (GSC is free; Places intake runs under the $200/mo free credit, guarded
+  at 90% by `budget-guard.ts`). It brings new plumbers into Firestore with
+  no human in the loop so the site keeps growing overnight.
+- **`deep-review-pull.yml`** — CRON DISABLED. `workflow_dispatch` only.
+  Outscraper multi-source review pull is a paid API; we're choosing cities
+  by hand in the Operator Console before dispatching.
+- **`rebuild-json.yml`** — CRON DISABLED. `workflow_dispatch` only. The
+  6-hour safety rebuild is OFF. Any Firestore writes that happen outside
+  the daily commit will not show up in JSON until `daily-scrape.yml` runs
+  or a human dispatches rebuild-json.
+- **`publish-experiment-metrics.yml`** — CRON DISABLED. `workflow_dispatch`
+  only. Experiment metric publishing is manual until the console owns it.
+
+Removed from `daily-scrape.yml` and now in the manual backlog:
+
+- `refresh-reviews.ts` (Places review accumulation)
+- `request-indexing.js` (Google Indexing API pings)
+- `score-plumbers.ts` (Sonnet scoring + synthesis)
+
+These are not deleted — they still live in `scripts/` and can be invoked
+from the Operator Console or `workflow_dispatch` runs. The plan is to
+wire each one into the console's 6-state reducer (idle → pulling →
+reviewing → synthesizing → publishing → published), watch it run end to
+end, sharpen the prompts and guardrails, then decide what goes back into
+cron. Until that work is done, treat scoring + enrichment + indexing as
+human-gated.
+
 ## Monorepo Extensibility Principle
 
 This app is the first of multiple directory sites planned under `~/code/directory-sites/`. Future directories include HVAC, electricians, handyman, and other local service verticals. All core architecture must be built with eventual extraction to shared packages in mind.
@@ -50,11 +92,19 @@ All SEO decisions must follow the standing doctrine at `~/code/control-center/do
 - **Vercel root directory:** `apps/plumbers-web/` (this is a monorepo; `vercel.json` at `apps/plumbers-web/vercel.json` is a minimal `{"framework": "nextjs"}`)
 - **Admin panel:** `/admin` — Firebase Auth with Google login (the canonical pattern being ported to `geteasyexit.com/admin`)
 
-Separately, two GitHub Actions workflows run daily and push JSON updates back to the repo, which triggers a fresh Vercel rebuild:
-- **`daily-scrape.yml`** (6 AM Central) — GSC expansion → Places scrape → Firestore upload → review refresh → Claude synthesis → commit → Vercel rebuild
-- **`deep-review-pull.yml`** (7 AM Central) — BBB lookup → Outscraper multi-source reviews (Google + Yelp + Angi) → Claude synthesis → JSON export → commit → Vercel rebuild
+One GitHub Actions workflow is currently on cron; the others are manual.
+See the "Automation pause" section above for the full current state.
 
-See ROADMAP.md → "Automated Pipeline Architecture" for the full flow and tier thresholds.
+- **`daily-scrape.yml`** (6 AM Central, ACTIVE) — GSC expansion → GSC
+  prepend → Places intake → Firestore upload → JSON rebuild → city
+  coverage regen → commit → Vercel rebuild. Enrichment/scoring/indexing
+  have been removed from this workflow and are now manual.
+- **`deep-review-pull.yml`** / **`rebuild-json.yml`** /
+  **`publish-experiment-metrics.yml`** — `workflow_dispatch` only as of
+  2026-04-23. Run by hand from the Operator Console or the Actions UI.
+
+ROADMAP.md → "Automated Pipeline Architecture" describes the pre-pivot
+fully-automated flow; treat it as historical reference, not current truth.
 
 ## Known Issues / Gotchas
 
@@ -71,18 +121,23 @@ See ROADMAP.md → "Automated Pipeline Architecture" for the full flow and tier 
 - **Yelp coverage gap:** Outscraper returns 0 reviews for businesses with <20 Yelp reviews. Needs an alternative scraping path.
 - **SEO is a grind.** Emergency plumbing is one of the most competitive local SEO verticals — our edge must be speed, UX, trust signals (we show weaknesses, not just stars), and honest review synthesis.
 
-## Publishing vs. scoring (Phase 1 stabilization, 2026-04-20)
+## Publishing vs. scoring (superseded 2026-04-23)
 
-**`score-plumbers.ts` MUST NEVER block publishing.** In both `daily-scrape.yml`
-and `deep-review-pull.yml`, the order is fixed: export → commit → request
-indexing → **then** score. If you modify either workflow, ensure export
-runs before scoring. `score-plumbers.ts` has a 30-minute per-step timeout and
-`continue-on-error: true`; it is allowed to cancel. The export step is not
-`continue-on-error` — if publishing fails, the workflow fails visibly.
+The earlier Phase 1 stabilization (2026-04-20) enforced a "publish BEFORE
+score" ordering inside `daily-scrape.yml` so that `score-plumbers.ts`
+couldn't block the daily site update. That invariant still matters in
+spirit, but it no longer applies to the current workflow: scoring has been
+REMOVED from `daily-scrape.yml` entirely as part of the manual-first pivot.
+`score-plumbers.ts` is now invoked by hand (or via `workflow_dispatch`)
+while we rebuild scoring inside the Operator Console.
 
-Scoring is best-effort and asynchronous. Any scoring-only Firestore writes
-that happen after the daily commit are exported to JSON by the next
-`rebuild-json.yml` run (every 6 hours).
+The 6-hour `rebuild-json.yml` safety net that used to catch scoring-only
+Firestore writes is also disabled. If you run `score-plumbers.ts` manually,
+remember to run `export-firestore-to-json.js` afterward — nothing will do
+it for you on a schedule.
+
+The core rule still holds: **the export step in `daily-scrape.yml` is not
+`continue-on-error`.** If publishing fails, the workflow fails visibly.
 
 ## Data pipeline invariants
 
@@ -110,9 +165,8 @@ Verify periodically (weekly or after pipeline changes):
 
 - [ ] Grep the repo for writes to `plumbers-synthesized.json` — confirm only `export-firestore-to-json.js` appears
 - [ ] Confirm Firestore plumber count matches JSON row count
-- [ ] Confirm the 6-hour safety rebuild GitHub Action (`rebuild-json.yml`) is still scheduled and its last 5 runs succeeded
-- [ ] Confirm every Firestore-mutating workflow still ends with a rebuild step
-- [ ] Spot-check 3 random plumbers: BBB fields, Yelp rating, and deep review data all present in JSON
+- [ ] Confirm `daily-scrape.yml` still ends with export → city-coverage regen → commit. (The 6-hour `rebuild-json.yml` safety net is disabled during the manual-first pivot — do NOT re-enable it without reading the "Automation pause" section above.)
+- [ ] Spot-check 3 random plumbers: BBB fields, Yelp rating, and deep review data all present in JSON. Staleness is expected during the pivot — enrichment is manual.
 - [ ] Confirm `RAW_CITIES` count in `cities-generated.ts` equals coord-key count in `city-coords.ts` (coord contract)
 - [ ] Scan `errors.jsonl` for recent `severity: error` entries from sources `gsc-prepend-queue`, `daily-scrape`, `export-firestore` — triage via the error-log UI (`preview_start error-log` → http://localhost:4330)
 - [ ] Check `/admin/activity` for recent `status: "error"` pipelineRuns
