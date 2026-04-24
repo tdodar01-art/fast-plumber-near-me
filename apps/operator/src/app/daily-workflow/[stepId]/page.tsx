@@ -8,12 +8,16 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCronStepById, IS_MOCK, todayCronRun } from "@/lib/dailyCronMock";
+import { todayCronRun as mockRun } from "@/lib/dailyCronMock";
+import { loadTodayCronRun } from "@/lib/dailyCronReader";
+import { CRON_STEPS } from "@/lib/cronSteps";
 import type {
   CronStep,
   CronStepStatus,
   StepDetailBlock,
 } from "@/lib/types";
+
+export const revalidate = 300;
 
 function statusInk(status: CronStepStatus): string {
   switch (status) {
@@ -63,10 +67,13 @@ export default async function StepDetailPage({
   params: Promise<{ stepId: string }>;
 }) {
   const { stepId } = await params;
-  const step = getCronStepById(stepId);
+  const live = await loadTodayCronRun();
+  const run = live ?? mockRun;
+  const isMock = !live;
+  const step = run.steps.find((s) => s.id === stepId);
   if (!step) notFound();
 
-  const idx = todayCronRun.steps.findIndex((s) => s.id === step.id) + 1;
+  const idx = run.steps.findIndex((s) => s.id === step.id) + 1;
 
   return (
     <div className="flex flex-col gap-10">
@@ -145,7 +152,7 @@ export default async function StepDetailPage({
         </div>
       )}
 
-      {IS_MOCK && (
+      {isMock && (
         <footer
           className="border-t pt-4"
           style={{ borderColor: "var(--color-border-tertiary)" }}
@@ -308,7 +315,7 @@ function BlockRenderer({ block }: { block: StepDetailBlock }) {
 }
 
 export function generateStaticParams() {
-  return todayCronRun.steps.map((s) => ({ stepId: s.id }));
+  return CRON_STEPS.map((s) => ({ stepId: s.id }));
 }
 
 // Guard against dynamic `params` types in strict mode if any static

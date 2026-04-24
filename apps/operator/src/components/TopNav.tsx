@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getCronStepById } from "@/lib/dailyCronMock";
+import { getStepDefById } from "@/lib/cronSteps";
 
 const items = [{ href: "/daily-workflow", label: "Daily Workflow" }] as const;
 
@@ -14,7 +14,7 @@ function resolveCrumbs(pathname: string): string[] {
 
   const stepMatch = pathname.match(/^\/daily-workflow\/([^/]+)$/);
   if (stepMatch) {
-    const step = getCronStepById(stepMatch[1]);
+    const step = getStepDefById(stepMatch[1]);
     return ["daily workflow", step ? step.name.toLowerCase() : stepMatch[1]];
   }
 
