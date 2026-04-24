@@ -1,10 +1,7 @@
 name: Rebuild JSON from Firestore (Safety Net)
 
 on:
-  schedule:
-    # Every 6 hours: midnight, 6am, noon, 6pm UTC
-    - cron: '0 0,6,12,18 * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch: # Manual trigger only — cron disabled 2026-04-23
 
 permissions:
   contents: write

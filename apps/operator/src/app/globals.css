@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+/*
+ * Operator Console — design tokens.
+ *
+ * Palette, type scale, spacing, and radius mirror
+ * control-center/docs/design/operator-console.md (Visual Language section).
+ * Dark mode is class-based — toggled on <html class="dark"> — not
+ * media-query based. Default is light.
+ */
+
+@theme {
+  /* ---------- Colors (light mode defaults) ---------- */
+  --color-base: #faf8f4;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1efe8;
+
+  --color-ink-primary: #1a1a18;
+  --color-ink-secondary: #5f5e5a;
+  --color-ink-tertiary: #888780;
+
+  --color-border-tertiary: rgba(26, 26, 24, 0.08);
+  --color-border-secondary: rgba(26, 26, 24, 0.15);
+
+  --color-accent-bg: #e1f5ee;
+  --color-accent-ink: #085041;
+  --color-accent-strong: #0f6e56;
+
+  --color-danger-ink: #993c1d;
+
+  /* ---------- Typography ---------- */
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular,
+    Menlo, monospace;
+
+  /* Type scale — 7 sizes keyed to the spec */
+  --text-ambient: 0.75rem; /* 12px */
+  --text-label: 0.6875rem; /* 11px */
+  --text-body: 0.9375rem; /* 15px */
+  --text-editorial: 1.75rem; /* 28px */
+  --text-metric: 1.375rem; /* 22px */
+  --text-delta: 0.75rem; /* 12px */
+  --text-footer: 0.75rem; /* 12px */
+
+  /* ---------- Radius ---------- */
+  --radius-card: 12px;
+  --radius-sm: 8px;
+
+  /* ---------- Column width ---------- */
+  --column-max: 720px;
+}
+
+/* ---------- Dark mode overrides (class-based) ---------- */
+.dark {
+  --color-base: #141413;
+  --color-surface: #1c1c1a;
+  --color-surface-muted: #252523;
+
+  --color-ink-primary: #f1efe8;
+  --color-ink-secondary: #b4b2a9;
+  --color-ink-tertiary: #888780;
+
+  --color-border-tertiary: rgba(241, 239, 232, 0.08);
+  --color-border-secondary: rgba(241, 239, 232, 0.15);
+
+  --color-accent-bg: #04342c;
+  --color-accent-ink: #9fe1cb;
+  --color-accent-strong: #5dcaa5;
+
+  --color-danger-ink: #f0997b;
+}
+
+/* ---------- Base resets ---------- */
+html,
+body {
+  background: var(--color-base);
+  color: var(--color-ink-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Keep serif italic readable */
+em,
+i {
+  font-style: italic;
+}
+
+/* The only universal motion baseline per spec */
+button,
+a {
+  transition: color 200ms ease-out, background-color 200ms ease-out,
+    border-color 200ms ease-out, opacity 200ms ease-out;
+}

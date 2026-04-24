@@ -1,11 +1,7 @@
 name: Publish Experiment Metrics
 
 on:
-  schedule:
-    # 7:30 AM Central (CDT=UTC-5) → 12:30 UTC
-    # Runs BEFORE control-center's 8:00 AM judge cron
-    - cron: "30 12 * * *"
-  workflow_dispatch:
+  workflow_dispatch: # Manual trigger only — cron disabled 2026-04-23
 
 concurrency:
   group: experiment-metrics
