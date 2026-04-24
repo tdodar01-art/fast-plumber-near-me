@@ -298,6 +298,61 @@ function BlockRenderer({ block }: { block: StepDetailBlock }) {
           </table>
         </div>
       );
+    case "links":
+      return (
+        <section>
+          {block.label && (
+            <h2
+              className="mb-3"
+              style={{
+                fontSize: "var(--text-label)",
+                letterSpacing: "0.04em",
+                color: "var(--color-ink-tertiary)",
+              }}
+            >
+              {block.label.toLowerCase()}
+            </h2>
+          )}
+          <ul className="flex flex-col gap-2">
+            {block.items.map((item, i) => (
+              <li key={i}>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="underline hover:opacity-80"
+                  style={{
+                    fontSize: "var(--text-body)",
+                    color: "var(--color-ink-primary)",
+                  }}
+                >
+                  {item.label}
+                </a>
+                {item.hint && (
+                  <span
+                    className="ml-2"
+                    style={{
+                      fontSize: "var(--text-ambient)",
+                      color: "var(--color-ink-tertiary)",
+                    }}
+                  >
+                    {item.hint}
+                  </span>
+                )}
+                <div
+                  className="font-mono"
+                  style={{
+                    fontSize: "var(--text-ambient)",
+                    color: "var(--color-ink-tertiary)",
+                  }}
+                >
+                  {item.href}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
     case "code":
       return (
         <pre

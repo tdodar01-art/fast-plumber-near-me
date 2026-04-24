@@ -111,6 +111,11 @@ export type StepDetailBlock =
       columns: string[];
       rows: string[][];
     }
+  | {
+      kind: "links";
+      label?: string;
+      items: Array<{ href: string; label: string; hint?: string }>;
+    }
   | { kind: "code"; language?: string; text: string };
 
 export interface CronStep {
