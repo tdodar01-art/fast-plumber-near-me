@@ -174,6 +174,38 @@ const STAGE_MARKERS: Record<string, string> = {
   "commit-push": "COMMIT",
 };
 
+// US state abbreviation → lowercase slug used in fastplumbernearme.com URLs
+// (`/emergency-plumbers/<state>/<city>`). Matches the reverse of
+// STATE_SLUG_TO_ABBR in scripts/gsc-expansion.js.
+const STATE_ABBR_TO_SLUG: Record<string, string> = {
+  AL: "alabama", AK: "alaska", AZ: "arizona", AR: "arkansas", CA: "california",
+  CO: "colorado", CT: "connecticut", DE: "delaware", FL: "florida", GA: "georgia",
+  HI: "hawaii", ID: "idaho", IL: "illinois", IN: "indiana", IA: "iowa",
+  KS: "kansas", KY: "kentucky", LA: "louisiana", ME: "maine", MD: "maryland",
+  MA: "massachusetts", MI: "michigan", MN: "minnesota", MS: "mississippi",
+  MO: "missouri", MT: "montana", NE: "nebraska", NV: "nevada",
+  NH: "new-hampshire", NJ: "new-jersey", NM: "new-mexico", NY: "new-york",
+  NC: "north-carolina", ND: "north-dakota", OH: "ohio", OK: "oklahoma",
+  OR: "oregon", PA: "pennsylvania", RI: "rhode-island", SC: "south-carolina",
+  SD: "south-dakota", TN: "tennessee", TX: "texas", UT: "utah", VT: "vermont",
+  VA: "virginia", WA: "washington", WV: "west-virginia", WI: "wisconsin",
+  WY: "wyoming", DC: "district-of-columbia",
+};
+
+function citySlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function cityPageUrl(cityName: string, stateAbbr: string): string | null {
+  const stateSlug = STATE_ABBR_TO_SLUG[stateAbbr.toUpperCase()];
+  if (!stateSlug) return null;
+  return `https://www.fastplumbernearme.com/emergency-plumbers/${stateSlug}/${citySlug(cityName)}`;
+}
+
 function linesByStage(lines: LogLine[]): Map<string, string[]> {
   const result = new Map<string, string[]>();
   let current: string | null = null;
@@ -294,12 +326,14 @@ function parseGscPrepend(lines: string[]): ParsedStepData {
 function parseDailyScrape(lines: string[]): ParsedStepData {
   type CityRow = {
     city: string;
+    state: string | null;
     newCount: number;
     deduped: number;
     apiCalls: number;
   };
   const cityRows: CityRow[] = [];
   let currentCity: string | null = null;
+  let currentState: string | null = null;
   let apiCallsTotal: number | undefined;
   let queueRemaining: number | undefined;
   let totalPlumbers: number | undefined;
@@ -310,18 +344,28 @@ function parseDailyScrape(lines: string[]): ParsedStepData {
     const t = raw.replace(/^\[\d{4}-\d{2}-\d{2}T[^\]]+\]\s*/, "");
     const scrapingMatch = t.match(/^Scraping:\s+(.+?)\s*(?:\(|$)/);
     if (scrapingMatch) {
-      currentCity = scrapingMatch[1].trim();
+      // "Baltimore, MD" → city="Baltimore", state="MD"
+      const withState = scrapingMatch[1].trim().match(/^(.+?),\s*([A-Z]{2})\b/);
+      if (withState) {
+        currentCity = withState[1].trim();
+        currentState = withState[2];
+      } else {
+        currentCity = scrapingMatch[1].trim();
+        currentState = null;
+      }
       continue;
     }
     const resultMatch = t.match(/^\s*\+(\d+)\s+new,\s+(\d+)\s+deduped,\s+(\d+)\s+API calls/);
     if (resultMatch && currentCity) {
       cityRows.push({
         city: currentCity,
+        state: currentState,
         newCount: Number(resultMatch[1]),
         deduped: Number(resultMatch[2]),
         apiCalls: Number(resultMatch[3]),
       });
       currentCity = null;
+      currentState = null;
       continue;
     }
     const apiTotal = t.match(/^\s*API calls:\s+(\d+)\s*$/);
@@ -351,12 +395,36 @@ function parseDailyScrape(lines: string[]): ParsedStepData {
       kind: "table",
       columns: ["City", "New", "Deduped", "API calls"],
       rows: cityRows.map((r) => [
-        r.city,
+        r.state ? `${r.city}, ${r.state}` : r.city,
         String(r.newCount),
         String(r.deduped),
         String(r.apiCalls),
       ]),
     });
+
+    // Clickable city pages so the operator can verify the plumbers we
+    // just added are rendering live on fastplumbernearme.com. Only
+    // cities that got at least one new plumber today — skip no-op scrapes.
+    const linkRows = cityRows
+      .filter((r) => r.newCount > 0 && r.state)
+      .map((r) => {
+        const href = cityPageUrl(r.city, r.state as string);
+        return href
+          ? {
+              href,
+              label: `${r.city}, ${r.state}`,
+              hint: `+${r.newCount} new`,
+            }
+          : null;
+      })
+      .filter((x): x is { href: string; label: string; hint: string } => !!x);
+    if (linkRows.length > 0) {
+      extraBlocks.push({
+        kind: "links",
+        label: "Verify on fastplumbernearme.com",
+        items: linkRows,
+      });
+    }
   }
   const facts: Array<{ label: string; value: string }> = [];
   if (apiCallsTotal !== undefined) {
