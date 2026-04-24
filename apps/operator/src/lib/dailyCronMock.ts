@@ -10,9 +10,7 @@
  * run metadata.
  */
 
-import type { CronStep, DailyCronRun } from "./types";
-
-export const IS_MOCK = true;
+import type { DailyCronRun } from "./types";
 
 export const todayCronRun: DailyCronRun = {
   date: "2026-04-24",
@@ -268,6 +266,3 @@ export const todayCronRun: DailyCronRun = {
   ],
 };
 
-export function getCronStepById(id: string): CronStep | undefined {
-  return todayCronRun.steps.find((s) => s.id === id);
-}

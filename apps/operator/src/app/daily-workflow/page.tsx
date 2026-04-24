@@ -8,8 +8,11 @@
  */
 
 import Link from "next/link";
-import { IS_MOCK, todayCronRun } from "@/lib/dailyCronMock";
+import { todayCronRun as mockRun } from "@/lib/dailyCronMock";
+import { loadTodayCronRun } from "@/lib/dailyCronReader";
 import type { CronStep, CronStepStatus } from "@/lib/types";
+
+export const revalidate = 300;
 
 function statusInk(status: CronStepStatus): string {
   switch (status) {
@@ -62,8 +65,10 @@ function formatDuration(seconds: number): string {
   return `${m}m ${s}s`;
 }
 
-export default function DailyWorkflowPage() {
-  const run = todayCronRun;
+export default async function DailyWorkflowPage() {
+  const live = await loadTodayCronRun();
+  const run = live ?? mockRun;
+  const isMock = !live;
 
   return (
     <div className="flex flex-col gap-10">
@@ -129,7 +134,7 @@ export default function DailyWorkflowPage() {
               {run.commitMessage}
             </p>
           )}
-          {IS_MOCK && (
+          {isMock && (
             <p
               className="font-mono mt-3"
               style={{
