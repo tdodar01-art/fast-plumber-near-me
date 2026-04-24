@@ -21,6 +21,8 @@ const REPO = "tdodar01-art/fast-plumber-near-me";
 const REVALIDATE_SECONDS = 300;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
+export type GscTier = "high" | "medium" | "low" | "none";
+
 export interface QueueEntry {
   city: string;
   state: string;
@@ -34,7 +36,33 @@ export interface QueueEntry {
   discoveredAt?: string;
   /** fastplumbernearme.com URL for this city (when state maps cleanly). */
   pageUrl?: string;
+  /** GSC tier matching scripts/gsc-expansion.js getTier(). `none` when
+   *  impressions are 0 or unknown. */
+  tier: GscTier;
 }
+
+// Mirrors getTier() in scripts/gsc-expansion.js. Keep in sync.
+export function tierForImpressions(impr: number | undefined): GscTier {
+  if (impr === undefined) return "none";
+  if (impr >= 50) return "high";
+  if (impr >= 10) return "medium";
+  if (impr >= 1) return "low";
+  return "none";
+}
+
+export const TIER_LABEL: Record<GscTier, string> = {
+  high: "High",
+  medium: "Medium",
+  low: "Low",
+  none: "No GSC data",
+};
+
+export const TIER_RANGE: Record<GscTier, string> = {
+  high: "50+ impressions",
+  medium: "10–49 impressions",
+  low: "1–9 impressions",
+  none: "no recent GSC traffic",
+};
 
 export interface QueueSnapshot {
   total: number;
@@ -164,6 +192,7 @@ export async function loadQueueSnapshot(): Promise<QueueSnapshot | null> {
       pageTypes: gsc?.pageTypes,
       discoveredAt: gsc?.discoveredAt,
       pageUrl: cityPageUrl(q.city, q.state),
+      tier: tierForImpressions(gsc?.impressions),
     };
   });
 
