@@ -1,17 +1,15 @@
 /**
  * Live reader for today's 6 AM `daily-scrape.yml` run.
  *
- * Pulls three things from GitHub REST API (public, unauthenticated — repo
+ * Pulls four things from GitHub REST API (public, unauthenticated — repo
  * is public and Next.js `fetch` caches for 5 min so we stay well under the
  * 60 req/hr limit):
  *
- *   1. Latest `Daily Plumber Scrape` workflow run on `main`
+ *   1. Latest scheduled `Daily Plumber Scrape` run on `main`
  *   2. That run's job steps (status + timing)
- *   3. The head commit (message, sha, files changed)
- *
- * Maps GitHub step names onto our 7-step catalog in `cronSteps.ts`. Any
- * steps outside the catalog (setup, scoring, cleanup) are ignored — the
- * operator console only surfaces the intake chain.
+ *   3. The scrape commit the run produced
+ *   4. The job's plain-text log, sliced per step and regex-extracted into
+ *      structured facts (plumber counts, city names, API spend, etc.)
  *
  * Returns `null` on any failure; callers fall back to the static mock.
  */
@@ -27,6 +25,23 @@ import { CRON_STEPS, getStepIdByGhName } from "./cronSteps";
 const REPO = "tdodar01-art/fast-plumber-near-me";
 const WORKFLOW_FILE = "daily-scrape.yml";
 const REVALIDATE_SECONDS = 300;
+
+// Public endpoints (workflow runs, jobs, commits) work unauthenticated but
+// are rate-limited to 60 req/hr per IP. `/actions/jobs/{id}/logs` requires
+// auth even for public repos. Seed apps/operator/.env.local with:
+//   GITHUB_TOKEN=$(gh auth token)
+// to enable log parsing. Without it, per-step summaries fall back to
+// generic blurbs but everything else (status, timing, commit) still works.
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
+function authHeaders(): HeadersInit {
+  const base: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+  if (GITHUB_TOKEN) base.Authorization = `Bearer ${GITHUB_TOKEN}`;
+  return base;
+}
 
 interface GhWorkflowRun {
   id: number;
@@ -66,14 +81,24 @@ interface GhCommit {
 async function gh<T>(path: string): Promise<T | null> {
   try {
     const res = await fetch(`https://api.github.com${path}`, {
-      headers: {
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
+      headers: authHeaders(),
       next: { revalidate: REVALIDATE_SECONDS },
     });
     if (!res.ok) return null;
     return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+async function ghText(path: string): Promise<string | null> {
+  try {
+    const res = await fetch(`https://api.github.com${path}`, {
+      headers: authHeaders(),
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+    if (!res.ok) return null;
+    return await res.text();
   } catch {
     return null;
   }
@@ -106,39 +131,443 @@ function durationSeconds(startIso: string, endIso: string): number {
   );
 }
 
+// ---------- Log parsing ----------
+
+interface LogLine {
+  time: number; // ms since epoch
+  text: string;
+}
+
+interface ParsedStepData {
+  summary?: string;
+  detail?: string;
+  extraBlocks?: StepDetailBlock[];
+}
+
+const ANSI = /\x1b\[[0-9;]*m/g;
+
+function parseLogLines(raw: string): LogLine[] {
+  const out: LogLine[] = [];
+  for (const line of raw.split("\n")) {
+    const m = line.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s(.*)$/);
+    if (!m) continue;
+    out.push({
+      time: new Date(m[1]).getTime(),
+      text: m[2].replace(ANSI, "").trimEnd(),
+    });
+  }
+  return out;
+}
+
+// GitHub step timestamps are second-granular and slightly lie about where
+// logs land (scripts run inside `bash -c` blocks that can finish a few
+// hundred ms after the reported `completed_at`). The workflow emits
+// `=== STAGE: X START ===` markers we can key off of for clean boundaries.
+// Stage markers map to our stepIds; city-coverage has no echo and needs
+// its own full-log scan in the parser.
+const STAGE_MARKERS: Record<string, string> = {
+  "gsc-expansion": "GSC EXPANSION",
+  "gsc-prepend": "GSC PREPEND",
+  "daily-scrape": "SCRAPE",
+  "upload-firestore": "UPLOAD",
+  "rebuild-json": "EXPORT",
+  "commit-push": "COMMIT",
+};
+
+function linesByStage(lines: LogLine[]): Map<string, string[]> {
+  const result = new Map<string, string[]>();
+  let current: string | null = null;
+  let bucket: string[] = [];
+  const markerRe = /===\s*STAGE:\s*(.+?)\s*START\s*===/;
+  for (const l of lines) {
+    const m = l.text.match(markerRe);
+    if (m) {
+      if (current) result.set(current, bucket);
+      current = m[1].trim();
+      bucket = [];
+      continue;
+    }
+    if (current) bucket.push(l.text);
+  }
+  if (current) result.set(current, bucket);
+  return result;
+}
+
+function linesBetween(
+  lines: LogLine[],
+  startIso: string | null,
+  endIso: string | null,
+): string[] {
+  if (!startIso || !endIso) return [];
+  const start = new Date(startIso).getTime();
+  const end = new Date(endIso).getTime() + 1000;
+  return lines
+    .filter((l) => l.time >= start && l.time < end)
+    .map((l) => l.text);
+}
+
+function parseGscExpansion(lines: string[]): ParsedStepData {
+  const tierRe = /^\s*✓\s+([a-z0-9-]+):\s+gscTier="(\w+)"\s+\(wrote "\w+",\s*(\d+)\s+impr\)/;
+  type Row = { slug: string; tier: string; impr: number };
+  const rows: Row[] = [];
+  let parsed: number | undefined;
+  for (const t of lines) {
+    const m = t.match(tierRe);
+    if (m) rows.push({ slug: m[1], tier: m[2], impr: Number(m[3]) });
+    const p = t.match(/Parsed (\d+) unique city pages from GSC data/);
+    if (p) parsed = Number(p[1]);
+  }
+
+  if (rows.length === 0 && parsed === undefined) return {};
+
+  const tierCounts = rows.reduce<Record<string, number>>((acc, r) => {
+    acc[r.tier] = (acc[r.tier] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const summaryParts: string[] = [];
+  if (rows.length > 0) {
+    summaryParts.push(`${rows.length} city tier${rows.length === 1 ? "" : "s"} updated`);
+    const tierBits = Object.entries(tierCounts)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([tier, n]) => `${n} ${tier}`);
+    if (tierBits.length > 0) summaryParts.push(`(${tierBits.join(" · ")})`);
+  }
+  const summary = summaryParts.join(" ");
+
+  const topRows = rows
+    .slice()
+    .sort((a, b) => b.impr - a.impr)
+    .slice(0, 8);
+  const extraBlocks: StepDetailBlock[] = [];
+  if (parsed !== undefined) {
+    extraBlocks.push({
+      kind: "facts",
+      rows: [
+        { label: "Cities parsed from GSC", value: String(parsed) },
+        { label: "City docs updated", value: String(rows.length) },
+        ...Object.entries(tierCounts).map(([tier, n]) => ({
+          label: `Tier "${tier}"`,
+          value: String(n),
+        })),
+      ],
+    });
+  }
+  if (topRows.length > 0) {
+    extraBlocks.push({
+      kind: "table",
+      columns: ["City slug", "Tier", "Impressions"],
+      rows: topRows.map((r) => [r.slug, r.tier, String(r.impr)]),
+    });
+  }
+
+  const detail =
+    topRows.length > 0
+      ? `Top: ${topRows
+          .slice(0, 3)
+          .map((r) => `${r.slug} (${r.impr})`)
+          .join(", ")}`
+      : undefined;
+
+  return { summary: summary || undefined, detail, extraBlocks };
+}
+
+function parseGscPrepend(lines: string[]): ParsedStepData {
+  const queueMatch = lines
+    .map((t) => t.match(/Prepended (\d+) cit(?:y|ies)/))
+    .find((m): m is RegExpMatchArray => !!m);
+  if (queueMatch) {
+    return { summary: `${queueMatch[1]} cities prepended to scrape queue.` };
+  }
+  // Look for per-city geocode outputs. If none, treat as empty run.
+  const geocodeLines = lines.filter((t) =>
+    t.match(/^\s*(?:✓|•|→|\+)\s+.+?\s+(?:via|→|at)\s+/i),
+  );
+  if (geocodeLines.length > 0) {
+    return {
+      summary: `${geocodeLines.length} cit${geocodeLines.length === 1 ? "y" : "ies"} geocoded.`,
+    };
+  }
+  return { summary: "No new cities to prepend." };
+}
+
+function parseDailyScrape(lines: string[]): ParsedStepData {
+  type CityRow = {
+    city: string;
+    newCount: number;
+    deduped: number;
+    apiCalls: number;
+  };
+  const cityRows: CityRow[] = [];
+  let currentCity: string | null = null;
+  let apiCallsTotal: number | undefined;
+  let queueRemaining: number | undefined;
+  let totalPlumbers: number | undefined;
+  let todayBudget: number | undefined;
+  let todaysCities: string | undefined;
+
+  for (const raw of lines) {
+    const t = raw.replace(/^\[\d{4}-\d{2}-\d{2}T[^\]]+\]\s*/, "");
+    const scrapingMatch = t.match(/^Scraping:\s+(.+?)\s*(?:\(|$)/);
+    if (scrapingMatch) {
+      currentCity = scrapingMatch[1].trim();
+      continue;
+    }
+    const resultMatch = t.match(/^\s*\+(\d+)\s+new,\s+(\d+)\s+deduped,\s+(\d+)\s+API calls/);
+    if (resultMatch && currentCity) {
+      cityRows.push({
+        city: currentCity,
+        newCount: Number(resultMatch[1]),
+        deduped: Number(resultMatch[2]),
+        apiCalls: Number(resultMatch[3]),
+      });
+      currentCity = null;
+      continue;
+    }
+    const apiTotal = t.match(/^\s*API calls:\s+(\d+)\s*$/);
+    if (apiTotal) apiCallsTotal = Number(apiTotal[1]);
+    const queue = t.match(/^\s*Queue remaining:\s+(\d+)\s+cities/);
+    if (queue) queueRemaining = Number(queue[1]);
+    const rawSaved = t.match(/Raw data saved:\s+(\d+)\s+total plumbers/);
+    if (rawSaved) totalPlumbers = Number(rawSaved[1]);
+    const budget = t.match(/Today's budget:\s+(\d+)\s+API calls/);
+    if (budget) todayBudget = Number(budget[1]);
+    const cities = t.match(/Today's cities:\s+(.+?)\s+\(est/);
+    if (cities) todaysCities = cities[1];
+  }
+
+  if (cityRows.length === 0 && apiCallsTotal === undefined) return {};
+
+  const totalNew = cityRows.reduce((sum, r) => sum + r.newCount, 0);
+  const cityList = cityRows.map((r) => r.city).join(", ");
+  const summary =
+    totalNew > 0
+      ? `${totalNew} new plumber${totalNew === 1 ? "" : "s"} across ${cityRows.length} cit${cityRows.length === 1 ? "y" : "ies"}${cityList ? `: ${cityList}` : ""}.`
+      : "Scrape ran; no new plumbers this cycle.";
+
+  const extraBlocks: StepDetailBlock[] = [];
+  if (cityRows.length > 0) {
+    extraBlocks.push({
+      kind: "table",
+      columns: ["City", "New", "Deduped", "API calls"],
+      rows: cityRows.map((r) => [
+        r.city,
+        String(r.newCount),
+        String(r.deduped),
+        String(r.apiCalls),
+      ]),
+    });
+  }
+  const facts: Array<{ label: string; value: string }> = [];
+  if (apiCallsTotal !== undefined) {
+    facts.push({ label: "API calls (total)", value: String(apiCallsTotal) });
+  }
+  if (todayBudget !== undefined) {
+    facts.push({
+      label: "Today's budget",
+      value: `${todayBudget} API calls`,
+    });
+  }
+  if (queueRemaining !== undefined) {
+    facts.push({
+      label: "Queue remaining",
+      value: `${queueRemaining} cities`,
+    });
+  }
+  if (totalPlumbers !== undefined) {
+    facts.push({ label: "Raw plumbers saved", value: String(totalPlumbers) });
+  }
+  if (todaysCities) {
+    facts.push({ label: "Today's cities", value: todaysCities });
+  }
+  if (facts.length > 0) extraBlocks.push({ kind: "facts", rows: facts });
+
+  const detail =
+    apiCallsTotal !== undefined
+      ? `${apiCallsTotal} API call${apiCallsTotal === 1 ? "" : "s"}${queueRemaining !== undefined ? ` · ${queueRemaining} cities remaining in queue` : ""}`
+      : undefined;
+
+  return { summary, detail, extraBlocks };
+}
+
+function parseUpload(lines: string[]): ParsedStepData {
+  let updated: number | undefined;
+  let complete = false;
+  for (const t of lines) {
+    const m = t.match(/^\s*Updated:\s+(\d+)/);
+    if (m) updated = Number(m[1]);
+    if (t.includes("Firestore upload complete")) complete = true;
+  }
+  if (updated === undefined && !complete) return {};
+  const summary =
+    updated !== undefined
+      ? `${updated} plumber doc${updated === 1 ? "" : "s"} upserted to Firestore.`
+      : "Firestore upload complete.";
+  const extraBlocks: StepDetailBlock[] =
+    updated !== undefined
+      ? [
+          {
+            kind: "facts",
+            rows: [{ label: "Docs updated", value: String(updated) }],
+          },
+        ]
+      : [];
+  return { summary, extraBlocks };
+}
+
+function parseRebuildJson(lines: string[]): ParsedStepData {
+  let firestorePlumbers: number | undefined;
+  let firestoreReviews: number | undefined;
+  let jsonPlumbers: number | undefined;
+  const newPlumbers: string[] = [];
+  let updated = 0;
+  for (const t of lines) {
+    const totals = t.match(
+      /Firestore:\s+(\d+)\s+plumbers,\s+(\d+)\s+reviews\s+\|\s+JSON:\s+(\d+)\s+plumbers/,
+    );
+    if (totals) {
+      firestorePlumbers = Number(totals[1]);
+      firestoreReviews = Number(totals[2]);
+      jsonPlumbers = Number(totals[3]);
+      continue;
+    }
+    const neu = t.match(/^\s*\+\s+(.+?)\s+\(new — not in JSON\)/);
+    if (neu) {
+      newPlumbers.push(neu[1]);
+      continue;
+    }
+    if (/^\s*↻\s+.+\(/.test(t)) updated += 1;
+  }
+  if (firestorePlumbers === undefined && newPlumbers.length === 0 && updated === 0) {
+    return {};
+  }
+  const parts: string[] = [];
+  if (firestorePlumbers !== undefined) {
+    parts.push(
+      `${firestorePlumbers} plumbers · ${firestoreReviews?.toLocaleString() ?? "?"} reviews in Firestore`,
+    );
+  }
+  if (updated > 0) {
+    parts.push(`${updated} updated`);
+  }
+  if (newPlumbers.length > 0) {
+    parts.push(`${newPlumbers.length} new in JSON`);
+  }
+  const summary = parts.join(" · ") + ".";
+
+  const extraBlocks: StepDetailBlock[] = [];
+  const facts: Array<{ label: string; value: string }> = [];
+  if (firestorePlumbers !== undefined) {
+    facts.push({
+      label: "Firestore plumbers",
+      value: String(firestorePlumbers),
+    });
+  }
+  if (firestoreReviews !== undefined) {
+    facts.push({
+      label: "Firestore reviews",
+      value: firestoreReviews.toLocaleString(),
+    });
+  }
+  if (jsonPlumbers !== undefined) {
+    facts.push({ label: "JSON plumbers (before)", value: String(jsonPlumbers) });
+  }
+  facts.push({ label: "JSON rows updated", value: String(updated) });
+  facts.push({ label: "New to JSON", value: String(newPlumbers.length) });
+  if (facts.length > 0) extraBlocks.push({ kind: "facts", rows: facts });
+
+  if (newPlumbers.length > 0) {
+    extraBlocks.push({
+      kind: "list",
+      label: "New plumbers added to JSON",
+      items: newPlumbers.slice(0, 25),
+    });
+  }
+  return { summary, extraBlocks };
+}
+
+function parseCityCoverage(lines: string[], allLines?: string[]): ParsedStepData {
+  // City-coverage has no `=== STAGE: X START ===` echo in the workflow, so
+  // if the time-window slice missed the output line (step ran in <1s), fall
+  // back to scanning the whole log.
+  const scope = lines.length > 0 ? lines : (allLines ?? []);
+  for (const t of scope) {
+    const m = t.match(/City coverage:\s+(\d+)\s+cities with data\s+\((\d+)\s+plumbers\)/);
+    if (m) {
+      const cities = Number(m[1]);
+      const plumbers = Number(m[2]);
+      return {
+        summary: `${cities} cities × service combos now in sitemap coverage (${plumbers} plumbers total).`,
+        extraBlocks: [
+          {
+            kind: "facts",
+            rows: [
+              { label: "Cities with data", value: String(cities) },
+              { label: "Plumbers total", value: String(plumbers) },
+            ],
+          },
+        ],
+      };
+    }
+  }
+  return {};
+}
+
+function parseStepFromLog(
+  stepId: string,
+  stepLines: string[],
+  allLines?: string[],
+): ParsedStepData {
+  switch (stepId) {
+    case "gsc-expansion":
+      return parseGscExpansion(stepLines);
+    case "gsc-prepend":
+      return parseGscPrepend(stepLines);
+    case "daily-scrape":
+      return parseDailyScrape(stepLines);
+    case "upload-firestore":
+      return parseUpload(stepLines);
+    case "rebuild-json":
+      return parseRebuildJson(stepLines);
+    case "city-coverage":
+      return parseCityCoverage(stepLines, allLines);
+    default:
+      return {};
+  }
+}
+
+// ---------- Block building ----------
+
 function buildStepBlocks(
   stepId: string,
   description: string,
   ghStep: GhJobStep,
   runUrl: string,
   commit: GhCommit | null,
+  parsed: ParsedStepData,
 ): StepDetailBlock[] {
   const blocks: StepDetailBlock[] = [
     { kind: "paragraph", text: description },
   ];
 
-  const facts: Array<{ label: string; value: string }> = [];
-  if (ghStep.started_at) {
-    facts.push({
-      label: "Started",
-      value: new Date(ghStep.started_at).toISOString(),
-    });
+  if (parsed.extraBlocks && parsed.extraBlocks.length > 0) {
+    blocks.push(...parsed.extraBlocks);
   }
+
+  const facts: Array<{ label: string; value: string }> = [];
   if (ghStep.started_at && ghStep.completed_at) {
     facts.push({
       label: "Duration",
       value: `${durationSeconds(ghStep.started_at, ghStep.completed_at)}s`,
     });
   }
-  facts.push({ label: "GitHub step", value: ghStep.name });
   facts.push({
     label: "Conclusion",
     value: ghStep.conclusion ?? ghStep.status,
   });
-  facts.push({ label: "Workflow run", value: runUrl });
+  facts.push({ label: "GitHub step", value: ghStep.name });
   blocks.push({ kind: "facts", rows: facts });
 
-  // Only the commit-push step gets the file list and commit message.
   if (stepId === "commit-push" && commit) {
     blocks.push({
       kind: "facts",
@@ -157,6 +586,11 @@ function buildStepBlocks(
     }
   }
 
+  blocks.push({
+    kind: "facts",
+    rows: [{ label: "Workflow run", value: runUrl }],
+  });
+
   return blocks;
 }
 
@@ -164,14 +598,14 @@ function stepSummary(
   stepId: string,
   ghStep: GhJobStep,
   commit: GhCommit | null,
+  parsed: ParsedStepData,
 ): string {
   if (ghStep.conclusion === "skipped") return "Skipped for today's run.";
   if (ghStep.conclusion === "failure") return "Step failed — see run logs.";
   if (ghStep.conclusion === "cancelled") return "Cancelled mid-run.";
   if (ghStep.status !== "completed") return "Still running.";
+  if (parsed.summary) return parsed.summary;
 
-  // Minimal per-step success blurbs. Real numbers live in logs; we stay
-  // honest by describing what the step does rather than fabricating counts.
   switch (stepId) {
     case "gsc-expansion":
       return "Pulled 90-day GSC data and queued any new cities with impressions.";
@@ -225,6 +659,17 @@ export async function loadTodayCronRun(): Promise<DailyCronRun | null> {
     ? await gh<GhCommit>(`/repos/${REPO}/commits/${botCommitSha}`)
     : await gh<GhCommit>(`/repos/${REPO}/commits/${run.head_sha}`);
 
+  // Fetch plain-text job log once. Used to slice per-step lines and
+  // regex out structured facts (plumber counts, city names, API spend,
+  // etc). Runs older than ~90 days may return 410 — we degrade gracefully
+  // to generic summaries.
+  const rawLog = await ghText(
+    `/repos/${REPO}/actions/jobs/${job.id}/logs`,
+  );
+  const logLines = rawLog ? parseLogLines(rawLog) : [];
+  const stageBuckets = rawLog ? linesByStage(logLines) : new Map();
+  const allLineTexts = logLines.map((l) => l.text);
+
   // Group GitHub steps by our stepId. Ignore any step that doesn't map.
   const byStepId = new Map<string, GhJobStep>();
   for (const ghStep of job.steps) {
@@ -245,11 +690,20 @@ export async function loadTodayCronRun(): Promise<DailyCronRun | null> {
         blocks: [{ kind: "paragraph", text: def.description }],
       };
     }
+    // Prefer stage-marker slicing (clean boundaries emitted by the
+    // workflow). Fall back to the time window when this step has no
+    // stage echo (city-coverage).
+    const markerKey = STAGE_MARKERS[def.id];
+    const stepLines = markerKey
+      ? (stageBuckets.get(markerKey) ?? [])
+      : linesBetween(logLines, ghStep.started_at, ghStep.completed_at);
+    const parsed = parseStepFromLog(def.id, stepLines, allLineTexts);
     const base: CronStep = {
       id: def.id,
       name: def.name,
       status: ghStepToStatus(ghStep),
-      summary: stepSummary(def.id, ghStep, commit),
+      summary: stepSummary(def.id, ghStep, commit, parsed),
+      detail: parsed.detail,
       startedAt: ghStep.started_at ?? undefined,
       durationSeconds:
         ghStep.started_at && ghStep.completed_at
@@ -261,6 +715,7 @@ export async function loadTodayCronRun(): Promise<DailyCronRun | null> {
         ghStep,
         run.html_url,
         commit,
+        parsed,
       ),
     };
     return base;
