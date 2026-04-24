@@ -1,18 +1,34 @@
 /**
- * Scrape queue detail page — everything pending scrape, sorted by GSC
- * impressions desc. Cities with no GSC join sink to the bottom.
+ * Scrape queue detail page.
+ *
+ * Grouped by GSC tier (high / medium / low / none) — same thresholds as
+ * scripts/gsc-expansion.js. Within each tier, sorted by impressions desc.
  */
 
 import Link from "next/link";
-import { loadQueueSnapshot, type QueueEntry } from "@/lib/queueReader";
+import {
+  loadQueueSnapshot,
+  TIER_LABEL,
+  TIER_RANGE,
+  type GscTier,
+  type QueueEntry,
+} from "@/lib/queueReader";
 
 export const revalidate = 300;
 
-function sortByImpressionsDesc(a: QueueEntry, b: QueueEntry): number {
-  const ai = a.impressions ?? -1;
-  const bi = b.impressions ?? -1;
-  if (ai !== bi) return bi - ai;
-  return a.city.localeCompare(b.city);
+const TIER_ORDER: GscTier[] = ["high", "medium", "low", "none"];
+
+function tierInk(tier: GscTier): string {
+  switch (tier) {
+    case "high":
+      return "var(--color-accent-strong)";
+    case "medium":
+      return "var(--color-ink-primary)";
+    case "low":
+      return "var(--color-ink-secondary)";
+    case "none":
+      return "var(--color-ink-tertiary)";
+  }
 }
 
 export default async function QueuePage() {
@@ -42,14 +58,23 @@ export default async function QueuePage() {
   }
 
   const pending = snap.entries.filter((e) => e.status === "pending");
-  const sorted = [...pending].sort(sortByImpressionsDesc);
-  const withImpr = sorted.filter(
-    (e) => typeof e.impressions === "number" && e.impressions > 0,
-  );
-  const noImpr = sorted.filter(
-    (e) => !(typeof e.impressions === "number" && e.impressions > 0),
-  );
-  const totalImpr = withImpr.reduce((s, e) => s + (e.impressions ?? 0), 0);
+  const byTier: Record<GscTier, QueueEntry[]> = {
+    high: [],
+    medium: [],
+    low: [],
+    none: [],
+  };
+  for (const e of pending) byTier[e.tier].push(e);
+  for (const tier of TIER_ORDER) {
+    byTier[tier].sort((a, b) => {
+      const ai = a.impressions ?? -1;
+      const bi = b.impressions ?? -1;
+      if (ai !== bi) return bi - ai;
+      return a.city.localeCompare(b.city);
+    });
+  }
+
+  const totalImpr = pending.reduce((s, e) => s + (e.impressions ?? 0), 0);
 
   return (
     <div className="flex flex-col gap-10">
@@ -86,16 +111,16 @@ export default async function QueuePage() {
           scrape.
         </h1>
         <p
+          className="font-mono"
           style={{
-            fontSize: "var(--text-body)",
-            color: "var(--color-ink-secondary)",
+            fontSize: "var(--text-ambient)",
+            color: "var(--color-ink-tertiary)",
           }}
         >
-          {withImpr.length} with GSC impression data (
-          {totalImpr.toLocaleString()} total impressions across the queue).
-          {noImpr.length > 0 && (
-            <> {noImpr.length} without recent GSC data.</>
-          )}
+          {TIER_ORDER.filter((t) => byTier[t].length > 0)
+            .map((t) => `${byTier[t].length} ${t}`)
+            .join(" · ")}{" "}
+          · {totalImpr.toLocaleString()} total impressions
         </p>
         <p
           className="font-mono"
@@ -109,24 +134,69 @@ export default async function QueuePage() {
         </p>
       </header>
 
-      <section>
-        <h2
-          className="mb-3"
+      {TIER_ORDER.map((tier) => {
+        const rows = byTier[tier];
+        if (rows.length === 0) return null;
+        return <TierSection key={tier} tier={tier} rows={rows} />;
+      })}
+    </div>
+  );
+}
+
+function TierSection({
+  tier,
+  rows,
+}: {
+  tier: GscTier;
+  rows: QueueEntry[];
+}) {
+  const tierImpr = rows.reduce((s, e) => s + (e.impressions ?? 0), 0);
+  return (
+    <section className="flex flex-col gap-3">
+      <header
+        className="flex items-baseline justify-between gap-4 border-b pb-2"
+        style={{ borderColor: "var(--color-border-secondary)" }}
+      >
+        <div className="flex items-baseline gap-3">
+          <h2
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "var(--text-heading)",
+              color: tierInk(tier),
+              lineHeight: 1.2,
+            }}
+          >
+            {TIER_LABEL[tier]}
+          </h2>
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-label)",
+              letterSpacing: "0.04em",
+              color: "var(--color-ink-tertiary)",
+            }}
+          >
+            {TIER_RANGE[tier]}
+          </span>
+        </div>
+        <span
+          className="font-mono tabular-nums"
           style={{
             fontSize: "var(--text-label)",
             letterSpacing: "0.04em",
             color: "var(--color-ink-tertiary)",
           }}
         >
-          sorted by impressions, desc
-        </h2>
-        <ol className="flex flex-col">
-          {sorted.map((e, idx) => (
-            <QueueRow key={`${e.city}|${e.state}`} entry={e} index={idx + 1} />
-          ))}
-        </ol>
-      </section>
-    </div>
+          {rows.length} cit{rows.length === 1 ? "y" : "ies"}
+          {tier !== "none" && ` · ${tierImpr.toLocaleString()} impr`}
+        </span>
+      </header>
+      <ol className="flex flex-col">
+        {rows.map((e, idx) => (
+          <QueueRow key={`${e.city}|${e.state}`} entry={e} index={idx + 1} />
+        ))}
+      </ol>
+    </section>
   );
 }
 
