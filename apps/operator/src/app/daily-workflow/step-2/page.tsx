@@ -1,16 +1,21 @@
 /**
- * Daily Workflow — step 1: review what the 6 AM cron did overnight.
+ * Daily Workflow — step 2: this morning's maintenance.
  *
- * Mirrors the seven surviving steps of `daily-scrape.yml` (see CLAUDE.md
- * "Automation pause" section). This page is intentionally the only thing
- * visible — no signal strip, no focus card, no quiet list. The operator's
- * daily pass starts here.
+ * Two cron steps that don't bring NEW data, they keep what we already
+ * have fresh:
+ *   - Refresh Reviews: re-pulls Google Places reviews on existing
+ *     plumbers (30-day rotation, capped at 20 per run)
+ *   - Request Indexing: pings Google Indexing API for the city pages
+ *     we just touched (200/day quota, free)
+ *
+ * Both run inside the same `daily-scrape.yml` workflow as step 1; this
+ * page just filters the run to the maintenance subset for review.
  */
 
 import Link from "next/link";
 import { todayCronRun as mockRun } from "@/lib/dailyCronMock";
 import { loadTodayCronRun } from "@/lib/dailyCronReader";
-import { INTAKE_STEPS } from "@/lib/cronSteps";
+import { MAINTENANCE_STEPS } from "@/lib/cronSteps";
 import type { CronStep, CronStepStatus } from "@/lib/types";
 
 export const revalidate = 300;
@@ -41,16 +46,6 @@ function statusLabel(status: CronStepStatus): string {
   }
 }
 
-function formatTime(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: "America/Chicago",
-    timeZoneName: "short",
-  });
-}
-
 function formatDate(iso: string): string {
   const d = new Date(iso + "T12:00:00Z");
   return d.toLocaleDateString("en-US", {
@@ -60,22 +55,27 @@ function formatDate(iso: string): string {
   });
 }
 
-function formatDuration(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}m ${s}s`;
-}
-
-export default async function DailyWorkflowPage() {
+export default async function DailyWorkflowStep2Page() {
   const live = await loadTodayCronRun();
   const run = live ?? mockRun;
   const isMock = !live;
-  const intakeIds = new Set(INTAKE_STEPS.map((s) => s.id));
-  const intakeSteps = run.steps.filter((s) => intakeIds.has(s.id));
+  const maintenanceIds = new Set(MAINTENANCE_STEPS.map((s) => s.id));
+  const maintenanceSteps = run.steps.filter((s) => maintenanceIds.has(s.id));
 
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-2">
+        <Link
+          href="/daily-workflow"
+          className="hover:opacity-80"
+          style={{
+            fontSize: "var(--text-label)",
+            letterSpacing: "0.04em",
+            color: "var(--color-ink-tertiary)",
+          }}
+        >
+          ← step 1: this morning&rsquo;s intake
+        </Link>
         <p
           style={{
             fontSize: "var(--text-label)",
@@ -83,7 +83,7 @@ export default async function DailyWorkflowPage() {
             color: "var(--color-ink-tertiary)",
           }}
         >
-          step 1 · this morning&rsquo;s intake
+          step 2 · this morning&rsquo;s maintenance
         </p>
         <h1
           style={{
@@ -93,7 +93,7 @@ export default async function DailyWorkflowPage() {
             lineHeight: 1.2,
           }}
         >
-          What ran at 6&nbsp;AM today.
+          What got refreshed today.
         </h1>
         <p
           style={{
@@ -101,57 +101,19 @@ export default async function DailyWorkflowPage() {
             color: "var(--color-ink-secondary)",
           }}
         >
-          {formatDate(run.date)} · started {formatTime(run.startedAt)} ·
-          finished in {formatDuration(run.durationSeconds)}
+          {formatDate(run.date)} · two automated jobs that keep existing data
+          fresh and ping Google to recrawl. Both are zero-cost and need no
+          operator attention — this page is just visibility.
         </p>
       </header>
 
       <ol className="flex flex-col">
-        {intakeSteps.map((step, idx) => (
+        {maintenanceSteps.map((step, idx) => (
           <StepRow key={step.id} step={step} index={idx + 1} />
         ))}
       </ol>
 
-      <Link
-        href="/daily-workflow/step-2"
-        className="border rounded-lg px-5 py-4 hover:opacity-90 transition-opacity flex items-baseline justify-between gap-4"
-        style={{
-          borderColor: "var(--color-border-tertiary)",
-          backgroundColor: "var(--color-surface-muted)",
-        }}
-      >
-        <div>
-          <p
-            style={{
-              fontSize: "var(--text-label)",
-              letterSpacing: "0.04em",
-              color: "var(--color-ink-tertiary)",
-            }}
-          >
-            step 2 · this morning&rsquo;s maintenance
-          </p>
-          <p
-            className="mt-1"
-            style={{
-              fontSize: "var(--text-body)",
-              color: "var(--color-ink-primary)",
-            }}
-          >
-            Refresh Reviews + Request Indexing — what the cron did to existing data.
-          </p>
-        </div>
-        <span
-          style={{
-            fontSize: "var(--text-label)",
-            letterSpacing: "0.04em",
-            color: "var(--color-ink-tertiary)",
-          }}
-        >
-          view →
-        </span>
-      </Link>
-
-      {run.commitSha && (
+      {isMock && (
         <footer
           className="border-t pt-4"
           style={{ borderColor: "var(--color-border-tertiary)" }}
@@ -163,30 +125,8 @@ export default async function DailyWorkflowPage() {
               color: "var(--color-ink-tertiary)",
             }}
           >
-            commit {run.commitSha}
+            mock data · no real 6 AM run captured yet for this date
           </p>
-          {run.commitMessage && (
-            <p
-              className="mt-1"
-              style={{
-                fontSize: "var(--text-body)",
-                color: "var(--color-ink-secondary)",
-              }}
-            >
-              {run.commitMessage}
-            </p>
-          )}
-          {isMock && (
-            <p
-              className="font-mono mt-3"
-              style={{
-                fontSize: "var(--text-ambient)",
-                color: "var(--color-ink-tertiary)",
-              }}
-            >
-              mock data · no real 6 AM run captured yet for this date
-            </p>
-          )}
         </footer>
       )}
     </div>

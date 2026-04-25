@@ -16,13 +16,18 @@ the workflows.** That undoes the work in progress.
 
 Current state of `.github/workflows/`:
 
-- **`daily-scrape.yml`** — STILL AUTOMATED (6 AM Central). Stripped to the
-  intake-only chain: GSC expansion → GSC prepend queue → daily-scrape
-  (Google Places) → upload-to-firestore → rebuild JSON from Firestore →
-  regenerate city coverage → commit & push. This chain is zero-dollar
-  (GSC is free; Places intake runs under the $200/mo free credit, guarded
-  at 90% by `budget-guard.ts`). It brings new plumbers into Firestore with
-  no human in the loop so the site keeps growing overnight.
+- **`daily-scrape.yml`** — STILL AUTOMATED (6 AM Central). Two-phase chain:
+  - **Intake (step 1):** GSC expansion → GSC prepend queue → daily-scrape
+    (Google Places) → upload-to-firestore → rebuild JSON from Firestore →
+    regenerate city coverage → commit & push. Brings new cities and
+    plumbers into the system.
+  - **Maintenance (step 2):** refresh-reviews.ts (Google Places review
+    accumulation, capped at 20 plumbers/run) runs between Upload and
+    Rebuild. request-indexing.js (Google Indexing API pings for newly-
+    scraped city pages, 200/day quota) runs after Commit & Push.
+  Zero-dollar (GSC, Places, and Indexing are all free at our scale,
+  guarded at 90% of $200/mo Places cap by `budget-guard.ts`). Re-enabled
+  2026-04-24 — neither step needs operator judgment, they just run.
 - **`deep-review-pull.yml`** — CRON DISABLED. `workflow_dispatch` only.
   Outscraper multi-source review pull is a paid API; we're choosing cities
   by hand in the Operator Console before dispatching.
@@ -35,9 +40,12 @@ Current state of `.github/workflows/`:
 
 Removed from `daily-scrape.yml` and now in the manual backlog:
 
-- `refresh-reviews.ts` (Places review accumulation)
-- `request-indexing.js` (Google Indexing API pings)
-- `score-plumbers.ts` (Sonnet scoring + synthesis)
+- `score-plumbers.ts` (Sonnet scoring + synthesis) — paid Anthropic API,
+  needs operator-paste-flow inside the console before re-automating.
+
+`refresh-reviews.ts` and `request-indexing.js` were re-automated on
+2026-04-24 — both are free, deterministic, and don't need operator
+judgment.
 
 These are not deleted — they still live in `scripts/` and can be invoked
 from the Operator Console or `workflow_dispatch` runs. The plan is to
@@ -96,9 +104,10 @@ One GitHub Actions workflow is currently on cron; the others are manual.
 See the "Automation pause" section above for the full current state.
 
 - **`daily-scrape.yml`** (6 AM Central, ACTIVE) — GSC expansion → GSC
-  prepend → Places intake → Firestore upload → JSON rebuild → city
-  coverage regen → commit → Vercel rebuild. Enrichment/scoring/indexing
-  have been removed from this workflow and are now manual.
+  prepend → Places intake → Firestore upload → **review refresh** → JSON
+  rebuild → city coverage regen → commit → **request indexing** → Vercel
+  rebuild. Scoring/synthesis remains manual; refresh + indexing were
+  re-automated 2026-04-24.
 - **`deep-review-pull.yml`** / **`rebuild-json.yml`** /
   **`publish-experiment-metrics.yml`** — `workflow_dispatch` only as of
   2026-04-23. Run by hand from the Operator Console or the Actions UI.

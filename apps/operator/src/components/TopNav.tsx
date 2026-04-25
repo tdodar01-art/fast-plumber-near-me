@@ -10,12 +10,19 @@ function resolveCrumbs(pathname: string): string[] {
   // "/" → no crumbs (we're on the dashboard)
   if (pathname === "/") return [];
 
-  if (pathname === "/daily-workflow") return ["daily workflow"];
+  if (pathname === "/daily-workflow") return ["daily workflow", "step 1"];
+  if (pathname === "/daily-workflow/step-2")
+    return ["daily workflow", "step 2"];
 
   const stepMatch = pathname.match(/^\/daily-workflow\/([^/]+)$/);
   if (stepMatch) {
     const step = getStepDefById(stepMatch[1]);
-    return ["daily workflow", step ? step.name.toLowerCase() : stepMatch[1]];
+    if (step) {
+      const phaseLabel =
+        step.category === "maintenance" ? "step 2" : "step 1";
+      return ["daily workflow", phaseLabel, step.name.toLowerCase()];
+    }
+    return ["daily workflow", stepMatch[1]];
   }
 
   return [];

@@ -10,7 +10,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { todayCronRun as mockRun } from "@/lib/dailyCronMock";
 import { loadTodayCronRun } from "@/lib/dailyCronReader";
-import { CRON_STEPS } from "@/lib/cronSteps";
+import { CRON_STEPS, getStepDefById } from "@/lib/cronSteps";
 import type {
   CronStep,
   CronStepStatus,
@@ -73,13 +73,20 @@ export default async function StepDetailPage({
   const step = run.steps.find((s) => s.id === stepId);
   if (!step) notFound();
 
+  const stepDef = getStepDefById(step.id);
+  const isMaintenance = stepDef?.category === "maintenance";
+  const parentHref = isMaintenance ? "/daily-workflow/step-2" : "/daily-workflow";
+  const parentLabel = isMaintenance
+    ? "step 2 · maintenance"
+    : "step 1 · this morning's intake";
+
   const idx = run.steps.findIndex((s) => s.id === step.id) + 1;
 
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-2">
         <Link
-          href="/daily-workflow"
+          href={parentHref}
           className="hover:opacity-80"
           style={{
             fontSize: "var(--text-label)",
@@ -87,7 +94,7 @@ export default async function StepDetailPage({
             color: "var(--color-ink-tertiary)",
           }}
         >
-          ← back to daily workflow
+          ← back to {parentLabel}
         </Link>
         <p
           style={{

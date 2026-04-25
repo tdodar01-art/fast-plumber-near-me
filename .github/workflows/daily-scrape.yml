@@ -82,6 +82,18 @@ jobs:
           echo "=== STAGE: UPLOAD START ==="
           node scripts/upload-to-firestore.js
 
+      # Refresh Google Places reviews on existing plumbers (30-day cadence,
+      # capped at 20 plumbers per run). Free Places API. continue-on-error
+      # so a partial failure here never blocks publishing.
+      - name: Refresh reviews
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+        run: |
+          echo "=== STAGE: REFRESH REVIEWS START ==="
+          npx tsx scripts/refresh-reviews.ts --max 20
+
       # Rebuild derived JSON from Firestore (single source of truth)
       # export-firestore-to-json.js is the SOLE writer to plumbers-synthesized.json.
       # MUST RUN — no continue-on-error. Publishing must never silently fail.
@@ -116,6 +128,48 @@ jobs:
             NEW=$(node -e "const r=require('./apps/plumbers-web/data/logs/daily-result-$(date +%Y-%m-%d).json');console.log(r.newPlumbers)" 2>/dev/null || echo "0")
             git commit -m "Daily scrape: +${NEW} plumbers from ${CITIES}"
             git push
+          fi
+
+      # Request indexing for the city pages we just touched. Free Google
+      # Indexing API (200/day quota guarded inside the script). Runs after
+      # commit so the URLs are already live before we ask Google to recrawl.
+      - name: Request indexing for scraped cities
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
+        run: |
+          echo "=== STAGE: INDEXING START ==="
+          LOG="data/logs/daily-result-$(date +%Y-%m-%d).json"
+          if [ ! -f "$LOG" ]; then
+            echo "No daily result log found — submitting sitemap only."
+            node scripts/request-indexing.js --sitemap-only
+            exit 0
+          fi
+          URLS=$(node -e "
+            const r = require('./$LOG');
+            const slugify = (t) => t.toLowerCase().replace(/\./g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+            const cities = r.citiesProcessed || [];
+            if (cities.length === 0) { process.exit(0); }
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('data/synthesized/plumbers-synthesized.json','utf-8'));
+            const urls = new Set();
+            for (const c of cities) {
+              const match = data.plumbers.find(p => p.city === c.city);
+              if (match) {
+                const abbrs = {AL:'alabama',AK:'alaska',AZ:'arizona',AR:'arkansas',CA:'california',CO:'colorado',CT:'connecticut',DE:'delaware',FL:'florida',GA:'georgia',HI:'hawaii',ID:'idaho',IL:'illinois',IN:'indiana',IA:'iowa',KS:'kansas',KY:'kentucky',LA:'louisiana',ME:'maine',MD:'maryland',MA:'massachusetts',MI:'michigan',MN:'minnesota',MS:'mississippi',MO:'missouri',MT:'montana',NE:'nebraska',NV:'nevada',NH:'new-hampshire',NJ:'new-jersey',NM:'new-mexico',NY:'new-york',NC:'north-carolina',ND:'north-dakota',OH:'ohio',OK:'oklahoma',OR:'oregon',PA:'pennsylvania',RI:'rhode-island',SC:'south-carolina',SD:'south-dakota',TN:'tennessee',TX:'texas',UT:'utah',VT:'vermont',VA:'virginia',WA:'washington',WV:'west-virginia',WI:'wisconsin',WY:'wyoming',DC:'district-of-columbia'};
+                const ss = abbrs[match.state] || match.state.toLowerCase();
+                urls.add('/emergency-plumbers/' + ss + '/' + slugify(c.city));
+              }
+            }
+            if (urls.size > 0) console.log([...urls].join(' '));
+          " 2>/dev/null)
+          if [ -z "$URLS" ]; then
+            echo "No city URLs to index — submitting sitemap only."
+            node scripts/request-indexing.js --sitemap-only
+          else
+            echo "Requesting indexing for: $URLS"
+            node scripts/request-indexing.js $URLS
           fi
 
       - name: Cleanup service account
