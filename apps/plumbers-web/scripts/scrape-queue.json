@@ -1,26 +1,8 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 669,
+  "usedThisMonth": 699,
   "queue": [
-    {
-      "city": "Georgetown",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Vallejo",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Dallas",
       "state": "TX",
@@ -1523,6 +1505,26 @@
       "actualCalls": 13,
       "plumbersFound": 11,
       "completedAt": "2026-04-24"
+    },
+    {
+      "city": "Georgetown",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 13,
+      "completedAt": "2026-04-25"
+    },
+    {
+      "city": "Vallejo",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 16,
+      "plumbersFound": 15,
+      "completedAt": "2026-04-25"
     }
   ]
 }
