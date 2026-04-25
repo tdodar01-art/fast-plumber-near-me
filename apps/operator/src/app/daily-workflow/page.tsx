@@ -10,7 +10,6 @@
 import Link from "next/link";
 import { todayCronRun as mockRun } from "@/lib/dailyCronMock";
 import { loadTodayCronRun } from "@/lib/dailyCronReader";
-import { INTAKE_STEPS } from "@/lib/cronSteps";
 import type { CronStep, CronStepStatus } from "@/lib/types";
 
 export const revalidate = 300;
@@ -70,8 +69,6 @@ export default async function DailyWorkflowPage() {
   const live = await loadTodayCronRun();
   const run = live ?? mockRun;
   const isMock = !live;
-  const intakeIds = new Set(INTAKE_STEPS.map((s) => s.id));
-  const intakeSteps = run.steps.filter((s) => intakeIds.has(s.id));
 
   return (
     <div className="flex flex-col gap-10">
@@ -107,49 +104,10 @@ export default async function DailyWorkflowPage() {
       </header>
 
       <ol className="flex flex-col">
-        {intakeSteps.map((step, idx) => (
+        {run.steps.map((step, idx) => (
           <StepRow key={step.id} step={step} index={idx + 1} />
         ))}
       </ol>
-
-      <Link
-        href="/daily-workflow/step-2"
-        className="border rounded-lg px-5 py-4 hover:opacity-90 transition-opacity flex items-baseline justify-between gap-4"
-        style={{
-          borderColor: "var(--color-border-tertiary)",
-          backgroundColor: "var(--color-surface-muted)",
-        }}
-      >
-        <div>
-          <p
-            style={{
-              fontSize: "var(--text-label)",
-              letterSpacing: "0.04em",
-              color: "var(--color-ink-tertiary)",
-            }}
-          >
-            step 2 · this morning&rsquo;s maintenance
-          </p>
-          <p
-            className="mt-1"
-            style={{
-              fontSize: "var(--text-body)",
-              color: "var(--color-ink-primary)",
-            }}
-          >
-            Refresh Reviews + Request Indexing — what the cron did to existing data.
-          </p>
-        </div>
-        <span
-          style={{
-            fontSize: "var(--text-label)",
-            letterSpacing: "0.04em",
-            color: "var(--color-ink-tertiary)",
-          }}
-        >
-          view →
-        </span>
-      </Link>
 
       {run.commitSha && (
         <footer

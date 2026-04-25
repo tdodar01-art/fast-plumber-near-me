@@ -82,17 +82,14 @@ jobs:
           echo "=== STAGE: UPLOAD START ==="
           node scripts/upload-to-firestore.js
 
-      # Refresh Google Places reviews on existing plumbers (30-day cadence,
-      # capped at 20 plumbers per run). Free Places API. continue-on-error
-      # so a partial failure here never blocks publishing.
-      - name: Refresh reviews
-        if: steps.firebase.outputs.configured == 'true'
-        continue-on-error: true
-        env:
-          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
-        run: |
-          echo "=== STAGE: REFRESH REVIEWS START ==="
-          npx tsx scripts/refresh-reviews.ts --max 20
+      # NOTE: refresh-reviews.ts was removed from this cron 2026-04-25.
+      # Google Places API (New) returns at most 5 reviews per plumber sorted
+      # by Google's relevance algorithm — not by recency. For mature
+      # plumbers, the same 5 reviews are returned day after day, so the
+      # script burned API calls confirming "still the same 5" and never
+      # surfaced new reviews. Real review accumulation needs Outscraper
+      # (paid, sorted by recency, up to 100/plumber). Re-add only after
+      # `deep-review-pull.yml` is wired into the operator console.
 
       # Rebuild derived JSON from Firestore (single source of truth)
       # export-firestore-to-json.js is the SOLE writer to plumbers-synthesized.json.

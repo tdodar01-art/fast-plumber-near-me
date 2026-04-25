@@ -1,81 +1,39 @@
 /**
- * Daily Workflow — step 2: this morning's maintenance.
+ * Daily Workflow — step 2: synthesize plumbers via paste-flow.
  *
- * Two cron steps that don't bring NEW data, they keep what we already
- * have fresh:
- *   - Refresh Reviews: re-pulls Google Places reviews on existing
- *     plumbers (30-day rotation, capped at 20 per run)
- *   - Request Indexing: pings Google Indexing API for the city pages
- *     we just touched (200/day quota, free)
+ * Lists plumbers in Firestore that have no Sonnet `synthesis.summary`
+ * yet. Operator clicks into each one to see a copy-able prompt + a
+ * paste-back area for Claude.ai's response (no Anthropic API spend).
  *
- * Both run inside the same `daily-scrape.yml` workflow as step 1; this
- * page just filters the run to the maintenance subset for review.
+ * This replaces the disabled `score-plumbers.ts` cron step. The page
+ * shows the work pile; the per-plumber detail page is where the actual
+ * paste-flow happens.
  */
 
 import Link from "next/link";
-import { todayCronRun as mockRun } from "@/lib/dailyCronMock";
-import { loadTodayCronRun } from "@/lib/dailyCronReader";
-import { MAINTENANCE_STEPS } from "@/lib/cronSteps";
-import type { CronStep, CronStepStatus } from "@/lib/types";
+import { loadSynthesisQueue } from "@/lib/synthesisReader";
 
 export const revalidate = 300;
 
-function statusInk(status: CronStepStatus): string {
-  switch (status) {
-    case "success":
-      return "var(--color-accent-strong)";
-    case "warn":
-      return "var(--color-ink-secondary)";
-    case "skip":
-      return "var(--color-ink-tertiary)";
-    case "error":
-      return "var(--color-danger-ink)";
+export default async function Step2Page() {
+  const snap = await loadSynthesisQueue();
+
+  if (!snap) {
+    return (
+      <div className="flex flex-col gap-4">
+        <p style={{ color: "var(--color-ink-secondary)" }}>
+          Could not load plumbers JSON from main. Check{" "}
+          <code>GITHUB_TOKEN</code> in <code>apps/operator/.env.local</code>.
+        </p>
+      </div>
+    );
   }
-}
 
-function statusLabel(status: CronStepStatus): string {
-  switch (status) {
-    case "success":
-      return "ran";
-    case "warn":
-      return "warn";
-    case "skip":
-      return "skip";
-    case "error":
-      return "fail";
-  }
-}
-
-function formatDate(iso: string): string {
-  const d = new Date(iso + "T12:00:00Z");
-  return d.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-export default async function DailyWorkflowStep2Page() {
-  const live = await loadTodayCronRun();
-  const run = live ?? mockRun;
-  const isMock = !live;
-  const maintenanceIds = new Set(MAINTENANCE_STEPS.map((s) => s.id));
-  const maintenanceSteps = run.steps.filter((s) => maintenanceIds.has(s.id));
+  const candidates = snap.candidates;
 
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-2">
-        <Link
-          href="/daily-workflow"
-          className="hover:opacity-80"
-          style={{
-            fontSize: "var(--text-label)",
-            letterSpacing: "0.04em",
-            color: "var(--color-ink-tertiary)",
-          }}
-        >
-          ← step 1: this morning&rsquo;s intake
-        </Link>
         <p
           style={{
             fontSize: "var(--text-label)",
@@ -83,7 +41,7 @@ export default async function DailyWorkflowStep2Page() {
             color: "var(--color-ink-tertiary)",
           }}
         >
-          step 2 · this morning&rsquo;s maintenance
+          step 2 · synthesize new plumbers
         </p>
         <h1
           style={{
@@ -93,7 +51,8 @@ export default async function DailyWorkflowStep2Page() {
             lineHeight: 1.2,
           }}
         >
-          What got refreshed today.
+          {candidates.length} plumber{candidates.length === 1 ? "" : "s"} need
+          synthesis.
         </h1>
         <p
           style={{
@@ -101,100 +60,101 @@ export default async function DailyWorkflowStep2Page() {
             color: "var(--color-ink-secondary)",
           }}
         >
-          {formatDate(run.date)} · two automated jobs that keep existing data
-          fresh and ping Google to recrawl. Both are zero-cost and need no
-          operator attention — this page is just visibility.
+          Sorted by review count desc — most reviews = synthesis with the most
+          signal. Click in to see the prompt and paste Claude&rsquo;s response
+          back. No Anthropic API spend; you run it in your own Claude.ai tab.
+        </p>
+        <p
+          className="font-mono"
+          style={{
+            fontSize: "var(--text-ambient)",
+            color: "var(--color-ink-tertiary)",
+          }}
+        >
+          {snap.hasSynthesis} / {snap.totalPlumbers} plumbers already have a
+          synthesis on file.
         </p>
       </header>
 
-      <ol className="flex flex-col">
-        {maintenanceSteps.map((step, idx) => (
-          <StepRow key={step.id} step={step} index={idx + 1} />
-        ))}
-      </ol>
-
-      {isMock && (
-        <footer
-          className="border-t pt-4"
-          style={{ borderColor: "var(--color-border-tertiary)" }}
-        >
-          <p
-            className="font-mono"
-            style={{
-              fontSize: "var(--text-ambient)",
-              color: "var(--color-ink-tertiary)",
-            }}
-          >
-            mock data · no real 6 AM run captured yet for this date
-          </p>
-        </footer>
-      )}
-    </div>
-  );
-}
-
-function StepRow({ step, index }: { step: CronStep; index: number }) {
-  return (
-    <li
-      className="border-b last:border-b-0"
-      style={{ borderColor: "var(--color-border-tertiary)" }}
-    >
-      <Link
-        href={`/daily-workflow/${step.id}`}
-        className="flex gap-5 py-4 hover:opacity-80"
-      >
-        <span
-          className="font-mono tabular-nums pt-0.5"
+      {candidates.length === 0 ? (
+        <p
+          className="italic"
           style={{
-            fontSize: "var(--text-label)",
+            fontFamily: "var(--font-serif)",
+            fontSize: "var(--text-body)",
             color: "var(--color-ink-tertiary)",
-            minWidth: "1.5rem",
           }}
         >
-          {String(index).padStart(2, "0")}
-        </span>
-        <div className="flex-1 flex flex-col gap-1">
-          <div className="flex items-baseline justify-between gap-4">
-            <span
-              style={{
-                fontSize: "var(--text-body)",
-                color: "var(--color-ink-primary)",
-                fontWeight: 500,
-              }}
+          Every plumber in Firestore has a synthesis. Nothing to do here.
+        </p>
+      ) : (
+        <ol className="flex flex-col">
+          {candidates.map((c, idx) => (
+            <li
+              key={c.placeId || c.slug}
+              className="border-b last:border-b-0"
+              style={{ borderColor: "var(--color-border-tertiary)" }}
             >
-              {step.name}
-            </span>
-            <span
-              className="font-mono"
-              style={{
-                fontSize: "var(--text-label)",
-                letterSpacing: "0.04em",
-                color: statusInk(step.status),
-              }}
-            >
-              {statusLabel(step.status)}
-            </span>
-          </div>
-          <p
-            style={{
-              fontSize: "var(--text-body)",
-              color: "var(--color-ink-secondary)",
-            }}
-          >
-            {step.summary}
-          </p>
-          {step.detail && (
-            <p
-              style={{
-                fontSize: "var(--text-ambient)",
-                color: "var(--color-ink-tertiary)",
-              }}
-            >
-              {step.detail}
-            </p>
-          )}
-        </div>
-      </Link>
-    </li>
+              <Link
+                href={`/daily-workflow/step-2/${c.placeId || c.slug}`}
+                className="flex gap-5 py-4 hover:opacity-80"
+              >
+                <span
+                  className="font-mono tabular-nums pt-0.5"
+                  style={{
+                    fontSize: "var(--text-label)",
+                    color: "var(--color-ink-tertiary)",
+                    minWidth: "2.5rem",
+                  }}
+                >
+                  {String(idx + 1).padStart(3, "0")}
+                </span>
+                <div className="flex-1 flex flex-col gap-1">
+                  <div className="flex items-baseline justify-between gap-4">
+                    <span
+                      style={{
+                        fontSize: "var(--text-body)",
+                        color: "var(--color-ink-primary)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {c.name}
+                    </span>
+                    <span
+                      className="font-mono tabular-nums"
+                      style={{
+                        fontSize: "var(--text-label)",
+                        letterSpacing: "0.04em",
+                        color: "var(--color-ink-tertiary)",
+                      }}
+                    >
+                      {c.reviewsCachedCount} cached
+                      {c.googleReviewCount !== undefined &&
+                        c.googleReviewCount !== c.reviewsCachedCount &&
+                        ` · ${c.googleReviewCount} on google`}
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "var(--text-body)",
+                      color: "var(--color-ink-secondary)",
+                    }}
+                  >
+                    {c.city}
+                    {c.state ? `, ${c.state}` : ""}
+                    {typeof c.googleRating === "number" && (
+                      <>
+                        {" · "}
+                        {c.googleRating.toFixed(1)}★
+                      </>
+                    )}
+                  </p>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
   );
 }

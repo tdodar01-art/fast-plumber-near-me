@@ -170,7 +170,6 @@ const STAGE_MARKERS: Record<string, string> = {
   "gsc-prepend": "GSC PREPEND",
   "daily-scrape": "SCRAPE",
   "upload-firestore": "UPLOAD",
-  "refresh-reviews": "REFRESH REVIEWS",
   "rebuild-json": "EXPORT",
   "commit-push": "COMMIT",
   "request-indexing": "INDEXING",
@@ -556,96 +555,6 @@ function parseRebuildJson(lines: string[]): ParsedStepData {
   return { summary, extraBlocks };
 }
 
-function parseRefreshReviews(lines: string[]): ParsedStepData {
-  // Per-plumber lines: "🔄 PlumberName (gap: 28,330 | cached: 76)" then
-  // "  · N new (consecutive zeros: M)" on the next non-empty line.
-  const refreshRe = /^🔄\s+(.+?)\s+\(gap:\s+([\d,]+)\s+\|\s+cached:\s+(\d+)\)/;
-  const newRe = /^\s*·\s+(\d+)\s+new\b/;
-  type Row = { name: string; gap: number; cached: number; newCount: number };
-  const rows: Row[] = [];
-  let pending: { name: string; gap: number; cached: number } | null = null;
-
-  let apiCalls: number | undefined;
-  let apiCost: string | undefined;
-  let totalGap: number | undefined;
-
-  for (const t of lines) {
-    const m = t.match(refreshRe);
-    if (m) {
-      pending = {
-        name: m[1].trim(),
-        gap: Number(m[2].replace(/,/g, "")),
-        cached: Number(m[3]),
-      };
-      continue;
-    }
-    const n = t.match(newRe);
-    if (n && pending) {
-      rows.push({ ...pending, newCount: Number(n[1]) });
-      pending = null;
-      continue;
-    }
-    const apiMatch = t.match(/API calls:\s+(\d+)\s+\(\$([\d.]+)\)/);
-    if (apiMatch) {
-      apiCalls = Number(apiMatch[1]);
-      apiCost = `$${apiMatch[2]}`;
-    }
-    const gapMatch = t.match(/Total review gap remaining:\s+([\d,]+)/);
-    if (gapMatch) totalGap = Number(gapMatch[1].replace(/,/g, ""));
-  }
-
-  if (rows.length === 0 && apiCalls === undefined) return {};
-
-  const totalNew = rows.reduce((s, r) => s + r.newCount, 0);
-  const summary =
-    rows.length > 0
-      ? `${rows.length} plumber${rows.length === 1 ? "" : "s"} refreshed · ${totalNew} new review${totalNew === 1 ? "" : "s"} pulled.`
-      : "Refresh ran; no plumbers processed this cycle.";
-
-  const detail =
-    apiCalls !== undefined
-      ? `${apiCalls} API call${apiCalls === 1 ? "" : "s"}${apiCost ? ` · ${apiCost}` : ""}${totalGap !== undefined ? ` · ${totalGap.toLocaleString()} review gap remaining` : ""}`
-      : undefined;
-
-  const extraBlocks: StepDetailBlock[] = [];
-  const facts: Array<{ label: string; value: string }> = [];
-  facts.push({ label: "Plumbers refreshed", value: String(rows.length) });
-  facts.push({ label: "New reviews pulled", value: String(totalNew) });
-  if (apiCalls !== undefined) {
-    facts.push({
-      label: "Places API calls",
-      value: `${apiCalls}${apiCost ? ` (${apiCost})` : ""}`,
-    });
-  }
-  if (totalGap !== undefined) {
-    facts.push({
-      label: "Total review gap remaining",
-      value: totalGap.toLocaleString(),
-    });
-  }
-  extraBlocks.push({ kind: "facts", rows: facts });
-
-  if (rows.length > 0) {
-    // Sort by new reviews desc, then gap desc — surfaces meaningful refreshes
-    // first. Cap at 20 (matches the --max 20 cron arg).
-    const sorted = [...rows]
-      .sort((a, b) => b.newCount - a.newCount || b.gap - a.gap)
-      .slice(0, 20);
-    extraBlocks.push({
-      kind: "table",
-      columns: ["Plumber", "New", "Cached", "Gap"],
-      rows: sorted.map((r) => [
-        r.name,
-        String(r.newCount),
-        String(r.cached),
-        r.gap.toLocaleString(),
-      ]),
-    });
-  }
-
-  return { summary, detail, extraBlocks };
-}
-
 function parseRequestIndexing(lines: string[]): ParsedStepData {
   let sitemapSubmitted = false;
   let quotaUsed: number | undefined;
@@ -771,8 +680,6 @@ function parseStepFromLog(
       return parseDailyScrape(stepLines);
     case "upload-firestore":
       return parseUpload(stepLines);
-    case "refresh-reviews":
-      return parseRefreshReviews(stepLines);
     case "rebuild-json":
       return parseRebuildJson(stepLines);
     case "city-coverage":
@@ -863,8 +770,6 @@ function stepSummary(
       return "Scraped queued cities via Google Places (New).";
     case "upload-firestore":
       return "Upserted scraped plumbers into Firestore.";
-    case "refresh-reviews":
-      return "Refreshed Google reviews on existing plumbers.";
     case "rebuild-json":
       return "Regenerated plumbers-synthesized.json + leaderboard.json.";
     case "city-coverage":

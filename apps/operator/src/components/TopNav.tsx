@@ -2,35 +2,53 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getStepDefById } from "@/lib/cronSteps";
 
-const items = [{ href: "/daily-workflow", label: "Daily Workflow" }] as const;
+/**
+ * Top nav for the operator console.
+ *
+ * The Daily Workflow is the operator's morning pass through the system,
+ * broken into numbered steps. Each step gets a pill at the top — click
+ * to jump anywhere. Active step is highlighted.
+ *
+ * Steps grow over time as we move automated jobs into the manual flow.
+ * Add a new entry to STEPS to surface it.
+ */
 
-function resolveCrumbs(pathname: string): string[] {
-  // "/" → no crumbs (we're on the dashboard)
-  if (pathname === "/") return [];
+interface StepDef {
+  href: string;
+  label: string;
+  hint: string;
+}
 
-  if (pathname === "/daily-workflow") return ["daily workflow", "step 1"];
-  if (pathname === "/daily-workflow/step-2")
-    return ["daily workflow", "step 2"];
+const STEPS: readonly StepDef[] = [
+  {
+    href: "/daily-workflow",
+    label: "Step 1",
+    hint: "this morning's intake",
+  },
+  {
+    href: "/daily-workflow/step-2",
+    label: "Step 2",
+    hint: "synthesize new plumbers",
+  },
+];
 
-  const stepMatch = pathname.match(/^\/daily-workflow\/([^/]+)$/);
-  if (stepMatch) {
-    const step = getStepDefById(stepMatch[1]);
-    if (step) {
-      const phaseLabel =
-        step.category === "maintenance" ? "step 2" : "step 1";
-      return ["daily workflow", phaseLabel, step.name.toLowerCase()];
-    }
-    return ["daily workflow", stepMatch[1]];
+function isActive(pathname: string, href: string): boolean {
+  if (href === "/daily-workflow") {
+    // Step 1 is active for /daily-workflow exactly OR any per-step detail
+    // page that isn't step-2.
+    if (pathname === "/daily-workflow") return true;
+    if (pathname.startsWith("/daily-workflow/step-2")) return false;
+    return pathname.startsWith("/daily-workflow/");
   }
-
-  return [];
+  return pathname.startsWith(href);
 }
 
 export default function TopNav() {
   const pathname = usePathname();
-  const crumbs = resolveCrumbs(pathname);
+  const inDailyWorkflow = pathname.startsWith("/daily-workflow");
+
+  if (!inDailyWorkflow) return null;
 
   return (
     <nav
@@ -38,14 +56,25 @@ export default function TopNav() {
       style={{ borderColor: "var(--color-border-tertiary)" }}
     >
       <div className="mx-auto w-full max-w-[720px] px-6 md:px-8">
-        <div className="flex items-center gap-6 py-3">
-          {items.map((item) => {
-            const active = pathname.startsWith(item.href);
+        <div className="flex items-baseline gap-3 py-3 flex-wrap">
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "var(--text-label)",
+              letterSpacing: "0.04em",
+              color: "var(--color-ink-tertiary)",
+              marginRight: "0.25rem",
+            }}
+          >
+            daily workflow
+          </span>
+          {STEPS.map((step) => {
+            const active = isActive(pathname, step.href);
             return (
               <Link
-                key={item.href}
-                href={item.href}
-                className="inline-flex items-center rounded-full border px-3 py-1"
+                key={step.href}
+                href={step.href}
+                className="inline-flex items-baseline gap-2 rounded-full border px-3 py-1 hover:opacity-90"
                 style={{
                   fontSize: "var(--text-label)",
                   letterSpacing: "0.04em",
@@ -60,41 +89,23 @@ export default function TopNav() {
                     : "transparent",
                 }}
               >
-                {item.label}
+                <span style={{ fontWeight: active ? 500 : 400 }}>
+                  {step.label}
+                </span>
+                <span
+                  style={{
+                    fontSize: "var(--text-ambient)",
+                    color: active
+                      ? "var(--color-ink-secondary)"
+                      : "var(--color-ink-tertiary)",
+                  }}
+                >
+                  {step.hint}
+                </span>
               </Link>
             );
           })}
         </div>
-        {crumbs.length > 0 && (
-          <div
-            className="pb-3 font-mono"
-            style={{
-              fontSize: "var(--text-ambient)",
-              color: "var(--color-ink-tertiary)",
-              letterSpacing: "0.02em",
-            }}
-          >
-            {crumbs.map((c, i) => (
-              <span key={i}>
-                {i > 0 && (
-                  <span className="mx-2" aria-hidden>
-                    ›
-                  </span>
-                )}
-                <span
-                  style={{
-                    color:
-                      i === crumbs.length - 1
-                        ? "var(--color-ink-secondary)"
-                        : "var(--color-ink-tertiary)",
-                  }}
-                >
-                  {c}
-                </span>
-              </span>
-            ))}
-          </div>
-        )}
       </div>
     </nav>
   );
