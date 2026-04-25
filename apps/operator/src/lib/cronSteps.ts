@@ -1,5 +1,9 @@
 /**
- * Static catalog of the 7 surviving daily-scrape.yml steps.
+ * Static catalog of the 8 daily-scrape.yml cron steps.
+ *
+ * All eight run autonomously each morning (no operator decisions). The
+ * operator-console "Step 1" page renders this list so Tim can verify
+ * what the cron did overnight.
  *
  * Client-safe (no Node APIs, no fetch). Used by:
  * - TopNav to resolve breadcrumb labels from stepId
@@ -67,6 +71,13 @@ export const CRON_STEPS: readonly CronStepDef[] = [
     ghStepMatchers: ["Commit and push", "Commit & push"],
     description:
       "Single commit with scrape queue, city coords, cities registry, coverage map, GSC queue, and rebuilt JSON. Push triggers Vercel auto-deploy for the plumbers-web app.",
+  },
+  {
+    id: "request-indexing",
+    name: "Request Indexing",
+    ghStepMatchers: ["Request indexing", "Request indexing for"],
+    description:
+      "Pings the Google Indexing API for the city pages we just touched (and the sitemap as a fallback). Free, 200/day quota guarded inside the script. Runs after the commit so the URLs Google fetches are already live.",
   },
 ] as const;
 

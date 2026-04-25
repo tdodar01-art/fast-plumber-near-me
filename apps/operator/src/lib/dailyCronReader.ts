@@ -172,6 +172,7 @@ const STAGE_MARKERS: Record<string, string> = {
   "upload-firestore": "UPLOAD",
   "rebuild-json": "EXPORT",
   "commit-push": "COMMIT",
+  "request-indexing": "INDEXING",
 };
 
 // US state abbreviation → lowercase slug used in fastplumbernearme.com URLs
@@ -554,6 +555,90 @@ function parseRebuildJson(lines: string[]): ParsedStepData {
   return { summary, extraBlocks };
 }
 
+function parseRequestIndexing(lines: string[]): ParsedStepData {
+  let sitemapSubmitted = false;
+  let quotaUsed: number | undefined;
+  let quotaTotal: number | undefined;
+  let quotaRemaining: number | undefined;
+  const submittedUrls: string[] = [];
+
+  for (const t of lines) {
+    if (t.match(/Sitemap submitted successfully/i)) sitemapSubmitted = true;
+    const reqMatch = t.match(/Requesting indexing for:\s+(.+)$/);
+    if (reqMatch) {
+      submittedUrls.push(
+        ...reqMatch[1]
+          .split(/\s+/)
+          .map((u) => u.trim())
+          .filter(Boolean),
+      );
+    }
+    const indexedMatch = t.match(/^\s*✓\s+(\/[^\s]+)\s+(?:submitted|indexed)/i);
+    if (indexedMatch) submittedUrls.push(indexedMatch[1]);
+    const quotaMatch = t.match(
+      /Daily quota:\s+(\d+)\/(\d+)\s+used,\s+(\d+)\s+remaining/,
+    );
+    if (quotaMatch) {
+      quotaUsed = Number(quotaMatch[1]);
+      quotaTotal = Number(quotaMatch[2]);
+      quotaRemaining = Number(quotaMatch[3]);
+    }
+  }
+
+  // Dedupe URLs (the script may log them twice — once in the bash echo,
+  // once when actually submitting).
+  const uniqueUrls = Array.from(new Set(submittedUrls));
+
+  if (!sitemapSubmitted && uniqueUrls.length === 0 && quotaUsed === undefined) {
+    return {};
+  }
+
+  const summaryParts: string[] = [];
+  if (sitemapSubmitted) summaryParts.push("sitemap submitted");
+  if (uniqueUrls.length > 0) {
+    summaryParts.push(
+      `${uniqueUrls.length} URL${uniqueUrls.length === 1 ? "" : "s"} pinged for re-crawl`,
+    );
+  }
+  const summary =
+    summaryParts.length > 0
+      ? summaryParts.join(" · ") + "."
+      : "Indexing step ran.";
+
+  const extraBlocks: StepDetailBlock[] = [];
+  const facts: Array<{ label: string; value: string }> = [];
+  facts.push({
+    label: "Sitemap",
+    value: sitemapSubmitted ? "submitted" : "—",
+  });
+  facts.push({ label: "URLs pinged", value: String(uniqueUrls.length) });
+  if (quotaUsed !== undefined && quotaTotal !== undefined) {
+    facts.push({
+      label: "Daily quota",
+      value: `${quotaUsed} / ${quotaTotal} used (${quotaRemaining ?? quotaTotal - quotaUsed} left)`,
+    });
+  }
+  extraBlocks.push({ kind: "facts", rows: facts });
+
+  if (uniqueUrls.length > 0) {
+    extraBlocks.push({
+      kind: "links",
+      label: "URLs submitted to Google for re-crawl",
+      items: uniqueUrls.map((path) => ({
+        href: `https://www.fastplumbernearme.com${path}`,
+        label: path,
+      })),
+    });
+  }
+
+  const detail =
+    quotaUsed !== undefined && quotaTotal !== undefined
+      ? `Indexing API: ${quotaUsed}/${quotaTotal} used today`
+      : undefined;
+
+  return { summary, detail, extraBlocks };
+}
+
 function parseCityCoverage(lines: string[], allLines?: string[]): ParsedStepData {
   // City-coverage has no `=== STAGE: X START ===` echo in the workflow, so
   // if the time-window slice missed the output line (step ran in <1s), fall
@@ -599,6 +684,8 @@ function parseStepFromLog(
       return parseRebuildJson(stepLines);
     case "city-coverage":
       return parseCityCoverage(stepLines, allLines);
+    case "request-indexing":
+      return parseRequestIndexing(stepLines);
     default:
       return {};
   }
@@ -687,6 +774,8 @@ function stepSummary(
       return "Regenerated plumbers-synthesized.json + leaderboard.json.";
     case "city-coverage":
       return "Rebuilt sitemap coverage map from fresh JSON.";
+    case "request-indexing":
+      return "Pinged Google Indexing API for updated city pages.";
     case "commit-push":
       return commit
         ? `Pushed ${commit.files.length} file${commit.files.length === 1 ? "" : "s"} to main — Vercel rebuild triggered.`

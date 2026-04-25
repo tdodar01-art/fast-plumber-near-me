@@ -87,7 +87,7 @@ export default async function StepDetailPage({
             color: "var(--color-ink-tertiary)",
           }}
         >
-          ← back to daily workflow
+          ← back to step 1
         </Link>
         <p
           style={{
