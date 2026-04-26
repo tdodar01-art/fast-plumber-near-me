@@ -1,26 +1,8 @@
 {
   "currentMonth": "2026-04",
   "monthlyBudget": 1000,
-  "usedThisMonth": 699,
+  "usedThisMonth": 738,
   "queue": [
-    {
-      "city": "Dallas",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Lakewood",
-      "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Louisville",
       "state": "KY",
@@ -1525,6 +1507,26 @@
       "actualCalls": 16,
       "plumbersFound": 15,
       "completedAt": "2026-04-25"
+    },
+    {
+      "city": "Dallas",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 21,
+      "plumbersFound": 20,
+      "completedAt": "2026-04-26"
+    },
+    {
+      "city": "Lakewood",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 18,
+      "plumbersFound": 17,
+      "completedAt": "2026-04-26"
     }
   ]
 }
