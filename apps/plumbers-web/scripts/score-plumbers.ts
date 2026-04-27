@@ -91,7 +91,7 @@ const SKIP_IF_SCORED_WITHIN_MS = 30 * 24 * 60 * 60 * 1000;
 const MIN_REVIEWS_TO_SCORE = 3;
 
 // ---------------------------------------------------------------------------
-// Synthesis types (replaces Haiku synthesize-reviews.ts)
+// Synthesis types
 // ---------------------------------------------------------------------------
 
 type SynthesisResult = {
@@ -572,14 +572,12 @@ function buildServicesMentioned(
 }
 
 // ---------------------------------------------------------------------------
-// Unified synthesis (replaces Haiku synthesize-reviews.ts)
+// Unified synthesis
 // ---------------------------------------------------------------------------
 
 /**
  * After batch extraction + aggregation, make ONE Sonnet call with the full
- * review set + aggregated scores to generate display copy. This replaces the
- * separate Haiku synthesize-reviews.ts script — same model, same pipeline,
- * no contradictions.
+ * review set + aggregated scores to generate display copy.
  */
 function buildSynthesisPrompt(
   plumberName: string,
@@ -612,7 +610,6 @@ function buildSynthesisPrompt(
     .join("\n");
 
   // Platform context block — for cross-platform discrepancy detection
-  // (replaces what outscraper-reviews.js used to do separately)
   const platformBlock = platformContext
     ? `Platform ratings:
 - Google: ${platformContext.googleRating ?? "N/A"}/5 (${platformContext.googleReviewCount ?? 0} reviews)
@@ -739,8 +736,7 @@ function derivePricingTier(scores: Scores): "budget" | "mid-range" | "premium" |
 
 /**
  * Keyword fallback for plumbers with < MIN_REVIEWS_TO_SCORE reviews.
- * Moved from synthesize-reviews.ts — produces the same reviewSynthesis
- * fields without a Claude call.
+ * Produces the same reviewSynthesis fields without a Claude call.
  */
 const KW_FAST = ["fast", "quick", "rapid", "same day", "prompt", "responsive", "right away", "within an hour"];
 const KW_EMERGENCY = ["emergency", "burst", "after hours", "weekend", "24 hour", "24/7", "middle of the night"];
@@ -1014,10 +1010,9 @@ async function runPass1(
       scores.review_count_used = totalReviewCount;
       scores.method = "sonnet";
 
-      // --- Step 3: Sonnet synthesis call (replaces Haiku) ---
+      // --- Step 3: Sonnet synthesis call ---
       // Pass platform context (Yelp/BBB ratings) so Sonnet can detect
-      // cross-platform discrepancies — replaces what outscraper-reviews.js
-      // used to do in a separate Haiku call.
+      // cross-platform discrepancies.
       const platformContext = {
         googleRating: data.googleRating ?? null,
         googleReviewCount: data.googleReviewCount ?? 0,
@@ -1045,7 +1040,7 @@ async function runPass1(
       const updateData: Record<string, unknown> = {
         scores,
         evidence_quotes: evidenceQuotes,
-        // Unified synthesis — replaces Haiku's reviewSynthesis
+        // Unified synthesis — sole writer of reviewSynthesis.*
         "reviewSynthesis.summary": synthParsed.summary,
         "reviewSynthesis.strengths": synthParsed.strengths,
         "reviewSynthesis.weaknesses": synthParsed.weaknesses,

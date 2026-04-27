@@ -1,5 +1,7 @@
 # Unified Pipeline Spec — Single Brain Architecture
 
+> **STATUS: IMPLEMENTED.** This was the design proposal. The consolidation shipped in commit `71c38a6` (2026-04-16). For "what runs in production today," see [synthesis-pipeline-current-state.md](./synthesis-pipeline-current-state.md). This doc is preserved as historical context for the design rationale.
+
 **Goal:** Replace 6 separate scripts with 3 phases under one orchestrator. Preserve every piece of intelligence we've built.
 
 ---

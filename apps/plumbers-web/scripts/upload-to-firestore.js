@@ -38,7 +38,7 @@ if (!fs.existsSync(SERVICE_ACCOUNT_PATH)) {
 
 if (!fs.existsSync(INPUT_PATH)) {
   console.error(`ERROR: Input file not found: ${INPUT_PATH}`);
-  console.error("Run synthesize-reviews.js first (Step 2).");
+  console.error("Run daily-scrape.js first to populate the staging file.");
   process.exit(1);
 }
 

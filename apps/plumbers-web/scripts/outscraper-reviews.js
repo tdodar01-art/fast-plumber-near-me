@@ -2,18 +2,19 @@
 
 /**
  * Pull deep reviews from Google and Yelp via Outscraper API
- * for plumbers in high-traction cities, then re-synthesize with Claude
- * using the full multi-source review corpus.
+ * for plumbers in high-traction cities. Stores reviews in the
+ * `reviews` subcollection and updates per-plumber review counts.
+ *
+ * Synthesis is owned by score-plumbers.ts and runs as a separate
+ * downstream step in the workflow.
  *
  * Usage:
  *   node scripts/outscraper-reviews.js crystal-lake-il aberdeen-md
  *   node scripts/outscraper-reviews.js crystal-lake-il --dry-run
- *   node scripts/outscraper-reviews.js crystal-lake-il --skip-synthesis
  *   node scripts/outscraper-reviews.js crystal-lake-il --google-only
  *
  * Env:
  *   OUTSCRAPER_API_KEY  — required
- *   ANTHROPIC_API_KEY   — required for synthesis step
  */
 
 const fs = require("fs");
@@ -27,9 +28,6 @@ const Outscraper = require("outscraper");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 const OUTSCRAPER_QPS_DELAY_MS = 2000;
-const CLAUDE_RATE_LIMIT_MS = 2000;
-const CLAUDE_MAX_RETRIES = 3;
-const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
 const MAX_REVIEWS_PER_SOURCE = 100;
 const COST_PER_REVIEW = 0.002; // ~$2 per 1000 reviews across sources
 
@@ -67,8 +65,6 @@ if (!OUTSCRAPER_API_KEY) {
   console.error("ERROR: OUTSCRAPER_API_KEY not set. Add it to .env.local or export it.");
   process.exit(1);
 }
-
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 // ---------------------------------------------------------------------------
 // Firebase Admin
@@ -334,217 +330,6 @@ async function storeReviews(plumberId, reviews) {
   return { newCount, dupeCount, countBySource };
 }
 
-// ---------------------------------------------------------------------------
-// Claude synthesis (multi-source aware)
-// ---------------------------------------------------------------------------
-
-function buildPrompt(name, googleRating, googleReviewCount, reviews, platformStats, businessContext) {
-  // Group reviews by source for the prompt
-  const googleReviews = reviews.filter((r) => r.source === "google");
-  const yelpReviews = reviews.filter((r) => r.source === "yelp");
-
-  let reviewBlock = "";
-
-  if (googleReviews.length > 0) {
-    reviewBlock += `=== GOOGLE REVIEWS (${googleReviews.length}) ===\n`;
-    reviewBlock += googleReviews.map((r) => `[${r.rating}/5${r.date ? ` — ${r.date}` : ""}] ${r.text}`).join("\n\n");
-    reviewBlock += "\n\n";
-  }
-  if (yelpReviews.length > 0) {
-    reviewBlock += `=== YELP REVIEWS (${yelpReviews.length}) ===\n`;
-    reviewBlock += yelpReviews.map((r) => `[${r.rating}/5${r.date ? ` — ${r.date}` : ""}] ${r.text}`).join("\n\n");
-    reviewBlock += "\n\n";
-  }
-
-  let platformContext = `Google Rating: ${googleRating ?? "N/A"}/5 (${googleReviewCount} reviews)`;
-  if (platformStats.yelpRating) platformContext += `\nYelp Rating: ${platformStats.yelpRating}/5 (${platformStats.yelpReviewCount || "?"} reviews)`;
-
-  // BBB data
-  const bbb = platformStats.bbb;
-  let bbbContext = "";
-  if (bbb) {
-    bbbContext = `\n\n=== BBB DATA ===\nBBB Rating: ${bbb.rating || "N/A"} | Accredited: ${bbb.accredited ? "Yes" : "No"}`;
-    if (bbb.complaintsPast3Years != null) bbbContext += ` | Complaints (3yr): ${bbb.complaintsPast3Years}`;
-    if (bbb.complaintsTotal != null) bbbContext += ` | Complaints (total): ${bbb.complaintsTotal}`;
-    if (bbb.yearsInBusiness != null) bbbContext += ` | Years in business: ${bbb.yearsInBusiness}`;
-  }
-
-  // Business context for emergency detection
-  const ctx = businessContext || {};
-  let businessSignals = "";
-  if (ctx.is24Hour) businessSignals += "\nGoogle Hours: Open 24 hours";
-  else if (ctx.workingHours) businessSignals += `\nGoogle Hours: ${Array.isArray(ctx.workingHours) ? ctx.workingHours.join("; ") : ctx.workingHours}`;
-  const nameLower = name.toLowerCase();
-  const emergencyNameSignals = [];
-  if (/24.?7|24.?hour|twenty.?four/i.test(nameLower)) emergencyNameSignals.push("24/7 in name");
-  if (/emergency/i.test(nameLower)) emergencyNameSignals.push("'emergency' in name");
-  if (/after.?hour|anytime|rescue|rapid|fast/i.test(nameLower)) emergencyNameSignals.push("urgency keyword in name");
-  if (emergencyNameSignals.length > 0) businessSignals += `\nBusiness Name Signals: ${emergencyNameSignals.join(", ")}`;
-
-  return `You are analyzing reviews from multiple platforms for a plumber to help homeowners in an emergency. This is an EMERGENCY PLUMBER DIRECTORY — emergency readiness detection is critical.
-
-Plumber: ${name}
-${platformContext}${businessSignals}${bbbContext}
-We have ${reviews.length} total reviews across all platforms.
-
-${reviewBlock}
-IMPORTANT: If ratings differ significantly between platforms (e.g. 4.8 on Google but 2.5 on Yelp), note this discrepancy in your summary and weaknesses. Platform rating gaps are a signal.
-${bbb ? "IMPORTANT: BBB complaints are a strong reliability signal. Unresolved or high complaint counts should be flagged as red flags. BBB accreditation is a positive trust signal. Low BBB ratings (B or below) with high Google ratings suggest possible review manipulation." : ""}
-
-CONSISTENCY CHECK: Before responding, verify that no badge contradicts a red flag and no strength contradicts a weakness. If a plumber has response time complaints in red flags, they cannot have 'Fast Responder' as a badge or 'quick response' as a strength. Resolve contradictions by removing the positive claim, not the negative one. Negative signals always win over positive ones — this protects homeowners.
-
-SERVICE CATEGORIES TO SCAN:
-When analyzing reviews, identify mentions of these specific plumbing services. For each category, count how many reviews mention it, compute the average rating of ONLY those reviews, and extract the single best quote (most detailed, ideally 5-star) as evidence. Use these exact keys:
-- "burst-pipe": burst pipe, broken pipe, pipe burst, frozen pipe, pipe leak, leaking pipe, pipe repair
-- "flooding": flood, flooded, water in basement, water damage, ceiling leak, leak in wall
-- "sewer": sewer, sewage, sewer backup, sewer line, sewer repair, sewer camera
-- "gas-leak": gas leak, gas line, gas pipe, smell gas, carbon monoxide
-- "water-heater": water heater, hot water, tankless, no hot water, water heater replacement
-- "toilet": toilet, toilet overflow, toilet repair, running toilet, toilet clogged
-- "sump-pump": sump pump, ejector pump, basement pump
-- "drain-cleaning": drain, clogged drain, drain cleaning, slow drain, snake, rooter
-- "water-line": water line, main line, water main, water supply, no water, water pressure
-- "slab-leak": slab leak, leak detection, hidden leak, under slab, foundation leak
-- "garbage-disposal": garbage disposal, disposal install
-- "faucet-fixture": faucet, fixture, sink repair, shower repair, bathtub, valve, dripping
-- "backflow": backflow, backflow preventer, backflow testing, RPZ
-- "repiping": repipe, repiping, pipe replacement, old pipes, copper repipe
-- "water-softener": water softener, water filter, water filtration, hard water
-- "bathroom-remodel": bathroom remodel, kitchen plumbing, remodel, renovation, rough in
-
-Respond in JSON only. No markdown, no preamble, no backticks.
-{
-  "summary": "One specific sentence a friend would say. Never say 'reliable and professional'. Reference actual patterns. If platforms disagree, mention it.",
-  "strengths": ["2-3 specific strengths with evidence. e.g. '3 of 8 Google reviewers mention arriving within an hour'${bbb?.accredited ? " Include BBB accreditation as a trust signal." : ""}"],
-  "weaknesses": ["1-2 specific weaknesses. e.g. 'Yelp reviews mention surprise fees not seen on Google'. Include platform discrepancies if significant.${bbb?.complaintsPast3Years > 0 ? " Flag BBB complaints." : ""}"],
-  "emergencyReadiness": "high|medium|low|unknown — IMPORTANT: This is an emergency plumber directory. Look for ALL signals: (1) Business name contains '24/7', 'emergency', '24 hour', 'anytime', 'after hours', 'rescue' → high. (2) Google hours show 'Open 24 hours' → high. (3) Reviews mention after-hours, weekend, holiday, midnight, same-day, or emergency response → high. (4) Reviews mention quick scheduling or fast arrival (even during business hours) → medium. (5) Only mark 'unknown' if there are literally zero signals in name, hours, or reviews. Most plumbers who show up in an 'emergency plumber' Google search have SOME emergency capability — lean toward medium over unknown when there's any signal at all.",
-  "emergencyNotes": "Summarize what reviews reveal about urgency response. Example: 'Multiple reviewers report same-day service; one mentions a basement flood fixed the same night they called.' Do NOT say 'no emergency data' if reviews mention fast response, same-day visits, or after-hours work — those ARE emergency signals. If you can estimate typical response time from review mentions, include it (e.g. 'Reviews suggest 2-4 hour typical response window'). If business hours show 24/7 or name contains emergency keywords, mention that.",
-  "badges": ["Only from: 'Fast Responder', 'Fair Pricing', '24/7 Available', 'Clean & Professional', 'Great Communicator'. Only include if reviews clearly support it. CRITICAL: A badge MUST NOT contradict any red flag. If there is ANY red flag about response time, lateness, or slow callbacks, do NOT award 'Fast Responder'. If there is ANY red flag about pricing disputes or surprise charges, do NOT award 'Fair Pricing'. If there is ANY red flag about unprofessional behavior, do NOT award 'Clean & Professional'. Badges are earned — one contradicting complaint disqualifies the badge."],
-  "redFlags": ["Concerning patterns — be especially aggressive with small sample sizes. If a plumber has fewer than 25 total reviews, even 1-2 negative reviews about the same issue (late arrival, didn't show up, didn't complete work, surprise charges, rude behavior, unresponsive) IS a pattern and MUST be flagged. For 25+ reviews, flag when 3+ reviews mention the same concern. Always flag: response time complaints, incomplete work, billing disputes, no-shows, licensing concerns, refusal to provide estimates. Format each flag as a specific finding with numbers, e.g. '2 of 14 reviewers report arrival delays exceeding 30 minutes'. Empty array ONLY if literally every review is 4-5 stars with no complaints."],
-  "bestFor": ["1-2 specific services or scenarios this plumber excels at, based on review patterns."],
-  "pricingTier": "budget|mid-range|premium|unknown",
-  "platformDiscrepancy": "Describe any significant rating gap between platforms, or null if ratings are consistent",
-  "servicesMentioned": "Object mapping service category keys to {count: number, avgRating: number, topQuote: string}. ONLY include categories where at least 1 review explicitly mentions the service. Do NOT invent mentions. Example: {\"water-heater\": {\"count\": 4, \"avgRating\": 4.8, \"topQuote\": \"Replaced our 40-gallon tank same day — arrived within 2 hours of our call\"}, \"drain-cleaning\": {\"count\": 7, \"avgRating\": 4.6, \"topQuote\": \"Cleared a 30-year-old root blockage that two other companies gave up on\"}}. Empty object {} if no specific services are mentioned."
-}`;
-}
-
-async function callClaude(prompt) {
-  if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not set");
-
-  for (let attempt = 0; attempt <= CLAUDE_MAX_RETRIES; attempt++) {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 1024,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-
-    if (resp.ok) {
-      const data = await resp.json();
-      return data.content?.[0]?.text || "";
-    }
-
-    if (resp.status === 429 && attempt < CLAUDE_MAX_RETRIES) {
-      const retryAfter = parseInt(resp.headers.get("retry-after") || "0", 10);
-      const backoff = retryAfter > 0 ? retryAfter * 1000 : (2 ** attempt) * 5000;
-      console.log(`    ⏳ Rate limited, retrying in ${Math.round(backoff / 1000)}s (attempt ${attempt + 1}/${CLAUDE_MAX_RETRIES})...`);
-      await sleep(backoff);
-      continue;
-    }
-
-    const body = await resp.text();
-    throw new Error(`Claude API ${resp.status}: ${body}`);
-  }
-
-  throw new Error("Claude API: max retries exceeded");
-}
-
-function parseAIResponse(text) {
-  const cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
-  return JSON.parse(cleaned);
-}
-
-async function synthesizePlumber(plumberId, plumberData, platformStats) {
-  // Fetch ALL cached reviews for this plumber (all sources)
-  const reviewsSnap = await db.collection("reviews")
-    .where("plumberId", "==", plumberId)
-    .get();
-
-  if (reviewsSnap.empty) {
-    console.log(`    No cached reviews to synthesize.`);
-    return false;
-  }
-
-  const reviews = reviewsSnap.docs.map((d) => ({
-    source: d.data().source || "google",
-    rating: d.data().rating || 0,
-    text: d.data().text || "",
-    date: d.data().publishedAt || "",
-  }));
-
-  const googleCount = reviews.filter((r) => r.source === "google").length;
-  const yelpCount = reviews.filter((r) => r.source === "yelp").length;
-  console.log(`    Synthesizing ${reviews.length} reviews (Google: ${googleCount}, Yelp: ${yelpCount})...`);
-
-  const prompt = buildPrompt(
-    plumberData.businessName,
-    plumberData.googleRating,
-    plumberData.googleReviewCount || 0,
-    reviews,
-    platformStats,
-    { is24Hour: plumberData.is24Hour, workingHours: plumberData.workingHours }
-  );
-
-  await sleep(CLAUDE_RATE_LIMIT_MS);
-  const response = await callClaude(prompt);
-  const ai = parseAIResponse(response);
-
-  const synthesis = {
-    strengths: ai.strengths || [],
-    weaknesses: ai.weaknesses || [],
-    emergencySignals: ai.emergencyReadiness !== "unknown"
-      ? [ai.emergencyNotes].filter(Boolean)
-      : [],
-    redFlags: ai.redFlags || [],
-    badges: ai.badges || [],
-    reviewCount: reviews.length,
-    synthesizedAt: admin.firestore.Timestamp.now(),
-    pricingTier: ai.pricingTier || "unknown",
-    categories: {
-      emergency: {
-        strengths: ai.emergencyReadiness === "high" ? [ai.emergencyNotes] : [],
-        weaknesses: ai.emergencyReadiness === "low" ? [ai.emergencyNotes] : [],
-      },
-      pricing: { strengths: [], weaknesses: [] },
-      quality: { strengths: [], weaknesses: [] },
-      communication: { strengths: [], weaknesses: [] },
-      homeRespect: { strengths: [], weaknesses: [] },
-      punctuality: { strengths: [], weaknesses: [] },
-    },
-    summary: ai.summary || "",
-    emergencyReadiness: ai.emergencyReadiness || "unknown",
-    emergencyNotes: ai.emergencyNotes || "",
-    platformDiscrepancy: ai.platformDiscrepancy || null,
-    servicesMentioned: ai.servicesMentioned || {},
-    aiSynthesizedAt: admin.firestore.Timestamp.now(),
-    synthesisVersion: "ai-v2-services",
-  };
-
-  await db.collection("plumbers").doc(plumberId).update({
-    reviewSynthesis: synthesis,
-    updatedAt: admin.firestore.Timestamp.now(),
-  });
-
-  console.log(`    ✓ Synthesis: ${ai.badges?.join(", ") || "no badges"} | ${ai.redFlags?.length || 0} red flags | emergency: ${ai.emergencyReadiness}${ai.platformDiscrepancy ? ` | ⚠ ${ai.platformDiscrepancy}` : ""}`);
-  return ai;
-}
 
 // ---------------------------------------------------------------------------
 // Main
@@ -553,18 +338,16 @@ async function synthesizePlumber(plumberId, plumberData, platformStats) {
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
-  const skipSynthesis = args.includes("--skip-synthesis");
   const googleOnly = args.includes("--google-only");
   const citySlugs = args.filter((a) => !a.startsWith("--"));
 
   if (citySlugs.length === 0) {
-    console.error("Usage: node scripts/outscraper-reviews.js <city-slug> [city-slug...] [--dry-run] [--skip-synthesis] [--google-only]");
+    console.error("Usage: node scripts/outscraper-reviews.js <city-slug> [city-slug...] [--dry-run] [--google-only]");
     console.error("Example: node scripts/outscraper-reviews.js crystal-lake-il aberdeen-md");
     process.exit(1);
   }
 
   if (dryRun) console.log("DRY RUN — no API calls, no writes\n");
-  if (skipSynthesis) console.log("SKIP SYNTHESIS — pulling reviews only\n");
   if (googleOnly) console.log("GOOGLE ONLY — skipping Yelp\n");
 
   console.log("=== Outscraper Multi-Source Deep Review Pull ===\n");
@@ -572,7 +355,6 @@ async function main() {
   let totalPlumbers = 0;
   let totalNewReviews = 0;
   let totalDupes = 0;
-  let totalSynthesized = 0;
   let totalErrors = 0;
   const reviewsBySource = { google: 0, yelp: 0 };
   const plumberDetails = [];
@@ -636,9 +418,6 @@ async function main() {
       // Per-plumber tracking variables
       let plumberCountBySource = { google: 0, yelp: 0 };
       let plumberDupeCount = 0;
-      let plumberSynthesized = false;
-      let plumberBadges = [];
-      let plumberRedFlagsCount = 0;
       let plumberError = false;
 
       try {
@@ -671,7 +450,7 @@ async function main() {
           plumberDetails.push({
             name: data.businessName, id: doc.id,
             reviews: { google: 0, yelp: 0 },
-            dupes: 0, synthesized: false, badges: [], redFlagsCount: 0, hasBBB: !!data.bbb,
+            dupes: 0, hasBBB: !!data.bbb,
           });
           continue;
         }
@@ -708,24 +487,6 @@ async function main() {
           ...(platformStats.yelpRating && { yelpRating: platformStats.yelpRating, yelpReviewCount: platformStats.yelpReviewCount }),
         });
 
-        // Re-synthesize with full multi-source corpus (include BBB if available)
-        if (data.bbb) platformStats.bbb = data.bbb;
-        if (!skipSynthesis && newCount > 0 && ANTHROPIC_API_KEY) {
-          try {
-            const aiResult = await synthesizePlumber(doc.id, data, platformStats);
-            if (aiResult) {
-              totalSynthesized++;
-              plumberSynthesized = true;
-              plumberBadges = aiResult.badges || [];
-              plumberRedFlagsCount = (aiResult.redFlags || []).length;
-            }
-          } catch (err) {
-            console.error(`    Synthesis error: ${err.message}`);
-            totalErrors++;
-          }
-        } else if (!ANTHROPIC_API_KEY && !skipSynthesis) {
-          console.log(`    Skipping synthesis — ANTHROPIC_API_KEY not set.`);
-        }
       } catch (err) {
         console.error(`    ERROR: ${err.message}`);
         totalErrors++;
@@ -737,9 +498,6 @@ async function main() {
         id: doc.id,
         reviews: { google: plumberCountBySource.google || 0, yelp: plumberCountBySource.yelp || 0 },
         dupes: plumberDupeCount,
-        synthesized: plumberSynthesized,
-        badges: plumberBadges,
-        redFlagsCount: plumberRedFlagsCount,
         hasBBB: !!data.bbb,
         ...(plumberError && { error: true }),
       });
@@ -758,7 +516,6 @@ async function main() {
   console.log(`    Google: ${reviewsBySource.google || 0}`);
   console.log(`    Yelp:   ${reviewsBySource.yelp || 0}`);
   console.log(`  Duplicate reviews skipped: ${totalDupes}`);
-  console.log(`  Plumbers re-synthesized: ${totalSynthesized}`);
   console.log(`  Errors: ${totalErrors}`);
   console.log(`  Estimated Outscraper cost: $${estCost}`);
   console.log(`  Duration: ${elapsed}s`);
@@ -779,7 +536,6 @@ async function main() {
           googleReviews: reviewsBySource.google || 0,
           yelpReviews: reviewsBySource.yelp || 0,
           dupesSkipped: totalDupes,
-          synthesized: totalSynthesized,
           errors: totalErrors,
           estimatedCost: `$${estCost}`,
           plumberDetails,

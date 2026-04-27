@@ -87,13 +87,12 @@ jobs:
         continue-on-error: true
         env:
           OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           echo "=== STAGE: OUTSCRAPER CITY 1 START ==="
           SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $1}')
           if [ -n "$SLUG" ]; then
             echo "Processing city 1: $SLUG"
-            node scripts/outscraper-reviews.js "$SLUG" --skip-synthesis
+            node scripts/outscraper-reviews.js "$SLUG"
           fi
 
       - name: Pull reviews for city 2
@@ -101,13 +100,12 @@ jobs:
         continue-on-error: true
         env:
           OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           echo "=== STAGE: OUTSCRAPER CITY 2 START ==="
           SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $2}')
           if [ -n "$SLUG" ]; then
             echo "Processing city 2: $SLUG"
-            node scripts/outscraper-reviews.js "$SLUG" --skip-synthesis
+            node scripts/outscraper-reviews.js "$SLUG"
           fi
 
       - name: Pull reviews for city 3
@@ -115,13 +113,12 @@ jobs:
         continue-on-error: true
         env:
           OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           echo "=== STAGE: OUTSCRAPER CITY 3 START ==="
           SLUG=$(echo "${{ steps.cities.outputs.slugs }}" | awk '{print $3}')
           if [ -n "$SLUG" ]; then
             echo "Processing city 3: $SLUG"
-            node scripts/outscraper-reviews.js "$SLUG" --skip-synthesis
+            node scripts/outscraper-reviews.js "$SLUG"
           fi
 
       # ---------------------------------------------------------------------
