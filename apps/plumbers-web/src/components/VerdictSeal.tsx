@@ -15,13 +15,13 @@ const SEAL_CONFIG: Record<
   { filename: string; label: string; description: string }
 > = {
   strong_hire: {
-    filename: "verdict-strong-hire.png",
+    filename: "verdict-strong-hire.svg",
     label: "Top pick",
     description:
       "Consistently strong across reliability, workmanship, pricing, and response. Safe to call first.",
   },
   conditional_hire: {
-    filename: "verdict-conditional.png",
+    filename: "verdict-conditional.svg",
     label: "Solid pick",
     description:
       "Good in most areas with a caveat or two. Worth calling, but read the specifics.",

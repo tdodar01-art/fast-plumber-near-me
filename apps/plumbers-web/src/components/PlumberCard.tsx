@@ -12,6 +12,7 @@ import { getScoreLabel } from "@/lib/scoring";
 import { getDistanceLabel } from "@/lib/geo";
 import SignalRow from "./SignalRow";
 import PlatformAgreementStrip from "./PlatformAgreementStrip";
+import VerdictSeal from "./VerdictSeal";
 
 // Deterministic initials + background color for the avatar circle.
 // Replaces the verdict-seal-as-avatar treatment that read as a profile
@@ -345,6 +346,20 @@ export default function PlumberCard({
         </div>
       </div>
 
+      {/* === VERDICT STRIP — seal + platform ratings, glanceable trust ===
+          Mirrors the strip on the plumber detail page. Octagon stop-sign style
+          for AVOID, GO for strong_hire, CAUTION for conditional_hire, amber
+          warning triangle for caution. Always-on PlatformAgreementStrip beside
+          it shows Google + Yelp + BBB inline. */}
+      {plumber.decision?.verdict && (
+        <div className="flex items-center gap-3 mt-3 py-2 border-t border-b border-gray-100">
+          <VerdictSeal verdict={plumber.decision.verdict} size="sm" showLabel />
+          <div className="flex-1 min-w-0">
+            <PlatformAgreementStrip plumber={plumber} />
+          </div>
+        </div>
+      )}
+
       {/* === KPI TILES === */}
       {kpis.length > 0 && (
         <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide sm:flex-wrap">
@@ -360,8 +375,11 @@ export default function PlumberCard({
         </div>
       )}
 
-      {/* === PLATFORM DISAGREEMENT (only shows if Google vs Yelp differ) === */}
-      <PlatformAgreementStrip plumber={plumber} cardMode />
+      {/* === PLATFORM DISAGREEMENT — fallback for plumbers without a verdict
+          (Pass 3 hasn't run). Verdict strip above already covers the rest. */}
+      {!plumber.decision?.verdict && (
+        <PlatformAgreementStrip plumber={plumber} cardMode />
+      )}
 
       {/* === FLAGGED WARNING === */}
       {plumber.status === "flagged" && (
