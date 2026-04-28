@@ -71,6 +71,11 @@ async function applyOne(p) {
   const update = {
     scores: {
       ...p.scores,
+      // Pass 3 (computeBestFor) walks scores.specialty_strength[key]; without
+      // this, it crashes on undefined access. Subagents don't produce it, so
+      // we set an empty object as a safe default. Future enhancement: have
+      // subagents emit per-specialty scores and merge here.
+      specialty_strength: p.scores.specialty_strength ?? {},
       last_scored_at: new Date().toISOString(),
       method: "manual-claude",
     },
