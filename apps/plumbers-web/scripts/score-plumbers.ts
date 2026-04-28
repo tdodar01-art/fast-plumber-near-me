@@ -1112,17 +1112,30 @@ async function runPass2(
     overall: number;
   };
   const withScores: Entry[] = [];
+  let skippedNoReviews = 0;
   for (const doc of plumbersSnap.docs) {
     const data = doc.data();
     if (!data.scores) continue;
+    // Exclude plumbers without real dimension scores. Without this guard,
+    // their NaN overall (mean of undefined dims) sorts unstably in JS and
+    // can land them at percentile 100 with a verdict — recommending plumbers
+    // we have no review evidence for. See decision-engine.ts: scores.method
+    // === "no_reviews" indicates this state.
+    const s = data.scores as Scores;
+    if (typeof s.reliability !== "number" || s.method === "no_reviews") {
+      skippedNoReviews++;
+      continue;
+    }
     withScores.push({
       id: doc.id,
-      scores: data.scores as Scores,
+      scores: s,
       serviceCities: effectiveServiceCities(data),
-      overall: overallScore(data.scores as Scores),
+      overall: overallScore(s),
     });
   }
-  console.log(`Ranking ${withScores.length} scored plumber(s)`);
+  console.log(
+    `Ranking ${withScores.length} scored plumber(s) (skipped ${skippedNoReviews} no-review entries)`,
+  );
 
   // Collect all city slugs in play
   const citySet = new Set<string>();

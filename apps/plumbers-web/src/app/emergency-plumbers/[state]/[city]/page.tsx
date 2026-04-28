@@ -117,10 +117,21 @@ function getTop3Plumbers(
       (s) => s.placeId === p.id || s.slug === p.slug
     );
     if (!synth?.decision?.verdict) continue;
+    // Belt-and-suspenders: a plumber must have real review-backed dimension
+    // scores to qualify for Top 3, even if a stale `decision.verdict` exists.
+    // Pass 2 in score-plumbers.ts already guards against this, but this
+    // filter prevents stale Firestore data from leaking into the UI.
+    if (typeof synth.scores?.reliability !== "number") continue;
+    if (synth.scores.method === "no_reviews") continue;
 
-    // Get this plumber's percentile for the current city
+    // Top 3 must be ranked FOR THIS SPECIFIC CITY. Radius-discovered plumbers
+    // (whose serviceCities don't include this city) get city_rank entries for
+    // their home city only — they show in this city's main listing via the
+    // 20-mile sweep, but they shouldn't be "Top 3 in Arlington" if they're
+    // really "Top of Dallas." Require an actual city_rank entry for this city.
     const cityRank = synth.city_rank?.[cityRankKey] ?? synth.city_rank?.[citySlug];
-    const percentile = cityRank?.overall_percentile ?? 0;
+    if (!cityRank) continue;
+    const percentile = cityRank.overall_percentile;
 
     candidates.push({ plumber: p, synthesized: synth, percentile });
   }

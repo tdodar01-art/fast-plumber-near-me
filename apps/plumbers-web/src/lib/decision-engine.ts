@@ -97,12 +97,13 @@ export type Scores = DimensionScores & {
   /**
    * How the plumber was processed:
    * - "sonnet": full Claude Sonnet extraction + synthesis (the normal path)
+   * - "manual-claude": parallel Claude subagents in place of Sonnet (no Anthropic API spend)
    * - "keyword_fallback": 1–2 reviews, keyword-only synthesis, no dimension scores
    * - "no_reviews": 0 reviews cached, nothing to synthesize
    *
    * Present from 2026-04-21 onward. Older records will not have this field.
    */
-  method?: "sonnet" | "keyword_fallback" | "no_reviews";
+  method?: "sonnet" | "manual-claude" | "keyword_fallback" | "no_reviews";
 };
 
 export type CityRankEntry = {
