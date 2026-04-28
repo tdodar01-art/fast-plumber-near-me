@@ -117,21 +117,27 @@ function getTop3Plumbers(
       (s) => s.placeId === p.id || s.slug === p.slug
     );
     if (!synth?.decision?.verdict) continue;
-    // Belt-and-suspenders: a plumber must have real review-backed dimension
-    // scores to qualify for Top 3, even if a stale `decision.verdict` exists.
-    // Pass 2 in score-plumbers.ts already guards against this, but this
-    // filter prevents stale Firestore data from leaking into the UI.
+    // Real review-backed dimension scores required (defense against stale
+    // Firestore data leaking through; Pass 2 in score-plumbers.ts is the
+    // primary guard, this is belt-and-suspenders).
     if (typeof synth.scores?.reliability !== "number") continue;
     if (synth.scores.method === "no_reviews") continue;
+    // Don't recommend plumbers we explicitly say to avoid.
+    if (synth.decision.verdict === "avoid") continue;
 
-    // Top 3 must be ranked FOR THIS SPECIFIC CITY. Radius-discovered plumbers
-    // (whose serviceCities don't include this city) get city_rank entries for
-    // their home city only — they show in this city's main listing via the
-    // 20-mile sweep, but they shouldn't be "Top 3 in Arlington" if they're
-    // really "Top of Dallas." Require an actual city_rank entry for this city.
-    const cityRank = synth.city_rank?.[cityRankKey] ?? synth.city_rank?.[citySlug];
-    if (!cityRank) continue;
-    const percentile = cityRank.overall_percentile;
+    // Prefer the percentile from THIS city's ranking. If the plumber is
+    // surfacing via the 20-mi radius and isn't ranked locally, fall back to
+    // their best percentile from any city they ARE ranked in — that's still
+    // a real quality signal. Skip plumbers with no city_rank anywhere.
+    const localRank = synth.city_rank?.[cityRankKey] ?? synth.city_rank?.[citySlug];
+    let percentile: number;
+    if (localRank) {
+      percentile = localRank.overall_percentile;
+    } else {
+      const allRanks = Object.values(synth.city_rank ?? {});
+      if (allRanks.length === 0) continue;
+      percentile = Math.max(...allRanks.map((r) => r.overall_percentile));
+    }
 
     candidates.push({ plumber: p, synthesized: synth, percentile });
   }

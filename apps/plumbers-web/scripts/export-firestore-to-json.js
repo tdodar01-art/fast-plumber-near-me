@@ -176,7 +176,15 @@ async function main() {
         fd.scores.last_scored_at !== existing.scores.last_scored_at);
     const isNewer = fsUpdated > jsonSynthAt;
 
-    if (!isNewer && !hasBBB && !hasNewSynthesis && !hasNewScoring) {
+    // ALSO merge if Firestore has REMOVED fields the JSON still has — without
+    // this, a Pass 2 cleanup that deletes city_rank/decision in Firestore
+    // leaves the stale values frozen in the JSON forever (the merge skips
+    // these plumbers as "unchanged"). Found 2026-04-28.
+    const hasStaleDecisionLayer =
+      (existing.city_rank && !fd.city_rank) ||
+      (existing.decision && !fd.decision);
+
+    if (!isNewer && !hasBBB && !hasNewSynthesis && !hasNewScoring && !hasStaleDecisionLayer) {
       unchanged++;
       continue;
     }
@@ -419,6 +427,15 @@ function mergeFirestoreData(existing, fd, reviews) {
   // These are the only place these fields enter the committed JSON — keep the
   // single-writer invariant intact.
   Object.assign(existing, copyDecisionLayer(fd));
+
+  // If Firestore has explicitly removed any decision-layer field, the JSON
+  // must reflect that — otherwise stale ranks/verdicts persist forever after
+  // a cleanup pass. (Found 2026-04-28: Pass 2 fix deleted city_rank+decision
+  // for 410 no-review plumbers in Firestore, but copyDecisionLayer's
+  // additive merge kept the old values in JSON, leaking back into the UI.)
+  if (!fd.city_rank) delete existing.city_rank;
+  if (!fd.decision) delete existing.decision;
+  if (!Array.isArray(fd.evidence_quotes)) delete existing.evidence_quotes;
 
   // Update scrapedAt
   if (fd.updatedAt?.toDate) {
