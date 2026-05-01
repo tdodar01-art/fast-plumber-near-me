@@ -1,17 +1,8 @@
 {
-  "currentMonth": "2026-04",
+  "currentMonth": "2026-05",
   "monthlyBudget": 1000,
-  "usedThisMonth": 861,
+  "usedThisMonth": 13,
   "queue": [
-    {
-      "city": "Pflugerville",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Abingdon",
       "state": "VA",
@@ -2183,6 +2174,16 @@
       "actualCalls": 10,
       "plumbersFound": 9,
       "completedAt": "2026-04-30"
+    },
+    {
+      "city": "Pflugerville",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 13,
+      "plumbersFound": 12,
+      "completedAt": "2026-05-01"
     }
   ]
 }
