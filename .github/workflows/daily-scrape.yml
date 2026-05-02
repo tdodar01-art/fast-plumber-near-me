@@ -130,6 +130,15 @@ jobs:
       # Request indexing for the city pages we just touched. Free Google
       # Indexing API (200/day quota guarded inside the script). Runs after
       # commit so the URLs are already live before we ask Google to recrawl.
+      #
+      # Each scraped city is converted into `{citySlug}:{stateAbbr}` pairs and
+      # passed to `build-indexing-urls.js`, which expands every city into the
+      # full set of URL variants Google has actually indexed (read from each
+      # city's `gscPageTypes` array in Firestore — populated by
+      # `gsc-expansion.js`). This ensures we ping the service-prefixed pages
+      # (`/24-hour-plumber/...`, `/clogged-drain/...`, etc.) that earn
+      # impressions, not only the canonical `/emergency-plumbers/...` URL,
+      # which Google often hasn't crawled.
       - name: Request indexing for scraped cities
         if: steps.firebase.outputs.configured == 'true'
         continue-on-error: true
@@ -143,29 +152,33 @@ jobs:
             node scripts/request-indexing.js --sitemap-only
             exit 0
           fi
-          URLS=$(node -e "
+          PAIRS=$(node -e "
             const r = require('./$LOG');
             const slugify = (t) => t.toLowerCase().replace(/\./g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
             const cities = r.citiesProcessed || [];
-            if (cities.length === 0) { process.exit(0); }
+            if (cities.length === 0) process.exit(0);
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('data/synthesized/plumbers-synthesized.json','utf-8'));
-            const urls = new Set();
+            const pairs = new Set();
             for (const c of cities) {
               const match = data.plumbers.find(p => p.city === c.city);
-              if (match) {
-                const abbrs = {AL:'alabama',AK:'alaska',AZ:'arizona',AR:'arkansas',CA:'california',CO:'colorado',CT:'connecticut',DE:'delaware',FL:'florida',GA:'georgia',HI:'hawaii',ID:'idaho',IL:'illinois',IN:'indiana',IA:'iowa',KS:'kansas',KY:'kentucky',LA:'louisiana',ME:'maine',MD:'maryland',MA:'massachusetts',MI:'michigan',MN:'minnesota',MS:'mississippi',MO:'missouri',MT:'montana',NE:'nebraska',NV:'nevada',NH:'new-hampshire',NJ:'new-jersey',NM:'new-mexico',NY:'new-york',NC:'north-carolina',ND:'north-dakota',OH:'ohio',OK:'oklahoma',OR:'oregon',PA:'pennsylvania',RI:'rhode-island',SC:'south-carolina',SD:'south-dakota',TN:'tennessee',TX:'texas',UT:'utah',VT:'vermont',VA:'virginia',WA:'washington',WV:'west-virginia',WI:'wisconsin',WY:'wyoming',DC:'district-of-columbia'};
-                const ss = abbrs[match.state] || match.state.toLowerCase();
-                urls.add('/emergency-plumbers/' + ss + '/' + slugify(c.city));
-              }
+              if (match && match.state) pairs.add(slugify(c.city) + ':' + match.state.toUpperCase());
             }
-            if (urls.size > 0) console.log([...urls].join(' '));
+            if (pairs.size > 0) console.log([...pairs].join(' '));
           " 2>/dev/null)
+          if [ -z "$PAIRS" ]; then
+            echo "No scraped cities to index — submitting sitemap only."
+            node scripts/request-indexing.js --sitemap-only
+            exit 0
+          fi
+          echo "Resolving GSC-indexed URL variants for: $PAIRS"
+          URLS=$(node scripts/build-indexing-urls.js $PAIRS)
           if [ -z "$URLS" ]; then
-            echo "No city URLs to index — submitting sitemap only."
+            echo "build-indexing-urls produced no URLs — submitting sitemap only."
             node scripts/request-indexing.js --sitemap-only
           else
-            echo "Requesting indexing for: $URLS"
+            echo "Requesting indexing for $(echo "$URLS" | wc -l | tr -d ' ') URL(s):"
+            echo "$URLS"
             node scripts/request-indexing.js $URLS
           fi
 

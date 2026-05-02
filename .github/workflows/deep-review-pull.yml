@@ -152,7 +152,17 @@ jobs:
           CITIES=$(grep '__AFFECTED_CITIES__:' /tmp/export-output.txt | sed 's/.*__AFFECTED_CITIES__://' || true)
           echo "affected_cities=$CITIES" >> $GITHUB_OUTPUT
 
-      # Request indexing for ALL city pages served by updated plumbers
+      # Request indexing for ALL city pages served by updated plumbers.
+      #
+      # `affected_cities` is a list of city slugs (e.g. `pflugerville`). For
+      # each, we look up its state in plumbers-synthesized.json, build a
+      # `{citySlug}:{stateAbbr}` pair, and pass to `build-indexing-urls.js`,
+      # which expands the pair into every URL variant Google has actually
+      # indexed for that city (read from `gscPageTypes` in Firestore). This
+      # makes the recrawl ping land on the service-prefixed pages
+      # (`/24-hour-plumber/...`, `/clogged-drain/...`, etc.) that earn
+      # impressions — not only the canonical `/emergency-plumbers/...` URL
+      # which Google often hasn't crawled.
       - name: Request indexing for affected cities
         if: steps.secrets.outputs.configured == 'true' && steps.export.outputs.affected_cities != '' && steps.export.outputs.affected_cities != '[]'
         continue-on-error: true
@@ -162,25 +172,29 @@ jobs:
           echo "=== STAGE: INDEXING START ==="
           npm install googleapis 2>/dev/null
 
-          URLS=$(node -e "
+          PAIRS=$(node -e "
             const fs = require('fs');
             const cities = ${{ steps.export.outputs.affected_cities || '[]' }};
             if (!cities.length) process.exit(0);
-            const abbrs = {AL:'alabama',AK:'alaska',AZ:'arizona',AR:'arkansas',CA:'california',CO:'colorado',CT:'connecticut',DE:'delaware',FL:'florida',GA:'georgia',HI:'hawaii',ID:'idaho',IL:'illinois',IN:'indiana',IA:'iowa',KS:'kansas',KY:'kentucky',LA:'louisiana',ME:'maine',MD:'maryland',MA:'massachusetts',MI:'michigan',MN:'minnesota',MS:'mississippi',MO:'missouri',MT:'montana',NE:'nebraska',NV:'nevada',NH:'new-hampshire',NJ:'new-jersey',NM:'new-mexico',NY:'new-york',NC:'north-carolina',ND:'north-dakota',OH:'ohio',OK:'oklahoma',OR:'oregon',PA:'pennsylvania',RI:'rhode-island',SC:'south-carolina',SD:'south-dakota',TN:'tennessee',TX:'texas',UT:'utah',VT:'vermont',VA:'virginia',WA:'washington',WV:'west-virginia',WI:'wisconsin',WY:'wyoming',DC:'district-of-columbia'};
             const data = JSON.parse(fs.readFileSync('data/synthesized/plumbers-synthesized.json','utf-8'));
             const cityState = new Map();
-            data.plumbers.forEach(p => (p.serviceCities||[]).forEach(c => { if (!cityState.has(c)) cityState.set(c, p.state); }));
-            const urls = cities.map(c => {
+            data.plumbers.forEach(p => (p.serviceCities||[]).forEach(c => { if (!cityState.has(c) && p.state) cityState.set(c, p.state); }));
+            const pairs = cities.map(c => {
               const state = cityState.get(c);
-              if (!state) return null;
-              const ss = abbrs[state] || state.toLowerCase();
-              return '/emergency-plumbers/' + ss + '/' + c;
+              return state ? c + ':' + state.toUpperCase() : null;
             }).filter(Boolean);
-            if (urls.length) console.log(urls.join(' '));
+            if (pairs.length) console.log(pairs.join(' '));
           " 2>/dev/null)
 
+          if [ -z "$PAIRS" ]; then
+            echo "No affected cities resolved to state — skipping indexing."
+            exit 0
+          fi
+          echo "Resolving GSC-indexed URL variants for: $PAIRS"
+          URLS=$(node scripts/build-indexing-urls.js $PAIRS)
           if [ -n "$URLS" ]; then
-            echo "Requesting indexing for: $URLS"
+            echo "Requesting indexing for $(echo "$URLS" | wc -l | tr -d ' ') URL(s):"
+            echo "$URLS"
             node scripts/request-indexing.js $URLS
           fi
 
