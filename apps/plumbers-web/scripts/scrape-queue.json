@@ -1,17 +1,8 @@
 {
   "currentMonth": "2026-05",
   "monthlyBudget": 1000,
-  "usedThisMonth": 24,
+  "usedThisMonth": 45,
   "queue": [
-    {
-      "city": "Greenville",
-      "state": "SC",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Milton",
       "state": "GA",
@@ -40,8 +31,8 @@
       "source": "gsc"
     },
     {
-      "city": "Cincinnati",
-      "state": "OH",
+      "city": "Arlington Heights",
+      "state": "IL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -49,8 +40,8 @@
       "source": "gsc"
     },
     {
-      "city": "Arlington Heights",
-      "state": "IL",
+      "city": "Cincinnati",
+      "state": "OH",
       "county": "",
       "region": "",
       "status": "pending",
@@ -67,6 +58,15 @@
       "source": "gsc"
     },
     {
+      "city": "Wheat Ridge",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Franklin",
       "state": "TN",
       "county": "",
@@ -76,8 +76,8 @@
       "source": "gsc"
     },
     {
-      "city": "Wheat Ridge",
-      "state": "CO",
+      "city": "Simpsonville",
+      "state": "SC",
       "county": "",
       "region": "",
       "status": "pending",
@@ -94,8 +94,26 @@
       "source": "gsc"
     },
     {
+      "city": "Chantilly",
+      "state": "VA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Carrollton",
       "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Prescott",
+      "state": "AZ",
       "county": "",
       "region": "",
       "status": "pending",
@@ -121,53 +139,8 @@
       "source": "gsc"
     },
     {
-      "city": "Chantilly",
-      "state": "VA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Norman",
       "state": "OK",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Johns Creek",
-      "state": "GA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Simpsonville",
-      "state": "SC",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Germantown",
-      "state": "MD",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Des Plaines",
-      "state": "IL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -184,8 +157,35 @@
       "source": "gsc"
     },
     {
-      "city": "Prescott",
-      "state": "AZ",
+      "city": "Johns Creek",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Des Plaines",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Germantown",
+      "state": "MD",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Orem",
+      "state": "UT",
       "county": "",
       "region": "",
       "status": "pending",
@@ -211,13 +211,14 @@
       "source": "gsc"
     },
     {
-      "city": "Orem",
-      "state": "UT",
+      "city": "Fairfield",
+      "state": "OH",
       "county": "",
       "region": "",
       "status": "pending",
       "estCalls": 18,
-      "source": "gsc"
+      "source": "gsc",
+      "priority": "high-impressions"
     },
     {
       "city": "Glendale",
@@ -227,16 +228,6 @@
       "status": "pending",
       "estCalls": 18,
       "source": "gsc"
-    },
-    {
-      "city": "Fairfield",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc",
-      "priority": "high-impressions"
     },
     {
       "city": "Smyrna",
@@ -284,26 +275,8 @@
       "source": "gsc"
     },
     {
-      "city": "Hammond",
-      "state": "IN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Thornton",
       "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Largo",
-      "state": "FL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -320,8 +293,44 @@
       "source": "gsc"
     },
     {
+      "city": "Hammond",
+      "state": "IN",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Largo",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Canton",
       "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Alpharetta",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Hayward",
+      "state": "CA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -365,8 +374,53 @@
       "source": "gsc"
     },
     {
+      "city": "Pasadena",
+      "state": "MD",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Sandy Springs",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Austin",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Fremont",
       "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Orland Park",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Cottonwood",
+      "state": "AZ",
       "county": "",
       "region": "",
       "status": "pending",
@@ -394,24 +448,6 @@
     {
       "city": "Round Lake",
       "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Hayward",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Alpharetta",
-      "state": "GA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -447,26 +483,8 @@
       "source": "gsc"
     },
     {
-      "city": "Orland Park",
-      "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Spring",
       "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Pasadena",
-      "state": "MD",
       "county": "",
       "region": "",
       "status": "pending",
@@ -510,8 +528,17 @@
       "source": "gsc"
     },
     {
-      "city": "Sandy Springs",
-      "state": "GA",
+      "city": "North Canton",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Fort Worth",
+      "state": "TX",
       "county": "",
       "region": "",
       "status": "pending",
@@ -537,8 +564,17 @@
       "source": "gsc"
     },
     {
-      "city": "North Canton",
-      "state": "OH",
+      "city": "Bel Air",
+      "state": "MD",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Highlands Ranch",
+      "state": "CO",
       "county": "",
       "region": "",
       "status": "pending",
@@ -582,8 +618,17 @@
       "source": "gsc"
     },
     {
-      "city": "Cottonwood",
-      "state": "AZ",
+      "city": "La Vergne",
+      "state": "TN",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Riverview",
+      "state": "FL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -618,15 +663,6 @@
       "source": "gsc"
     },
     {
-      "city": "Bel Air",
-      "state": "MD",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Brighton",
       "state": "CO",
       "county": "",
@@ -636,17 +672,8 @@
       "source": "gsc"
     },
     {
-      "city": "Austin",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Highlands Ranch",
-      "state": "CO",
+      "city": "Rockville",
+      "state": "MD",
       "county": "",
       "region": "",
       "status": "pending",
@@ -672,26 +699,8 @@
       "source": "gsc"
     },
     {
-      "city": "Rockville",
-      "state": "MD",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Copperas Cove",
       "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "La Vergne",
-      "state": "TN",
       "county": "",
       "region": "",
       "status": "pending",
@@ -717,8 +726,8 @@
       "source": "gsc"
     },
     {
-      "city": "Fort Worth",
-      "state": "TX",
+      "city": "Daly City",
+      "state": "CA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -771,15 +780,6 @@
       "source": "gsc"
     },
     {
-      "city": "Riverview",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Newberg",
       "state": "OR",
       "county": "",
@@ -816,8 +816,8 @@
       "source": "gsc"
     },
     {
-      "city": "Daly City",
-      "state": "CA",
+      "city": "Commerce City",
+      "state": "CO",
       "county": "",
       "region": "",
       "status": "pending",
@@ -843,8 +843,8 @@
       "source": "gsc"
     },
     {
-      "city": "Commerce City",
-      "state": "CO",
+      "city": "Roswell",
+      "state": "GA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -924,6 +924,42 @@
       "source": "gsc"
     },
     {
+      "city": "Newark",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Parma",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Zephyrhills",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Golden",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Keller",
       "state": "TX",
       "county": "",
@@ -960,34 +996,7 @@
       "source": "gsc"
     },
     {
-      "city": "Newark",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Davie",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Parma",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Zephyrhills",
       "state": "FL",
       "county": "",
       "region": "",
@@ -1050,8 +1059,8 @@
       "source": "gsc"
     },
     {
-      "city": "Roswell",
-      "state": "GA",
+      "city": "Trumbull",
+      "state": "CT",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1104,8 +1113,8 @@
       "source": "gsc"
     },
     {
-      "city": "Trumbull",
-      "state": "CT",
+      "city": "American Fork",
+      "state": "UT",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1113,8 +1122,17 @@
       "source": "gsc"
     },
     {
-      "city": "Golden",
-      "state": "CO",
+      "city": "Solon",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Athens",
+      "state": "AL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1176,24 +1194,6 @@
       "source": "gsc"
     },
     {
-      "city": "American Fork",
-      "state": "UT",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Solon",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Munster",
       "state": "IN",
       "county": "",
@@ -1241,6 +1241,33 @@
     {
       "city": "El Cerrito",
       "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Grand Prairie",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "West Valley City",
+      "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Duncanville",
+      "state": "TX",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1320,15 +1347,6 @@
       "source": "gsc"
     },
     {
-      "city": "Lindon",
-      "state": "UT",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Littleton",
       "state": "CO",
       "county": "",
@@ -1338,8 +1356,53 @@
       "source": "gsc"
     },
     {
-      "city": "Grand Prairie",
-      "state": "TX",
+      "city": "Fairfield",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Temple Terrace",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Arvada",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Englewood",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Boulder",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Lindon",
+      "state": "UT",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1419,15 +1482,6 @@
       "source": "gsc"
     },
     {
-      "city": "Fairfield",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Oakland",
       "state": "CA",
       "county": "",
@@ -1482,44 +1536,8 @@
       "source": "gsc"
     },
     {
-      "city": "Athens",
-      "state": "AL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Temple Terrace",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Glenview",
       "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "West Valley City",
-      "state": "UT",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Arvada",
-      "state": "CO",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1554,8 +1572,8 @@
       "source": "gsc"
     },
     {
-      "city": "Sun City Center",
-      "state": "FL",
+      "city": "Kenosha",
+      "state": "WI",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1563,8 +1581,8 @@
       "source": "gsc"
     },
     {
-      "city": "Kenosha",
-      "state": "WI",
+      "city": "Sun City Center",
+      "state": "FL",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1592,15 +1610,6 @@
     {
       "city": "Canton",
       "state": "GA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Duncanville",
-      "state": "TX",
       "county": "",
       "region": "",
       "status": "pending",
@@ -2302,6 +2311,16 @@
       "actualCalls": 11,
       "plumbersFound": 10,
       "completedAt": "2026-05-02"
+    },
+    {
+      "city": "Greenville",
+      "state": "SC",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 21,
+      "plumbersFound": 20,
+      "completedAt": "2026-05-03"
     }
   ]
 }
