@@ -1,17 +1,8 @@
 {
   "currentMonth": "2026-05",
   "monthlyBudget": 1000,
-  "usedThisMonth": 75,
+  "usedThisMonth": 92,
   "queue": [
-    {
-      "city": "Milton",
-      "state": "GA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "West Jordan",
       "state": "UT",
@@ -2449,6 +2440,16 @@
       "actualCalls": 14,
       "plumbersFound": 13,
       "completedAt": "2026-05-05"
+    },
+    {
+      "city": "Milton",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 16,
+      "completedAt": "2026-05-06"
     }
   ]
 }
