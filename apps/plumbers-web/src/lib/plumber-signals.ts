@@ -18,7 +18,7 @@
  */
 
 import type { Plumber } from "./types";
-import type { DimensionKey, SpecialtyKey } from "./decision-engine";
+import type { DimensionKey, SpecialtyKey, Verdict } from "./decision-engine";
 
 /**
  * Accept either the Firestore-shape Plumber (with `reviewSynthesis` field)
@@ -40,7 +40,9 @@ export type PlumberLike = {
   /** JSON-shape narrative (SynthesizedPlumber.synthesis) */
   synthesis?: Plumber["reviewSynthesis"] | unknown;
   googleRating?: number | null;
+  googleReviewCount?: number | null;
   yelpRating?: number | null;
+  yelpReviewCount?: number | null;
   is24Hour?: boolean;
   status?: string;
   bbb?: unknown;
@@ -66,10 +68,21 @@ export const SPECIALTY_EXCEL_THRESHOLD = 85;
 export const VARIANCE_HIGH = 25;
 /** Variance below this threshold + good mean triggers a "consistent" excel. */
 export const VARIANCE_LOW = 10;
-/** BBB complaints in past 3 years at or above this number triggers a concern. */
-export const BBB_COMPLAINTS_3YR_CONCERN = 10;
-/** BBB complaints in past 12 months at or above this number triggers a concern. */
-export const BBB_COMPLAINTS_12MO_CONCERN = 5;
+/**
+ * Holistic BBB complaint thresholds (rate of complaints to total reviews).
+ *
+ * The BBB complaint count alone is not a usable signal — it has to be
+ * normalized against the plumber's review volume so high-volume chains
+ * with a small absolute complaint count don't get flagged, while small
+ * shops with a large complaint-to-review ratio do.
+ *
+ * Combined with `BBB_COMPLAINTS_ABSOLUTE_FLOOR` so 1-2 isolated complaints
+ * never fire a chip regardless of denominator. Per-product principle:
+ * "even one or two complaints is not that big of a deal."
+ */
+export const BBB_COMPLAINT_RATE_RED = 0.01;     // ≥1.0% complaint:review ratio → red concern
+export const BBB_COMPLAINT_RATE_AMBER = 0.005;  // ≥0.5% complaint:review ratio → amber watch
+export const BBB_COMPLAINTS_ABSOLUTE_FLOOR = 3; // never fire below this raw count
 /** BBB years in business at or above this number triggers a tenure info chip. */
 export const BBB_LONG_ESTABLISHED = 20;
 /** review_count_used below this number triggers a small-sample warning. */
@@ -232,7 +245,15 @@ function resolveSampleSignals(plumber: PlumberLike): Signal[] {
   return [];
 }
 
-function resolveDecisionSignals(plumber: PlumberLike): Signal[] {
+function resolveDecisionSignals(
+  plumber: PlumberLike,
+  /**
+   * Optional override that downgrades the rendered verdict when concern
+   * chips have fired elsewhere on the card. See `applyVerdictCap`.
+   * Pass null/undefined to fall through to the plumber's stored verdict.
+   */
+  cappedVerdict?: Verdict | null,
+): Signal[] {
   const out: Signal[] = [];
   // Emit the verdict itself as the highest-priority chip — this is the
   // headline signal. Replaces the standalone VerdictSeal component; the
@@ -241,7 +262,7 @@ function resolveDecisionSignals(plumber: PlumberLike): Signal[] {
   // in pickTop, which also peaks at priority 10 for major flags — tied
   // values fall back to kind weight where verdicts/seals are ranked
   // highest to win the tie).
-  const verdict = plumber.decision?.verdict;
+  const verdict = cappedVerdict ?? plumber.decision?.verdict;
   if (verdict) {
     const VERDICT_LABELS = {
       strong_hire: { label: "Top Pick", detail: "Reviews confirm strong performance across reliability, workmanship, pricing, and response. Safe first call." },
@@ -357,6 +378,46 @@ function resolveSynthesisSignals(plumber: PlumberLike): Signal[] {
   return out;
 }
 
+/**
+ * Classify a BBB complaint signal holistically against the plumber's overall
+ * review volume. Returns `null` when the data is insufficient or the rate
+ * is acceptable — most plumbers don't engage with BBB so missing data is
+ * normal and must not be penalized.
+ *
+ * Rules (in order):
+ *   - No complaint count cached  → null (no signal)
+ *   - Complaints below absolute floor (≤2)  → null
+ *   - Complaint count without any review-count denominator  → null
+ *     (we cannot tell if it's a high or low rate without context)
+ *   - rate ≥ 1.0%  → "red"
+ *   - rate ≥ 0.5%  → "amber"
+ *   - otherwise   → null
+ *
+ * Examples (matches user expectations):
+ *   25,000 reviews + 2 complaints  → null (below floor)
+ *   1,000 reviews  + 2 complaints  → null (below floor)
+ *   1,000 reviews  + 5 complaints  → null (rate 0.5% → amber, OK 0.5% threshold; this returns "amber")
+ *   200 reviews    + 10 complaints → "red" (rate 5%)
+ *   1,800 reviews  + 793 complaints → "red" (rate 44% — but should never happen post-locality-fix)
+ */
+export function classifyBbbComplaintSignal(
+  complaints: number | null | undefined,
+  totalReviews: number | null | undefined,
+): "red" | "amber" | null {
+  if (typeof complaints !== "number" || complaints < BBB_COMPLAINTS_ABSOLUTE_FLOOR) {
+    return null;
+  }
+  if (!totalReviews || totalReviews <= 0) {
+    // We have a complaint count but no review denominator. Without context we
+    // can't tell if it's significant — refuse to flag rather than guess.
+    return null;
+  }
+  const rate = complaints / totalReviews;
+  if (rate >= BBB_COMPLAINT_RATE_RED) return "red";
+  if (rate >= BBB_COMPLAINT_RATE_AMBER) return "amber";
+  return null;
+}
+
 function resolveBbbSignals(plumber: PlumberLike): Signal[] {
   const out: Signal[] = [];
   const bbb = (plumber as { bbb?: unknown }).bbb as
@@ -381,26 +442,35 @@ function resolveBbbSignals(plumber: PlumberLike): Signal[] {
     });
   }
 
-  if (
-    (bbb.complaintsPast3Years ?? 0) >= BBB_COMPLAINTS_3YR_CONCERN
-  ) {
+  // Holistic complaint signal — normalized by total review volume so that a
+  // chain with millions of positive reviews and a handful of complaints
+  // doesn't get the same flag as a small shop with a high complaint rate.
+  // See classifyBbbComplaintSignal for the exact rules.
+  const totalReviews =
+    (num(plumber.googleReviewCount) ?? 0) +
+    (num((plumber as { yelpReviewCount?: number | null }).yelpReviewCount) ?? 0);
+  const severity = classifyBbbComplaintSignal(
+    bbb.complaintsPast3Years ?? null,
+    totalReviews || null,
+  );
+  if (severity === "red") {
+    const rate = ((bbb.complaintsPast3Years ?? 0) / totalReviews) * 100;
     out.push({
       id: "bbb-complaints-3yr",
       kind: "flag",
       priority: 8,
-      label: "BBB complaint history",
-      detail: `${bbb.complaintsPast3Years} BBB complaints filed in the past 3 years — worth reviewing before booking.`,
+      label: "BBB complaint pattern",
+      detail: `${bbb.complaintsPast3Years} BBB complaints in 3 years against ${totalReviews.toLocaleString()} total reviews (${rate.toFixed(1)}% — high relative to review volume).`,
       icon: icon("bbb-concerns"),
     });
-  } else if (
-    (bbb.complaintsPast12Months ?? 0) >= BBB_COMPLAINTS_12MO_CONCERN
-  ) {
+  } else if (severity === "amber") {
+    const rate = ((bbb.complaintsPast3Years ?? 0) / totalReviews) * 100;
     out.push({
-      id: "bbb-complaints-12mo",
+      id: "bbb-complaints-3yr-watch",
       kind: "flag",
-      priority: 7,
-      label: "Recent BBB complaints",
-      detail: `${bbb.complaintsPast12Months} BBB complaints in the past 12 months.`,
+      priority: 5,
+      label: "BBB complaints worth a glance",
+      detail: `${bbb.complaintsPast3Years} BBB complaints in 3 years against ${totalReviews.toLocaleString()} reviews (${rate.toFixed(1)}%) — uncommon but not severe.`,
       icon: icon("bbb-concerns"),
     });
   }
@@ -493,6 +563,65 @@ function resolveSpecialtySignals(plumber: PlumberLike): Signal[] {
 }
 
 // ---------------------------------------------------------------------------
+// Verdict cap — render-time downgrade when concern chips fire elsewhere
+// ---------------------------------------------------------------------------
+
+/**
+ * Numeric severity for verdicts. Higher = more positive recommendation.
+ * Used to compute the most-conservative-wins cap when multiple chips fire.
+ */
+const VERDICT_RANK: Record<Verdict, number> = {
+  strong_hire: 4,
+  conditional_hire: 3,
+  caution: 2,
+  avoid: 1,
+};
+
+/**
+ * The max-allowed verdict given a list of signal IDs that fired on the card.
+ * Returns the most conservative cap — i.e. if BOTH a "red" cap signal AND
+ * a "downgrade-one" signal fire, the red wins.
+ *
+ * Cap rules:
+ *   - bbb-complaints-3yr (red BBB rate) → cap at "caution"
+ *   - amber BBB rate / platform discrepancy / templated-pattern flag /
+ *     premium-with-concerns → cap at "conditional_hire"
+ *
+ * Why render-time and not at scoring time: the user has 1k+ plumbers and
+ * we don't want to re-run scoring just to apply this cap. Computing the
+ * cap from already-resolved signals at render time gives the same UX
+ * outcome without re-scoring, and stays in sync automatically as the
+ * underlying signals change.
+ */
+export function applyVerdictCap(
+  storedVerdict: Verdict | undefined,
+  firedSignalIds: Set<string>,
+): Verdict | undefined {
+  if (!storedVerdict) return storedVerdict;
+
+  let cap: Verdict | null = null;
+  const tighten = (next: Verdict) => {
+    if (!cap || VERDICT_RANK[next] < VERDICT_RANK[cap]) cap = next;
+  };
+
+  // Red-tier signals — the strongest concern chips on the card.
+  if (firedSignalIds.has("bbb-complaints-3yr")) tighten("caution");
+
+  // Amber-tier signals — meaningful concerns but not red. Cap at
+  // conditional_hire so a "Top Pick" never displays alongside them.
+  if (firedSignalIds.has("bbb-complaints-3yr-watch")) tighten("conditional_hire");
+  if (firedSignalIds.has("platform-mismatch")) tighten("conditional_hire");
+  if (firedSignalIds.has("platform-gap-raw")) tighten("conditional_hire");
+  if (firedSignalIds.has("premium-with-concerns")) tighten("conditional_hire");
+
+  if (cap === null) return storedVerdict;
+
+  // Only downgrade — never upgrade. Stored "avoid" stays "avoid" even if
+  // the cap says "caution".
+  return VERDICT_RANK[storedVerdict] <= VERDICT_RANK[cap] ? storedVerdict : cap;
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -501,15 +630,27 @@ function resolveSpecialtySignals(plumber: PlumberLike): Signal[] {
  * Does NOT cap — callers pick how many to show.
  */
 export function resolveSignals(plumber: PlumberLike): Signal[] {
-  const signals: Signal[] = [
+  // Two-pass: collect all non-verdict signals first so we can compute
+  // the chip-induced verdict cap before emitting the verdict seal. This
+  // keeps the rendered verdict in sync with the visible concern chips —
+  // e.g. a "Top Pick" can never appear next to a "Ratings don't agree"
+  // chip because the cap downgrades the seal to "Solid Choice" first.
+  const nonVerdictSignals: Signal[] = [
     ...resolveDimensionSignals(plumber),
     ...resolveVarianceSignals(plumber),
     ...resolveSampleSignals(plumber),
-    ...resolveDecisionSignals(plumber),
     ...resolveSynthesisSignals(plumber),
     ...resolveBbbSignals(plumber),
     ...resolvePlatformRatingGap(plumber),
     ...resolveSpecialtySignals(plumber),
+  ];
+
+  const firedIds = new Set(nonVerdictSignals.map((s) => s.id));
+  const cappedVerdict = applyVerdictCap(plumber.decision?.verdict, firedIds);
+
+  const signals: Signal[] = [
+    ...nonVerdictSignals,
+    ...resolveDecisionSignals(plumber, cappedVerdict),
   ];
 
   // Dedup by id (multiple resolvers could theoretically produce the same).

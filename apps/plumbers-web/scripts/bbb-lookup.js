@@ -169,18 +169,95 @@ async function scrapeProfile(reportUrl) {
 // Match & lookup a single plumber
 // ---------------------------------------------------------------------------
 
-async function lookupPlumber(businessName, city, state) {
+/**
+ * Haversine distance in miles between two lat/lng points.
+ */
+function haversineMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8; // Earth radius in miles
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+/**
+ * Parse "lat,lng" from a BBB result's `location` field.
+ * Returns [lat, lng] as numbers, or null if the field is missing/malformed.
+ */
+function parseBbbLocation(loc) {
+  if (!loc || typeof loc !== "string") return null;
+  const parts = loc.split(",").map((s) => parseFloat(s.trim()));
+  if (parts.length !== 2 || parts.some((n) => !Number.isFinite(n))) return null;
+  return parts;
+}
+
+/**
+ * Extract the 2-letter state code from a BBB profile URL like
+ * "/us/al/huntsville/profile/plumber/...".
+ * Returns the uppercased code, or null if the URL doesn't match the pattern.
+ *
+ * Used as a defense-in-depth check on `reportUrl` (which is the corporate-
+ * parent profile for franchise chains and points to an unrelated state).
+ */
+function extractStateFromBbbUrl(url) {
+  if (!url) return null;
+  const m = url.match(/\/us\/([a-z]{2})\//i);
+  return m ? m[1].toUpperCase() : null;
+}
+
+/**
+ * Locality threshold in miles. A BBB result is rejected if its location
+ * is more than this far from the plumber's address. Catches in-state
+ * regional chains whose BBB profile is in a different metro than the
+ * franchise we're scoring.
+ */
+const LOCALITY_RADIUS_MILES = 30;
+
+async function lookupPlumber(businessName, city, state, plumberLat, plumberLng) {
   const results = await searchBBB(businessName, city, state);
 
   if (results.length === 0) {
     return null;
   }
 
-  // Find best fuzzy match
+  // Find best fuzzy match — but ONLY among results that are local to the
+  // plumber. For franchise chains the search API returns the corporate
+  // parent in a different state alongside the local franchise; we must
+  // never pick the corporate parent or we'd attribute thousands of
+  // national complaints to a single local franchise.
   let bestMatch = null;
   let bestScore = 0;
+  let rejectedNonLocal = 0;
 
   for (const r of results) {
+    // Locality check 1: state must match the plumber's state.
+    const resultState = (r.state || "").toUpperCase();
+    const plumberState = (state || "").toUpperCase();
+    if (!resultState || !plumberState || resultState !== plumberState) {
+      rejectedNonLocal++;
+      continue;
+    }
+
+    // Locality check 2: BBB result must be within LOCALITY_RADIUS_MILES of the
+    // plumber's address. Catches in-state regional chains (e.g. a Birmingham
+    // BBB profile being attributed to a Huntsville franchise — same state,
+    // different metro). Skipped silently if either side lacks coords.
+    const bbbLoc = parseBbbLocation(r.location);
+    if (
+      bbbLoc &&
+      Number.isFinite(plumberLat) &&
+      Number.isFinite(plumberLng)
+    ) {
+      const distMi = haversineMiles(plumberLat, plumberLng, bbbLoc[0], bbbLoc[1]);
+      if (distMi > LOCALITY_RADIUS_MILES) {
+        rejectedNonLocal++;
+        continue;
+      }
+    }
+
     const cleanName = (r.businessName || "").replace(/<\/?em>/g, "");
     const score = similarity(businessName, cleanName);
 
@@ -198,12 +275,37 @@ async function lookupPlumber(businessName, city, state) {
     }
   }
 
+  if (rejectedNonLocal > 0 && !bestMatch) {
+    // Surface to the caller log so we can tell "no match" apart from "matched
+    // but rejected because the only candidates were non-local".
+    console.log(`    Rejected ${rejectedNonLocal} non-local BBB result(s).`);
+  }
+
   // Require minimum similarity
-  if (bestScore < 0.3) {
+  if (!bestMatch || bestScore < 0.3) {
     return null;
   }
 
   const cleanName = (bestMatch.businessName || "").replace(/<\/?em>/g, "");
+
+  // Prefer the local franchise profile. Only fall back to `reportUrl` if its
+  // URL points to the plumber's state — `reportUrl` is the corporate-parent
+  // record for franchise chains and would re-introduce the bug we just
+  // filtered out at the candidate-selection stage.
+  let profileUrl = bestMatch.localReportUrl;
+  if (!profileUrl && bestMatch.reportUrl) {
+    const reportUrlState = extractStateFromBbbUrl(bestMatch.reportUrl);
+    if (reportUrlState && reportUrlState === (state || "").toUpperCase()) {
+      profileUrl = bestMatch.reportUrl;
+    }
+  }
+
+  if (!profileUrl) {
+    // Best match was local by city/state/distance, but neither URL field
+    // resolves to a same-state profile. Refuse rather than fall back to a
+    // potentially-wrong national record.
+    return null;
+  }
 
   // Scrape profile page for complaint data
   let profileData = {
@@ -213,14 +315,11 @@ async function lookupPlumber(businessName, city, state) {
     yearsInBusiness: null,
   };
 
-  const profileUrl = bestMatch.reportUrl || bestMatch.localReportUrl;
-  if (profileUrl) {
-    try {
-      await sleep(REQUEST_DELAY_MS);
-      profileData = await scrapeProfile(profileUrl);
-    } catch (err) {
-      console.error(`      Profile scrape failed: ${err.message}`);
-    }
+  try {
+    await sleep(REQUEST_DELAY_MS);
+    profileData = await scrapeProfile(profileUrl);
+  } catch (err) {
+    console.error(`      Profile scrape failed: ${err.message}`);
   }
 
   return {
@@ -231,8 +330,10 @@ async function lookupPlumber(businessName, city, state) {
     complaintsPast3Years: profileData.complaintsPast3Years,
     complaintsPast12Months: profileData.complaintsPast12Months,
     yearsInBusiness: profileData.yearsInBusiness,
-    bbbUrl: profileUrl ? `${BBB_BASE_URL}${profileUrl}` : null,
+    bbbUrl: `${BBB_BASE_URL}${profileUrl}`,
     bbbBusinessName: cleanName,
+    bbbCity: bestMatch.city || null,
+    bbbState: bestMatch.state || null,
     matchScore: Math.round(bestScore * 100) / 100,
     lastBBBPull: admin.firestore.Timestamp.now(),
   };
@@ -297,6 +398,8 @@ async function main() {
       const data = doc.data();
       const city = data.address?.city || "";
       const state = data.address?.state || "";
+      const plumberLat = data.address?.lat;
+      const plumberLng = data.address?.lng;
       totalPlumbers++;
 
       console.log(`  🔧 ${data.businessName} (${city}, ${state})`);
@@ -309,7 +412,7 @@ async function main() {
 
       try {
         await sleep(REQUEST_DELAY_MS);
-        const bbbData = await lookupPlumber(data.businessName, city, state);
+        const bbbData = await lookupPlumber(data.businessName, city, state, plumberLat, plumberLng);
 
         if (!bbbData) {
           console.log(`    Not found on BBB.`);

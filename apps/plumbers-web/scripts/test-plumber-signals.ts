@@ -14,10 +14,11 @@ import {
   resolveSignals,
   pickTop,
   countByKind,
+  classifyBbbComplaintSignal,
+  applyVerdictCap,
   FLAG_THRESHOLD,
   EXCEL_THRESHOLD,
   VARIANCE_HIGH,
-  BBB_COMPLAINTS_3YR_CONCERN,
   SMALL_SAMPLE_THRESHOLD,
   type Signal,
 } from "../src/lib/plumber-signals.js";
@@ -225,18 +226,68 @@ test("accredited + A+ produces bbb-a-plus excel", () => {
   assert.ok(signals.some((s) => s.id === "bbb-a-plus" && s.kind === "excel"));
 });
 
-test("10 complaints in 3 years triggers concern flag (boundary)", () => {
-  const p = makePlumber({
-    bbb: { complaintsPast3Years: BBB_COMPLAINTS_3YR_CONCERN },
-  });
-  const signals = resolveSignals(p);
-  assert.ok(signals.some((s) => s.id === "bbb-complaints-3yr"));
+// ---------------------------------------------------------------------------
+// Holistic BBB complaint signal — see classifyBbbComplaintSignal docstring.
+// Two principles being tested:
+//   - 1-2 complaints never fire (absolute floor)
+//   - Above the floor, only the complaint:review *rate* matters (not the
+//     raw count) — chains with millions of reviews shouldn't be punished
+//     for a small absolute count.
+// ---------------------------------------------------------------------------
+
+test("classifyBbbComplaintSignal: 25k reviews + 2 complaints → null (below floor)", () => {
+  assert.equal(classifyBbbComplaintSignal(2, 25000), null);
 });
 
-test("9 complaints in 3 years does NOT trigger the 3yr concern (below boundary)", () => {
-  const p = makePlumber({ bbb: { complaintsPast3Years: 9 } });
+test("classifyBbbComplaintSignal: 200 reviews + 10 complaints → red (5%)", () => {
+  assert.equal(classifyBbbComplaintSignal(10, 200), "red");
+});
+
+test("classifyBbbComplaintSignal: 1000 reviews + 5 complaints → amber (0.5%)", () => {
+  assert.equal(classifyBbbComplaintSignal(5, 1000), "amber");
+});
+
+test("classifyBbbComplaintSignal: 5000 reviews + 5 complaints → null (0.1% — fine)", () => {
+  assert.equal(classifyBbbComplaintSignal(5, 5000), null);
+});
+
+test("classifyBbbComplaintSignal: complaints without a review denominator → null", () => {
+  assert.equal(classifyBbbComplaintSignal(50, null), null);
+  assert.equal(classifyBbbComplaintSignal(50, 0), null);
+});
+
+test("red BBB rate emits bbb-complaints-3yr flag", () => {
+  // 200 reviews + 10 complaints = 5% rate → red
+  const p = makePlumber({
+    googleReviewCount: 200,
+    bbb: { complaintsPast3Years: 10 },
+  });
   const signals = resolveSignals(p);
-  assert.equal(signals.filter((s) => s.id === "bbb-complaints-3yr").length, 0);
+  assert.ok(signals.some((s) => s.id === "bbb-complaints-3yr" && s.kind === "flag"));
+});
+
+test("amber BBB rate emits the watch-tier flag (lower priority)", () => {
+  // 1000 reviews + 5 complaints = 0.5% rate → amber
+  const p = makePlumber({
+    googleReviewCount: 1000,
+    bbb: { complaintsPast3Years: 5 },
+  });
+  const signals = resolveSignals(p);
+  assert.ok(signals.some((s) => s.id === "bbb-complaints-3yr-watch" && s.kind === "flag"));
+});
+
+test("high-volume chain with tiny complaint ratio does NOT fire BBB flag", () => {
+  // 25,000 reviews + 2 complaints = 0.008% — below absolute floor anyway
+  const p = makePlumber({
+    googleReviewCount: 25000,
+    bbb: { complaintsPast3Years: 2 },
+  });
+  const signals = resolveSignals(p);
+  assert.equal(
+    signals.filter((s) => s.id.startsWith("bbb-complaints")).length,
+    0,
+    "no BBB complaint flag should fire for high-volume + tiny complaint ratio",
+  );
 });
 
 test("no BBB data emits zero BBB signals", () => {
@@ -321,6 +372,71 @@ test("premium pricing WITHOUT pricing red flag does NOT flag", () => {
   });
   const signals = resolveSignals(p);
   assert.equal(signals.filter((s) => s.id === "premium-with-concerns").length, 0);
+});
+
+// ---------------------------------------------------------------------------
+// Verdict cap — chips downgrade the rendered verdict
+// ---------------------------------------------------------------------------
+
+section("Verdict cap from concern chips");
+
+test("applyVerdictCap: red BBB rate caps strong_hire at caution", () => {
+  assert.equal(
+    applyVerdictCap("strong_hire", new Set(["bbb-complaints-3yr"])),
+    "caution",
+  );
+});
+
+test("applyVerdictCap: amber BBB or platform mismatch caps strong_hire at conditional_hire", () => {
+  assert.equal(
+    applyVerdictCap("strong_hire", new Set(["bbb-complaints-3yr-watch"])),
+    "conditional_hire",
+  );
+  assert.equal(
+    applyVerdictCap("strong_hire", new Set(["platform-mismatch"])),
+    "conditional_hire",
+  );
+});
+
+test("applyVerdictCap: most-conservative cap wins when multiple fire", () => {
+  assert.equal(
+    applyVerdictCap(
+      "strong_hire",
+      new Set(["bbb-complaints-3yr", "platform-mismatch"]),
+    ),
+    "caution",
+  );
+});
+
+test("applyVerdictCap: never upgrades — avoid stays avoid even with no concerns", () => {
+  assert.equal(applyVerdictCap("avoid", new Set()), "avoid");
+});
+
+test("applyVerdictCap: passes through when no concern chips fire", () => {
+  assert.equal(applyVerdictCap("strong_hire", new Set()), "strong_hire");
+  assert.equal(applyVerdictCap("strong_hire", new Set(["bbb-a-plus"])), "strong_hire");
+});
+
+test("Roto-Rooter Huntsville scenario: top percentile + chips → seal NOT strong_hire", () => {
+  // High percentile would normally produce verdict=strong_hire. The page
+  // also fires the platform-mismatch chip (Google/Yelp gap) and a red BBB
+  // complaint chip. Top Pick must NOT render — verdict cap engages.
+  const p = makePlumber({
+    googleRating: 4.7,
+    googleReviewCount: 1800,
+    yelpRating: 3.5,
+    bbb: { accredited: true, rating: "A+", complaintsPast3Years: 793 },
+    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
+    reviewSynthesis: {
+      platformDiscrepancy: "Google 4.7 vs Yelp 3.5 — meaningful gap",
+    },
+  });
+  const signals = resolveSignals(p);
+  const seal = signals.find((s) => s.kind === "seal");
+  assert.ok(seal, "expected a verdict seal in the signal list");
+  assert.notEqual(seal.id, "verdict-strong_hire", "Top Pick must not render alongside concern chips");
+  // BBB rate is ~44% which is red → seal should be capped at "caution"
+  assert.equal(seal.id, "verdict-caution");
 });
 
 // ---------------------------------------------------------------------------
@@ -416,8 +532,11 @@ section("Realistic plumber shapes");
 
 test("Hiller-like plumber (high Google, low Yelp, many BBB complaints) surfaces 3+ flags in top3", () => {
   // Mirrors the Hiller data we ran through the pipeline for real.
+  // 21 complaints / 1000 reviews = 2.1% rate → red BBB flag fires under the
+  // holistic formula.
   const p = makePlumber({
     googleRating: 4.8,
+    googleReviewCount: 1000,
     yelpRating: 3.5,
     scores: {
       ...makePlumber().scores,
