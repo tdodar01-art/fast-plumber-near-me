@@ -4,6 +4,12 @@
 **/data/outscraper-plumbers.csv
 **/data/raw/.scrape-progress.json
 **/data/raw/plumbers-with-synthesis.json
+# Intermediate scoring batches consumed by apply-manual-synthesis.js — written
+# by build-resynth-inputs.js + parallel Claude subagents, then ingested into
+# Firestore. Scratch files; the source of truth is Firestore.
+**/data/raw/synth-input-*.json
+**/data/raw/synth-batch-*.json
+**/data/raw/resynth-input-*.json
 **/data/synthesized/.synthesis-progress.json
 **/data/logs/
 
