@@ -20,8 +20,12 @@ import {
   computeCautionIf,
   computeHireIf,
   overallComposite,
+  computeCrossPlatformSignals,
+  computeAdjustmentPenalty,
+  applyAdjustment,
   type Scores,
   type CityRankEntry,
+  type CrossPlatformSignals,
 } from "../src/lib/decision-engine.js";
 
 let passed = 0;
@@ -78,105 +82,296 @@ function makeRank(overrides: Partial<CityRankEntry> = {}): CityRankEntry {
 // computeVerdict
 // ---------------------------------------------------------------------------
 
-section("computeVerdict");
+section("computeVerdict (absolute composite + signal-clean)");
 
-test("strong_hire when percentile 90 + variance 10", () => {
+// NOTE: cityRank is preserved in the signature for forward compat / tie-breaks
+// but no longer drives the verdict. Verdict is derived from absolute composite
+// score + variance + cross-platform signals. See decision-engine.ts.
+
+test("composite 90 + variance 10 + clean signals -> strong_hire", () => {
   const v = computeVerdict(
-    makeScores({ variance: 10 }),
-    makeRank({ overall_percentile: 90 }),
+    makeScores({ reliability: 90, pricing_fairness: 90, workmanship: 90, responsiveness: 90, communication: 90, variance: 10 }),
+    makeRank({ overall_percentile: 50 }), // city percentile no longer matters
   );
   assert.equal(v, "strong_hire");
 });
 
-test("boundary: percentile 80 + variance 19 -> strong_hire", () => {
+test("boundary: composite exactly 80 + variance 19 -> strong_hire", () => {
   const v = computeVerdict(
-    makeScores({ variance: 19 }),
-    makeRank({ overall_percentile: 80 }),
+    makeScores({ variance: 19 }), // makeScores defaults to all 75s -> composite 75; lift to 80
+    makeRank(),
+    undefined,
   );
-  assert.equal(v, "strong_hire");
+  // makeScores composites to 75, not 80 — explicitly raise to 80
+  const at80 = makeScores({
+    reliability: 80, pricing_fairness: 80, workmanship: 80, responsiveness: 80, communication: 80, variance: 19,
+  });
+  assert.equal(computeVerdict(at80, makeRank()), "strong_hire");
 });
 
-test("boundary: percentile 80 + variance 20 -> conditional_hire (variance < 20 fails)", () => {
-  const v = computeVerdict(
-    makeScores({ variance: 20 }),
-    makeRank({ overall_percentile: 80 }),
-  );
-  assert.equal(v, "conditional_hire");
-});
-
-test("high percentile but variance 30 -> conditional_hire", () => {
-  const v = computeVerdict(
-    makeScores({ variance: 30 }),
-    makeRank({ overall_percentile: 95 }),
-  );
-  assert.equal(v, "conditional_hire");
-});
-
-test("boundary: percentile 60 -> conditional_hire", () => {
-  const v = computeVerdict(makeScores(), makeRank({ overall_percentile: 60 }));
-  assert.equal(v, "conditional_hire");
-});
-
-test("percentile 59 -> caution", () => {
-  const v = computeVerdict(makeScores(), makeRank({ overall_percentile: 59 }));
-  assert.equal(v, "caution");
-});
-
-test("boundary: percentile 40 -> caution", () => {
-  const v = computeVerdict(makeScores(), makeRank({ overall_percentile: 40 }));
-  assert.equal(v, "caution");
-});
-
-test("percentile 39 + composite >= 65 -> caution (absolute floor)", () => {
-  // All dims at 75 -> composite = 75, above the 65 floor
-  const v = computeVerdict(makeScores(), makeRank({ overall_percentile: 39 }));
-  assert.equal(v, "caution");
-});
-
-test("percentile 0 + composite >= 65 -> caution (absolute floor)", () => {
-  const v = computeVerdict(makeScores(), makeRank({ overall_percentile: 0 }));
-  assert.equal(v, "caution");
-});
-
-test("percentile 39 + composite < 65 -> avoid (below floor)", () => {
+test("composite 80 + variance 20 -> conditional_hire (variance gate)", () => {
   const v = computeVerdict(
     makeScores({
-      reliability: 50,
-      pricing_fairness: 50,
-      workmanship: 50,
-      responsiveness: 50,
-      communication: 50,
+      reliability: 80, pricing_fairness: 80, workmanship: 80, responsiveness: 80, communication: 80, variance: 20,
     }),
-    makeRank({ overall_percentile: 39 }),
+    makeRank(),
+  );
+  assert.equal(v, "conditional_hire");
+});
+
+test("composite 90 + variance 30 -> conditional_hire (high variance)", () => {
+  const v = computeVerdict(
+    makeScores({
+      reliability: 90, pricing_fairness: 90, workmanship: 90, responsiveness: 90, communication: 90, variance: 30,
+    }),
+    makeRank(),
+  );
+  assert.equal(v, "conditional_hire");
+});
+
+test("composite 80 + clean signals + MAJOR platform discrepancy -> conditional_hire", () => {
+  const sigs: CrossPlatformSignals = { platform: "major", bbb: "none" };
+  const scores = makeScores({
+    reliability: 80, pricing_fairness: 80, workmanship: 80, responsiveness: 80, communication: 80,
+  });
+  assert.equal(computeVerdict(scores, makeRank(), sigs), "conditional_hire");
+});
+
+test("composite 80 + clean signals + RED BBB -> conditional_hire", () => {
+  const sigs: CrossPlatformSignals = { platform: "none", bbb: "red" };
+  const scores = makeScores({
+    reliability: 80, pricing_fairness: 80, workmanship: 80, responsiveness: 80, communication: 80,
+  });
+  assert.equal(computeVerdict(scores, makeRank(), sigs), "conditional_hire");
+});
+
+test("composite 80 + MINOR platform discrepancy -> still strong_hire (minor not major)", () => {
+  const sigs: CrossPlatformSignals = { platform: "minor", bbb: "none" };
+  const scores = makeScores({
+    reliability: 80, pricing_fairness: 80, workmanship: 80, responsiveness: 80, communication: 80,
+  });
+  assert.equal(computeVerdict(scores, makeRank(), sigs), "strong_hire");
+});
+
+test("composite 70 -> conditional_hire (below strong_hire threshold)", () => {
+  const v = computeVerdict(
+    makeScores({
+      reliability: 70, pricing_fairness: 70, workmanship: 70, responsiveness: 70, communication: 70,
+    }),
+    makeRank(),
+  );
+  assert.equal(v, "conditional_hire");
+});
+
+test("composite 60 -> caution", () => {
+  const v = computeVerdict(
+    makeScores({
+      reliability: 60, pricing_fairness: 60, workmanship: 60, responsiveness: 60, communication: 60,
+    }),
+    makeRank(),
+  );
+  assert.equal(v, "caution");
+});
+
+test("composite 59 -> avoid", () => {
+  const v = computeVerdict(
+    makeScores({
+      reliability: 59, pricing_fairness: 59, workmanship: 59, responsiveness: 59, communication: 59,
+    }),
+    makeRank(),
   );
   assert.equal(v, "avoid");
 });
 
-test("percentile 0 + composite exactly 65 -> caution (floor boundary)", () => {
+test("city percentile no longer affects verdict (composite is canonical)", () => {
+  // Same scores, different city percentile -> same verdict
+  const scores = makeScores({
+    reliability: 75, pricing_fairness: 75, workmanship: 75, responsiveness: 75, communication: 75,
+  });
+  const v1 = computeVerdict(scores, makeRank({ overall_percentile: 99 }));
+  const v2 = computeVerdict(scores, makeRank({ overall_percentile: 1 }));
+  assert.equal(v1, "conditional_hire");
+  assert.equal(v2, "conditional_hire");
+});
+
+// ---------------------------------------------------------------------------
+// Cross-platform signals (deterministic detector)
+// ---------------------------------------------------------------------------
+
+section("computeCrossPlatformSignals");
+
+test("severe platform: 1.5+ star Google/Yelp gap with adequate sample", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.8, googleReviewCount: 200,
+    yelpRating: 3.2, yelpReviewCount: 50,
+    platformDiscrepancyText: null, bbb: null,
+  });
+  assert.equal(s.platform, "severe");
+});
+
+test("major platform: 1.0-1.5 star gap", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.7, googleReviewCount: 1800,
+    yelpRating: 3.4, yelpReviewCount: 28,
+    platformDiscrepancyText: null, bbb: null,
+  });
+  assert.equal(s.platform, "major");
+});
+
+test("minor platform: 0.7-1.0 star gap", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.7, googleReviewCount: 100,
+    yelpRating: 3.9, yelpReviewCount: 30,
+    platformDiscrepancyText: null, bbb: null,
+  });
+  assert.equal(s.platform, "minor");
+});
+
+test("none: gap below 0.7", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.7, googleReviewCount: 100,
+    yelpRating: 4.4, yelpReviewCount: 30,
+    platformDiscrepancyText: null, bbb: null,
+  });
+  assert.equal(s.platform, "none");
+});
+
+test("insufficient sample: gap is large but Yelp <10 reviews -> none", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.8, googleReviewCount: 500,
+    yelpRating: 1.0, yelpReviewCount: 5,
+    platformDiscrepancyText: null, bbb: null,
+  });
+  assert.equal(s.platform, "none");
+});
+
+test("synthesizer-detected discrepancy promotes 'none' to 'major'", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.8, googleReviewCount: 100,
+    yelpRating: 4.5, yelpReviewCount: 20, // numeric gap is small
+    platformDiscrepancyText: "Google glowing, Yelp 1-stars cite billing disputes",
+    bbb: null,
+  });
+  assert.equal(s.platform, "major");
+});
+
+test("BBB red: 1.0%+ complaint rate", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.7, googleReviewCount: 200, yelpRating: null, yelpReviewCount: 0,
+    platformDiscrepancyText: null,
+    bbb: { complaintsPast3Years: 5 }, // 5/200 = 2.5%
+  });
+  assert.equal(s.bbb, "red");
+});
+
+test("BBB amber: 0.5-1.0% complaint rate", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.7, googleReviewCount: 800, yelpRating: null, yelpReviewCount: 0,
+    platformDiscrepancyText: null,
+    bbb: { complaintsPast3Years: 5 }, // 5/800 = 0.625%
+  });
+  assert.equal(s.bbb, "amber");
+});
+
+test("BBB none: below 3 absolute complaints (1-2 don't fire)", () => {
+  const s = computeCrossPlatformSignals({
+    googleRating: 4.7, googleReviewCount: 50, yelpRating: null, yelpReviewCount: 0,
+    platformDiscrepancyText: null,
+    bbb: { complaintsPast3Years: 2 },
+  });
+  assert.equal(s.bbb, "none");
+});
+
+// ---------------------------------------------------------------------------
+// Adjustment penalty + apply
+// ---------------------------------------------------------------------------
+
+section("computeAdjustmentPenalty + applyAdjustment");
+
+test("clean signals -> 0 penalty", () => {
+  assert.equal(computeAdjustmentPenalty({ platform: "none", bbb: "none" }), 0);
+});
+
+test("major platform alone -> 6 point penalty", () => {
+  assert.equal(computeAdjustmentPenalty({ platform: "major", bbb: "none" }), 6);
+});
+
+test("severe platform + red BBB -> capped at 15", () => {
+  assert.equal(computeAdjustmentPenalty({ platform: "severe", bbb: "red" }), 15);
+});
+
+test("applyAdjustment subtracts uniformly from each dimension", () => {
+  const raw = makeScores({
+    reliability: 90, pricing_fairness: 80, workmanship: 75, responsiveness: 85, communication: 70,
+  });
+  const adj = applyAdjustment(raw, 6);
+  assert.equal(adj.reliability, 84);
+  assert.equal(adj.pricing_fairness, 74);
+  assert.equal(adj.workmanship, 69);
+  assert.equal(adj.responsiveness, 79);
+  assert.equal(adj.communication, 64);
+});
+
+test("applyAdjustment preserves variance and other non-dim fields", () => {
+  const raw = makeScores({ variance: 14, review_count_used: 42 });
+  const adj = applyAdjustment(raw, 5);
+  assert.equal(adj.variance, 14);
+  assert.equal(adj.review_count_used, 42);
+});
+
+test("applyAdjustment clamps to [0, 100]", () => {
+  const raw = makeScores({
+    reliability: 5, pricing_fairness: 95, workmanship: 50, responsiveness: 50, communication: 50,
+  });
+  const adj = applyAdjustment(raw, 10);
+  assert.equal(adj.reliability, 0); // 5 - 10 clamped
+  assert.equal(adj.pricing_fairness, 85);
+});
+
+// ---------------------------------------------------------------------------
+// Roto-Rooter Huntsville regression: the case the rework was driven by
+// ---------------------------------------------------------------------------
+
+test("Roto-Rooter Huntsville scenario: high raw composite + major platform → conditional_hire", () => {
+  // Real numbers from production: 1758 Google reviews 4.7★, 28 Yelp 3.3★
+  const sigs = computeCrossPlatformSignals({
+    googleRating: 4.7, googleReviewCount: 1758,
+    yelpRating: 3.3, yelpReviewCount: 28,
+    platformDiscrepancyText: "Google 4.7 vs Yelp 3.3",
+    bbb: { complaintsPast3Years: null },
+  });
+  assert.equal(sigs.platform, "major");
+
+  const rawScores = makeScores({
+    reliability: 89, pricing_fairness: 91, workmanship: 91, responsiveness: 89, communication: 87, variance: 5,
+  });
+  const penalty = computeAdjustmentPenalty(sigs);
+  assert.equal(penalty, 6);
+
+  const adjustedScores = applyAdjustment(rawScores, penalty);
+  // Adjusted composite = (83 + 85 + 85 + 83 + 81) / 5 = 83.4
+  // Above strong_hire threshold (80), but signal-clean check fails
+  const verdict = computeVerdict(adjustedScores, makeRank(), sigs);
+  assert.equal(verdict, "conditional_hire");
+});
+
+test("low composite 60 with mixed dims -> caution (≥60 floor)", () => {
+  // Mean of 55, 65, 65, 65, 69 = 63.8 — above 60 caution floor
   const v = computeVerdict(
     makeScores({
-      reliability: 65,
-      pricing_fairness: 65,
-      workmanship: 65,
-      responsiveness: 65,
-      communication: 65,
+      reliability: 55, pricing_fairness: 65, workmanship: 65, responsiveness: 65, communication: 69,
     }),
-    makeRank({ overall_percentile: 0 }),
+    makeRank(),
   );
   assert.equal(v, "caution");
 });
 
-test("percentile 0 + composite 64.9 -> avoid (just below floor)", () => {
-  // Mean of 60,65,65,65,69 = 64.8
+test("composite below 60 -> avoid", () => {
   const v = computeVerdict(
     makeScores({
-      reliability: 60,
-      pricing_fairness: 65,
-      workmanship: 65,
-      responsiveness: 65,
-      communication: 69,
+      reliability: 50, pricing_fairness: 50, workmanship: 50, responsiveness: 50, communication: 50,
     }),
-    makeRank({ overall_percentile: 0 }),
+    makeRank(),
   );
   assert.equal(v, "avoid");
 });
@@ -467,7 +662,10 @@ test("weak plumber -> avoid verdict + avoid_if + caution_if populated", () => {
   assert.ok(d.caution_if.length >= 1);
 });
 
-test("middling plumber -> caution verdict, hire_if still present, best_for empty", () => {
+test("middling plumber (composite 70.2) -> conditional_hire, hire_if present, best_for empty", () => {
+  // Composite = (70+72+68+70+71)/5 = 70.2 — at the conditional_hire threshold.
+  // Previously this test asserted "caution" because the 45th percentile mapped
+  // there; now the absolute composite drives the verdict.
   const scores = makeScores({
     reliability: 70,
     pricing_fairness: 72,
@@ -478,9 +676,17 @@ test("middling plumber -> caution verdict, hire_if still present, best_for empty
   });
   const rank = makeRank({ overall_percentile: 45 });
   const d = computeDecision(scores, rank);
-  assert.equal(d.verdict, "caution");
+  assert.equal(d.verdict, "conditional_hire");
   assert.equal(d.hire_if.length, 2);
   assert.equal(d.best_for.length, 0);
+});
+
+test("genuinely middling plumber (composite 64) -> caution", () => {
+  const scores = makeScores({
+    reliability: 64, pricing_fairness: 64, workmanship: 64, responsiveness: 64, communication: 64, variance: 15,
+  });
+  const d = computeDecision(scores, makeRank());
+  assert.equal(d.verdict, "caution");
 });
 
 // ---------------------------------------------------------------------------

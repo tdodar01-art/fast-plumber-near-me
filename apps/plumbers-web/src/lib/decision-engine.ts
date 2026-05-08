@@ -157,16 +157,146 @@ const WEAKNESS_PHRASES: Record<DimensionKey, string> = {
   communication: "detailed walkthroughs and written estimates before work starts",
 };
 
+/**
+ * Cross-platform signal severity flags used by the verdict + adjustment
+ * logic. Computed deterministically from review counts, ratings, and BBB
+ * data. See `computeCrossPlatformSignals()` below.
+ */
+export type PlatformSeverity = "none" | "minor" | "major" | "severe";
+export type BbbSeverity = "none" | "amber" | "red";
+
+export type CrossPlatformSignals = {
+  /** Google vs Yelp rating gap, sample-gated. */
+  platform: PlatformSeverity;
+  /** BBB complaint count normalized against total review volume. */
+  bbb: BbbSeverity;
+};
+
+/**
+ * Inputs that the cross-platform signal detector reads. Caller passes
+ * a structurally-typed shape so this stays library-agnostic — works for
+ * Firestore-shape Plumber and JSON-shape SynthesizedPlumber alike.
+ */
+export type CrossPlatformInput = {
+  googleRating?: number | null;
+  googleReviewCount?: number | null;
+  yelpRating?: number | null;
+  yelpReviewCount?: number | null;
+  /**
+   * The synthesizer's narrative discrepancy detection. When the synthesis
+   * pass surfaces a Google/Yelp/BBB contradiction in prose, treat it as
+   * MAJOR even when our raw rating-gap heuristic doesn't fire. The
+   * synthesizer sees review TEXT for both platforms and catches things
+   * a numeric gap misses (e.g. consistent billing-dispute themes on Yelp
+   * absent from Google).
+   */
+  platformDiscrepancyText?: string | null;
+  bbb?: {
+    complaintsPast3Years?: number | null;
+  } | null;
+};
+
+/**
+ * Compute the cross-platform signal severity for a plumber. Pure function.
+ *
+ * Platform severity tiers (require ≥10 reviews on each side; otherwise the
+ * gap isn't reliable enough to act on):
+ *   - severe: gap ≥ 1.5 stars
+ *   - major:  gap ≥ 1.0 stars  (also: synthesizer-detected discrepancy)
+ *   - minor:  gap ≥ 0.7 stars
+ *   - none:   below 0.7 stars OR insufficient sample
+ *
+ * BBB severity tiers (require ≥3 complaints absolute floor; below that we
+ * never flag — small-shop noise):
+ *   - red:   complaints/total_reviews ≥ 1.0%
+ *   - amber: complaints/total_reviews ≥ 0.5%
+ *   - none:  below 0.5%, missing data, or below absolute floor
+ */
+export function computeCrossPlatformSignals(
+  input: CrossPlatformInput,
+): CrossPlatformSignals {
+  const g = input.googleRating;
+  const y = input.yelpRating;
+  const gn = input.googleReviewCount ?? 0;
+  const yn = input.yelpReviewCount ?? 0;
+  const totalRev = gn + yn;
+
+  let platform: PlatformSeverity = "none";
+  if (typeof g === "number" && typeof y === "number" && gn >= 10 && yn >= 10) {
+    const gap = Math.abs(g - y);
+    if (gap >= 1.5) platform = "severe";
+    else if (gap >= 1.0) platform = "major";
+    else if (gap >= 0.7) platform = "minor";
+  }
+  if (input.platformDiscrepancyText && (platform === "none" || platform === "minor")) {
+    // Synthesizer-detected discrepancy is at least major-grade evidence.
+    // platform is "none" | "minor" here (TS narrowed by the if condition);
+    // promote to "major" unconditionally.
+    platform = "major";
+  }
+
+  let bbb: BbbSeverity = "none";
+  const c = input.bbb?.complaintsPast3Years;
+  if (typeof c === "number" && c >= 3 && totalRev > 0) {
+    const rate = c / totalRev;
+    if (rate >= 0.01) bbb = "red";
+    else if (rate >= 0.005) bbb = "amber";
+  }
+
+  return { platform, bbb };
+}
+
+/**
+ * Penalty (in composite-score points) to apply to a plumber's raw
+ * dimension scores given their cross-platform signals.
+ *
+ * Why deterministic + at-write-time, not at render: see commit message of
+ * the architectural rework. Scores must reflect ALL signals, not just
+ * review text. Render reads the stored verdict and trusts it.
+ *
+ * Tilted toward reliability + pricing? No — applied uniformly to all 5
+ * dimensions because the goal is composite-level dampening; per-dimension
+ * deductions get drowned out by the variance check downstream.
+ *
+ * Capped at 15 points to prevent stacking from producing unrecognizable
+ * scores. A genuinely terrible plumber (Yelp 1-star vs Google 5-star
+ * with 50 BBB complaints) should already have a low review-text composite.
+ */
+export function computeAdjustmentPenalty(signals: CrossPlatformSignals): number {
+  const platPen = { none: 0, minor: 3, major: 6, severe: 10 }[signals.platform];
+  const bbbPen = { none: 0, amber: 5, red: 10 }[signals.bbb];
+  return Math.min(platPen + bbbPen, 15);
+}
+
+/**
+ * Apply the cross-platform adjustment to raw review-text dimension scores.
+ * Returns a new Scores object — does not mutate. Penalty is subtracted
+ * uniformly from each dimension and clamped to [0, 100]. Variance is
+ * preserved (it's a measure of consistency across reviews, unaffected
+ * by cross-platform signals).
+ *
+ * The original raw scores are intended to be stored alongside as
+ * `scores.review_text_only` for audit/debugging — see the rework script.
+ */
+export function applyAdjustment(scores: Scores, penalty: number): Scores {
+  const adjusted: Scores = { ...scores };
+  for (const k of DIMENSION_KEYS) {
+    adjusted[k] = Math.max(0, Math.min(100, scores[k] - penalty));
+  }
+  return adjusted;
+}
+
 export function computeDecision(
   scores: Scores,
   cityRank: CityRankEntry,
+  signals?: CrossPlatformSignals,
 ): DecisionCore {
   return {
     best_for: computeBestFor(scores),
     avoid_if: computeAvoidIf(scores, cityRank),
     hire_if: computeHireIf(scores),
     caution_if: computeCautionIf(scores),
-    verdict: computeVerdict(scores, cityRank),
+    verdict: computeVerdict(scores, cityRank, signals),
   };
 }
 
@@ -177,24 +307,48 @@ export function overallComposite(scores: Scores): number {
 }
 
 /**
- * Absolute floor: a plumber with an overall composite >= 65 cannot receive
- * "avoid". In a city of uniformly good plumbers, percentile ranking alone
- * would label the bottom half "avoid" even when every plumber has 4.8+ stars.
- * The floor caps the worst possible verdict at "caution" for plumbers whose
- * absolute quality is still reasonable.
+ * Verdict thresholds — ABSOLUTE composite, not city percentile.
+ *
+ * The pre-rework version mapped percentile within city to verdict, which
+ * crowned the cleanest mediocre plumber as "Top Pick" in mediocre cities.
+ * Now: a plumber's verdict reflects their absolute quality across all
+ * signals (review-text dimensions + cross-platform adjustment applied at
+ * write time). City rank still exists and ships in `decision.primary_city`
+ * but is purely a position indicator — not a quality bar.
+ *
+ * The signal-clean requirement on strong_hire encodes the chip→verdict
+ * cap that previously lived at render time. A plumber with a major
+ * platform discrepancy or red BBB rate cannot be strong_hire even if
+ * their adjusted composite is ≥80.
  */
-const AVOID_COMPOSITE_FLOOR = 65;
+const COMPOSITE_STRONG_HIRE = 80;
+const COMPOSITE_CONDITIONAL_HIRE = 70;
+const COMPOSITE_CAUTION = 60;
+const VARIANCE_STRONG_HIRE_MAX = 20;
 
 export function computeVerdict(
   scores: Scores,
+  // Kept in the signature for backward compat / future use (e.g. tie-breaks).
+  // Verdict is now absolute, so cityRank no longer drives it.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   cityRank: CityRankEntry,
+  signals?: CrossPlatformSignals,
 ): Verdict {
-  const p = cityRank.overall_percentile;
-  if (p >= 80 && scores.variance < 20) return "strong_hire";
-  if (p >= 60) return "conditional_hire";
-  if (p >= 40) return "caution";
-  // Absolute floor: demote "avoid" to "caution" if composite is strong enough
-  if (overallComposite(scores) >= AVOID_COMPOSITE_FLOOR) return "caution";
+  const composite = overallComposite(scores);
+  const hasMajorConcern =
+    signals?.platform === "major" ||
+    signals?.platform === "severe" ||
+    signals?.bbb === "red";
+
+  if (
+    composite >= COMPOSITE_STRONG_HIRE &&
+    scores.variance < VARIANCE_STRONG_HIRE_MAX &&
+    !hasMajorConcern
+  ) {
+    return "strong_hire";
+  }
+  if (composite >= COMPOSITE_CONDITIONAL_HIRE) return "conditional_hire";
+  if (composite >= COMPOSITE_CAUTION) return "caution";
   return "avoid";
 }
 

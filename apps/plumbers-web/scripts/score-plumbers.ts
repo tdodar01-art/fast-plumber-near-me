@@ -29,6 +29,9 @@ import { fileURLToPath } from "url";
 import {
   computeDecision,
   computeBestFor,
+  computeCrossPlatformSignals,
+  computeAdjustmentPenalty,
+  applyAdjustment,
   DIMENSION_KEYS,
   SPECIALTY_KEYS,
   type DimensionKey,
@@ -36,6 +39,7 @@ import {
   type CityRankEntry,
   type Scores,
   type EvidenceQuote,
+  type CrossPlatformSignals,
 } from "../src/lib/decision-engine.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1000,15 +1004,15 @@ async function runPass1(
         continue;
       }
 
-      // --- Step 2: Aggregate scores ---
-      const { scores, evidenceQuotes, servicesMentioned } = aggregate(extracted, ageByReviewId, reviews);
+      // --- Step 2: Aggregate scores (review-text only) ---
+      const { scores: rawScores, evidenceQuotes, servicesMentioned } = aggregate(extracted, ageByReviewId, reviews);
 
       // Override review_count_used with the TOTAL review count (not capped)
       // so the 20%-delta skip check on the next run compares apples to apples.
       // aggregate() sets this to extracted.length by default, which would
       // equal the cap (75) and cause the delta check to always fire.
-      scores.review_count_used = totalReviewCount;
-      scores.method = "sonnet";
+      rawScores.review_count_used = totalReviewCount;
+      rawScores.method = "sonnet";
 
       // --- Step 3: Sonnet synthesis call ---
       // Pass platform context (Yelp/BBB ratings) so Sonnet can detect
@@ -1023,11 +1027,35 @@ async function runPass1(
         bbbComplaintsPast3Years: data.bbb?.complaintsPast3Years ?? null,
       };
       await sleep(RATE_LIMIT_MS);
-      const synthPrompt = buildSynthesisPrompt(name, reviews, scores, evidenceQuotes, platformContext);
+      const synthPrompt = buildSynthesisPrompt(name, reviews, rawScores, evidenceQuotes, platformContext);
       const synthRaw = await callClaude(synthPrompt);
       const synthParsed = parseSynthesisResponse(synthRaw);
 
-      // --- Step 4: Derive deterministic fields from scores ---
+      // --- Step 3b: Cross-platform adjustment (the 2026-05-08 rework) ---
+      // Pass 1's review-text dimension scores see only review prose. Cross-
+      // platform signals (Yelp/Google gap, BBB complaint rate) live in the
+      // platform context block above and now feed deterministically into the
+      // canonical scores. We store the raw review-text scores under
+      // `scores.review_text_only` for audit/debugging; `scores.*` is the
+      // adjusted canonical version that downstream Pass 2 (rank), Pass 3
+      // (decide), and render layers consume.
+      const cpSignals = computeCrossPlatformSignals({
+        googleRating: data.googleRating ?? null,
+        googleReviewCount: data.googleReviewCount ?? null,
+        yelpRating: data.yelpRating ?? null,
+        yelpReviewCount: data.yelpReviewCount ?? null,
+        platformDiscrepancyText: synthParsed.platformDiscrepancy ?? null,
+        bbb: data.bbb ?? null,
+      });
+      const adjustmentPenalty = computeAdjustmentPenalty(cpSignals);
+      const scores = applyAdjustment(rawScores, adjustmentPenalty);
+      // Preserve metadata that applyAdjustment doesn't touch
+      scores.method = rawScores.method;
+      scores.review_count_used = rawScores.review_count_used;
+      scores.last_scored_at = rawScores.last_scored_at;
+      scores.specialty_strength = rawScores.specialty_strength;
+
+      // --- Step 4: Derive deterministic fields from ADJUSTED scores ---
       const badges = deriveBadges(scores, synthParsed.redFlags);
       const { readiness: emergencyReadiness, signals: emergencySignals } =
         deriveEmergencyReadiness(scores, synthParsed.emergencyNotes);
@@ -1038,7 +1066,14 @@ async function runPass1(
 
       // --- Step 5: Write scores + unified synthesis to Firestore ---
       const updateData: Record<string, unknown> = {
-        scores,
+        // Canonical adjusted scores (used by Pass 2 ranking + Pass 3 verdict)
+        scores: {
+          ...scores,
+          review_text_only: rawScores,
+          cross_platform_signals: cpSignals,
+          adjustment_penalty: adjustmentPenalty,
+          last_adjusted_at: admin.firestore.Timestamp.now(),
+        },
         evidence_quotes: evidenceQuotes,
         // Unified synthesis — sole writer of reviewSynthesis.*
         "reviewSynthesis.summary": synthParsed.summary,
@@ -1054,7 +1089,7 @@ async function runPass1(
         "reviewSynthesis.platformDiscrepancy": synthParsed.platformDiscrepancy,
         "reviewSynthesis.reviewCount": reviews.length,
         "reviewSynthesis.aiSynthesizedAt": admin.firestore.Timestamp.now(),
-        "reviewSynthesis.synthesisVersion": "unified-sonnet-v2",
+        "reviewSynthesis.synthesisVersion": "unified-sonnet-v3-adjusted",
         updatedAt: admin.firestore.Timestamp.now(),
       };
       if (Object.keys(servicesMentioned).length > 0) {
@@ -1270,7 +1305,13 @@ async function runPass3(
     }
     const primaryEntry = cityRank[primarySlug];
 
-    const core = computeDecision(scores, primaryEntry);
+    // Cross-platform signals are stored on `scores.cross_platform_signals`
+    // by Pass 1 (post-2026-05-08 rework). They're an input to the verdict
+    // computation: a plumber with a high adjusted composite but a major
+    // platform discrepancy or red BBB rate cannot be strong_hire.
+    const cpSignals = (scores as Scores & { cross_platform_signals?: CrossPlatformSignals })
+      .cross_platform_signals;
+    const core = computeDecision(scores, primaryEntry, cpSignals);
     const decision = {
       ...core,
       evidence_quotes: evidenceQuotes,
@@ -1309,9 +1350,26 @@ async function main(): Promise<void> {
   const db = initFirebase();
   const startedAt = new Date();
 
-  if (args.pass === "1" || args.pass === "all") await runPass1(db, args);
-  if (args.pass === "2" || args.pass === "all") await runPass2(db, args);
-  if (args.pass === "3" || args.pass === "all") await runPass3(db, args);
+  // Pass N triggers all subsequent passes — the three are conceptually one
+  // operation. Skipping Pass 2 after Pass 1 leaves city_rank stale relative
+  // to scores; skipping Pass 3 after Pass 2 leaves verdicts stale relative
+  // to ranks. The 2026-05-08 rework made the entire chain deterministic
+  // post-extraction, so the cost of always running 2+3 is negligible
+  // (no Anthropic spend).
+  if (args.pass === "1" || args.pass === "all") {
+    await runPass1(db, args);
+  }
+  if (args.pass === "1" || args.pass === "2" || args.pass === "all") {
+    await runPass2(db, args);
+  }
+  if (
+    args.pass === "1" ||
+    args.pass === "2" ||
+    args.pass === "3" ||
+    args.pass === "all"
+  ) {
+    await runPass3(db, args);
+  }
 
   // Phase 1 stabilization: log a pipelineRuns entry so publish vs score
   // behavior can be separated in Firestore. Wrapped in try/catch so this

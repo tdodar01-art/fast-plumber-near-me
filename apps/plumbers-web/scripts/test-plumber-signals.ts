@@ -15,9 +15,6 @@ import {
   pickTop,
   countByKind,
   classifyBbbComplaintSignal,
-  applyVerdictCap,
-  compareByEffectiveQuality,
-  getRankingProfile,
   FLAG_THRESHOLD,
   EXCEL_THRESHOLD,
   VARIANCE_HIGH,
@@ -377,138 +374,18 @@ test("premium pricing WITHOUT pricing red flag does NOT flag", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Verdict cap — chips downgrade the rendered verdict
+// Verdict consistency — stored verdict is canonical, no render-time cap
 // ---------------------------------------------------------------------------
-
-section("Verdict cap from concern chips");
-
-test("applyVerdictCap: red BBB rate caps strong_hire at caution", () => {
-  assert.equal(
-    applyVerdictCap("strong_hire", new Set(["bbb-complaints-3yr"])),
-    "caution",
-  );
-});
-
-test("applyVerdictCap: amber BBB or platform mismatch caps strong_hire at conditional_hire", () => {
-  assert.equal(
-    applyVerdictCap("strong_hire", new Set(["bbb-complaints-3yr-watch"])),
-    "conditional_hire",
-  );
-  assert.equal(
-    applyVerdictCap("strong_hire", new Set(["platform-mismatch"])),
-    "conditional_hire",
-  );
-});
-
-test("applyVerdictCap: most-conservative cap wins when multiple fire", () => {
-  assert.equal(
-    applyVerdictCap(
-      "strong_hire",
-      new Set(["bbb-complaints-3yr", "platform-mismatch"]),
-    ),
-    "caution",
-  );
-});
-
-test("applyVerdictCap: never upgrades — avoid stays avoid even with no concerns", () => {
-  assert.equal(applyVerdictCap("avoid", new Set()), "avoid");
-});
-
-test("applyVerdictCap: passes through when no concern chips fire", () => {
-  assert.equal(applyVerdictCap("strong_hire", new Set()), "strong_hire");
-  assert.equal(applyVerdictCap("strong_hire", new Set(["bbb-a-plus"])), "strong_hire");
-});
-
-test("Roto-Rooter Huntsville scenario: top percentile + chips → seal NOT strong_hire", () => {
-  // High percentile would normally produce verdict=strong_hire. The page
-  // also fires the platform-mismatch chip (Google/Yelp gap) and a red BBB
-  // complaint chip. Top Pick must NOT render — verdict cap engages.
-  const p = makePlumber({
-    googleRating: 4.7,
-    googleReviewCount: 1800,
-    yelpRating: 3.5,
-    bbb: { accredited: true, rating: "A+", complaintsPast3Years: 793 },
-    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
-    reviewSynthesis: {
-      platformDiscrepancy: "Google 4.7 vs Yelp 3.5 — meaningful gap",
-    },
-  });
-  const signals = resolveSignals(p);
-  const seal = signals.find((s) => s.kind === "seal");
-  assert.ok(seal, "expected a verdict seal in the signal list");
-  assert.notEqual(seal.id, "verdict-strong_hire", "Top Pick must not render alongside concern chips");
-  // BBB rate is ~44% which is red → seal should be capped at "caution"
-  assert.equal(seal.id, "verdict-caution");
-});
-
-// ---------------------------------------------------------------------------
-// City-page sort — effective-quality comparator
-// ---------------------------------------------------------------------------
-
-section("compareByEffectiveQuality (city-page sort)");
-
-test("getRankingProfile: clean strong_hire plumber is uncapped", () => {
-  const p = makePlumber({
-    googleRating: 4.8,
-    googleReviewCount: 500,
-    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
-  });
-  const rp = getRankingProfile(p);
-  assert.equal(rp.effectiveVerdictRank, 4); // strong_hire
-  assert.equal(rp.wasChipCapped, false);
-});
-
-test("getRankingProfile: strong_hire plumber with platform discrepancy is capped down", () => {
-  const p = makePlumber({
-    googleRating: 4.7,
-    googleReviewCount: 1800,
-    yelpRating: 3.3,
-    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
-    reviewSynthesis: {
-      platformDiscrepancy: "Google 4.7 vs Yelp 3.3 — 1.4-star gap",
-    },
-  });
-  const rp = getRankingProfile(p);
-  assert.equal(rp.effectiveVerdictRank, 3); // capped to conditional_hire
-  assert.equal(rp.wasChipCapped, true);
-});
-
-test("Huntsville scenario: chip-capped strong_hire sorts BELOW clean conditional_hire", () => {
-  // Roto-Rooter equivalent: stored strong_hire, capped down by platform discrepancy
-  const flagged = makePlumber({
-    googleRating: 4.7,
-    googleReviewCount: 1800,
-    yelpRating: 3.3,
-    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
-    reviewSynthesis: {
-      platformDiscrepancy: "Google 4.7 vs Yelp 3.3 — 1.4-star gap",
-    },
-  });
-  // Around-the-Clock equivalent: stored conditional_hire, no chips firing
-  const clean = makePlumber({
-    googleRating: 5.0,
-    googleReviewCount: 2200,
-    yelpRating: 4.3,
-    decision: { verdict: "conditional_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
-  });
-
-  // Without our fix, percentile 100 (flagged) would beat percentile 67 (clean)
-  // and put the chip-flagged plumber at #1. With the fix, clean wins.
-  const cmp = compareByEffectiveQuality(flagged, clean, 100, 67);
-  assert.ok(cmp > 0, "clean plumber must sort BEFORE chip-flagged plumber even with lower percentile");
-});
-
-test("compareByEffectiveQuality: same effective tier + same cap status → percentile decides", () => {
-  const a = makePlumber({
-    decision: { verdict: "conditional_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
-  });
-  const b = makePlumber({
-    decision: { verdict: "conditional_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
-  });
-  // a has higher percentile, neither capped → a wins
-  const cmp = compareByEffectiveQuality(a, b, 80, 50);
-  assert.ok(cmp < 0);
-});
+//
+// The render-time `applyVerdictCap` and `compareByEffectiveQuality` were
+// removed in the 2026-05-08 architectural rework. Cross-platform signals
+// now feed into scoring at write time (see decision-engine.ts:
+// computeAdjustmentPenalty + applyAdjustment), so the stored verdict is
+// canonical and consistent with whatever chips fire on the card. Tests
+// for the old cap mechanism were removed; the rework is exercised in
+// scripts/test-decision-engine.ts (the "Roto-Rooter Huntsville scenario"
+// regression test there asserts that adjusted scores + signal-clean rule
+// produce conditional_hire instead of strong_hire).
 
 // ---------------------------------------------------------------------------
 // pickTop — the honesty rule

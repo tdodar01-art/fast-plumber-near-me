@@ -91,6 +91,34 @@ jobs:
       # (paid, sorted by recency, up to 100/plumber). Re-add only after
       # `deep-review-pull.yml` is wired into the operator console.
 
+      # Score newly-scraped plumbers + refresh decisions for everyone.
+      #
+      # Pass 1 (Anthropic Sonnet — paid) is gated by score-plumbers.ts's
+      # built-in 30-day-stale + 20% review-delta skip logic, so the typical
+      # cost is small (only plumbers genuinely needing re-scoring run Sonnet).
+      # Pass 2 + Pass 3 are deterministic and free; they always run after
+      # Pass 1 so city_rank and verdicts stay in sync with whatever Pass 1
+      # wrote (or what today's scrape added).
+      #
+      # continue-on-error: true so a scoring failure or timeout never blocks
+      # the publish gate below. The export step is the publish gate and
+      # MUST run regardless of scoring outcome — this is the Phase-1
+      # publish-vs-score invariant from CLAUDE.md.
+      - name: Score plumbers (Pass 1 + 2 + 3)
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        timeout-minutes: 25
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "=== STAGE: SCORE START ==="
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "ANTHROPIC_API_KEY not configured — skipping Pass 1, running deterministic Pass 2+3."
+            npx tsx scripts/score-plumbers.ts --pass 2
+          else
+            npx tsx scripts/score-plumbers.ts --pass all
+          fi
+
       # Rebuild derived JSON from Firestore (single source of truth)
       # export-firestore-to-json.js is the SOLE writer to plumbers-synthesized.json.
       # MUST RUN — no continue-on-error. Publishing must never silently fail.

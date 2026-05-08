@@ -18,7 +18,7 @@
  */
 
 import type { Plumber } from "./types";
-import type { DimensionKey, SpecialtyKey, Verdict } from "./decision-engine";
+import type { DimensionKey, SpecialtyKey } from "./decision-engine";
 
 /**
  * Accept either the Firestore-shape Plumber (with `reviewSynthesis` field)
@@ -245,24 +245,14 @@ function resolveSampleSignals(plumber: PlumberLike): Signal[] {
   return [];
 }
 
-function resolveDecisionSignals(
-  plumber: PlumberLike,
-  /**
-   * Optional override that downgrades the rendered verdict when concern
-   * chips have fired elsewhere on the card. See `applyVerdictCap`.
-   * Pass null/undefined to fall through to the plumber's stored verdict.
-   */
-  cappedVerdict?: Verdict | null,
-): Signal[] {
+function resolveDecisionSignals(plumber: PlumberLike): Signal[] {
   const out: Signal[] = [];
   // Emit the verdict itself as the highest-priority chip — this is the
-  // headline signal. Replaces the standalone VerdictSeal component; the
-  // verdict now flows through SignalRow like any other signal. Priority
-  // 10 ensures it always appears in slot 1 (above the flag-first rule
-  // in pickTop, which also peaks at priority 10 for major flags — tied
-  // values fall back to kind weight where verdicts/seals are ranked
-  // highest to win the tie).
-  const verdict = cappedVerdict ?? plumber.decision?.verdict;
+  // headline signal. The stored verdict is canonical: cross-platform
+  // signals flow into it at scoring time (post-2026-05-08 rework), so
+  // the rendered seal always agrees with the chips that fire on the
+  // card. No render-time cap.
+  const verdict = plumber.decision?.verdict;
   if (verdict) {
     const VERDICT_LABELS = {
       strong_hire: { label: "Top Pick", detail: "Reviews confirm strong performance across reliability, workmanship, pricing, and response. Safe first call." },
@@ -563,163 +553,24 @@ function resolveSpecialtySignals(plumber: PlumberLike): Signal[] {
 }
 
 // ---------------------------------------------------------------------------
-// Verdict cap — render-time downgrade when concern chips fire elsewhere
-// ---------------------------------------------------------------------------
-
-/**
- * Numeric severity for verdicts. Higher = more positive recommendation.
- * Used to compute the most-conservative-wins cap when multiple chips fire.
- */
-const VERDICT_RANK: Record<Verdict, number> = {
-  strong_hire: 4,
-  conditional_hire: 3,
-  caution: 2,
-  avoid: 1,
-};
-
-/**
- * The max-allowed verdict given a list of signal IDs that fired on the card.
- * Returns the most conservative cap — i.e. if BOTH a "red" cap signal AND
- * a "downgrade-one" signal fire, the red wins.
- *
- * Cap rules:
- *   - bbb-complaints-3yr (red BBB rate) → cap at "caution"
- *   - amber BBB rate / platform discrepancy / templated-pattern flag /
- *     premium-with-concerns → cap at "conditional_hire"
- *
- * Why render-time and not at scoring time: the user has 1k+ plumbers and
- * we don't want to re-run scoring just to apply this cap. Computing the
- * cap from already-resolved signals at render time gives the same UX
- * outcome without re-scoring, and stays in sync automatically as the
- * underlying signals change.
- */
-export function applyVerdictCap(
-  storedVerdict: Verdict | undefined,
-  firedSignalIds: Set<string>,
-): Verdict | undefined {
-  if (!storedVerdict) return storedVerdict;
-
-  let cap: Verdict | null = null;
-  const tighten = (next: Verdict) => {
-    if (!cap || VERDICT_RANK[next] < VERDICT_RANK[cap]) cap = next;
-  };
-
-  // Red-tier signals — the strongest concern chips on the card.
-  if (firedSignalIds.has("bbb-complaints-3yr")) tighten("caution");
-
-  // Amber-tier signals — meaningful concerns but not red. Cap at
-  // conditional_hire so a "Top Pick" never displays alongside them.
-  if (firedSignalIds.has("bbb-complaints-3yr-watch")) tighten("conditional_hire");
-  if (firedSignalIds.has("platform-mismatch")) tighten("conditional_hire");
-  if (firedSignalIds.has("platform-gap-raw")) tighten("conditional_hire");
-  if (firedSignalIds.has("premium-with-concerns")) tighten("conditional_hire");
-
-  if (cap === null) return storedVerdict;
-
-  // Only downgrade — never upgrade. Stored "avoid" stays "avoid" even if
-  // the cap says "caution".
-  return VERDICT_RANK[storedVerdict] <= VERDICT_RANK[cap] ? storedVerdict : cap;
-}
-
-/**
- * Ranking profile for sort comparators on city pages. Captures both the
- * effective (cap-applied) verdict tier and whether chips actively dragged
- * the verdict down from its stored value.
- *
- * The "wasCapped" bit is the critical input the verdict-tier alone doesn't
- * convey: a plumber stored as strong_hire whose chips push it to
- * conditional_hire is meaningfully riskier than a plumber whose stored
- * verdict was already conditional_hire — even though both render with the
- * same seal. Using only the effective tier would put the chip-flagged
- * plumber AHEAD of clean plumbers in its tier (because its dimension-score
- * percentile is artificially high — Pass 1 only sees review text and
- * misses Yelp/BBB discrepancies).
- *
- * Sort order:
- *   1. Effective verdict tier (strong_hire > conditional_hire > caution > avoid > none)
- *   2. Within same tier, uncapped plumbers above capped plumbers
- *   3. Within same tier + cap status, percentile (caller-provided)
- */
-export type RankingProfile = {
-  effectiveVerdictRank: number; // 0=none, 1=avoid, 2=caution, 3=conditional_hire, 4=strong_hire
-  wasChipCapped: boolean;
-};
-
-export function getRankingProfile(plumber: PlumberLike): RankingProfile {
-  const stored = plumber.decision?.verdict;
-  if (!stored) return { effectiveVerdictRank: 0, wasChipCapped: false };
-
-  // Compute chip-firing IDs the same way resolveSignals does. We only need
-  // the IDs that applyVerdictCap recognizes — call resolveSignals (cost is
-  // negligible at <30 plumbers per city) and let it produce the full set.
-  // Filter out the verdict-seal signal so we don't recurse on ourselves.
-  const nonVerdictSignals: Signal[] = [
-    ...resolveDimensionSignals(plumber),
-    ...resolveVarianceSignals(plumber),
-    ...resolveSampleSignals(plumber),
-    ...resolveSynthesisSignals(plumber),
-    ...resolveBbbSignals(plumber),
-    ...resolvePlatformRatingGap(plumber),
-    ...resolveSpecialtySignals(plumber),
-  ];
-  const firedIds = new Set(nonVerdictSignals.map((s) => s.id));
-
-  const effective = applyVerdictCap(stored, firedIds) ?? stored;
-  return {
-    effectiveVerdictRank: VERDICT_RANK[effective],
-    wasChipCapped: effective !== stored,
-  };
-}
-
-/**
- * Compare two plumbers by effective quality (cap-aware).
- * Returns negative if a should sort BEFORE b, positive if after, 0 if equal.
- *
- * Caller is responsible for the percentile values (with any distance
- * weighting applied) since this module doesn't know about geographic
- * preference. Pass 0 for both percentiles to fall back to verdict-only
- * ordering.
- */
-export function compareByEffectiveQuality(
-  a: PlumberLike,
-  b: PlumberLike,
-  aPercentile: number,
-  bPercentile: number,
-): number {
-  const ar = getRankingProfile(a);
-  const br = getRankingProfile(b);
-
-  // 1. Higher effective verdict tier wins (rank desc).
-  if (ar.effectiveVerdictRank !== br.effectiveVerdictRank) {
-    return br.effectiveVerdictRank - ar.effectiveVerdictRank;
-  }
-
-  // 2. Within same effective tier, uncapped plumbers above capped plumbers.
-  // This is the rule that prevents a "would-be Top Pick that got chip-capped
-  // to Solid Choice" from outranking a clean plumber whose stored verdict
-  // was Solid Choice from the start.
-  if (ar.wasChipCapped !== br.wasChipCapped) {
-    return ar.wasChipCapped ? 1 : -1;
-  }
-
-  // 3. Same tier + same cap status: defer to caller-provided percentile.
-  return bPercentile - aPercentile;
-}
-
-// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
 /**
  * Produce the full list of signals for a plumber, sorted priority-desc.
  * Does NOT cap — callers pick how many to show.
+ *
+ * NOTE: A render-time verdict cap and a cap-aware sort comparator used to
+ * live here. Both were band-aids for the fact that the old percentile-based
+ * scoring pipeline didn't account for cross-platform signals (Google/Yelp
+ * gap, BBB complaint rate). The 2026-05-08 architectural rework moved that
+ * logic into the scoring pipeline itself: cross-platform signals now
+ * deterministically adjust dimension scores at write time, and the verdict
+ * (driven by absolute composite + signal-clean rule) reflects that
+ * adjustment. The cap and the cap-aware sort became dead code; both have
+ * been removed. Render reads the stored verdict and trusts it.
  */
 export function resolveSignals(plumber: PlumberLike): Signal[] {
-  // Two-pass: collect all non-verdict signals first so we can compute
-  // the chip-induced verdict cap before emitting the verdict seal. This
-  // keeps the rendered verdict in sync with the visible concern chips —
-  // e.g. a "Top Pick" can never appear next to a "Ratings don't agree"
-  // chip because the cap downgrades the seal to "Solid Choice" first.
   const nonVerdictSignals: Signal[] = [
     ...resolveDimensionSignals(plumber),
     ...resolveVarianceSignals(plumber),
@@ -730,12 +581,9 @@ export function resolveSignals(plumber: PlumberLike): Signal[] {
     ...resolveSpecialtySignals(plumber),
   ];
 
-  const firedIds = new Set(nonVerdictSignals.map((s) => s.id));
-  const cappedVerdict = applyVerdictCap(plumber.decision?.verdict, firedIds);
-
   const signals: Signal[] = [
     ...nonVerdictSignals,
-    ...resolveDecisionSignals(plumber, cappedVerdict),
+    ...resolveDecisionSignals(plumber),
   ];
 
   // Dedup by id (multiple resolvers could theoretically produce the same).
