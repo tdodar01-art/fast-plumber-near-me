@@ -23,6 +23,7 @@ import { MAX_PLUMBERS_PER_PAGE, SERVICE_CONFIGS } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
 import { getCityCoordBySlug } from "@/lib/city-coords";
 import { calculateDistance, getDistanceWeight } from "@/lib/geo";
+import { compareByEffectiveQuality } from "@/lib/plumber-signals";
 import type { Plumber } from "@/lib/types";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
@@ -142,8 +143,15 @@ function getTop3Plumbers(
     candidates.push({ plumber: p, synthesized: synth, percentile });
   }
 
-  // Sort by percentile (highest first), take top 3
-  candidates.sort((a, b) => b.percentile - a.percentile);
+  // Sort by effective verdict tier first (cap-aware), then percentile.
+  // The cap-aware tier prevents a plumber whose stored verdict was
+  // strong_hire but got chip-capped (e.g. Roto-Rooter Huntsville with a
+  // platform-discrepancy chip) from outranking a clean plumber whose
+  // stored verdict was already conditional_hire — even when its raw
+  // dimension percentile is much higher.
+  candidates.sort((a, b) =>
+    compareByEffectiveQuality(a.synthesized, b.synthesized, a.percentile, b.percentile),
+  );
   return candidates.slice(0, 3);
 }
 
@@ -236,11 +244,14 @@ export default async function CityPage({
     if (aScored && !bScored) return -1;
     if (!aScored && bScored) return 1;
 
-    // Both scored: sort by percentile (higher = better), weighted by distance
-    if (aScored && bScored) {
-      const aScore = (aRank!.overall_percentile) * getDistanceWeight(a.distanceMiles ?? 0);
-      const bScore = (bRank!.overall_percentile) * getDistanceWeight(b.distanceMiles ?? 0);
-      return bScore - aScore;
+    // Both scored: sort by effective verdict tier (cap-aware) first, then
+    // by percentile × distance weight. The tier-first comparator keeps
+    // chip-flagged plumbers below clean ones even when their raw percentile
+    // is higher — see compareByEffectiveQuality docstring for the rationale.
+    if (aScored && bScored && aSynth && bSynth) {
+      const aWeighted = aRank!.overall_percentile * getDistanceWeight(a.distanceMiles ?? 0);
+      const bWeighted = bRank!.overall_percentile * getDistanceWeight(b.distanceMiles ?? 0);
+      return compareByEffectiveQuality(aSynth, bSynth, aWeighted, bWeighted);
     }
 
     // Neither scored: fall back to old quality formula

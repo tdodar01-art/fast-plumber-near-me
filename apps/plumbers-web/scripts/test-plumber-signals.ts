@@ -16,6 +16,8 @@ import {
   countByKind,
   classifyBbbComplaintSignal,
   applyVerdictCap,
+  compareByEffectiveQuality,
+  getRankingProfile,
   FLAG_THRESHOLD,
   EXCEL_THRESHOLD,
   VARIANCE_HIGH,
@@ -437,6 +439,75 @@ test("Roto-Rooter Huntsville scenario: top percentile + chips → seal NOT stron
   assert.notEqual(seal.id, "verdict-strong_hire", "Top Pick must not render alongside concern chips");
   // BBB rate is ~44% which is red → seal should be capped at "caution"
   assert.equal(seal.id, "verdict-caution");
+});
+
+// ---------------------------------------------------------------------------
+// City-page sort — effective-quality comparator
+// ---------------------------------------------------------------------------
+
+section("compareByEffectiveQuality (city-page sort)");
+
+test("getRankingProfile: clean strong_hire plumber is uncapped", () => {
+  const p = makePlumber({
+    googleRating: 4.8,
+    googleReviewCount: 500,
+    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
+  });
+  const rp = getRankingProfile(p);
+  assert.equal(rp.effectiveVerdictRank, 4); // strong_hire
+  assert.equal(rp.wasChipCapped, false);
+});
+
+test("getRankingProfile: strong_hire plumber with platform discrepancy is capped down", () => {
+  const p = makePlumber({
+    googleRating: 4.7,
+    googleReviewCount: 1800,
+    yelpRating: 3.3,
+    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
+    reviewSynthesis: {
+      platformDiscrepancy: "Google 4.7 vs Yelp 3.3 — 1.4-star gap",
+    },
+  });
+  const rp = getRankingProfile(p);
+  assert.equal(rp.effectiveVerdictRank, 3); // capped to conditional_hire
+  assert.equal(rp.wasChipCapped, true);
+});
+
+test("Huntsville scenario: chip-capped strong_hire sorts BELOW clean conditional_hire", () => {
+  // Roto-Rooter equivalent: stored strong_hire, capped down by platform discrepancy
+  const flagged = makePlumber({
+    googleRating: 4.7,
+    googleReviewCount: 1800,
+    yelpRating: 3.3,
+    decision: { verdict: "strong_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
+    reviewSynthesis: {
+      platformDiscrepancy: "Google 4.7 vs Yelp 3.3 — 1.4-star gap",
+    },
+  });
+  // Around-the-Clock equivalent: stored conditional_hire, no chips firing
+  const clean = makePlumber({
+    googleRating: 5.0,
+    googleReviewCount: 2200,
+    yelpRating: 4.3,
+    decision: { verdict: "conditional_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
+  });
+
+  // Without our fix, percentile 100 (flagged) would beat percentile 67 (clean)
+  // and put the chip-flagged plumber at #1. With the fix, clean wins.
+  const cmp = compareByEffectiveQuality(flagged, clean, 100, 67);
+  assert.ok(cmp > 0, "clean plumber must sort BEFORE chip-flagged plumber even with lower percentile");
+});
+
+test("compareByEffectiveQuality: same effective tier + same cap status → percentile decides", () => {
+  const a = makePlumber({
+    decision: { verdict: "conditional_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
+  });
+  const b = makePlumber({
+    decision: { verdict: "conditional_hire", best_for: [], avoid_if: [], hire_if: [], caution_if: [] },
+  });
+  // a has higher percentile, neither capped → a wins
+  const cmp = compareByEffectiveQuality(a, b, 80, 50);
+  assert.ok(cmp < 0);
 });
 
 // ---------------------------------------------------------------------------

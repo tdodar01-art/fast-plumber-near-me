@@ -621,6 +621,91 @@ export function applyVerdictCap(
   return VERDICT_RANK[storedVerdict] <= VERDICT_RANK[cap] ? storedVerdict : cap;
 }
 
+/**
+ * Ranking profile for sort comparators on city pages. Captures both the
+ * effective (cap-applied) verdict tier and whether chips actively dragged
+ * the verdict down from its stored value.
+ *
+ * The "wasCapped" bit is the critical input the verdict-tier alone doesn't
+ * convey: a plumber stored as strong_hire whose chips push it to
+ * conditional_hire is meaningfully riskier than a plumber whose stored
+ * verdict was already conditional_hire — even though both render with the
+ * same seal. Using only the effective tier would put the chip-flagged
+ * plumber AHEAD of clean plumbers in its tier (because its dimension-score
+ * percentile is artificially high — Pass 1 only sees review text and
+ * misses Yelp/BBB discrepancies).
+ *
+ * Sort order:
+ *   1. Effective verdict tier (strong_hire > conditional_hire > caution > avoid > none)
+ *   2. Within same tier, uncapped plumbers above capped plumbers
+ *   3. Within same tier + cap status, percentile (caller-provided)
+ */
+export type RankingProfile = {
+  effectiveVerdictRank: number; // 0=none, 1=avoid, 2=caution, 3=conditional_hire, 4=strong_hire
+  wasChipCapped: boolean;
+};
+
+export function getRankingProfile(plumber: PlumberLike): RankingProfile {
+  const stored = plumber.decision?.verdict;
+  if (!stored) return { effectiveVerdictRank: 0, wasChipCapped: false };
+
+  // Compute chip-firing IDs the same way resolveSignals does. We only need
+  // the IDs that applyVerdictCap recognizes — call resolveSignals (cost is
+  // negligible at <30 plumbers per city) and let it produce the full set.
+  // Filter out the verdict-seal signal so we don't recurse on ourselves.
+  const nonVerdictSignals: Signal[] = [
+    ...resolveDimensionSignals(plumber),
+    ...resolveVarianceSignals(plumber),
+    ...resolveSampleSignals(plumber),
+    ...resolveSynthesisSignals(plumber),
+    ...resolveBbbSignals(plumber),
+    ...resolvePlatformRatingGap(plumber),
+    ...resolveSpecialtySignals(plumber),
+  ];
+  const firedIds = new Set(nonVerdictSignals.map((s) => s.id));
+
+  const effective = applyVerdictCap(stored, firedIds) ?? stored;
+  return {
+    effectiveVerdictRank: VERDICT_RANK[effective],
+    wasChipCapped: effective !== stored,
+  };
+}
+
+/**
+ * Compare two plumbers by effective quality (cap-aware).
+ * Returns negative if a should sort BEFORE b, positive if after, 0 if equal.
+ *
+ * Caller is responsible for the percentile values (with any distance
+ * weighting applied) since this module doesn't know about geographic
+ * preference. Pass 0 for both percentiles to fall back to verdict-only
+ * ordering.
+ */
+export function compareByEffectiveQuality(
+  a: PlumberLike,
+  b: PlumberLike,
+  aPercentile: number,
+  bPercentile: number,
+): number {
+  const ar = getRankingProfile(a);
+  const br = getRankingProfile(b);
+
+  // 1. Higher effective verdict tier wins (rank desc).
+  if (ar.effectiveVerdictRank !== br.effectiveVerdictRank) {
+    return br.effectiveVerdictRank - ar.effectiveVerdictRank;
+  }
+
+  // 2. Within same effective tier, uncapped plumbers above capped plumbers.
+  // This is the rule that prevents a "would-be Top Pick that got chip-capped
+  // to Solid Choice" from outranking a clean plumber whose stored verdict
+  // was Solid Choice from the start.
+  if (ar.wasChipCapped !== br.wasChipCapped) {
+    return ar.wasChipCapped ? 1 : -1;
+  }
+
+  // 3. Same tier + same cap status: defer to caller-provided percentile.
+  return bPercentile - aPercentile;
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
