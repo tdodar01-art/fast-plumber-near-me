@@ -13,6 +13,7 @@
 const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -286,14 +287,14 @@ async function storeReviewsInFirestore(plumber) {
     const googleReviewId = hashReviewId(authorName, text);
 
     // Dedup check
-    const dupeCheck = await db.collection("reviews")
+    const dupeCheck = await db.collection(COLLECTIONS.reviews)
       .where("plumberId", "==", plumber.placeId)
       .where("googleReviewId", "==", googleReviewId)
       .limit(1)
       .get();
     if (!dupeCheck.empty) continue;
 
-    await db.collection("reviews").add({
+    await db.collection(COLLECTIONS.reviews).add({
       plumberId: plumber.placeId,
       googleReviewId,
       authorName,
@@ -620,7 +621,7 @@ async function main() {
         if (db) {
           const citySlug = `${slugify(cityName)}-${cityState.toLowerCase()}`;
           const source = cityEntry.source === "gsc" ? "gsc" : (cityState === "IL" ? "cron" : "manual");
-          await db.collection("cities").doc(citySlug).set({
+          await db.collection(COLLECTIONS.cities).doc(citySlug).set({
             slug: citySlug,
             city: cityName,
             state: cityState,

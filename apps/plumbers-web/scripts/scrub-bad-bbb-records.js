@@ -26,6 +26,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 
@@ -53,7 +54,7 @@ async function main() {
   console.log("=== BBB Bad-Record Scrub ===");
   if (dryRun) console.log("DRY RUN — no Firestore writes\n");
 
-  const snap = await db.collection("plumbers").get();
+  const snap = await db.collection(COLLECTIONS.businesses).get();
   console.log(`Scanning ${snap.size} plumber records...\n`);
 
   let withBbb = 0;

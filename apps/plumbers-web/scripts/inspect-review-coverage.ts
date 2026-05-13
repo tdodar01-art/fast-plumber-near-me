@@ -3,6 +3,10 @@ import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,7 +25,7 @@ async function main() {
   const db = initFirebase();
 
   // Load all reviews, index by plumberId
-  const reviewSnap = await db.collection("reviews").get();
+  const reviewSnap = await db.collection(COLLECTIONS.reviews).get();
   const reviewsByPlumber = new Map<string, number>();
   for (const doc of reviewSnap.docs) {
     const pid = doc.data().plumberId;
@@ -31,7 +35,7 @@ async function main() {
   console.log(`Plumbers with ≥1 review: ${reviewsByPlumber.size}\n`);
 
   // Load plumbers, group by city
-  const plumberSnap = await db.collection("plumbers").get();
+  const plumberSnap = await db.collection(COLLECTIONS.businesses).get();
   const cityStats = new Map<string, { total: number; withReviews: number; totalReviews: number }>();
 
   for (const doc of plumberSnap.docs) {

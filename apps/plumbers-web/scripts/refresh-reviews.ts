@@ -19,6 +19,10 @@ import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -208,10 +212,10 @@ async function main() {
   console.log(`📊 Budget: $${budgetLimit}/mo | Refresh allocation: $${(dailyBudget).toFixed(2)}/day | Max refreshes: ${maxPlumbers}`);
 
   // Load all plumbers
-  const plumbersSnap = await db.collection("plumbers").get();
+  const plumbersSnap = await db.collection(COLLECTIONS.businesses).get();
 
   // Count cached reviews per plumber
-  const reviewsSnap = await db.collection("reviews").get();
+  const reviewsSnap = await db.collection(COLLECTIONS.reviews).get();
   const cachedCounts: Record<string, number> = {};
   reviewsSnap.docs.forEach((d) => {
     const pid = d.data().plumberId as string;
@@ -219,7 +223,7 @@ async function main() {
   });
 
   // Count leads per plumber
-  const leadsSnap = await db.collection("leads").get();
+  const leadsSnap = await db.collection(COLLECTIONS.leads).get();
   const leadCounts: Record<string, number> = {};
   leadsSnap.docs.forEach((d) => {
     const pid = d.data().plumberId as string;
@@ -288,14 +292,14 @@ async function main() {
       if (!text) continue;
       const googleReviewId = hashReviewId(authorName, text);
 
-      const dupeCheck = await db.collection("reviews")
+      const dupeCheck = await db.collection(COLLECTIONS.reviews)
         .where("plumberId", "==", entry.docId)
         .where("googleReviewId", "==", googleReviewId)
         .limit(1)
         .get();
       if (!dupeCheck.empty) continue;
 
-      await db.collection("reviews").add({
+      await db.collection(COLLECTIONS.reviews).add({
         plumberId: entry.docId,
         googleReviewId,
         authorName,
@@ -379,7 +383,7 @@ async function main() {
       updateData.verificationStatus = "unverified";
     }
 
-    await db.collection("plumbers").doc(entry.docId).update(updateData);
+    await db.collection(COLLECTIONS.businesses).doc(entry.docId).update(updateData);
 
     // Rating snapshot
     if (details.rating) {

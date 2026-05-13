@@ -3,6 +3,7 @@ import { ArrowRight, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import { STATES_DATA } from "@/lib/states-data";
 import { CITY_DATA, getStatesWithCities, getTotalCityCount } from "@/lib/cities-data";
+import { absoluteUrl } from "@/config/plumbing-routes";
 
 export const metadata: Metadata = {
   title: "Emergency Plumbers by State",
@@ -14,8 +15,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
-    { "@type": "ListItem", position: 2, name: "Emergency Plumbers", item: "https://fastplumbernearme.com/emergency-plumbers" },
+    { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+    { "@type": "ListItem", position: 2, name: "Emergency Plumbers", item: absoluteUrl("/emergency-plumbers") },
   ],
 };
 

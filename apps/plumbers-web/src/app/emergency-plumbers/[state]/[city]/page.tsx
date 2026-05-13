@@ -27,6 +27,7 @@ import type { Plumber } from "@/lib/types";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
 import { getExperimentMetaTitle } from "@/lib/experiments/getExperimentMetaTitle";
+import { absoluteUrl, businessProfilePath, cityPath } from "@/config/plumbing-routes";
 
 // Only prerender cities that have plumber data. Long-tail cities render
 // on-demand via dynamicParams (still SEO-indexable because they 200 on
@@ -51,7 +52,7 @@ export async function generateMetadata({
   const count = Math.min(plumbers.length, MAX_PLUMBERS_PER_PAGE);
   const year = new Date().getFullYear();
 
-  const ogUrl = new URL("https://fastplumbernearme.com/api/og");
+  const ogUrl = new URL(absoluteUrl("/api/og"));
   ogUrl.searchParams.set("city", city.name);
   ogUrl.searchParams.set("state", city.state);
   ogUrl.searchParams.set("county", city.county);
@@ -268,10 +269,10 @@ export default async function CityPage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
-      { "@type": "ListItem", position: 2, name: "Emergency Plumbers", item: "https://fastplumbernearme.com/emergency-plumbers" },
-      { "@type": "ListItem", position: 3, name: stateInfo.name, item: `https://fastplumbernearme.com/emergency-plumbers/${stateSlug}` },
-      { "@type": "ListItem", position: 4, name: city.name, item: `https://fastplumbernearme.com/emergency-plumbers/${stateSlug}/${citySlug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+      { "@type": "ListItem", position: 2, name: "Emergency Plumbers", item: absoluteUrl("/emergency-plumbers") },
+      { "@type": "ListItem", position: 3, name: stateInfo.name, item: absoluteUrl(`/emergency-plumbers/${stateSlug}`) },
+      { "@type": "ListItem", position: 4, name: city.name, item: absoluteUrl(cityPath(stateSlug, citySlug)) },
     ],
   };
 
@@ -290,7 +291,7 @@ export default async function CityPage({
         "@type": "Plumber",
         name: p.businessName,
         telephone: p.phone,
-        url: `https://fastplumbernearme.com/plumber/${plumberSlug(p.businessName)}`,
+        url: absoluteUrl(businessProfilePath(plumberSlug(p.businessName))),
         address: {
           "@type": "PostalAddress",
           addressLocality: p.address?.city || city.name,
@@ -336,12 +337,12 @@ export default async function CityPage({
         itemReviewed: {
           "@type": "Plumber",
           name: p.businessName,
-          url: `https://fastplumbernearme.com/plumber/${plumberSlug(p.businessName)}`,
+          url: absoluteUrl(businessProfilePath(plumberSlug(p.businessName))),
         },
         author: {
           "@type": "Organization",
           name: "Fast Plumber Near Me",
-          url: "https://fastplumbernearme.com",
+          url: absoluteUrl(),
         },
         ...(p.googleRating && {
           reviewRating: {

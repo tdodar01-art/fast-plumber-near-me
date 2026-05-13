@@ -16,6 +16,10 @@ import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,7 +44,7 @@ async function main() {
   const db = initFirebase();
 
   // --- Q1 + Q2: plumber docs ---
-  const plumbersSnap = await db.collection("plumbers").get();
+  const plumbersSnap = await db.collection(COLLECTIONS.businesses).get();
   console.log(`\nTotal plumber docs: ${plumbersSnap.size}`);
 
   let emptyOrMissing = 0;
@@ -99,7 +103,7 @@ async function main() {
   }
 
   // --- Q3: cities/ collection ---
-  const citiesSnap = await db.collection("cities").get();
+  const citiesSnap = await db.collection(COLLECTIONS.cities).get();
   const cityFormats = { state_suffixed: 0, plain: 0 };
   const citySampleSuffixed: string[] = [];
   const citySamplePlain: string[] = [];
@@ -170,8 +174,8 @@ async function main() {
     const sc = d.data().serviceCities;
     return Array.isArray(sc) && sc.includes("provo-ut");
   }).length;
-  const provoCityDoc = await db.collection("cities").doc("provo-ut").get();
-  const provoCityPlain = await db.collection("cities").doc("provo").get();
+  const provoCityDoc = await db.collection(COLLECTIONS.cities).doc("provo-ut").get();
+  const provoCityPlain = await db.collection(COLLECTIONS.cities).doc("provo").get();
   console.log(`  plumbers with serviceCities.includes("provo"):    ${provoDirect}`);
   console.log(`  plumbers with serviceCities.includes("provo-ut"): ${provoSuffixed}`);
   console.log(`  cities/provo-ut exists:                           ${provoCityDoc.exists}`);

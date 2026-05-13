@@ -14,6 +14,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -198,7 +199,7 @@ async function main() {
   if (dryRun) console.log("[DRY RUN]\n");
 
   // Get all plumbers
-  const plumbersSnap = await db.collection("plumbers").get();
+  const plumbersSnap = await db.collection(COLLECTIONS.businesses).get();
   console.log(`Total plumbers in Firestore: ${plumbersSnap.size}`);
 
   // Find plumbers needing re-synthesis
@@ -217,7 +218,7 @@ async function main() {
   console.log(`Processing: ${toProcess.length}\n`);
 
   // Load all reviews grouped by plumber
-  const reviewsSnap = await db.collection("reviews").get();
+  const reviewsSnap = await db.collection(COLLECTIONS.reviews).get();
   const reviewsByPlumber = new Map();
   for (const rdoc of reviewsSnap.docs) {
     const rd = rdoc.data();
@@ -294,7 +295,7 @@ async function main() {
         synthesisVersion: "ai-v2-services",
       };
 
-      await db.collection("plumbers").doc(id).update({
+      await db.collection(COLLECTIONS.businesses).doc(id).update({
         reviewSynthesis: synthesis,
         updatedAt: admin.firestore.Timestamp.now(),
       });

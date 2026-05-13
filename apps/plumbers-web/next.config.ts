@@ -6,6 +6,8 @@ const withAnalyzer = withBundleAnalyzer({
 });
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@directory-sites/directory-core"],
+
   // Skip type checking during build — @types/react-dom@19.2.3 has a
   // packaging bug (missing index.d.ts). Types still checked in IDE.
   typescript: {

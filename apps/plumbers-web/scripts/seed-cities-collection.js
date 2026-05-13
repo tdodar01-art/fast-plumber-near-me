@@ -12,6 +12,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -132,7 +133,7 @@ async function main() {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
-    const ref = db.collection("cities").doc(docId);
+    const ref = db.collection(COLLECTIONS.cities).doc(docId);
     batch.set(ref, doc, { merge: true });
     batchCount++;
     totalWritten++;

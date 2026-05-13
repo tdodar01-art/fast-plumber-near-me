@@ -3,6 +3,10 @@ import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -15,7 +19,7 @@ function initFirebase(): admin.firestore.Firestore {
 
 async function main() {
   const db = initFirebase();
-  const snap = await db.collection("plumbers").get();
+  const snap = await db.collection(COLLECTIONS.businesses).get();
   const provo = snap.docs.filter((d) => {
     const sc = d.data().serviceCities;
     return Array.isArray(sc) && sc.includes("provo");
@@ -25,7 +29,7 @@ async function main() {
 
   for (const doc of provo) {
     const data = doc.data();
-    const reviewSnap = await db.collection("reviews").where("plumberId", "==", doc.id).get();
+    const reviewSnap = await db.collection(COLLECTIONS.reviews).where("plumberId", "==", doc.id).get();
     const googleRating = data.googleRating ?? data.rating ?? "?";
     const googleReviewCount = data.googleReviewCount ?? data.reviewCount ?? "?";
     console.log(`${data.businessName}`);

@@ -25,6 +25,10 @@ import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 import {
   computeDecision,
@@ -803,14 +807,14 @@ async function loadPlumbers(
   opts: { ordered?: boolean } = {},
 ): Promise<Array<admin.firestore.QueryDocumentSnapshot>> {
   if (args.plumber) {
-    const doc = await db.collection("plumbers").doc(args.plumber).get();
+    const doc = await db.collection(COLLECTIONS.businesses).doc(args.plumber).get();
     if (!doc.exists) {
       console.error(`Plumber ${args.plumber} not found`);
       process.exit(1);
     }
     return [doc as admin.firestore.QueryDocumentSnapshot];
   }
-  const snap = await db.collection("plumbers").get();
+  const snap = await db.collection(COLLECTIONS.businesses).get();
   let docs: admin.firestore.QueryDocumentSnapshot[] = snap.docs;
   if (args.city) {
     // Client-side filter so the primary-city fallback in effectiveServiceCities
@@ -848,7 +852,7 @@ async function loadReviews(
   plumberId: string,
 ): Promise<ReviewInput[]> {
   const snap = await db
-    .collection("reviews")
+    .collection(COLLECTIONS.reviews)
     .where("plumberId", "==", plumberId)
     .get();
   return snap.docs.map((d) => {
@@ -940,7 +944,7 @@ async function runPass1(
       const nowIso = new Date().toISOString();
       if (reviews.length === 0) {
         if (!args.dryRun) {
-          await db.collection("plumbers").doc(plumberDoc.id).update({
+          await db.collection(COLLECTIONS.businesses).doc(plumberDoc.id).update({
             "scores.last_scored_at": nowIso,
             "scores.method": "no_reviews",
             "scores.review_count_used": 0,
@@ -953,7 +957,7 @@ async function runPass1(
       }
       const synth = keywordFallback(reviews);
       if (!args.dryRun) {
-        await db.collection("plumbers").doc(plumberDoc.id).update({
+        await db.collection(COLLECTIONS.businesses).doc(plumberDoc.id).update({
           "scores.last_scored_at": nowIso,
           "scores.method": "keyword_fallback",
           "scores.review_count_used": totalReviewCount,
@@ -1095,7 +1099,7 @@ async function runPass1(
       if (Object.keys(servicesMentioned).length > 0) {
         updateData["reviewSynthesis.servicesMentioned"] = servicesMentioned;
       }
-      await db.collection("plumbers").doc(plumberDoc.id).update(updateData);
+      await db.collection(COLLECTIONS.businesses).doc(plumberDoc.id).update(updateData);
       scored++;
       console.log(
         `  + ${name}: variance=${scores.variance} badges=[${badges.join(",")}] emergency=${emergencyReadiness} redFlags=${synthParsed.redFlags.length}`,
@@ -1139,7 +1143,7 @@ async function runPass2(
 ): Promise<void> {
   console.log("\n=== Pass 2: Rank ===");
 
-  const plumbersSnap = await db.collection("plumbers").get();
+  const plumbersSnap = await db.collection(COLLECTIONS.businesses).get();
   type Entry = {
     id: string;
     scores: Scores;
@@ -1185,7 +1189,7 @@ async function runPass2(
   // Look up city display names + state from cities collection in one sweep
   const cityLabels = new Map<string, string>(); // slug -> "Aurora, IL"
   for (const slug of citySet) {
-    const cityDoc = await db.collection("cities").doc(slug).get();
+    const cityDoc = await db.collection(COLLECTIONS.cities).doc(slug).get();
     if (cityDoc.exists) {
       const d = cityDoc.data()!;
       const label =
@@ -1257,7 +1261,7 @@ async function runPass2(
 
   let written = 0;
   for (const [plumberId, cityRank] of cityRankUpdates.entries()) {
-    await db.collection("plumbers").doc(plumberId).update({
+    await db.collection(COLLECTIONS.businesses).doc(plumberId).update({
       city_rank: cityRank,
       updatedAt: admin.firestore.Timestamp.now(),
     });
@@ -1327,7 +1331,7 @@ async function runPass3(
       continue;
     }
 
-    await db.collection("plumbers").doc(plumberDoc.id).update({
+    await db.collection(COLLECTIONS.businesses).doc(plumberDoc.id).update({
       decision,
       updatedAt: admin.firestore.Timestamp.now(),
     });

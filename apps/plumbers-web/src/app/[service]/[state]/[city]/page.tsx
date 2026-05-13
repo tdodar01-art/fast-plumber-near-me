@@ -25,6 +25,7 @@ import { CITY_COVERAGE } from "@/lib/city-coverage";
 import type { Plumber } from "@/lib/types";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
+import { absoluteUrl, businessProfilePath, cityPath, serviceCityPath } from "@/config/plumbing-routes";
 
 // ---------------------------------------------------------------------------
 // Static params: [service] × [state] × [city]
@@ -241,10 +242,10 @@ export default async function ServiceCityPage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
-      { "@type": "ListItem", position: 2, name: stateInfo.name, item: `https://fastplumbernearme.com/emergency-plumbers/${stateSlug}` },
-      { "@type": "ListItem", position: 3, name: city.name, item: `https://fastplumbernearme.com/emergency-plumbers/${stateSlug}/${citySlug}` },
-      { "@type": "ListItem", position: 4, name: config.displayName, item: `https://fastplumbernearme.com/${serviceSlug}/${stateSlug}/${citySlug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+      { "@type": "ListItem", position: 2, name: stateInfo.name, item: absoluteUrl(`/emergency-plumbers/${stateSlug}`) },
+      { "@type": "ListItem", position: 3, name: city.name, item: absoluteUrl(cityPath(stateSlug, citySlug)) },
+      { "@type": "ListItem", position: 4, name: config.displayName, item: absoluteUrl(serviceCityPath(serviceSlug, stateSlug, citySlug)) },
     ],
   };
 
@@ -269,7 +270,7 @@ export default async function ServiceCityPage({
         "@type": "Plumber",
         name: t.plumber.businessName,
         telephone: t.plumber.phone,
-        url: `https://fastplumbernearme.com/plumber/${plumberSlug(t.plumber.businessName)}`,
+        url: absoluteUrl(businessProfilePath(plumberSlug(t.plumber.businessName))),
         ...(t.plumber.address?.lat && t.plumber.address?.lng && {
           geo: { "@type": "GeoCoordinates", latitude: t.plumber.address.lat, longitude: t.plumber.address.lng },
         }),

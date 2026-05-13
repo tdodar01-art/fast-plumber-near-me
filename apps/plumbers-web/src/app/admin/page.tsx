@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { collection, getCountFromServer, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Wrench, MapPin, MousePointerClick, ClipboardList, Loader2 } from "lucide-react";
+import { COLLECTIONS } from "@/config/plumbing-collections";
 
 interface Stats {
   totalPlumbers: number;
@@ -26,12 +27,12 @@ export default function AdminDashboard() {
       }
       try {
         const [plumbers, active, cities, published, leads, submissions] = await Promise.all([
-          getCountFromServer(collection(db, "plumbers")),
-          getCountFromServer(query(collection(db, "plumbers"), where("isActive", "==", true))),
-          getCountFromServer(collection(db, "cities")),
-          getCountFromServer(query(collection(db, "cities"), where("isPublished", "==", true))),
-          getCountFromServer(collection(db, "leads")),
-          getCountFromServer(collection(db, "businessSubmissions")),
+          getCountFromServer(collection(db, COLLECTIONS.businesses)),
+          getCountFromServer(query(collection(db, COLLECTIONS.businesses), where("isActive", "==", true))),
+          getCountFromServer(collection(db, COLLECTIONS.cities)),
+          getCountFromServer(query(collection(db, COLLECTIONS.cities), where("isPublished", "==", true))),
+          getCountFromServer(collection(db, COLLECTIONS.leads)),
+          getCountFromServer(collection(db, COLLECTIONS.businessSubmissions)),
         ]);
 
         setStats({

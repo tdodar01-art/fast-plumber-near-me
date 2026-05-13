@@ -22,6 +22,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { businessProfilePath, cityPath } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -150,7 +151,7 @@ function stateName(abbr) {
 
 function generateRankingsPost(city, state, plumbers) {
   const ranked = [...plumbers].sort((a, b) => (b.synthesis?.score || 0) - (a.synthesis?.score || 0));
-  const cityUrl = `/emergency-plumbers/${stateSlug(state)}/${slugify(city)}`;
+  const cityUrl = cityPath(stateSlug(state), slugify(city));
   const fullState = stateName(state);
 
   let content = `Looking for a reliable emergency plumber in ${city}, ${fullState}? We analyzed ${plumbers.length} plumbing companies using real Google, Yelp, and BBB data to rank the best options for ${YEAR}.\n\n`;
@@ -186,7 +187,7 @@ function generateRankingsPost(city, state, plumbers) {
       content += `\n\n`;
     }
 
-    content += `[See full profile and reviews](/plumber/${p.slug})\n\n`;
+    content += `[See full profile and reviews](${businessProfilePath(p.slug)})\n\n`;
     content += `---\n\n`;
   }
 
@@ -225,7 +226,7 @@ function generateServicePost(city, state, serviceKey, plumbers) {
     return bRating - aRating;
   });
 
-  const cityUrl = `/emergency-plumbers/${stateSlug(state)}/${slugify(city)}`;
+  const cityUrl = cityPath(stateSlug(state), slugify(city));
   const fullState = stateName(state);
 
   let content = `Need ${serviceInfo.title.toLowerCase()} in ${city}, ${fullState}? We found ${withService.length} plumbers with verified experience in this service, ranked by customer review data.\n\n`;
@@ -243,7 +244,7 @@ function generateServicePost(city, state, serviceKey, plumbers) {
     }
 
     if (s.summary) content += `${s.summary}\n\n`;
-    content += `[See full profile](/plumber/${p.slug})\n\n---\n\n`;
+    content += `[See full profile](${businessProfilePath(p.slug)})\n\n---\n\n`;
   }
 
   content += `[See all plumbers in ${city}](${cityUrl})\n`;
@@ -270,7 +271,7 @@ function generateRedFlagsPost(city, state, plumbers) {
   if (withFlags.length < 2) return null;
 
   const fullState = stateName(state);
-  const cityUrl = `/emergency-plumbers/${stateSlug(state)}/${slugify(city)}`;
+  const cityUrl = cityPath(stateSlug(state), slugify(city));
   const allFlags = [];
 
   for (const p of withFlags) {
@@ -294,7 +295,7 @@ function generateRedFlagsPost(city, state, plumbers) {
     if (flags.length === 0) continue;
     content += `## ${theme}\n\n`;
     for (const f of flags) {
-      content += `- **${f.plumber}:** ${f.flag} — [See full profile](/plumber/${f.slug})\n`;
+      content += `- **${f.plumber}:** ${f.flag} — [See full profile](${businessProfilePath(f.slug)})\n`;
     }
     content += `\n`;
   }
@@ -305,7 +306,7 @@ function generateRedFlagsPost(city, state, plumbers) {
   if (other.length > 0) {
     content += `## Other Concerns\n\n`;
     for (const f of other) {
-      content += `- **${f.plumber}:** ${f.flag} — [See full profile](/plumber/${f.slug})\n`;
+      content += `- **${f.plumber}:** ${f.flag} — [See full profile](${businessProfilePath(f.slug)})\n`;
     }
     content += `\n`;
   }
@@ -342,7 +343,7 @@ async function generateGuidePost(city, state, plumbers, dryRun) {
   if (plumbers.length < 5) return null;
 
   const fullState = stateName(state);
-  const cityUrl = `/emergency-plumbers/${stateSlug(state)}/${slugify(city)}`;
+  const cityUrl = cityPath(stateSlug(state), slugify(city));
   const regions = getRegionTags(state);
   const ranked = [...plumbers].sort((a, b) => (b.synthesis?.score || 0) - (a.synthesis?.score || 0));
   const top3 = ranked.slice(0, 3);
@@ -394,7 +395,7 @@ DATA TO USE (real numbers — reference them):
 - Region tags: ${regions.join(", ")}
 
 TOP 3 PLUMBERS (link to their profiles):
-${top3.map((p, i) => `${i+1}. ${p.name} — ${p.googleRating}/5 (${p.googleReviewCount} reviews), Score: ${p.synthesis?.score}/100, Badges: ${(p.synthesis?.badges || []).join(", ") || "none"} — link: /plumber/${p.slug}`).join("\n")}
+${top3.map((p, i) => `${i+1}. ${p.name} — ${p.googleRating}/5 (${p.googleReviewCount} reviews), Score: ${p.synthesis?.score}/100, Badges: ${(p.synthesis?.badges || []).join(", ") || "none"} — link: ${businessProfilePath(p.slug)}`).join("\n")}
 
 CITY PAGE LINK: ${cityUrl}
 
@@ -424,7 +425,7 @@ async function generateTipsPost(city, state, plumbers, dryRun) {
   if (plumbers.length < 5) return null;
 
   const fullState = stateName(state);
-  const cityUrl = `/emergency-plumbers/${stateSlug(state)}/${slugify(city)}`;
+  const cityUrl = cityPath(stateSlug(state), slugify(city));
   const regions = getRegionTags(state);
   const ranked = [...plumbers].sort((a, b) => (b.synthesis?.score || 0) - (a.synthesis?.score || 0));
   const top2 = ranked.slice(0, 2);
@@ -472,8 +473,8 @@ ${regions.includes("northern") ? "- Frozen pipe thawing technique (hair dryer, w
 
 END WITH CTA: "When you're ready, here are ${city}'s top-rated emergency plumbers" linking to ${cityUrl}
 Also mention these top plumbers inline:
-- ${top2[0]?.name || "Top local plumber"} — /plumber/${top2[0]?.slug || ""}
-${top2[1] ? `- ${top2[1].name} — /plumber/${top2[1].slug}` : ""}
+- ${top2[0]?.name || "Top local plumber"} — ${businessProfilePath(top2[0]?.slug || "")}
+${top2[1] ? `- ${top2[1].name} — ${businessProfilePath(top2[1].slug)}` : ""}
 
 Write in an urgent but calm tone — the reader might be standing in water right now.
 Output ONLY the markdown content — no frontmatter, no code fences.`;

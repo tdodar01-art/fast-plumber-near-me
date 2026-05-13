@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { SITE_ORIGIN, SITE_ORIGIN_WITH_WWW } from "@/config/plumbing-routes";
 
 const WINDOW_MS = 60_000; // 1 minute
 const MAX_REQUESTS = 10;
@@ -38,8 +39,8 @@ export function checkRateLimit(request: NextRequest): NextResponse | null {
 }
 
 const ALLOWED_ORIGINS = [
-  "https://fastplumbernearme.com",
-  "https://www.fastplumbernearme.com",
+  SITE_ORIGIN,
+  SITE_ORIGIN_WITH_WWW,
 ];
 
 export function checkOrigin(request: NextRequest): NextResponse | null {

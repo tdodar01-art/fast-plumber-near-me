@@ -16,6 +16,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -371,7 +372,7 @@ async function main() {
     console.log(`\n📍 City: ${citySlug}`);
 
     // Try slug as-is, then without state suffix (e.g. "crystal-lake-il" -> "crystal-lake")
-    let snap = await db.collection("plumbers")
+    let snap = await db.collection(COLLECTIONS.businesses)
       .where("serviceCities", "array-contains", citySlug)
       .where("isActive", "==", true)
       .get();
@@ -379,7 +380,7 @@ async function main() {
     if (snap.empty) {
       const shortSlug = citySlug.replace(/-[a-z]{2}$/, "");
       if (shortSlug !== citySlug) {
-        snap = await db.collection("plumbers")
+        snap = await db.collection(COLLECTIONS.businesses)
           .where("serviceCities", "array-contains", shortSlug)
           .where("isActive", "==", true)
           .get();
@@ -430,7 +431,7 @@ async function main() {
         plumberDetails.push({ name: data.businessName, id: doc.id, matched: true, rating: bbbData.rating, accredited: bbbData.accredited, complaints3yr: bbbData.complaintsPast3Years, yearsInBusiness: bbbData.yearsInBusiness });
 
         if (!dryRun) {
-          await db.collection("plumbers").doc(doc.id).update({
+          await db.collection(COLLECTIONS.businesses).doc(doc.id).update({
             bbb: bbbData,
             updatedAt: admin.firestore.Timestamp.now(),
           });

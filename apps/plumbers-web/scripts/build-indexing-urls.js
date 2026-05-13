@@ -27,6 +27,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS, cityPath } = require("./config/plumbing-directory.cjs");
 
 const STATE_ABBR_TO_SLUG = {
   AL: "alabama", AK: "alaska", AZ: "arizona", AR: "arkansas", CA: "california",
@@ -102,12 +103,12 @@ async function main() {
   const urls = new Set();
   for (const c of cities) {
     // Always include the canonical emergency-plumbers URL as a discovery signal.
-    urls.add(`/emergency-plumbers/${c.stateSlug}/${c.citySlug}`);
+    urls.add(cityPath(c.stateSlug, c.citySlug));
 
     if (!db) continue;
 
     try {
-      const snap = await db.collection("cities").doc(c.docId).get();
+      const snap = await db.collection(COLLECTIONS.cities).doc(c.docId).get();
       const data = snap.exists ? snap.data() : null;
       const pageTypes = (data && Array.isArray(data.gscPageTypes)) ? data.gscPageTypes : [];
       let added = 0;

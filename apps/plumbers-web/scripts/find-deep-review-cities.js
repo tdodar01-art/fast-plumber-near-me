@@ -12,6 +12,7 @@
 const admin = require("firebase-admin");
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const SA_PATH = path.join(__dirname, "..", "service-account.json");
 if (!fs.existsSync(SA_PATH)) {
@@ -25,7 +26,7 @@ const db = admin.firestore();
 
 async function main() {
   // Debug: log all cities and their gscTier values
-  const allCities = await db.collection("cities").get();
+  const allCities = await db.collection(COLLECTIONS.cities).get();
   console.error("DEBUG: Total cities in Firestore: " + allCities.size);
 
   const tierCounts = {};
@@ -46,7 +47,7 @@ async function main() {
   //   PRIORITY 2: impressions >= 10 AND position <= 30
   //   SKIP:       impressions < 10 OR position > 30
   // Replaces simple gscTier filter that didn't account for position.
-  const snap = await db.collection("cities")
+  const snap = await db.collection(COLLECTIONS.cities)
     .where("gscTier", "in", ["medium", "high"])
     .get();
 
@@ -92,14 +93,14 @@ async function main() {
     const stateAbbr = stateMatch ? stateMatch[1].toUpperCase() : "";
 
     // Try serviceCities match first
-    let plumberSnap = await db.collection("plumbers")
+    let plumberSnap = await db.collection(COLLECTIONS.businesses)
       .where("serviceCities", "array-contains", cityOnlySlug)
       .where("isActive", "==", true)
       .get();
 
     // Fallback: query by state if no serviceCities match
     if (plumberSnap.empty && stateAbbr) {
-      const stateSnap = await db.collection("plumbers")
+      const stateSnap = await db.collection(COLLECTIONS.businesses)
         .where("address.state", "==", stateAbbr)
         .where("isActive", "==", true)
         .get();

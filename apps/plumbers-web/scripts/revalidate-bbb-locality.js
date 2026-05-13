@@ -22,6 +22,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 const BBB_SEARCH_URL = "https://www.bbb.org/api/search";
@@ -199,7 +200,7 @@ async function main() {
         complaints: data.bbb.complaintsPast3Years,
       });
       if (!dryRun) {
-        await db.collection("plumbers").doc(id).update({
+        await db.collection(COLLECTIONS.businesses).doc(id).update({
           bbb: admin.firestore.FieldValue.delete(),
         });
       }

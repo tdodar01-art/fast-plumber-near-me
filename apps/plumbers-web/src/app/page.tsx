@@ -6,6 +6,7 @@ import CallToAction from "@/components/CallToAction";
 import { FEATURED_CITIES, CITY_LIST } from "@/lib/city-list";
 import { getStatesWithCities, getTotalCityCount } from "@/lib/cities-data";
 import { getCityCoords } from "@/lib/city-coords";
+import { absoluteUrl } from "@/config/plumbing-routes";
 
 const featuredCities = FEATURED_CITIES;
 const totalCities = getTotalCityCount();
@@ -16,12 +17,12 @@ const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Fast Plumber Near Me",
-  url: "https://fastplumbernearme.com",
+  url: absoluteUrl(),
   potentialAction: {
     "@type": "SearchAction",
     target: {
       "@type": "EntryPoint",
-      urlTemplate: "https://fastplumbernearme.com/emergency-plumbers/{state}/{city}",
+      urlTemplate: absoluteUrl("/emergency-plumbers/{state}/{city}"),
     },
     "query-input": "required name=city",
   },
@@ -31,7 +32,7 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Fast Plumber Near Me",
-  url: "https://fastplumbernearme.com",
+  url: absoluteUrl(),
   description:
     "Emergency plumber directory that connects homeowners with verified, responsive plumbers. Real Google review analysis with honest strengths and weaknesses — no pay-to-play rankings.",
 };

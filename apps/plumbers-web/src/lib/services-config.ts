@@ -7,38 +7,21 @@
  */
 
 import type { SpecialtyKey, DimensionKey } from "./decision-engine";
+import type {
+  PageConfig as DirectoryPageConfig,
+  PageType,
+  ScoringStrategy as DirectoryScoringStrategy,
+} from "@directory-sites/directory-core";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export type PageType = "service" | "symptom" | "intent";
+export type { PageType };
 
-export type ScoringStrategy =
-  | { kind: "specialty"; key: SpecialtyKey }
-  | { kind: "dimension"; sortBy: DimensionKey }
-  | { kind: "signal"; field: string; value: unknown }
-  | { kind: "mapped"; serviceKeys: SpecialtyKey[] };
+export type ScoringStrategy = DirectoryScoringStrategy<SpecialtyKey, DimensionKey>;
 
-export interface PageConfig {
-  /** Unique ID — matches URL slug */
-  slug: string;
-  type: PageType;
-  /** Decision engine scoring strategy */
-  scoring: ScoringStrategy;
-  /** Display name for H1, titles */
-  displayName: string;
-  /** Short pain-point hook for hero section */
-  heroHook: string;
-  /** Bridge to outscraper servicesMentioned data (16 categories) */
-  serviceMentionedKeys: string[];
-  /** Emergency/scenario types specific to this page */
-  emergencyTypes: { title: string; description: string }[];
-  /** FAQ templates — {city}, {state}, {county} are replaced at render time */
-  faqTemplates: { question: string; answer: string }[];
-  /** Related page slugs for cross-linking */
-  relatedServices: string[];
-}
+export type PageConfig = DirectoryPageConfig<SpecialtyKey, DimensionKey>;
 
 // ---------------------------------------------------------------------------
 // Legacy compat — re-export old types so existing imports still work

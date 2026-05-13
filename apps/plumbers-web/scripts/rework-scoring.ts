@@ -30,6 +30,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { createRequire } from "node:module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 import { fileURLToPath } from "node:url";
 import {
   computeCrossPlatformSignals,
@@ -113,7 +117,7 @@ async function main() {
   if (dryRun) console.log("DRY RUN — no Firestore writes");
   console.log();
 
-  const snap = await db.collection("plumbers").where("isActive", "==", true).get();
+  const snap = await db.collection(COLLECTIONS.businesses).where("isActive", "==", true).get();
   const all: PlumberDoc[] = [];
   snap.forEach((doc: FirebaseFirestore.QueryDocumentSnapshot) =>
     all.push({ id: doc.id, data: doc.data() as PlumberDoc["data"] }),
@@ -318,7 +322,7 @@ async function main() {
     };
 
     try {
-      await db.collection("plumbers").doc(c.plumber.id).update(updatePayload);
+      await db.collection(COLLECTIONS.businesses).doc(c.plumber.id).update(updatePayload);
       writes++;
       if (writes % 50 === 0) console.log(`  written ${writes}/${withScores}`);
     } catch (e) {

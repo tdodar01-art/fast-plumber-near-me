@@ -21,6 +21,10 @@ import {
   setDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -330,7 +334,7 @@ async function main() {
       }
 
       // Check if exists
-      const docRef = doc(db, "plumbers", details.place_id);
+      const docRef = doc(db, COLLECTIONS.businesses, details.place_id);
       const existing = await getDoc(docRef);
 
       if (existing.exists()) {

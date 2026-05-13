@@ -13,6 +13,7 @@
 const fs = require("fs");
 const path = require("path");
 const { google } = require("googleapis");
+const { SITE_ORIGIN, SITE_ORIGIN_WITH_WWW } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -37,7 +38,7 @@ function loadEnv() {
 
 loadEnv();
 
-const SITE_URL = process.env.GSC_SITE_URL || "https://fastplumbernearme.com/";
+const SITE_URL = process.env.GSC_SITE_URL || `${SITE_ORIGIN}/`;
 
 // ---------------------------------------------------------------------------
 // Check prerequisites
@@ -139,7 +140,7 @@ async function main() {
 
   for (const row of rows) {
     // Shorten URL for display
-    const url = row.keys[0].replace("https://www.fastplumbernearme.com", "").replace("https://fastplumbernearme.com", "");
+    const url = row.keys[0].replace(SITE_ORIGIN_WITH_WWW, "").replace(SITE_ORIGIN, "");
     const ctr = (row.ctr * 100).toFixed(1) + "%";
     const pos = row.position.toFixed(1);
 

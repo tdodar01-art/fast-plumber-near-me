@@ -9,6 +9,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 
@@ -109,7 +110,7 @@ async function main() {
 
   for (const city of cities) {
     const docId = `${city.slug}-${city.state.toLowerCase()}`;
-    const docRef = db.collection("cities").doc(docId);
+    const docRef = db.collection(COLLECTIONS.cities).doc(docId);
 
     const stateNames = {
       AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { absoluteUrl } from "@/config/plumbing-routes";
 import { Clock, ArrowLeft, ArrowRight } from "lucide-react";
 import { getBlogPost, getAllBlogSlugs, BLOG_POSTS } from "@/lib/blog-data";
 import CallToAction from "@/components/CallToAction";
@@ -169,18 +170,18 @@ export default async function BlogPostPage({
     "@type": "Article",
     headline: post.title,
     description: post.description,
-    mainEntityOfPage: `https://fastplumbernearme.com/blog/${slug}`,
+    mainEntityOfPage: absoluteUrl(`/blog/${slug}`),
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     author: {
       "@type": "Organization",
       name: "Fast Plumber Near Me",
-      url: "https://fastplumbernearme.com",
+      url: absoluteUrl(),
     },
     publisher: {
       "@type": "Organization",
       name: "Fast Plumber Near Me",
-      url: "https://fastplumbernearme.com",
+      url: absoluteUrl(),
     },
   };
 
@@ -188,9 +189,9 @@ export default async function BlogPostPage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
-      { "@type": "ListItem", position: 2, name: "Blog", item: "https://fastplumbernearme.com/blog" },
-      { "@type": "ListItem", position: 3, name: post.title, item: `https://fastplumbernearme.com/blog/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+      { "@type": "ListItem", position: 2, name: "Blog", item: absoluteUrl("/blog") },
+      { "@type": "ListItem", position: 3, name: post.title, item: absoluteUrl(`/blog/${slug}`) },
     ],
   };
 

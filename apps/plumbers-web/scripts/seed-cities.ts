@@ -11,6 +11,10 @@
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, Timestamp } from "firebase/firestore";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -112,7 +116,7 @@ async function seed() {
 
   for (const city of cities) {
     const { id, ...data } = city;
-    await setDoc(doc(db, "cities", id), {
+    await setDoc(doc(db, COLLECTIONS.cities, id), {
       ...data,
       publishedAt: data.isPublished ? Timestamp.now() : null,
     });

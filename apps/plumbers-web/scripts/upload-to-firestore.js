@@ -13,6 +13,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -110,7 +111,7 @@ async function main() {
       continue;
     }
 
-    const docRef = db.collection("plumbers").doc(plumber.placeId);
+    const docRef = db.collection(COLLECTIONS.businesses).doc(plumber.placeId);
 
     const data = {
       businessName: plumber.name,

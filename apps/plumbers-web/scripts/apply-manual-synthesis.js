@@ -22,6 +22,7 @@ const admin = require("firebase-admin");
 const fs = require("fs");
 const path = require("path");
 const glob = require("fs").readdirSync;
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const SA_PATH = path.join(__dirname, "..", "service-account.json");
 const sa = JSON.parse(fs.readFileSync(SA_PATH, "utf-8"));
@@ -104,7 +105,7 @@ async function applyOne(p) {
   // up the change without waiting for the next plumbers-synthesized.json export.
   update["synthesis.summary"] = p.reviewSynthesis.summary;
 
-  await db.collection("plumbers").doc(p.placeId).update(update);
+  await db.collection(COLLECTIONS.businesses).doc(p.placeId).update(update);
 }
 
 async function main() {

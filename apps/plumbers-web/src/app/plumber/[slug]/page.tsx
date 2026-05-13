@@ -29,6 +29,7 @@ import ServiceCoverageGrid from "@/components/ServiceCoverageGrid";
 import PlatformAgreementStrip from "@/components/PlatformAgreementStrip";
 import { calculateDistance } from "@/lib/geo";
 import { getCityCoords } from "@/lib/city-coords";
+import { absoluteUrl, businessProfilePath } from "@/config/plumbing-routes";
 
 // ---------------------------------------------------------------------------
 // Static generation
@@ -195,9 +196,9 @@ export default async function PlumberProfilePage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
-      { "@type": "ListItem", position: 2, name: "Plumbers", item: "https://fastplumbernearme.com/plumbers" },
-      { "@type": "ListItem", position: 3, name: plumber.name, item: `https://fastplumbernearme.com/plumber/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+      { "@type": "ListItem", position: 2, name: "Plumbers", item: absoluteUrl("/plumbers") },
+      { "@type": "ListItem", position: 3, name: plumber.name, item: absoluteUrl(businessProfilePath(slug)) },
     ],
   };
 
@@ -230,12 +231,12 @@ export default async function PlumberProfilePage({
     itemReviewed: {
       "@type": "Plumber",
       name: plumber.name,
-      url: `https://fastplumbernearme.com/plumber/${slug}`,
+      url: absoluteUrl(businessProfilePath(slug)),
     },
     author: {
       "@type": "Organization",
       name: "Fast Plumber Near Me",
-      url: "https://fastplumbernearme.com",
+      url: absoluteUrl(),
     },
     ...(plumber.googleRating && {
       reviewRating: {

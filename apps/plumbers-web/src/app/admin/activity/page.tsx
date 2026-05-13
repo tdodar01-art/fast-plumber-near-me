@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy, limit, getCountFromServer } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, CheckCircle, XCircle, AlertTriangle, Database, FileText, Zap, DollarSign, ChevronDown, ChevronRight } from "lucide-react";
+import { COLLECTIONS } from "@/config/plumbing-collections";
+import { SITE_ORIGIN_WITH_WWW } from "@/config/plumbing-routes";
 
 interface PipelineRun {
   id: string;
@@ -167,7 +169,7 @@ function PlumberDetailRow({ p }: { p: Record<string, any> }) {
   );
 }
 
-const SITE_ORIGIN = "https://www.fastplumbernearme.com";
+const SITE_ORIGIN = SITE_ORIGIN_WITH_WWW;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ExpandableList({ items, renderItem, label, initialShow = 5 }: { items: any[]; renderItem: (item: any, i: number) => React.ReactNode; label: string; initialShow?: number }) {
@@ -346,20 +348,20 @@ export default function AdminActivityPage() {
       if (!db) { setLoading(false); return; }
       try {
         // Pipeline runs (last 200)
-        const runsSnap = await getDocs(query(collection(db, "pipelineRuns"), orderBy("startedAt", "desc"), limit(200)));
+        const runsSnap = await getDocs(query(collection(db, COLLECTIONS.pipelineRuns), orderBy("startedAt", "desc"), limit(200)));
         setRuns(runsSnap.docs.map((d) => ({ id: d.id, ...d.data() }) as unknown as PipelineRun));
 
         // Stats
-        const plumberSnap = await getCountFromServer(collection(db, "plumbers"));
+        const plumberSnap = await getCountFromServer(collection(db, COLLECTIONS.businesses));
         setPlumberCount(plumberSnap.data().count);
 
-        const reviewSnap = await getCountFromServer(collection(db, "reviews"));
+        const reviewSnap = await getCountFromServer(collection(db, COLLECTIONS.reviews));
         setReviewCount(reviewSnap.data().count);
 
         // API usage this month
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-        const usageSnap = await getDocs(collection(db, "apiUsage"));
+        const usageSnap = await getDocs(collection(db, COLLECTIONS.apiUsage));
         const usageDoc = usageSnap.docs.find((d) => d.id === monthKey);
         if (usageDoc) {
           const data = usageDoc.data();

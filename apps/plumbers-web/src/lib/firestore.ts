@@ -15,13 +15,14 @@ import {
 } from "firebase/firestore";
 import { db, isConfigured } from "./firebase";
 import type { Plumber, City, Lead, CachedReview, RatingSnapshot, ApiUsageRecord, ReviewSynthesis, PlumberReport } from "./types";
+import { COLLECTIONS } from "@/config/plumbing-collections";
 
 // --- Plumber helpers ---
 
 export async function getPlumbersByCity(citySlug: string): Promise<Plumber[]> {
   if (!isConfigured || !db) return [];
   const q = query(
-    collection(db, "plumbers"),
+    collection(db, COLLECTIONS.businesses),
     where("serviceCities", "array-contains", citySlug),
     where("isActive", "==", true),
     orderBy("listingTier", "desc"),
@@ -33,7 +34,7 @@ export async function getPlumbersByCity(citySlug: string): Promise<Plumber[]> {
 
 export async function getPlumberById(id: string): Promise<Plumber | null> {
   if (!isConfigured || !db) return null;
-  const docRef = doc(db, "plumbers", id);
+  const docRef = doc(db, COLLECTIONS.businesses, id);
   const snapshot = await getDoc(docRef);
   if (!snapshot.exists()) return null;
   return { id: snapshot.id, ...snapshot.data() } as Plumber;
@@ -42,7 +43,7 @@ export async function getPlumberById(id: string): Promise<Plumber | null> {
 export async function getActivePlumbersByState(state: string): Promise<Plumber[]> {
   if (!isConfigured || !db) return [];
   const q = query(
-    collection(db, "plumbers"),
+    collection(db, COLLECTIONS.businesses),
     where("address.state", "==", state),
     where("isActive", "==", true)
   );
@@ -52,7 +53,7 @@ export async function getActivePlumbersByState(state: string): Promise<Plumber[]
 
 export async function getAllPlumbers(): Promise<Plumber[]> {
   if (!isConfigured || !db) return [];
-  const q = query(collection(db, "plumbers"), orderBy("businessName"));
+  const q = query(collection(db, COLLECTIONS.businesses), orderBy("businessName"));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Plumber);
 }
@@ -129,7 +130,7 @@ export async function resolvePlumbersForCity(
 
 export async function getCityBySlug(slug: string): Promise<City | null> {
   if (!isConfigured || !db) return null;
-  const docRef = doc(db, "cities", slug);
+  const docRef = doc(db, COLLECTIONS.cities, slug);
   const snapshot = await getDoc(docRef);
   if (!snapshot.exists()) return null;
   return { id: snapshot.id, ...snapshot.data() } as City;
@@ -138,7 +139,7 @@ export async function getCityBySlug(slug: string): Promise<City | null> {
 export async function getPublishedCities(): Promise<City[]> {
   if (!isConfigured || !db) return [];
   const q = query(
-    collection(db, "cities"),
+    collection(db, COLLECTIONS.cities),
     where("isPublished", "==", true),
     orderBy("name")
   );
@@ -148,57 +149,57 @@ export async function getPublishedCities(): Promise<City[]> {
 
 export async function getAllCities(): Promise<City[]> {
   if (!isConfigured || !db) return [];
-  const q = query(collection(db, "cities"), orderBy("name"));
+  const q = query(collection(db, COLLECTIONS.cities), orderBy("name"));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as City);
 }
 
 export async function createPlumber(data: Omit<Plumber, "id">): Promise<string> {
   if (!isConfigured || !db) return "";
-  const docRef = await addDoc(collection(db, "plumbers"), data);
+  const docRef = await addDoc(collection(db, COLLECTIONS.businesses), data);
   return docRef.id;
 }
 
 export async function updatePlumber(id: string, data: Partial<Plumber>): Promise<void> {
   if (!isConfigured || !db) return;
   const { id: _id, ...fields } = data as Plumber;
-  await updateDoc(doc(db, "plumbers", id), fields);
+  await updateDoc(doc(db, COLLECTIONS.businesses, id), fields);
 }
 
 export async function deletePlumber(id: string): Promise<void> {
   if (!isConfigured || !db) return;
-  await deleteDoc(doc(db, "plumbers", id));
+  await deleteDoc(doc(db, COLLECTIONS.businesses, id));
 }
 
 // --- City helpers (write) ---
 
 export async function createCity(id: string, data: Omit<City, "id">): Promise<void> {
   if (!isConfigured || !db) return;
-  await setDoc(doc(db, "cities", id), data);
+  await setDoc(doc(db, COLLECTIONS.cities, id), data);
 }
 
 export async function updateCity(id: string, data: Partial<City>): Promise<void> {
   if (!isConfigured || !db) return;
   const { id: _id, ...fields } = data as City;
-  await updateDoc(doc(db, "cities", id), fields);
+  await updateDoc(doc(db, COLLECTIONS.cities, id), fields);
 }
 
 export async function deleteCity(id: string): Promise<void> {
   if (!isConfigured || !db) return;
-  await deleteDoc(doc(db, "cities", id));
+  await deleteDoc(doc(db, COLLECTIONS.cities, id));
 }
 
 // --- Lead helpers ---
 
 export async function trackLead(lead: Omit<Lead, "id">): Promise<string> {
   if (!isConfigured || !db) return "";
-  const docRef = await addDoc(collection(db, "leads"), lead);
+  const docRef = await addDoc(collection(db, COLLECTIONS.leads), lead);
   return docRef.id;
 }
 
 export async function getLeads(max: number = 200): Promise<Lead[]> {
   if (!isConfigured || !db) return [];
-  const q = query(collection(db, "leads"), orderBy("createdAt", "desc"), firestoreLimit(max));
+  const q = query(collection(db, COLLECTIONS.leads), orderBy("createdAt", "desc"), firestoreLimit(max));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Lead);
 }
@@ -209,21 +210,21 @@ export async function cacheReview(review: Omit<CachedReview, "id">): Promise<str
   if (!isConfigured || !db) return "";
   // Check for duplicate by googleReviewId
   const q = query(
-    collection(db, "reviews"),
+    collection(db, COLLECTIONS.reviews),
     where("plumberId", "==", review.plumberId),
     where("googleReviewId", "==", review.googleReviewId),
     firestoreLimit(1)
   );
   const existing = await getDocs(q);
   if (!existing.empty) return existing.docs[0].id;
-  const docRef = await addDoc(collection(db, "reviews"), review);
+  const docRef = await addDoc(collection(db, COLLECTIONS.reviews), review);
   return docRef.id;
 }
 
 export async function getReviewsForPlumber(plumberId: string): Promise<CachedReview[]> {
   if (!isConfigured || !db) return [];
   const q = query(
-    collection(db, "reviews"),
+    collection(db, COLLECTIONS.reviews),
     where("plumberId", "==", plumberId),
     orderBy("cachedAt", "desc")
   );
@@ -234,7 +235,7 @@ export async function getReviewsForPlumber(plumberId: string): Promise<CachedRev
 export async function getLatestReviewForPlumber(plumberId: string): Promise<CachedReview | null> {
   if (!isConfigured || !db) return null;
   const q = query(
-    collection(db, "reviews"),
+    collection(db, COLLECTIONS.reviews),
     where("plumberId", "==", plumberId),
     orderBy("cachedAt", "desc"),
     firestoreLimit(1)
@@ -248,7 +249,7 @@ export async function getLatestReviewForPlumber(plumberId: string): Promise<Cach
 
 export async function saveRatingSnapshot(snapshot: Omit<RatingSnapshot, "id">): Promise<string> {
   if (!isConfigured || !db) return "";
-  const docRef = await addDoc(collection(db, "ratingSnapshots"), snapshot);
+  const docRef = await addDoc(collection(db, COLLECTIONS.ratingSnapshots), snapshot);
   return docRef.id;
 }
 
@@ -258,7 +259,7 @@ export async function trackApiUsage(type: "textSearch" | "placeDetails", count: 
   if (!isConfigured || !db) return;
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const docRef = doc(db, "apiUsage", monthKey);
+  const docRef = doc(db, COLLECTIONS.apiUsage, monthKey);
   const existing = await getDoc(docRef);
 
   const costPer1000 = type === "textSearch" ? 32 : 17;
@@ -289,7 +290,7 @@ export async function getApiUsage(month?: string): Promise<ApiUsageRecord | null
   if (!isConfigured || !db) return null;
   const now = new Date();
   const key = month || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const docRef = doc(db, "apiUsage", key);
+  const docRef = doc(db, COLLECTIONS.apiUsage, key);
   const snapshot = await getDoc(docRef);
   if (!snapshot.exists()) return null;
   return { id: snapshot.id, ...snapshot.data() } as ApiUsageRecord;
@@ -299,7 +300,7 @@ export async function getApiUsage(month?: string): Promise<ApiUsageRecord | null
 
 export async function updatePlumberSynthesis(plumberId: string, synthesis: ReviewSynthesis): Promise<void> {
   if (!isConfigured || !db) return;
-  await updateDoc(doc(db, "plumbers", plumberId), {
+  await updateDoc(doc(db, COLLECTIONS.businesses, plumberId), {
     reviewSynthesis: synthesis,
     updatedAt: Timestamp.now(),
   });
@@ -324,14 +325,14 @@ export async function getPlumberReports(): Promise<PlumberReport[]> {
 
 export async function getBusinessSubmissions(): Promise<Array<{ id: string; [key: string]: unknown }>> {
   if (!isConfigured || !db) return [];
-  const q = query(collection(db, "businessSubmissions"), orderBy("createdAt", "desc"));
+  const q = query(collection(db, COLLECTIONS.businessSubmissions), orderBy("createdAt", "desc"));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
 export async function deleteSubmission(id: string): Promise<void> {
   if (!isConfigured || !db) return;
-  await deleteDoc(doc(db, "businessSubmissions", id));
+  await deleteDoc(doc(db, COLLECTIONS.businessSubmissions, id));
 }
 
 // --- Contact submissions ---
@@ -361,7 +362,7 @@ export async function submitBusiness(data: {
   licenseNumber: string;
 }): Promise<string> {
   if (!isConfigured || !db) return "";
-  const docRef = await addDoc(collection(db, "plumbers"), {
+  const docRef = await addDoc(collection(db, COLLECTIONS.businesses), {
     ...data,
     ownerName: "",
     address: { street: "", city: "", state: "", zip: "", lat: 0, lng: 0 },

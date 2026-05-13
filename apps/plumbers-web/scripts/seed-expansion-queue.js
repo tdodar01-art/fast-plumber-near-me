@@ -9,6 +9,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 if (!fs.existsSync(SERVICE_ACCOUNT_PATH)) {
@@ -78,7 +79,7 @@ async function main() {
   console.log(`Found ${cities.length} cities and ${Object.keys(coords).length} coordinate entries\n`);
 
   // Get already-scraped cities
-  const plumbersSnap = await db.collection("plumbers").get();
+  const plumbersSnap = await db.collection(COLLECTIONS.businesses).get();
   const scrapedCities = new Set();
   plumbersSnap.docs.forEach((d) => {
     const sc = d.data().serviceCities || [];

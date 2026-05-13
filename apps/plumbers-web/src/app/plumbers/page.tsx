@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { getPlumbersRanked, getDataMeta } from "@/lib/plumber-data";
 import { getCityCoords } from "@/lib/city-coords";
 import PlumberDirectory from "./PlumberDirectory";
+import { absoluteUrl } from "@/config/plumbing-routes";
 
 export const metadata: Metadata = {
   title: "Ranked Plumbers — Honest Reviews & Trust Scores",
@@ -14,8 +15,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
-    { "@type": "ListItem", position: 2, name: "Plumber Rankings", item: "https://fastplumbernearme.com/plumbers" },
+    { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+    { "@type": "ListItem", position: 2, name: "Plumber Rankings", item: absoluteUrl("/plumbers") },
   ],
 };
 

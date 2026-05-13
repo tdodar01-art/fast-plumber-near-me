@@ -4,20 +4,19 @@ import { STATES_DATA, getStateBySlug } from "@/lib/states-data";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { getAllServiceSlugs } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
-
-const BASE_URL = "https://fastplumbernearme.com";
+import { absoluteUrl, cityPath, serviceCityPath } from "@/config/plumbing-routes";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1.0 },
-    { url: `${BASE_URL}/emergency-plumbers`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
-    { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/how-we-verify`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/add-your-business`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
-    { url: `${BASE_URL}/privacy-policy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
-    { url: `${BASE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
+    { url: absoluteUrl(), lastModified: new Date(), changeFrequency: "weekly", priority: 1.0 },
+    { url: absoluteUrl("/emergency-plumbers"), lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: absoluteUrl("/blog"), lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
+    { url: absoluteUrl("/about"), lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: absoluteUrl("/how-we-verify"), lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: absoluteUrl("/add-your-business"), lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: absoluteUrl("/contact"), lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+    { url: absoluteUrl("/privacy-policy"), lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
+    { url: absoluteUrl("/terms"), lastModified: new Date(), changeFrequency: "yearly", priority: 0.2 },
   ];
 
   // State pages
@@ -25,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .map((abbr) => STATES_DATA[abbr])
     .filter(Boolean)
     .map((state) => ({
-      url: `${BASE_URL}/emergency-plumbers/${state!.slug}`,
+      url: absoluteUrl(`/emergency-plumbers/${state!.slug}`),
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,
@@ -35,7 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // City pages — highest priority after homepage
   const cityPages: MetadataRoute.Sitemap = cityParams.map(({ state, city }) => ({
-    url: `${BASE_URL}/emergency-plumbers/${state}/${city}`,
+    url: absoluteUrl(cityPath(state, city)),
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
@@ -50,7 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         return stateInfo && CITY_COVERAGE[`${stateInfo.abbreviation}:${city}`];
       })
       .map(({ state, city }) => ({
-        url: `${BASE_URL}/${svc}/${state}/${city}`,
+        url: absoluteUrl(serviceCityPath(svc, state, city)),
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.7,
@@ -59,7 +58,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Blog posts
   const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
-    url: `${BASE_URL}/blog/${post.slug}`,
+    url: absoluteUrl(`/blog/${post.slug}`),
     lastModified: new Date(post.updatedAt),
     changeFrequency: "monthly" as const,
     priority: 0.6,

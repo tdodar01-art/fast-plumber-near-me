@@ -18,13 +18,14 @@
 const fs = require("fs");
 const path = require("path");
 const { google } = require("googleapis");
+const { SITE_ORIGIN_WITH_WWW } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
-const SITE_URL = process.env.GSC_SITE_URL || "https://www.fastplumbernearme.com/";
+const SITE_URL = process.env.GSC_SITE_URL || `${SITE_ORIGIN_WITH_WWW}/`;
 const SITE_ORIGIN = SITE_URL.replace(/\/$/, "");
 const SITEMAP_URL = `${SITE_ORIGIN}/sitemap.xml`;
 const DAILY_QUOTA = 200;

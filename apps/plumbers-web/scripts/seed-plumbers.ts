@@ -11,6 +11,10 @@
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, Timestamp } from "firebase/firestore";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -227,7 +231,7 @@ async function seed() {
 
   for (const plumber of plumbers) {
     const { id, ...data } = plumber;
-    await setDoc(doc(db, "plumbers", id), {
+    await setDoc(doc(db, COLLECTIONS.businesses, id), {
       ...data,
       lastVerifiedAt: data.verificationStatus === "verified" ? Timestamp.now() : null,
       createdAt: Timestamp.now(),

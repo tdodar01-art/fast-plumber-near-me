@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Clock, BookOpen } from "lucide-react";
 import type { Metadata } from "next";
 import { BLOG_POSTS } from "@/lib/blog-data";
+import { absoluteUrl } from "@/config/plumbing-routes";
 
 export const metadata: Metadata = {
   title: "Plumbing Emergency Guide & Tips",
@@ -13,8 +14,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
-    { "@type": "ListItem", position: 2, name: "Blog", item: "https://fastplumbernearme.com/blog" },
+    { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+    { "@type": "ListItem", position: 2, name: "Blog", item: absoluteUrl("/blog") },
   ],
 };
 

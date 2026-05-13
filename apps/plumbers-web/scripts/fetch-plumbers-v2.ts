@@ -17,6 +17,10 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -247,7 +251,7 @@ async function main() {
       if (!placeId) continue;
 
       // Check if already cached and fresh
-      const existingRef = doc(db, "plumbers", placeId);
+      const existingRef = doc(db, COLLECTIONS.businesses, placeId);
       const existing = await getDoc(existingRef);
 
       if (existing.exists()) {
@@ -367,7 +371,7 @@ async function main() {
 
         // Check for duplicate
         const reviewQ = query(
-          collection(db, "reviews"),
+          collection(db, COLLECTIONS.reviews),
           where("plumberId", "==", placeId),
           where("googleReviewId", "==", googleReviewId),
           firestoreLimit(1)
@@ -375,7 +379,7 @@ async function main() {
         const existingReview = await getDocs(reviewQ);
         if (!existingReview.empty) continue;
 
-        await addDoc(collection(db, "reviews"), {
+        await addDoc(collection(db, COLLECTIONS.reviews), {
           plumberId: placeId,
           googleReviewId,
           authorName,

@@ -25,6 +25,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 
@@ -62,7 +63,7 @@ async function main() {
   // Step 1: identify candidate plumbers — those whose synthesis prose
   // still references BBB or complaint counts. After the locality fix +
   // scrub, that prose is now describing data that may have changed.
-  const snap = await db.collection("plumbers").where("isActive", "==", true).get();
+  const snap = await db.collection(COLLECTIONS.businesses).where("isActive", "==", true).get();
   const candidates = [];
   snap.forEach((doc) => {
     const d = doc.data();
@@ -95,7 +96,7 @@ async function main() {
     // formatted string so we can't ORDER BY it server-side reliably —
     // fetch the lot keyed by plumberId, then sort + slice client-side.
     const reviewsSnap = await db
-      .collection("reviews")
+      .collection(COLLECTIONS.reviews)
       .where("plumberId", "==", id)
       .limit(200) // conservative upper bound per plumber
       .get();

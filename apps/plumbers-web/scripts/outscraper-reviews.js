@@ -21,6 +21,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const Outscraper = require("outscraper");
+const { COLLECTIONS, cityPath } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -300,7 +301,7 @@ async function storeReviews(plumberId, reviews) {
       : hashReviewId(review.source, review.author, review.text);
 
     // Check for dupe
-    const dupeCheck = await db.collection("reviews")
+    const dupeCheck = await db.collection(COLLECTIONS.reviews)
       .where("plumberId", "==", plumberId)
       .where("googleReviewId", "==", reviewId)
       .limit(1)
@@ -311,7 +312,7 @@ async function storeReviews(plumberId, reviews) {
       continue;
     }
 
-    await db.collection("reviews").add({
+    await db.collection(COLLECTIONS.reviews).add({
       plumberId,
       googleReviewId: reviewId, // field name kept for compat; it's really "reviewHash"
       authorName: review.author,
@@ -364,7 +365,7 @@ async function main() {
     console.log(`\n📍 City: ${citySlug}`);
 
     // Try slug as-is, then without state suffix (e.g. "crystal-lake-il" -> "crystal-lake")
-    let snap = await db.collection("plumbers")
+    let snap = await db.collection(COLLECTIONS.businesses)
       .where("serviceCities", "array-contains", citySlug)
       .where("isActive", "==", true)
       .get();
@@ -372,7 +373,7 @@ async function main() {
     if (snap.empty) {
       const shortSlug = citySlug.replace(/-[a-z]{2}$/, "");
       if (shortSlug !== citySlug) {
-        snap = await db.collection("plumbers")
+        snap = await db.collection(COLLECTIONS.businesses)
           .where("serviceCities", "array-contains", shortSlug)
           .where("isActive", "==", true)
           .get();
@@ -443,7 +444,7 @@ async function main() {
         }
 
         if (allReviews.length === 0) {
-          await db.collection("plumbers").doc(doc.id).update({
+          await db.collection(COLLECTIONS.businesses).doc(doc.id).update({
             lastOutscraperPull: admin.firestore.Timestamp.now(),
           });
           console.log(`    No reviews found across any platform.`);
@@ -468,7 +469,7 @@ async function main() {
         console.log(`    Stored: ${newCount} new (G:${countBySource.google || 0} Y:${countBySource.yelp || 0}), ${dupeCount} dupes skipped`);
 
         // Count reviews per source for this plumber
-        const allSnap = await db.collection("reviews").where("plumberId", "==", doc.id).get();
+        const allSnap = await db.collection(COLLECTIONS.reviews).where("plumberId", "==", doc.id).get();
         let gCount = 0, yCount = 0;
         allSnap.docs.forEach((d) => {
           const src = d.data().source || "google";
@@ -477,7 +478,7 @@ async function main() {
         });
 
         // Update plumber document
-        await db.collection("plumbers").doc(doc.id).update({
+        await db.collection(COLLECTIONS.businesses).doc(doc.id).update({
           lastOutscraperPull: admin.firestore.Timestamp.now(),
           cachedReviewCount: allSnap.size,
           googleReviewsCached: gCount,
@@ -586,7 +587,7 @@ main()
               const state = cityStateMap.get(c);
               if (!state) return null;
               const stateSlug = STATE_ABBR_TO_SLUG[state] || state.toLowerCase();
-              return `/emergency-plumbers/${stateSlug}/${c}`;
+              return cityPath(stateSlug, c);
             })
             .filter(Boolean);
 

@@ -18,6 +18,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync, spawnSync } = require("child_process");
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -115,10 +116,10 @@ async function main() {
   const plumbersByPlaceId = new Map(plumbers.map((p) => [p.placeId, p]));
 
   // Load all Firestore plumber docs
-  const firestoreSnap = await db.collection("plumbers").get();
+  const firestoreSnap = await db.collection(COLLECTIONS.businesses).get();
 
   // Load all reviews, grouped by plumberId
-  const allReviewsSnap = await db.collection("reviews").get();
+  const allReviewsSnap = await db.collection(COLLECTIONS.reviews).get();
   const reviewsByPlumber = new Map();
   for (const rdoc of allReviewsSnap.docs) {
     const rd = rdoc.data();

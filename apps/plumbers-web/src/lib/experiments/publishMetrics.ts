@@ -12,6 +12,7 @@ import fs from "fs";
 import path from "path";
 import { google } from "googleapis";
 import { getAllTrackedSlugs } from "./activeExperiments";
+import { SITE_ORIGIN_WITH_WWW } from "../../config/plumbing-routes";
 
 // ─── Config ───────────────────────────────────────────────
 
@@ -63,7 +64,7 @@ export async function publishDailyMetrics(targetDate?: string): Promise<number> 
   console.log(`[metrics] Publishing metrics for ${date}, ${slugs.length} slugs`);
 
   // Authenticate with GSC
-  const gscSiteUrl = process.env.GSC_SITE_URL || "https://www.fastplumbernearme.com/";
+  const gscSiteUrl = process.env.GSC_SITE_URL || `${SITE_ORIGIN_WITH_WWW}/`;
   const keyFile = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"));
   const auth = new google.auth.GoogleAuth({
     credentials: keyFile,

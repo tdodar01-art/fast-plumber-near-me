@@ -6,6 +6,7 @@ import CallToAction from "@/components/CallToAction";
 import { getCitiesForState } from "@/lib/cities-data";
 import { getStateBySlug, getAllStateSlugs, STATES_DATA } from "@/lib/states-data";
 import { getStatesWithCities } from "@/lib/cities-data";
+import { absoluteUrl } from "@/config/plumbing-routes";
 
 export function generateStaticParams() {
   const statesWithCities = getStatesWithCities();
@@ -59,9 +60,9 @@ export default async function StatePage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://fastplumbernearme.com" },
-      { "@type": "ListItem", position: 2, name: "Emergency Plumbers", item: "https://fastplumbernearme.com/emergency-plumbers" },
-      { "@type": "ListItem", position: 3, name: stateInfo.name, item: `https://fastplumbernearme.com/emergency-plumbers/${stateSlug}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+      { "@type": "ListItem", position: 2, name: "Emergency Plumbers", item: absoluteUrl("/emergency-plumbers") },
+      { "@type": "ListItem", position: 3, name: stateInfo.name, item: absoluteUrl(`/emergency-plumbers/${stateSlug}`) },
     ],
   };
 

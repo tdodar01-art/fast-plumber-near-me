@@ -51,6 +51,9 @@ importers:
 
   apps/plumbers-web:
     dependencies:
+      '@directory-sites/directory-core':
+        specifier: workspace:*
+        version: link:../../packages/directory-core
       csv-parse:
         specifier: ^6.2.1
         version: 6.2.1
@@ -106,6 +109,8 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+
+  packages/directory-core: {}
 
 packages:
 

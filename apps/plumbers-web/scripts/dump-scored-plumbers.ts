@@ -6,6 +6,10 @@ import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -46,7 +50,7 @@ async function main() {
   }
 
   const db = initFirebase();
-  const snap = await db.collection("plumbers").get();
+  const snap = await db.collection(COLLECTIONS.businesses).get();
   const matched = snap.docs.filter((d) =>
     effectiveServiceCities(d.data()).includes(citySlug)
   );

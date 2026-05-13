@@ -19,6 +19,10 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const require = createRequire(import.meta.url);
+const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -135,7 +139,7 @@ async function main() {
   console.log(`📋 Found ${cities.length} cities and ${Object.keys(coords).length} coordinate entries\n`);
 
   // Get already-scraped cities from plumber serviceCities
-  const plumbersSnap = await getDocs(collection(db, "plumbers"));
+  const plumbersSnap = await getDocs(collection(db, COLLECTIONS.businesses));
   const scrapedCities = new Set<string>();
   for (const plumberDoc of plumbersSnap.docs) {
     const serviceCities = plumberDoc.data().serviceCities as string[] | undefined;

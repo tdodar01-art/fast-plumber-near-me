@@ -16,6 +16,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { google } = require("googleapis");
+const { COLLECTIONS, SITE_ORIGIN } = require("./config/plumbing-directory.cjs");
 
 // ---------------------------------------------------------------------------
 // Paths & Config
@@ -60,7 +61,7 @@ function loadEnv() {
 
 loadEnv();
 
-const SITE_URL = process.env.GSC_SITE_URL || "https://fastplumbernearme.com/";
+const SITE_URL = process.env.GSC_SITE_URL || `${SITE_ORIGIN}/`;
 
 // ---------------------------------------------------------------------------
 // Check prerequisites
@@ -255,17 +256,17 @@ async function main() {
         gscTier: tier,
         gscPageTypes: city.pageTypes || [],
       };
-      await db.collection("cities").doc(docId).set(cityPayload, { merge: true });
+      await db.collection(COLLECTIONS.cities).doc(docId).set(cityPayload, { merge: true });
 
       // Verify the write persisted (debug — remove once confirmed working)
       if (tier === "medium" || tier === "high") {
-        const verifySnap = await db.collection("cities").doc(docId).get();
+        const verifySnap = await db.collection(COLLECTIONS.cities).doc(docId).get();
         const verifyData = verifySnap.data();
         console.log(`  ✓ ${docId}: gscTier="${verifyData?.gscTier}" (wrote "${tier}", ${city.impressions} impr)`);
       }
 
       // Write daily history to subcollection (date as doc ID = idempotent)
-      await db.collection("cities").doc(docId)
+      await db.collection(COLLECTIONS.cities).doc(docId)
         .collection("gscHistory")
         .doc(todayStr)
         .set({
@@ -325,7 +326,7 @@ async function main() {
 
     const docId = `${parsed.citySlug}-${parsed.stateAbbr.toLowerCase()}`;
     const subDocId = `${date}__${country}__${device}`;
-    const ref = db.collection("cities").doc(docId)
+    const ref = db.collection(COLLECTIONS.cities).doc(docId)
       .collection("gscPageBreakdown").doc(subDocId);
 
     batch.set(ref, {
@@ -383,7 +384,7 @@ async function main() {
 
     const docId = `${parsed.citySlug}-${parsed.stateAbbr.toLowerCase()}`;
     const subDocId = `${date}__${sha1Short(query)}__${sha1Short(pageUrl)}__${country}`;
-    const ref = db.collection("cities").doc(docId)
+    const ref = db.collection(COLLECTIONS.cities).doc(docId)
       .collection("gscQueries").doc(subDocId);
 
     batch.set(ref, {
@@ -421,7 +422,7 @@ async function main() {
     if (parsed) citiesWithImpressions.add(`${parsed.citySlug}-${parsed.stateAbbr.toLowerCase()}`);
   }
 
-  const allCityDocs = await db.collection("cities").get();
+  const allCityDocs = await db.collection(COLLECTIONS.cities).get();
   let zeroFilled = 0;
   batch = db.batch();
   batchCount = 0;
@@ -429,7 +430,7 @@ async function main() {
   for (const doc of allCityDocs.docs) {
     if (citiesWithImpressions.has(doc.id)) continue;
 
-    const ref = db.collection("cities").doc(doc.id)
+    const ref = db.collection(COLLECTIONS.cities).doc(doc.id)
       .collection("gscPageBreakdown").doc(`${targetDate}__zero`);
 
     batch.set(ref, {
@@ -680,7 +681,7 @@ async function main() {
   // Check Firestore cities collection for scrape status
   // =========================================================================
 
-  const citiesSnap = await db.collection("cities").get();
+  const citiesSnap = await db.collection(COLLECTIONS.cities).get();
   const scrapedCities = new Set();
   const knownCities = new Set();
   for (const doc of citiesSnap.docs) {
@@ -717,7 +718,7 @@ async function main() {
 
     const docId = `${city.citySlug}-${city.state.toLowerCase()}`;
     try {
-      await db.collection("cities").doc(docId).set({
+      await db.collection(COLLECTIONS.cities).doc(docId).set({
         slug: docId,
         city: city.city,
         state: city.state,

@@ -13,6 +13,7 @@
 const fs = require("fs");
 const path = require("path");
 const { google } = require("googleapis");
+const { SITE_ORIGIN } = require("./config/plumbing-directory.cjs");
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
 
@@ -35,7 +36,7 @@ function loadEnv() {
 }
 loadEnv();
 
-const SITE_URL = process.env.GSC_SITE_URL || "https://fastplumbernearme.com/";
+const SITE_URL = process.env.GSC_SITE_URL || `${SITE_ORIGIN}/`;
 
 // ---------------------------------------------------------------------------
 // URL parsing — matches gsc-expansion.js patterns
