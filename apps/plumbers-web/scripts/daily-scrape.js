@@ -28,7 +28,7 @@ const LOG_DIR = path.join(__dirname, "..", "data", "logs");
 // Safety constants
 // ---------------------------------------------------------------------------
 
-const MAX_DAILY_CALLS = 50;
+const MAX_DAILY_CALLS = 150;
 const MIN_DAILY_CALLS = 20;
 const MONTHLY_BUFFER = 50; // stop at budget - 50
 const RATE_LIMIT_MS = 300;

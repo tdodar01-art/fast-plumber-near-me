@@ -294,10 +294,9 @@ export default async function ServiceCityPage({
       {plumberListJsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(plumberListJsonLd) }} />
       )}
-      {/* noindex if fewer than MIN_PLUMBERS_FOR_PAGE plumbers across all tiers */}
-      {!hasEnoughPlumbers && (
-        <meta name="robots" content="noindex" />
-      )}
+      {/* Let Google index every service page. Thin-coverage pages stay
+          discoverable so we can chase them with content once daily-scrape
+          adds plumbers within radius. */}
 
       {/* Hero */}
       <section className="bg-primary text-white py-10 sm:py-14">

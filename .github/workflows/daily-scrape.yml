@@ -12,7 +12,7 @@ permissions:
 jobs:
   scrape-and-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75
     defaults:
       run:
         working-directory: apps/plumbers-web
@@ -63,6 +63,13 @@ jobs:
         run: |
           echo "=== STAGE: GSC PREPEND START ==="
           node scripts/gsc-prepend-queue.js
+
+      - name: Sort scrape queue by GSC impressions
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        run: |
+          echo "=== STAGE: QUEUE SORT START ==="
+          node scripts/sort-scrape-queue.js
 
       # Phase 1: Expansion -- scrape new cities (60% of budget)
       - name: Run daily scrape (expansion)
@@ -209,6 +216,25 @@ jobs:
             echo "$URLS"
             node scripts/request-indexing.js $URLS
           fi
+
+      - name: Ingest GSC sitemap status
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
+        run: |
+          echo "=== STAGE: SITEMAP STATUS INGEST ==="
+          node scripts/ingest-sitemap-status.js
+
+      - name: Ingest GSC URL inspection
+        if: steps.firebase.outputs.configured == 'true'
+        continue-on-error: true
+        env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
+          URL_INSPECTION_CAP: '1500'
+        run: |
+          echo "=== STAGE: URL INSPECTION INGEST ==="
+          node scripts/ingest-url-inspection.js
 
       - name: Cleanup service account
         if: always()
