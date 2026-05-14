@@ -1,26 +1,8 @@
 {
   "currentMonth": "2026-05",
   "monthlyBudget": 1000,
-  "usedThisMonth": 207,
+  "usedThisMonth": 231,
   "queue": [
-    {
-      "city": "Greer",
-      "state": "SC",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Fort Collins",
-      "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Westminster",
       "state": "CO",
@@ -2669,6 +2651,26 @@
       "actualCalls": 12,
       "plumbersFound": 11,
       "completedAt": "2026-05-13"
+    },
+    {
+      "city": "Greer",
+      "state": "SC",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 6,
+      "plumbersFound": 5,
+      "completedAt": "2026-05-14"
+    },
+    {
+      "city": "Fort Collins",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 18,
+      "plumbersFound": 17,
+      "completedAt": "2026-05-14"
     }
   ]
 }
