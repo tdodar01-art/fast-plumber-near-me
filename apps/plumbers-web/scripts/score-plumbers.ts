@@ -77,7 +77,7 @@ const WEIGHT_RECENT = 1.0; // age <= 12 months
 const WEIGHT_MID = 0.5; // 12 months < age <= 24 months
 const WEIGHT_OLD = 0.25; // age > 24 months
 
-const CLAUDE_MODEL = "claude-sonnet-4-6";
+const CLAUDE_MODEL = "claude-haiku-4-5";
 // Batch sizing tuned 2026-04-21. Was 15; Sonnet handles 30 reviews per call
 // comfortably inside 4096 output tokens. Roughly halves call count on the
 // 327-plumber 200+ review bucket.
