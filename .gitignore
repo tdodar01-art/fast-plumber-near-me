@@ -12,6 +12,9 @@
 **/data/raw/resynth-input-*.json
 **/data/synthesized/.synthesis-progress.json
 **/data/logs/
+# Local synthesis paste-flow scratch (synth-local.js). Firestore is truth.
+**/data/synth-tasks.json
+**/data/synth-results.json
 
 # dependencies
 /node_modules
