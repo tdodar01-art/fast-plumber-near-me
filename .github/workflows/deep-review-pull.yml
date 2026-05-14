@@ -21,13 +21,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm install firebase-admin outscraper googleapis typescript tsx @anthropic-ai/sdk
+        working-directory: .
+        run: pnpm install --filter plumbers-web --frozen-lockfile
 
       - name: Check secrets
         id: secrets
@@ -170,7 +177,7 @@ jobs:
           GSC_SITE_URL: https://www.fastplumbernearme.com/
         run: |
           echo "=== STAGE: INDEXING START ==="
-          npm install googleapis 2>/dev/null
+          # googleapis is installed via pnpm at the top of the workflow.
 
           PAIRS=$(node -e "
             const fs = require('fs');

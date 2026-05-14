@@ -22,10 +22,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: pnpm
 
       - name: Check Firebase secret
         id: firebase
@@ -48,7 +54,8 @@ jobs:
         run: echo "$FIREBASE_SERVICE_ACCOUNT" > ../service-account.json
 
       - name: Install dependencies
-        run: npm install
+        working-directory: .
+        run: pnpm install --filter plumbers-web --frozen-lockfile
 
       - name: Publish experiment metrics
         if: steps.firebase.outputs.configured == 'true'
