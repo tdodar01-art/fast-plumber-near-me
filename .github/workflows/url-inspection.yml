@@ -1,0 +1,77 @@
+name: GSC URL Inspection
+
+# Runs nightly at 2 AM Central (7 UTC CDT / 8 UTC CST) — split out of
+# daily-scrape.yml on 2026-05-15 because URL inspection at full coverage
+# (~750 URLs × ~10s GSC API roundtrip = ~125 min) exceeds the daily-scrape
+# workflow's 75-min outer timeout. 2 AM Central is 8 hours after the 6 AM
+# scrape cron, plenty of buffer if the scrape runs long.
+#
+# Captures last-crawl-time + coverage state per indexed URL into Firestore
+# `urlInspection` so we can measure re-crawl latency after content pushes
+# and detect URLs that drop out of Google's index.
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # 2 AM CDT / 1 AM CST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    defaults:
+      run:
+        working-directory: apps/plumbers-web
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --filter plumbers-web --frozen-lockfile
+
+      - name: Check Firebase config
+        id: firebase
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "WARNING: FIREBASE_SERVICE_ACCOUNT secret not set"
+          fi
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Setup service account
+        if: steps.firebase.outputs.configured == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
+      - name: Ingest GSC URL inspection
+        if: steps.firebase.outputs.configured == 'true'
+        env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
+          URL_INSPECTION_CAP: '1500'
+        run: |
+          echo "=== STAGE: URL INSPECTION INGEST ==="
+          node scripts/ingest-url-inspection.js
+
+      - name: Cleanup service account
+        if: always()
+        run: rm -f service-account.json

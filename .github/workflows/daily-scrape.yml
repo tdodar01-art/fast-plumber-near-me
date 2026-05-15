@@ -12,7 +12,7 @@ permissions:
 jobs:
   scrape-and-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: apps/plumbers-web
@@ -233,15 +233,9 @@ jobs:
           echo "=== STAGE: SITEMAP STATUS INGEST ==="
           node scripts/ingest-sitemap-status.js
 
-      - name: Ingest GSC URL inspection
-        if: steps.firebase.outputs.configured == 'true'
-        continue-on-error: true
-        env:
-          GSC_SITE_URL: https://www.fastplumbernearme.com/
-          URL_INSPECTION_CAP: '1500'
-        run: |
-          echo "=== STAGE: URL INSPECTION INGEST ==="
-          node scripts/ingest-url-inspection.js
+      # URL inspection moved to its own workflow (url-inspection.yml) on
+      # 2026-05-15 — at ~10 sec/URL × ~750 URLs = ~125 min it does not fit
+      # alongside scrape + score + export inside the daily-scrape timeout.
 
       - name: Cleanup service account
         if: always()
