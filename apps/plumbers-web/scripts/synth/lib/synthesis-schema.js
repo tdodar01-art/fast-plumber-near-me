@@ -41,6 +41,22 @@ function isPlainObject(v) {
   return v && typeof v === "object" && !Array.isArray(v);
 }
 
+/**
+ * Normalize a string for anti-hallucination grounding comparison. Absorbs
+ * legitimate formatting drift (typo corrections, whitespace collapse,
+ * curly-quote vs straight-quote, etc.) so a verbatim-with-cleanup quote
+ * still grounds, but a paraphrase / invention doesn't.
+ */
+function normalizeForGrounding(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/[‘’‚‛]/g, "'")     // curly singles → straight
+    .replace(/[“”„‟]/g, '"')      // curly doubles → straight
+    .replace(/[^\w\s]/g, " ")                          // strip all punctuation
+    .replace(/\s+/g, " ")                              // collapse whitespace
+    .trim();
+}
+
 function isStringArray(v, maxLen = Infinity, maxItem = 500) {
   if (!Array.isArray(v)) return false;
   if (v.length > maxLen) return false;
@@ -142,8 +158,11 @@ function validateSynthesisResult(result, batchPlumber) {
   if (!Array.isArray(result.evidenceQuotes)) {
     errors.push("evidenceQuotes must be an array");
   } else if (batchPlumber && Array.isArray(batchPlumber.evidenceQuotes)) {
+    // Anti-hallucination: substring match between agent's quote and ANY source
+    // text in the batch input, after normalization to absorb legitimate
+    // formatting drift (typo corrections, whitespace collapse, punctuation cleanup).
     const sourceTexts = batchPlumber.evidenceQuotes.map(
-      (q) => String(q.text || "").toLowerCase().slice(0, 200),
+      (q) => normalizeForGrounding(String(q.text || "")),
     );
     for (let i = 0; i < result.evidenceQuotes.length; i++) {
       const q = result.evidenceQuotes[i];
@@ -154,12 +173,23 @@ function validateSynthesisResult(result, batchPlumber) {
       if (typeof q.dimension !== "string" || !DIMENSION_KEYS.includes(q.dimension)) {
         errors.push(`evidenceQuotes[${i}].dimension must be one of ${DIMENSION_KEYS.join("|")}`);
       }
-      const candidate = q.quote.toLowerCase().slice(0, 200);
-      const grounded = sourceTexts.some(
-        (s) =>
-          s.includes(candidate.slice(0, Math.min(40, candidate.length))) ||
-          candidate.includes(s.slice(0, Math.min(40, s.length))),
-      );
+      const candidate = normalizeForGrounding(q.quote);
+      // Need a substring of at least 40 normalized characters that appears
+      // somewhere in some source. Window over the candidate so a quote starting
+      // mid-source is still caught.
+      const NEEDLE = 40;
+      let grounded = false;
+      if (candidate.length < NEEDLE) {
+        grounded = sourceTexts.some((s) => s.includes(candidate));
+      } else {
+        for (let start = 0; start <= candidate.length - NEEDLE; start += 10) {
+          const needle = candidate.slice(start, start + NEEDLE);
+          if (sourceTexts.some((s) => s.includes(needle))) {
+            grounded = true;
+            break;
+          }
+        }
+      }
       if (!grounded) errors.push(`evidenceQuotes[${i}] quote not grounded in batch input`);
     }
   }
