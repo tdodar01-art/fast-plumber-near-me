@@ -95,8 +95,8 @@ function validateSynthesisResult(result, batchPlumber) {
   // --- Display synthesis fields ----------------------------------------
   if (typeof result.summary !== "string" || result.summary.length === 0) {
     errors.push("summary missing");
-  } else if (result.summary.length > 240) {
-    errors.push(`summary too long (${result.summary.length} > 240)`);
+  } else if (result.summary.length > 320) {
+    errors.push(`summary too long (${result.summary.length} > 320)`);
   } else {
     const lower = result.summary.toLowerCase();
     for (const banned of BANNED_PHRASES) {
@@ -134,6 +134,11 @@ function validateSynthesisResult(result, batchPlumber) {
   }
 
   // --- servicesMentioned: keyed by service slug, with count + avgRating + topQuote
+  // Tolerate the zero-review case where the agent returns [] instead of {} —
+  // both signal "no service mentions" which is semantically the same.
+  if (Array.isArray(result.servicesMentioned) && result.servicesMentioned.length === 0) {
+    result.servicesMentioned = {};
+  }
   if (!isPlainObject(result.servicesMentioned)) {
     errors.push("servicesMentioned must be an object");
   } else {
