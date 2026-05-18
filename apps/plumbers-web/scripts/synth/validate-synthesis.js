@@ -37,9 +37,11 @@ function validateJob(runDir, job) {
   const batch = loadJSON(job.batchPath);
   const batchByPlaceId = new Map(batch.plumbers.map((p) => [p.placeId, p]));
 
-  if (resultFile.results.length !== job.plumberCount) {
+  // Tolerate count <= plumberCount (normalize-result-keys.js may have dropped
+  // hallucinated placeIds). Fail only when we got MORE results than plumbers.
+  if (resultFile.results.length > job.plumberCount) {
     errors.push(
-      `result count mismatch: expected ${job.plumberCount}, got ${resultFile.results.length}`,
+      `result count too high: expected <=${job.plumberCount}, got ${resultFile.results.length}`,
     );
   }
 
