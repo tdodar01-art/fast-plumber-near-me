@@ -4,13 +4,39 @@ import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Sparkles, Zap, Star, DollarSign, Phone, ArrowRight, MapPin } from "lucide-react";
-import type { SynthesizedPlumber } from "@/lib/plumber-data";
 import { calculateDistance, getDistanceWeight, getDistanceLabel } from "@/lib/geo";
 
 type SortMode = "best-match" | "fastest" | "top-rated" | "best-price";
 
+/**
+ * Slim plumber shape sent from the server component into this client component.
+ * Keep this minimal — every field here ships in the RSC payload for /plumbers,
+ * which is capped at 19.07 MB by Vercel (FALLBACK_BODY_TOO_LARGE). Adding heavy
+ * fields like `reviews` or `evidence_quotes` will blow the cap as the dataset grows.
+ */
+export interface DirectoryPlumber {
+  placeId: string;
+  name: string;
+  slug: string;
+  phone: string;
+  city: string;
+  googleRating: number | null;
+  googleReviewCount: number;
+  is24Hour: boolean;
+  location: { lat: number; lng: number } | null;
+  serviceCities?: string[];
+  synthesis: {
+    score: number;
+    summary: string;
+    strengths: string[];
+    bestFor: string[];
+    redFlags: string[];
+    priceSignal: string;
+  } | null;
+}
+
 interface Props {
-  plumbers: SynthesizedPlumber[];
+  plumbers: DirectoryPlumber[];
   cityCoords: Record<string, [number, number]>; // "CityName" -> [lat, lng]
 }
 
@@ -18,7 +44,7 @@ const PRICE_ORDER: Record<string, number> = {
   budget: 0, "mid-range": 1, unknown: 2, mixed: 3, premium: 4,
 };
 
-function responseScore(p: SynthesizedPlumber, dist: number | null): number {
+function responseScore(p: DirectoryPlumber, dist: number | null): number {
   let score = 0;
   const s = p.synthesis;
   if (!s) return p.is24Hour ? 1 : 0;

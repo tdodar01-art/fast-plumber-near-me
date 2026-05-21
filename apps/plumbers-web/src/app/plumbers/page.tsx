@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getPlumbersRanked, getDataMeta } from "@/lib/plumber-data";
 import { getCityCoords } from "@/lib/city-coords";
-import PlumberDirectory from "./PlumberDirectory";
+import PlumberDirectory, { type DirectoryPlumber } from "./PlumberDirectory";
 import { absoluteUrl } from "@/config/plumbing-routes";
 
 export const metadata: Metadata = {
@@ -32,6 +32,33 @@ export default function PlumbersDirectoryPage() {
     cityCoords[c.name] = [c.lat, c.lng];
   }
 
+  // Project to slim shape before crossing the server/client boundary. The full
+  // SynthesizedPlumber record (~12 KB each, with reviews/evidence_quotes/etc.) blows
+  // Vercel's 19.07 MB RSC fallback cap once the dataset grows past ~1.4k plumbers.
+  // Keep this projection narrow — only fields PlumberDirectory actually reads.
+  const slimPlumbers: DirectoryPlumber[] = plumbers.map((p) => ({
+    placeId: p.placeId,
+    name: p.name,
+    slug: p.slug,
+    phone: p.phone,
+    city: p.city,
+    googleRating: p.googleRating,
+    googleReviewCount: p.googleReviewCount,
+    is24Hour: p.is24Hour,
+    location: p.location,
+    serviceCities: p.serviceCities,
+    synthesis: p.synthesis
+      ? {
+          score: p.synthesis.score,
+          summary: p.synthesis.summary,
+          strengths: p.synthesis.strengths,
+          bestFor: p.synthesis.bestFor,
+          redFlags: p.synthesis.redFlags,
+          priceSignal: p.synthesis.priceSignal,
+        }
+      : null,
+  }));
+
   return (
     <>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
@@ -46,7 +73,7 @@ export default function PlumbersDirectoryPage() {
       </div>
 
       <Suspense fallback={<div className="h-8 mb-5" />}>
-        <PlumberDirectory plumbers={plumbers} cityCoords={cityCoords} />
+        <PlumberDirectory plumbers={slimPlumbers} cityCoords={cityCoords} />
       </Suspense>
 
       <div className="text-center text-xs text-gray-400 mt-8 mb-4">
