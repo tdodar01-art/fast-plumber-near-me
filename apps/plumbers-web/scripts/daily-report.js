@@ -340,20 +340,37 @@ async function measureQueues(db) {
     }
 
     // C. L1 synth queue: pendingRescoreSince OR scores.method not canonical OR no summary.
+    // Exclude plumbers that are structurally pinned to non-canonical methods —
+    // keyword_fallback (<3 reviews) and no_reviews (zero reviews) cannot be
+    // re-synthesized into the canonical path until they accumulate more
+    // reviews. Treating them as "needs work" makes the queue noisy.
     const hasPending = !!data.pendingRescoreSince;
     const methodOk = CANONICAL_METHODS.has(scores.method);
     const hasSummary = typeof rs.summary === "string" && rs.summary.trim().length > 0;
-    if (hasPending || !methodOk || !hasSummary) l1Needed++;
+    const structurallyPinned =
+      scores.method === "no_reviews" || scores.method === "keyword_fallback";
+    if (!structurallyPinned && (hasPending || !methodOk || !hasSummary)) l1Needed++;
 
     // D. City page reorg queue: scores newer than city_rank's freshness.
-    // city_rank doesn't store a timestamp per entry; use updatedAt vs scores.
+    // Pass 2 (score-plumbers.ts) explicitly skips plumbers with
+    // method=="no_reviews" or no numeric scores.reliability (keyword_fallback
+    // produces a summary but no dimension scores). Those plumbers are
+    // structurally uncrankable — exclude them from the queue so it reflects
+    // actionable work only. The check mirrors the Pass 2 filter at
+    // score-plumbers.ts:1163-1164.
+    const rankable =
+      scores.method !== "no_reviews" &&
+      scores.method !== "keyword_fallback" &&
+      typeof scores.reliability === "number";
     const cityRank = data.city_rank || {};
     const hasAnyRank = cityRank && Object.keys(cityRank).length > 0;
-    if (scoredAt > 0 && !hasAnyRank) cityRankStale++;
+    if (rankable && scoredAt > 0 && !hasAnyRank) cityRankStale++;
 
     // E. L2 decision queue: scores newer than decision.decided_at.
+    // Same uncrankable-exclusion applies — Pass 3 needs city_rank from
+    // Pass 2 to compute a verdict.
     const decidedAt = data.decision?.decided_at ? Date.parse(data.decision.decided_at) : 0;
-    if (scoredAt > 0 && (!decidedAt || scoredAt > decidedAt)) decisionStale++;
+    if (rankable && scoredAt > 0 && (!decidedAt || scoredAt > decidedAt)) decisionStale++;
   }
 
   queues.deep_review.count = dpEligible;
