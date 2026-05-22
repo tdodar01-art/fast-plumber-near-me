@@ -1,0 +1,64 @@
+name: Daily Activity Report
+
+on:
+  schedule:
+    # 9:30 AM Central = 14:30 UTC (CDT) / 15:30 UTC (CST)
+    # Runs AFTER:
+    #   - daily-scrape.yml (6 AM Central / 11:00 UTC)
+    #   - deep-review-pull.yml (7 AM Central / 12:00 UTC)
+    # so the report captures everything from the previous 24h cycle.
+    - cron: '30 14 * * *'
+  workflow_dispatch: # manual trigger from Actions UI
+
+permissions:
+  contents: read
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/plumbers-web
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --filter plumbers-web --frozen-lockfile
+
+      - name: Write Firebase service account
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "ERROR: FIREBASE_SERVICE_ACCOUNT secret is not configured" >&2
+            exit 1
+          fi
+          echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
+      - name: Send daily report via Brevo
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_SENDER_EMAIL: ${{ secrets.BREVO_SENDER_EMAIL }}
+          BREVO_SENDER_NAME: ${{ secrets.BREVO_SENDER_NAME }}
+          REPORT_TO_EMAIL: ${{ secrets.REPORT_TO_EMAIL }}
+        run: |
+          if [ -z "$BREVO_API_KEY" ] || [ -z "$BREVO_SENDER_EMAIL" ] || [ -z "$REPORT_TO_EMAIL" ]; then
+            echo "ERROR: missing Brevo secrets (BREVO_API_KEY=$([ -n "$BREVO_API_KEY" ] && echo set || echo MISSING), BREVO_SENDER_EMAIL=$([ -n "$BREVO_SENDER_EMAIL" ] && echo set || echo MISSING), REPORT_TO_EMAIL=$([ -n "$REPORT_TO_EMAIL" ] && echo set || echo MISSING))" >&2
+            exit 1
+          fi
+          node scripts/daily-report.js --window-hours 24

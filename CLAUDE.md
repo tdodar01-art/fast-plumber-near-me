@@ -60,6 +60,21 @@ the workflows.** That undoes the work in progress.
 
 Current state of `.github/workflows/`:
 
+- **`daily-report.yml`** — STILL AUTOMATED (9:30 AM Central). Reads
+  the past 24h of `pipelineRuns` + current queue depths from Firestore,
+  composes an HTML email with activity log + queue snapshot, sends via
+  Brevo to `REPORT_TO_EMAIL`. Required GitHub secrets: `BREVO_API_KEY`,
+  `BREVO_SENDER_EMAIL` (verified Brevo sender — AOK domain OK per
+  control-center playbook-delta 023), `BREVO_SENDER_NAME` (display
+  name, defaults to "Fast Plumber Pipeline"), `REPORT_TO_EMAIL`
+  (recipient). Activity classes surfaced: scrape, level 1 synthesis,
+  level 2 synthesis (decision), city page reorg (rank), publish. Queue
+  classes: A. scrape (GSC-tagged but not scraped), B. deep-review
+  (≥20 Google reviews + no/stale Outscraper pull), C. L1 synth (off-
+  canonical method OR pending rescore), D. city page reorg (scored
+  but no city_rank), E. L2 decision (scores newer than decision).
+  Implemented in `scripts/daily-report.js` + `scripts/lib/brevo.js`.
+
 - **`daily-scrape.yml`** — STILL AUTOMATED (6 AM Central). Eight steps:
   GSC expansion → GSC prepend queue → daily-scrape (Google Places) →
   upload-to-firestore → rebuild JSON from Firestore → regenerate city

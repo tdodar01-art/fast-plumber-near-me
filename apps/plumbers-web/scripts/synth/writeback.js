@@ -298,15 +298,46 @@ async function main() {
     return;
   }
 
+  const startedAt = new Date();
   let totalOk = 0;
   let totalFailed = 0;
+  const perJob = [];
   for (const job of jobs) {
     console.log(`\nWriting ${job.jobId} (${job.plumberCount} plumbers)${dryRun ? " [dry-run]" : ""}`);
     const r = await writebackJob(db, runDir, job, { dryRun });
     totalOk += r.ok;
     totalFailed += r.failed;
+    perJob.push({ jobId: job.jobId, ok: r.ok, failed: r.failed });
   }
   console.log(`\nWriteback: ${totalOk} ok, ${totalFailed} failed across ${jobs.length} jobs`);
+
+  // Log pipelineRun so the daily report surfaces local-synth writeback activity.
+  // Without this, manual local-synth runs are invisible to the daily report
+  // pipeline (which reads activity from the pipelineRuns collection). Phase
+  // "score" matches the daily-report classifier's L1-synth bucket.
+  if (!dryRun && db) {
+    try {
+      await db.collection("pipelineRuns").add({
+        script: "synth-writeback",
+        phase: "score",
+        startedAt: admin.firestore.Timestamp.fromDate(startedAt),
+        completedAt: admin.firestore.Timestamp.now(),
+        durationSeconds: Math.round((Date.now() - startedAt.getTime()) / 1000),
+        status: totalFailed === 0 ? "success" : totalOk === 0 ? "error" : "partial",
+        summary: {
+          runDir: runDir.replace(/^.*\/synth-runs\//, "synth-runs/"),
+          jobCount: jobs.length,
+          plumbersUpdated: totalOk,
+          plumbersFailed: totalFailed,
+          synthesisVersion: SYNTHESIS_VERSION,
+          perJob,
+        },
+        triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+      });
+    } catch (e) {
+      console.error("Failed to log pipelineRun for synth-writeback:", e?.message || e);
+    }
+  }
 }
 
 if (require.main === module) {
