@@ -63,6 +63,13 @@ async function main() {
   admin.initializeApp({ credential: admin.credential.cert(sa) });
   const db = admin.firestore();
 
+  // Log to pipelineRuns so the daily report surfaces this run. Added
+  // 2026-05-22 — prior runs ran nightly via cron but never appeared in
+  // the report because the script didn't write an entry. The daily-report
+  // classifier puts ingest-url-inspection in the "Publish" group as the
+  // diagnostic read-back step.
+  const startedAt = new Date();
+
   const auth = new google.auth.GoogleAuth({
     credentials: sa,
     scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
@@ -164,6 +171,27 @@ async function main() {
   console.log("\nCoverage state distribution (all-time, this collection):");
   for (const [k, v] of Object.entries(states).sort((a, b) => b[1] - a[1])) {
     console.log(`  ${v}\t${k}`);
+  }
+
+  // Log to pipelineRuns so the daily report can count + surface this run.
+  try {
+    const durationSeconds = Math.round((Date.now() - startedAt.getTime()) / 1000);
+    await db.collection("pipelineRuns").add({
+      script: "ingest-url-inspection",
+      startedAt: admin.firestore.Timestamp.fromDate(startedAt),
+      completedAt: admin.firestore.Timestamp.now(),
+      durationSeconds,
+      status: failed === 0 ? "success" : ok === 0 ? "error" : "partial",
+      summary: {
+        urlsInspected: ok,
+        urlsFailed: failed,
+        urlsRequested: seen.length,
+        coverageStates: states,
+      },
+      triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
+    });
+  } catch (e) {
+    console.error("Failed to log pipelineRun for ingest-url-inspection:", e?.message || e);
   }
 }
 

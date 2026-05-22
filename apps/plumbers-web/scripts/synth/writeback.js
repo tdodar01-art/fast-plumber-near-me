@@ -342,7 +342,23 @@ async function main() {
 
 if (require.main === module) {
   main()
-    .then(() => process.exit(0))
+    .then(async () => {
+      // Post-writeback publish hook: export Firestore → JSON and ping GSC
+      // indexing for affected city pages. Mirrors the outscraper-reviews.js
+      // pattern so manual local-synth runs don't leave the site updated
+      // without telling Google. Without this, the 1,485-plumber backfill
+      // on 2026-05-22 published changes to git but never submitted the
+      // affected city URLs for re-crawl — Google would have only picked up
+      // the changes via sitemap re-discovery (slower).
+      const dryRun = process.argv.includes("--dry-run");
+      try {
+        const { publishAfterWriteback } = require("../lib/post-writeback-publish");
+        await publishAfterWriteback({ dryRun, label: "synth-writeback" });
+      } catch (e) {
+        console.error("[writeback] post-publish hook failed:", e?.stack || e);
+      }
+      process.exit(0);
+    })
     .catch((e) => {
       console.error("[writeback] FATAL:", e?.stack || e);
       process.exit(1);
