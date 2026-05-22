@@ -969,7 +969,7 @@ async function loadReviews(
 async function runPass1(
   db: admin.firestore.Firestore,
   args: CliArgs,
-): Promise<void> {
+): Promise<{ scored: number; skipped: number; failed: number }> {
   console.log("\n=== Pass 1: Score ===");
   const plumbers = await loadPlumbers(db, args, { ordered: true });
   console.log(`Loaded ${plumbers.length} plumber(s) (unscored first, then oldest-scored ascending)`);
@@ -1239,6 +1239,7 @@ async function runPass1(
   console.log(
     `\nPass 1 done: ${scored} scored, ${skipped} skipped, ${failed} failed`,
   );
+  return { scored, skipped, failed };
 }
 
 // ---------------------------------------------------------------------------
@@ -1266,7 +1267,7 @@ function bestWorstDim(scores: Scores): {
 async function runPass2(
   db: admin.firestore.Firestore,
   args: CliArgs,
-): Promise<void> {
+): Promise<{ ranked: number; skipped: number }> {
   console.log("\n=== Pass 2: Rank ===");
 
   const plumbersSnap = await db.collection(COLLECTIONS.businesses).get();
@@ -1382,7 +1383,7 @@ async function runPass2(
     console.log(
       `  [dry-run] computed city_rank for ${cityRankUpdates.size} plumbers`,
     );
-    return;
+    return { ranked: cityRankUpdates.size, skipped: skippedNoReviews };
   }
 
   let written = 0;
@@ -1394,6 +1395,7 @@ async function runPass2(
     written++;
   }
   console.log(`Pass 2 done: wrote city_rank for ${written} plumber(s)`);
+  return { ranked: written, skipped: skippedNoReviews };
 }
 
 // ---------------------------------------------------------------------------
@@ -1403,7 +1405,7 @@ async function runPass2(
 async function runPass3(
   db: admin.firestore.Firestore,
   args: CliArgs,
-): Promise<void> {
+): Promise<{ decided: number; skipped: number }> {
   console.log("\n=== Pass 3: Decide ===");
 
   const plumbers = await loadPlumbers(db, args);
@@ -1466,6 +1468,7 @@ async function runPass3(
   }
 
   console.log(`\nPass 3 done: ${decided} decided, ${skipped} skipped`);
+  return { decided, skipped };
 }
 
 // ---------------------------------------------------------------------------
@@ -1486,11 +1489,22 @@ async function main(): Promise<void> {
   // to ranks. The 2026-05-08 rework made the entire chain deterministic
   // post-extraction, so the cost of always running 2+3 is negligible
   // (no Anthropic spend).
+  //
+  // Per-pass counters tracked so the pipelineRun summary surfaces actual
+  // work units (scored / ranked / decided) — the daily report's headline
+  // breaks these out into discrete line items.
+  let scored = 0, ranked = 0, decided = 0;
+  let p1Skipped = 0, p2Skipped = 0, p3Skipped = 0, p1Failed = 0;
   if (args.pass === "1" || args.pass === "all") {
-    await runPass1(db, args);
+    const r = await runPass1(db, args);
+    scored = r.scored;
+    p1Skipped = r.skipped;
+    p1Failed = r.failed;
   }
   if (args.pass === "1" || args.pass === "2" || args.pass === "all") {
-    await runPass2(db, args);
+    const r = await runPass2(db, args);
+    ranked = r.ranked;
+    p2Skipped = r.skipped;
   }
   if (
     args.pass === "1" ||
@@ -1498,7 +1512,9 @@ async function main(): Promise<void> {
     args.pass === "3" ||
     args.pass === "all"
   ) {
-    await runPass3(db, args);
+    const r = await runPass3(db, args);
+    decided = r.decided;
+    p3Skipped = r.skipped;
   }
 
   // Phase 1 stabilization: log a pipelineRuns entry so publish vs score
@@ -1514,7 +1530,16 @@ async function main(): Promise<void> {
         completedAt: admin.firestore.Timestamp.now(),
         durationSeconds,
         status: "success",
-        summary: { pass: args.pass },
+        summary: {
+          pass: args.pass,
+          scored,
+          ranked,
+          decided,
+          pass1Skipped: p1Skipped,
+          pass1Failed: p1Failed,
+          pass2Skipped: p2Skipped,
+          pass3Skipped: p3Skipped,
+        },
         triggeredBy: process.env.GITHUB_ACTIONS ? "github-actions" : "manual",
       });
     } catch (e) {

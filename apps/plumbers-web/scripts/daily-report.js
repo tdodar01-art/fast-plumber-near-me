@@ -116,10 +116,218 @@ function classifyActivity(run) {
     // pass "1", "all", or unset → L1
     return "l1_synth";
   }
-  if (script === "export-json" || script === "request-indexing") {
+  if (script === "export-json" || script === "request-indexing" || script === "ingest-url-inspection") {
     return "publish";
   }
   return "other";
+}
+
+// ---------------------------------------------------------------------------
+// Headline line items — explicit per-script breakouts so Tim can see at a
+// glance what each piece of the pipeline did today, instead of bucketed
+// totals. Each line: a label, a filter that picks the relevant runs, and
+// a function that produces the "Work performed" metric strings.
+// ---------------------------------------------------------------------------
+
+function sumKey(runs, key) {
+  let t = 0;
+  for (const r of runs) {
+    const v = r.summary?.[key];
+    if (typeof v === "number") t += v;
+  }
+  return t;
+}
+function sumLenKey(runs, key) {
+  let t = 0;
+  for (const r of runs) {
+    const v = r.summary?.[key];
+    if (Array.isArray(v)) t += v.length;
+  }
+  return t;
+}
+function countTrue(runs, key) {
+  let t = 0;
+  for (const r of runs) if (r.summary?.[key] === true) t++;
+  return t;
+}
+
+function buildHeadlineLines(runs) {
+  const byScript = new Map();
+  for (const r of runs) {
+    const s = (r.script || "").toLowerCase();
+    if (!byScript.has(s)) byScript.set(s, []);
+    byScript.get(s).push(r);
+  }
+  const pick = (s) => byScript.get(s) || [];
+  // score-plumbers.ts cascades: --pass 1 runs all three passes, --pass 2 runs
+  // Pass 2 + Pass 3, --pass 3 runs only Pass 3. The pipelineRun records only
+  // the CLI arg (`summary.pass`), so when surfacing per-pass counts in the
+  // headline we infer which downstream passes also fired.
+  const scoreRuns = (didPass) =>
+    pick("score-plumbers").filter((r) => {
+      const p = String(r.summary?.pass ?? "all").toLowerCase();
+      if (didPass === 1) return p === "1" || p === "all";
+      if (didPass === 2) return p === "1" || p === "2" || p === "all"; // Pass 1 cascades through 2
+      if (didPass === 3) return p === "1" || p === "2" || p === "3" || p === "all"; // all paths reach 3
+      return false;
+    });
+  return [
+    {
+      group: "Scrape",
+      label: "Scrape — Google Places (daily)",
+      runs: pick("daily-scrape"),
+      metrics: (rs) => {
+        const out = {};
+        const np = sumKey(rs, "newPlumbers");
+        const cs = sumLenKey(rs, "citiesSearched");
+        if (np > 0) out["new plumbers"] = np;
+        if (cs > 0) out["cities"] = cs;
+        return out;
+      },
+    },
+    {
+      group: "Scrape",
+      label: "Scrape — Firestore upload",
+      runs: pick("upload-firestore"),
+      metrics: (rs) => {
+        const out = {};
+        const c = sumKey(rs, "created");
+        const u = sumKey(rs, "updated");
+        if (c > 0) out["created"] = c;
+        if (u > 0) out["updated"] = u;
+        return out;
+      },
+    },
+    {
+      group: "Scrape",
+      label: "Scrape — Deep review (Outscraper)",
+      runs: pick("outscraper-reviews"),
+      metrics: (rs) => {
+        const out = {};
+        const p = sumKey(rs, "plumbersProcessed");
+        const nr = sumKey(rs, "newReviews");
+        const cs = sumLenKey(rs, "citySlugs");
+        if (p > 0) out["plumbers"] = p;
+        if (nr > 0) out["new reviews"] = nr;
+        if (cs > 0) out["cities"] = cs;
+        return out;
+      },
+    },
+    {
+      group: "Scrape",
+      label: "Scrape — Review refresh (Google)",
+      runs: pick("refresh-reviews"),
+      metrics: (rs) => {
+        const out = {};
+        const p = sumKey(rs, "plumbersRefreshed");
+        const nr = sumKey(rs, "newReviewsCached");
+        if (p > 0) out["plumbers"] = p;
+        if (nr > 0) out["new reviews"] = nr;
+        return out;
+      },
+    },
+    {
+      group: "Scrape",
+      label: "Scrape — BBB lookup",
+      runs: pick("bbb-lookup"),
+      metrics: (rs) => {
+        const out = {};
+        const p = sumKey(rs, "plumbersLookedUp");
+        const m = sumKey(rs, "matchedOnBBB");
+        if (p > 0) out["plumbers"] = p;
+        if (m > 0) out["matched"] = m;
+        return out;
+      },
+    },
+    {
+      group: "Synthesis",
+      label: "Level 1 synthesis (local Claude)",
+      runs: [...pick("synth-writeback"), ...scoreRuns(1)],
+      metrics: (rs) => {
+        const out = {};
+        const local = sumKey(rs.filter((r) => r.script === "synth-writeback"), "plumbersUpdated");
+        const sonnet = sumKey(rs.filter((r) => r.script === "score-plumbers"), "scored");
+        const batches = sumKey(rs.filter((r) => r.script === "synth-writeback"), "jobCount");
+        if (local > 0) out["plumbers re-synthesized"] = local;
+        if (sonnet > 0) out["Sonnet-scored"] = sonnet;
+        if (batches > 0) out["batches"] = batches;
+        return out;
+      },
+    },
+    {
+      group: "Synthesis",
+      label: "Level 2 synthesis — decision (verdict)",
+      runs: scoreRuns(3),
+      metrics: (rs) => {
+        const out = {};
+        const d = sumKey(rs, "decided");
+        if (d > 0) out["plumbers decided"] = d;
+        return out;
+      },
+    },
+    {
+      group: "Synthesis",
+      label: "City page reorg (Pass 2 rank)",
+      runs: scoreRuns(2),
+      metrics: (rs) => {
+        const out = {};
+        const r = sumKey(rs, "ranked");
+        if (r > 0) out["plumbers re-ranked"] = r;
+        return out;
+      },
+    },
+    {
+      group: "Publish",
+      label: "Publish — Plumbers published (JSON export)",
+      runs: pick("export-json"),
+      metrics: (rs) => {
+        const out = {};
+        const total = sumKey(rs, "plumbersUpdated") + sumKey(rs, "plumbersAdded");
+        const cities = sumLenKey(rs, "citiesAffected");
+        if (total > 0) out["plumbers"] = total;
+        if (cities > 0) out["cities affected"] = cities;
+        return out;
+      },
+    },
+    {
+      group: "Publish",
+      label: "Publish — Sitemap submitted (GSC)",
+      runs: pick("request-indexing"),
+      metrics: (rs) => {
+        const out = {};
+        const n = countTrue(rs, "sitemapSubmitted");
+        if (n > 0) out["submissions"] = n;
+        return out;
+      },
+    },
+    {
+      group: "Publish",
+      label: "Publish — URL indexing requested (GSC)",
+      runs: pick("request-indexing"),
+      metrics: (rs) => {
+        const out = {};
+        const requested = sumKey(rs, "urlsRequested");
+        const submitted = sumKey(rs, "indexingSubmitted");
+        const errors = sumKey(rs, "indexingErrors");
+        if (submitted > 0) out["URLs submitted"] = submitted;
+        if (errors > 0) out["errors"] = errors;
+        if (requested === 200) out["quota"] = "EXHAUSTED";
+        else if (requested > 0) out["of-quota"] = `${requested}/200`;
+        return out;
+      },
+    },
+    {
+      group: "Publish",
+      label: "Publish — URL inspection (GSC diagnostic)",
+      runs: pick("ingest-url-inspection"),
+      metrics: (rs) => {
+        const out = {};
+        const urls = sumKey(rs, "urlsInspected");
+        if (urls > 0) out["URLs inspected"] = urls;
+        return out;
+      },
+    },
+  ];
 }
 
 function activityLabel(kind) {
@@ -431,25 +639,36 @@ function buildEmail({ runs, queues, totals, windowHours }) {
   html += `<h2 style="margin-bottom: 4px;">Fast Plumber Near Me — daily activity</h2>`;
   html += `<p style="color:#718096; margin-top:0;">Window: last ${windowHours}h · ${runs.length} pipeline runs total · ${totals.totalActiveBusinesses} active plumbers · ${totals.totalCities} cities tracked</p>`;
 
-  // Headline table — runs + work units per bucket.
+  // Headline table — explicit per-line-item breakouts so the email lists each
+  // pipeline step on its own row instead of bucketed totals. One row per
+  // (script · meaningful metric) so Tim can see exactly what ran and how
+  // much work it did.
+  const lines = buildHeadlineLines(runs);
   html += `<h3>Today at a glance</h3>`;
   html += `<table cellpadding="6" cellspacing="0" style="border-collapse: collapse; font-size: 14px; width: 100%;">`;
   html += `<tr style="background:#f7fafc;"><th align="left">Activity</th><th align="right">Runs</th><th align="left">Work performed</th></tr>`;
-  for (const [k, label] of [
-    ["scrape", "Scrape"],
-    ["l1_synth", "Level 1 synthesis"],
-    ["l2_synth", "Level 2 synthesis (decision)"],
-    ["city_reorg", "City page reorg (rank)"],
-    ["publish", "Publish (export + indexing)"],
-    ["other", "Other"],
-  ]) {
-    const n = byKind[k]?.length || 0;
-    const m = metrics[k] || {};
+  let lastGroup = null;
+  for (const line of lines) {
+    if (line.group !== lastGroup) {
+      // Section separator
+      html += `<tr><td colspan="3" style="border-top: 1px solid #e2e8f0; padding-top: 4px; padding-bottom: 0;"></td></tr>`;
+      lastGroup = line.group;
+    }
+    const n = line.runs.length;
+    const m = line.metrics(line.runs);
     const workStr = formatHeadlineMetrics(m);
-    const workDisplay = n === 0
-      ? `<span style="color:#a0aec0;">—</span>`
-      : (workStr || `<span style="color:#a0aec0;">(no counts logged)</span>`);
-    html += `<tr><td>${label}</td><td align="right" style="font-variant-numeric: tabular-nums;">${n}</td><td style="color:#4a5568;">${workDisplay}</td></tr>`;
+    let workDisplay;
+    if (n === 0) {
+      // Special highlight for URL inspection — surfaces a known cadence issue
+      if (line.label.includes("URL inspection")) {
+        workDisplay = `<span style="color:#c53030;">⚠ no runs (expected nightly)</span>`;
+      } else {
+        workDisplay = `<span style="color:#a0aec0;">—</span>`;
+      }
+    } else {
+      workDisplay = workStr || `<span style="color:#a0aec0;">(ran, no counts logged)</span>`;
+    }
+    html += `<tr><td>${escapeHtml(line.label)}</td><td align="right" style="font-variant-numeric: tabular-nums;">${n}</td><td style="color:#4a5568;">${workDisplay}</td></tr>`;
   }
   html += `<tr style="background:#fff5f5; color:#742a2a;"><td><strong>Errors</strong></td><td align="right" style="font-variant-numeric: tabular-nums;"><strong>${errors.length}</strong></td><td></td></tr>`;
   html += `</table>`;
@@ -503,24 +722,34 @@ function buildEmail({ runs, queues, totals, windowHours }) {
   html += `<p style="color:#a0aec0; font-size: 12px;">Sent by scripts/daily-report.js · Source: pipelineRuns Firestore collection · See ROADMAP.md and CLAUDE.md for the pipeline map.</p>`;
   html += `</div>`;
 
-  // Plain-text version
-  const textRow = (label, kind) => {
-    const n = headline[kind] ?? 0;
-    const m = metrics[kind] || {};
+  // Plain-text version — same line-item structure as the HTML table.
+  const textLines = [];
+  let lastGroupText = null;
+  for (const line of lines) {
+    if (line.group !== lastGroupText) {
+      if (textLines.length > 0) textLines.push("");
+      textLines.push(`[${line.group}]`);
+      lastGroupText = line.group;
+    }
+    const n = line.runs.length;
+    const m = line.metrics(line.runs);
     const work = formatHeadlineMetrics(m);
-    return n === 0 ? `  ${label}: 0 runs` : `  ${label}: ${n} run${n === 1 ? "" : "s"}${work ? ` · ${work}` : ""}`;
-  };
+    let rest;
+    if (n === 0) {
+      rest = line.label.includes("URL inspection") ? "0 runs ⚠ expected nightly" : "0 runs";
+    } else {
+      rest = `${n} run${n === 1 ? "" : "s"}${work ? " · " + work : ""}`;
+    }
+    textLines.push(`  ${line.label}: ${rest}`);
+  }
   const text = [
     `Fast Plumber Near Me — daily activity (last ${windowHours}h)`,
     `${runs.length} pipeline runs · ${totals.totalActiveBusinesses} active plumbers · ${totals.totalCities} cities tracked`,
     ``,
     `Today at a glance:`,
-    textRow("Scrape", "scrape"),
-    textRow("Level 1 synthesis", "l1_synth"),
-    textRow("Level 2 synthesis (decision)", "l2_synth"),
-    textRow("City page reorg (rank)", "city_reorg"),
-    textRow("Publish", "publish"),
-    `  Errors: ${headline.errors}`,
+    ...textLines,
+    ``,
+    `Errors: ${headline.errors}`,
     ``,
     `Queue depths:`,
     ...Object.values(queues.queues).map((q) => `  ${q.label}: ${q.count.toLocaleString()} (${q.note})`),
