@@ -43,6 +43,7 @@ import {
   type CityRankEntry,
   type Scores,
   type EvidenceQuote,
+  type EvidencedClaim,
   type CrossPlatformSignals,
 } from "../src/lib/decision-engine.js";
 
@@ -279,6 +280,11 @@ type ReviewInput = {
   rating: number;
   text: string;
   publishedAt: string | null;
+  // Attribution carried through from the cached review doc so aggregate()
+  // can stamp evidence quotes with platform/author at write time, instead
+  // of trusting the model to echo it back.
+  source?: string | null;
+  author_name?: string | null;
 };
 
 type ExtractedReview = {
@@ -481,6 +487,15 @@ function aggregate(
   // Evidence: one quote per dimension. Pick the most recent review that has
   // a quote for that dimension AND scored that dim in the top half of the
   // plumber's range. Fallback: any quote for that dim.
+  //
+  // Attribution (source/author/date/rating) is sourced from the original
+  // review object via reviewById — not from the model — so quotes can never
+  // be mis-attributed by a hallucination. If a quote text doesn't match the
+  // source review's text, we still trust the attribution because review_id
+  // is the linking key.
+  const reviewById = new Map<string, ReviewInput>();
+  for (const r of reviews) reviewById.set(r.review_id, r);
+
   const evidenceQuotes: EvidenceQuote[] = [];
   for (const dim of DIMENSION_KEYS) {
     const candidates = extracted.filter(
@@ -494,10 +509,15 @@ function aggregate(
         (ageByReviewId.get(b.review_id) ?? 999),
     );
     const chosen = candidates[0];
+    const src = reviewById.get(chosen.review_id);
     evidenceQuotes.push({
       dimension: dim,
       quote: chosen.evidence_quote!,
       review_id: chosen.review_id,
+      source: src?.source ?? "google",
+      author_name: src?.author_name ?? null,
+      published_at: src?.publishedAt ?? null,
+      rating: src?.rating ?? null,
     });
   }
 
@@ -602,7 +622,10 @@ function buildSynthesisPrompt(
     bbbComplaintsPast3Years?: number | null;
   },
 ): string {
-  // Include up to 30 reviews for synthesis context (sorted by recency)
+  // Include up to 30 reviews for synthesis context (sorted by recency).
+  // Each review is prefixed with its review_id so the model can cite it
+  // in the structured supporting_review_ids fields. The model MUST reuse
+  // those exact ids — verification is enforced post-parse in score-plumbers.
   const reviewsSorted = [...reviews].sort((a, b) => {
     if (!a.publishedAt) return 1;
     if (!b.publishedAt) return -1;
@@ -610,11 +633,14 @@ function buildSynthesisPrompt(
   });
   const reviewBlock = reviewsSorted
     .slice(0, 30)
-    .map((r) => `[${r.rating}/5${r.publishedAt ? ` — ${r.publishedAt}` : ""}] ${r.text}`)
+    .map(
+      (r) =>
+        `[review_id: ${r.review_id}] [${r.rating}/5${r.publishedAt ? ` — ${r.publishedAt}` : ""}${r.source ? ` — ${r.source}` : ""}] ${r.text}`,
+    )
     .join("\n\n---\n\n");
 
   const quoteBlock = evidenceQuotes
-    .map((eq) => `${eq.dimension}: "${eq.quote}"`)
+    .map((eq) => `${eq.dimension} (${eq.review_id}): "${eq.quote}"`)
     .join("\n");
 
   // Platform context block — for cross-platform discrepancy detection
@@ -641,34 +667,100 @@ Reviews:
 ${reviewBlock}
 
 Respond in JSON only. No markdown, no preamble, no backticks.
+
+Every claim in "strengths", "weaknesses", and "redFlags" MUST cite the review_ids of the reviews that support it. Use the review_id values from the [review_id: ...] tags above. If you cannot ground a claim in at least one cited review, OMIT that claim. Do not invent review_ids. Quote evidence is verified against the cached reviews — unsupported claims will be discarded.
+
 {
   "summary": "One specific, punchy sentence a friend would say. NEVER say 'reliable and professional'. Reference actual patterns. Example: 'Responds fast to emergencies but pricing runs 20% above competitors'",
-  "strengths": ["2-3 specific strengths with evidence counts. e.g. '4 of 6 reviewers mention same-day arrival' or 'Multiple reviews praise thorough cleanup after work'"],
-  "weaknesses": ["1-2 specific weaknesses from reviews. e.g. 'Two reviews mention final bill exceeding initial quote by $200+'. Say 'Not enough data to identify weaknesses' ONLY if every review is positive."],
-  "redFlags": ["Concerning patterns with specifics. For <25 reviews, even 1-2 mentions of the same issue = pattern. e.g. '2 of 8 reviews report no-show on scheduled appointment'. Empty array [] if genuinely none."],
+  "strengths": [
+    { "text": "Specific strength with evidence count. e.g. '4 of 6 reviewers mention same-day arrival'", "supporting_review_ids": ["rev_abc", "rev_def"] }
+  ],
+  "weaknesses": [
+    { "text": "Specific weakness from reviews. e.g. 'Two reviews mention final bill exceeding initial quote by $200+'", "supporting_review_ids": ["rev_xyz"] }
+  ],
+  "redFlags": [
+    { "text": "Concerning pattern. For <25 reviews total, even 1-2 mentions of the same issue is a pattern. e.g. '2 of 8 reviews report no-show on scheduled appointment'", "supporting_review_ids": ["rev_pdq"] }
+  ],
   "emergencyNotes": "One sentence about emergency capability signals: after-hours mentions, response time, weekend/holiday availability, burst-pipe experience. If reviews mention fast response even during business hours, note it.",
   "platformDiscrepancy": "If Google and Yelp ratings differ by 0.7+ stars OR if Yelp/BBB complaints contradict Google's positive picture, describe the gap in one sentence. e.g. 'Google rates 4.9 but Yelp shows 3.8 with multiple billing disputes'. Return null if ratings are consistent across platforms."
-}`;
 }
 
-function parseSynthesisResponse(text: string): {
+Use empty arrays ([]) when a section genuinely has no entries — do not fabricate filler. "Not enough data to identify weaknesses" is acceptable text for the weaknesses field ONLY when every review is positive, in which case supporting_review_ids should reference the 2-3 most positive reviews.`;
+}
+
+type ParsedSynthesis = {
   summary: string;
   strengths: string[];
   weaknesses: string[];
   redFlags: string[];
+  strengthsEvidence: EvidencedClaim[];
+  weaknessesEvidence: EvidencedClaim[];
+  redFlagsEvidence: EvidencedClaim[];
   emergencyNotes: string;
   platformDiscrepancy: string | null;
-} {
+};
+
+/**
+ * Normalize one entry from a claim array. Accepts the new structured shape
+ * ({ text, supporting_review_ids[] }) and the legacy plain-string shape —
+ * the legacy shape produces a claim with no supporting_review_ids, which
+ * the audit pipeline can flag as "unverified" without breaking parsing.
+ */
+function normalizeClaim(entry: unknown): EvidencedClaim | null {
+  if (typeof entry === "string") {
+    return { text: entry, supporting_review_ids: [] };
+  }
+  if (entry && typeof entry === "object" && "text" in entry) {
+    const e = entry as { text?: unknown; supporting_review_ids?: unknown };
+    const text = typeof e.text === "string" ? e.text : "";
+    if (!text) return null;
+    const ids = Array.isArray(e.supporting_review_ids)
+      ? e.supporting_review_ids.filter((x): x is string => typeof x === "string")
+      : [];
+    return { text, supporting_review_ids: ids };
+  }
+  return null;
+}
+
+function parseSynthesisResponse(
+  text: string,
+  validReviewIds: Set<string>,
+): ParsedSynthesis {
   const cleaned = text
     .replace(/^```(?:json)?\s*\n?/i, "")
     .replace(/\n?```\s*$/i, "")
     .trim();
   const parsed = JSON.parse(cleaned);
+
+  const claimify = (arr: unknown): EvidencedClaim[] => {
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .map(normalizeClaim)
+      .filter((c): c is EvidencedClaim => c !== null)
+      .map((c) => ({
+        text: c.text,
+        // Filter to ids the model actually saw — discards hallucinated ids.
+        // We do NOT discard the whole claim when ids fail validation; an
+        // empty supporting_review_ids[] is the explicit "unverified" signal
+        // for the audit pipeline.
+        supporting_review_ids: c.supporting_review_ids.filter((id) =>
+          validReviewIds.has(id),
+        ),
+      }));
+  };
+
+  const strengthsEvidence = claimify(parsed.strengths);
+  const weaknessesEvidence = claimify(parsed.weaknesses);
+  const redFlagsEvidence = claimify(parsed.redFlags);
+
   return {
     summary: parsed.summary || "",
-    strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
-    weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [],
-    redFlags: Array.isArray(parsed.redFlags) ? parsed.redFlags : [],
+    strengths: strengthsEvidence.map((c) => c.text),
+    weaknesses: weaknessesEvidence.map((c) => c.text),
+    redFlags: redFlagsEvidence.map((c) => c.text),
+    strengthsEvidence,
+    weaknessesEvidence,
+    redFlagsEvidence,
     emergencyNotes: parsed.emergencyNotes || "",
     platformDiscrepancy: parsed.platformDiscrepancy || null,
   };
@@ -863,6 +955,9 @@ async function loadReviews(
       text: typeof data.text === "string" ? data.text : "",
       publishedAt:
         typeof data.publishedAt === "string" ? data.publishedAt : null,
+      source: typeof data.source === "string" ? data.source : "google",
+      author_name:
+        typeof data.authorName === "string" ? data.authorName : null,
     };
   });
 }
@@ -896,6 +991,11 @@ async function runPass1(
     //
     // NOTE: compares TOTAL review count (not capped), so the cap below
     // doesn't mask genuine review growth from the delta check.
+    //
+    // pendingRescoreSince (set by refresh-reviews.ts / outscraper-reviews.js
+    // when new reviews land) is a third trigger: even if neither timer nor
+    // delta would re-score, a fresh review batch bypasses the skip and we
+    // re-synthesize. Cleared after a successful re-score below.
     if (!args.force && data.scores?.last_scored_at) {
       const last = Date.parse(data.scores.last_scored_at);
       const recentlyScored =
@@ -906,13 +1006,26 @@ async function runPass1(
         : 1;
       const reviewsChangedSignificantly = reviewCountDelta >= 0.20;
 
-      if (recentlyScored && !reviewsChangedSignificantly) {
+      // pendingRescoreSince is a Firestore Timestamp; the .toMillis() guard
+      // covers both shapes (admin SDK vs plain JS).
+      const pendingTs =
+        (data.pendingRescoreSince as { toMillis?: () => number } | undefined)
+          ?.toMillis?.() ?? null;
+      const hasPendingRescore =
+        typeof pendingTs === "number" && (!Number.isNaN(last) ? pendingTs > last : true);
+
+      if (recentlyScored && !reviewsChangedSignificantly && !hasPendingRescore) {
         skipped++;
         continue;
       }
       if (recentlyScored && reviewsChangedSignificantly) {
         console.log(
           `  ! ${name}: recently scored but review count changed ${(reviewCountDelta * 100).toFixed(0)}% (${lastReviewCount} → ${totalReviewCount}) — re-scoring`,
+        );
+      }
+      if (recentlyScored && hasPendingRescore && !reviewsChangedSignificantly) {
+        console.log(
+          `  ! ${name}: recently scored but pendingRescoreSince set (${data.pendingRescoreReason ?? "new reviews"}) — re-scoring`,
         );
       }
     }
@@ -948,6 +1061,8 @@ async function runPass1(
             "scores.last_scored_at": nowIso,
             "scores.method": "no_reviews",
             "scores.review_count_used": 0,
+            pendingRescoreSince: admin.firestore.FieldValue.delete(),
+            pendingRescoreReason: admin.firestore.FieldValue.delete(),
             updatedAt: admin.firestore.Timestamp.now(),
           });
         }
@@ -961,6 +1076,8 @@ async function runPass1(
           "scores.last_scored_at": nowIso,
           "scores.method": "keyword_fallback",
           "scores.review_count_used": totalReviewCount,
+          pendingRescoreSince: admin.firestore.FieldValue.delete(),
+          pendingRescoreReason: admin.firestore.FieldValue.delete(),
           "reviewSynthesis.summary": synth.summary,
           "reviewSynthesis.strengths": synth.strengths,
           "reviewSynthesis.weaknesses": synth.weaknesses,
@@ -1033,7 +1150,8 @@ async function runPass1(
       await sleep(RATE_LIMIT_MS);
       const synthPrompt = buildSynthesisPrompt(name, reviews, rawScores, evidenceQuotes, platformContext);
       const synthRaw = await callClaude(synthPrompt);
-      const synthParsed = parseSynthesisResponse(synthRaw);
+      const validReviewIds = new Set(reviews.map((r) => r.review_id));
+      const synthParsed = parseSynthesisResponse(synthRaw, validReviewIds);
 
       // --- Step 3b: Cross-platform adjustment (the 2026-05-08 rework) ---
       // Pass 1's review-text dimension scores see only review prose. Cross-
@@ -1084,6 +1202,12 @@ async function runPass1(
         "reviewSynthesis.strengths": synthParsed.strengths,
         "reviewSynthesis.weaknesses": synthParsed.weaknesses,
         "reviewSynthesis.redFlags": synthParsed.redFlags,
+        // Structured form — each claim carries the review_ids that ground it.
+        // Render layer may upgrade to these for citation-aware display;
+        // flat string arrays above remain for backward compat.
+        "reviewSynthesis.strengthsEvidence": synthParsed.strengthsEvidence,
+        "reviewSynthesis.weaknessesEvidence": synthParsed.weaknessesEvidence,
+        "reviewSynthesis.redFlagsEvidence": synthParsed.redFlagsEvidence,
         "reviewSynthesis.badges": badges,
         "reviewSynthesis.emergencyReadiness": emergencyReadiness,
         "reviewSynthesis.emergencyNotes": synthParsed.emergencyNotes,
@@ -1093,7 +1217,9 @@ async function runPass1(
         "reviewSynthesis.platformDiscrepancy": synthParsed.platformDiscrepancy,
         "reviewSynthesis.reviewCount": reviews.length,
         "reviewSynthesis.aiSynthesizedAt": admin.firestore.Timestamp.now(),
-        "reviewSynthesis.synthesisVersion": "unified-sonnet-v3-adjusted",
+        "reviewSynthesis.synthesisVersion": "unified-sonnet-v4-cited",
+        pendingRescoreSince: admin.firestore.FieldValue.delete(),
+        pendingRescoreReason: admin.firestore.FieldValue.delete(),
         updatedAt: admin.firestore.Timestamp.now(),
       };
       if (Object.keys(servicesMentioned).length > 0) {

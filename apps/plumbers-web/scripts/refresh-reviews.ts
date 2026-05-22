@@ -329,6 +329,16 @@ async function main() {
       reviewGap: updatedReviewCount - newCachedCount,
     };
 
+    // Re-synthesis trigger (added 2026-05-22). When new reviews land, mark the
+    // plumber as pending re-score. score-plumbers.ts Pass 1 honors this flag
+    // by bypassing the 30-day skip window and clears the flag on success.
+    // Without this, new reviews sit cached but unsynthesized until the next
+    // scheduled scoring run — stale synthesis on high-traffic plumbers.
+    if (newForThis > 0) {
+      updateData.pendingRescoreSince = admin.firestore.Timestamp.now();
+      updateData.pendingRescoreReason = `${newForThis} new review(s) cached`;
+    }
+
     // --- CLOSURE DETECTION ---
     const businessStatus = details.businessStatus as string | undefined;
     if (businessStatus === "CLOSED_PERMANENTLY" || businessStatus === "CLOSED_TEMPORARILY") {

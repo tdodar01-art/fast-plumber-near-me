@@ -36,7 +36,7 @@ const { DIMENSION_KEYS, SPECIALTY_KEYS } = require("./lib/synthesis-schema");
 const APP_ROOT = path.resolve(__dirname, "..", "..");
 const SA_PATH = path.join(APP_ROOT, "service-account.json");
 
-const SYNTHESIS_VERSION = "claude-code-local-v2";
+const SYNTHESIS_VERSION = "claude-code-local-v3-cited";
 
 function initDb() {
   if (!fs.existsSync(SA_PATH)) {
@@ -89,6 +89,79 @@ function buildRawScores(result, batchPlumber) {
 }
 
 /**
+ * Coerce a claim array to plain string[] regardless of whether the agent
+ * emitted the new structured form [{text, supporting_review_ids[]}] or the
+ * legacy string[] form. Used to keep `reviewSynthesis.strengths` (and the
+ * sibling fields) as the flat shape that the render layer expects.
+ */
+function flattenClaims(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .map((item) => {
+      if (typeof item === "string") return item;
+      if (item && typeof item === "object" && typeof item.text === "string") return item.text;
+      return null;
+    })
+    .filter((s) => typeof s === "string" && s.length > 0);
+}
+
+/**
+ * Produce the structured evidenced form. Prefers the validator-supplied
+ * *Evidence array when present (already normalized + id-validated); falls
+ * back to deriving from the raw claims array.
+ */
+function evidencedClaims(evidenceArr, rawArr) {
+  if (Array.isArray(evidenceArr) && evidenceArr.length > 0) return evidenceArr;
+  if (!Array.isArray(rawArr)) return [];
+  return rawArr
+    .map((item) => {
+      if (typeof item === "string") return { text: item, supporting_review_ids: [] };
+      if (item && typeof item === "object" && typeof item.text === "string") {
+        return {
+          text: item.text,
+          supporting_review_ids: Array.isArray(item.supporting_review_ids)
+            ? item.supporting_review_ids.filter((x) => typeof x === "string")
+            : [],
+        };
+      }
+      return null;
+    })
+    .filter(Boolean);
+}
+
+/**
+ * Match an agent-output quote back to the source batch quote it was drawn from
+ * so we can stamp source/publishedAt/author_name onto the EvidenceQuote at
+ * write time. The validator already enforces substring overlap between agent
+ * output and one of the input quotes — so for any quote that passes
+ * validation, exactly one source quote should match. Falls back to returning
+ * null when nothing matches; the EvidenceQuote will be written without
+ * attribution and surface in the audit pipeline as a legacy un-attributed
+ * citation.
+ */
+function findSourceQuote(agentQuote, batchPlumber) {
+  if (!batchPlumber || !Array.isArray(batchPlumber.evidenceQuotes)) return null;
+  const agentText = (agentQuote.quote || "").toLowerCase().trim();
+  if (!agentText) return null;
+  // First try: substring either direction, whichever side is longer
+  for (const src of batchPlumber.evidenceQuotes) {
+    const srcText = (src.text || "").toLowerCase().trim();
+    if (!srcText) continue;
+    if (srcText.includes(agentText) || agentText.includes(srcText)) {
+      return src;
+    }
+  }
+  // Fallback: first 30 chars overlap
+  const head = agentText.slice(0, 30);
+  if (head.length < 10) return null;
+  for (const src of batchPlumber.evidenceQuotes) {
+    const srcText = (src.text || "").toLowerCase().trim();
+    if (srcText.includes(head)) return src;
+  }
+  return null;
+}
+
+/**
  * Apply Pass-1-equivalent adjustments + derivations and return the Firestore
  * update payload for one plumber.
  */
@@ -113,18 +186,47 @@ function buildUpdatePayload(result, batchPlumber, nowTs) {
     scores: {
       ...adjusted,
       review_text_only: rawScores,
-      method: "claude-code-local-v2",
+      method: "claude-code-local-v3-cited",
       last_scored_at: new Date().toISOString(),
       review_count_used: batchPlumber.signals?.totalReviewsAnalyzed ?? 0,
     },
-    evidence_quotes: (result.evidenceQuotes || []).map((q) => ({
-      dimension: q.dimension,
-      quote: q.quote,
-    })),
+    evidence_quotes: (result.evidenceQuotes || []).map((q) => {
+      const src = findSourceQuote(q, batchPlumber);
+      const out = {
+        dimension: q.dimension,
+        quote: q.quote,
+      };
+      // Attribution carried through from the batch input (which carries it
+      // through from the Firestore review docs). Source-of-truth attribution
+      // — never trust the agent to echo these back. Optional fields: if a
+      // match isn't found, omit them rather than fabricating.
+      if (src?.source) out.source = src.source;
+      if (src?.publishedAt) out.published_at = src.publishedAt;
+      if (src?.author_name) out.author_name = src.author_name;
+      if (typeof src?.rating === "number") out.rating = src.rating;
+      // review_id: preprocessor doesn't currently carry it on evidenceQuotes,
+      // but we keep the field stable so downstream consumers can rely on the
+      // shape and so an upstream preprocessor change wires through cleanly.
+      if (src?.review_id) out.review_id = src.review_id;
+      return out;
+    }),
     "reviewSynthesis.summary": result.summary,
-    "reviewSynthesis.strengths": result.strengths,
-    "reviewSynthesis.weaknesses": result.weaknesses,
-    "reviewSynthesis.redFlags": result.redFlags,
+    // CRITICAL: agents emit strengths/weaknesses/redFlags in the new structured
+    // form [{text, supporting_review_ids[]}] OR the legacy string[] form. The
+    // validator normalizes in-memory but doesn't persist back to disk, so we
+    // re-flatten here before write. Without this the render layer sees object
+    // arrays where it expects strings and crashes with "a.toLowerCase is not
+    // a function" during Next.js static generation. Found 2026-05-22 after
+    // the narsso-construction-and-plumbing Vercel build failure.
+    "reviewSynthesis.strengths": flattenClaims(result.strengths),
+    "reviewSynthesis.weaknesses": flattenClaims(result.weaknesses),
+    "reviewSynthesis.redFlags": flattenClaims(result.redFlags),
+    // Structured evidenced forms — derived from result.strengths/weaknesses/redFlags
+    // when the agent returned the structured shape, else from result.*Evidence
+    // when the validator populated them.
+    "reviewSynthesis.strengthsEvidence": evidencedClaims(result.strengthsEvidence, result.strengths),
+    "reviewSynthesis.weaknessesEvidence": evidencedClaims(result.weaknessesEvidence, result.weaknesses),
+    "reviewSynthesis.redFlagsEvidence": evidencedClaims(result.redFlagsEvidence, result.redFlags),
     "reviewSynthesis.badges": badges,
     "reviewSynthesis.emergencyReadiness": emergencyReadiness,
     "reviewSynthesis.emergencyNotes": result.emergencyNotes,
@@ -135,6 +237,8 @@ function buildUpdatePayload(result, batchPlumber, nowTs) {
     "reviewSynthesis.reviewCount": batchPlumber.signals?.totalReviewsAnalyzed ?? 0,
     "reviewSynthesis.aiSynthesizedAt": nowTs,
     "reviewSynthesis.synthesisVersion": SYNTHESIS_VERSION,
+    pendingRescoreSince: admin.firestore.FieldValue.delete(),
+    pendingRescoreReason: admin.firestore.FieldValue.delete(),
     updatedAt: nowTs,
   };
   if (Object.keys(servicesMentioned).length > 0) {

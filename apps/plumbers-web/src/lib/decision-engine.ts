@@ -135,6 +135,32 @@ export type EvidenceQuote = {
   dimension: string;
   quote: string;
   review_id: string;
+  /**
+   * Attribution fields added 2026-05-22 to close the citation-integrity gap.
+   * Populated from the source review at aggregation time — NOT extracted by
+   * Claude — so they are guaranteed to come from a real cached review and
+   * cannot be hallucinated. Older records may lack these fields; renderers
+   * must treat them as optional and degrade gracefully.
+   */
+  source?: "google" | "yelp" | "angi" | "bbb" | string;
+  author_name?: string | null;
+  published_at?: string | null;
+  rating?: number | null;
+};
+
+/**
+ * A synthesis claim paired with the review_ids that support it. The Sonnet
+ * synthesis prompt now returns strengths/weaknesses/redFlags in this shape;
+ * the scoring pipeline stores both the structured form (for verification)
+ * and a flat string[] form (backward compat with existing render layer).
+ *
+ * supporting_review_ids reference review docs in the reviews collection.
+ * An empty array means the model was unable to ground the claim — those
+ * are surfaced to the audit pipeline as "unverified claims".
+ */
+export type EvidencedClaim = {
+  text: string;
+  supporting_review_ids: string[];
 };
 
 export type Decision = DecisionCore & {

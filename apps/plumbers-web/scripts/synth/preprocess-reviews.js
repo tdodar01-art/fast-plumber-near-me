@@ -28,9 +28,15 @@ const MAX_QUOTE_CHARS = 600;
  */
 function preprocessPlumber(plumber, reviews) {
   // Keep only reviews with rating + non-empty text.
+  // review_id and author_name are carried through so each evidenceQuote can
+  // be traced back to the cached review doc. Required by the cited-synthesis
+  // schema introduced 2026-05-22; older review docs without these fields
+  // degrade to null and surface in the audit pipeline as legacy un-cited.
   const cleaned = (reviews || [])
     .filter((r) => typeof r.text === "string" && r.text.trim().length > 0)
     .map((r) => ({
+      review_id: r.id || r.googleReviewId || null,
+      author_name: r.authorName || null,
       rating: Number(r.rating ?? 0),
       text: r.text.trim(),
       publishedAt: r.publishedAt || null,
@@ -71,6 +77,8 @@ function preprocessPlumber(plumber, reviews) {
     if (!hit) return;
     usedReviewIds.add(reviewKey(hit));
     evidenceQuotes.push({
+      review_id: hit.review_id,
+      author_name: hit.author_name,
       rating: hit.rating,
       publishedAt: hit.publishedAt,
       source: hit.source,
@@ -94,6 +102,8 @@ function preprocessPlumber(plumber, reviews) {
     if (usedReviewIds.has(reviewKey(r))) continue;
     usedReviewIds.add(reviewKey(r));
     evidenceQuotes.push({
+      review_id: r.review_id,
+      author_name: r.author_name,
       rating: r.rating,
       publishedAt: r.publishedAt,
       source: r.source,
@@ -110,6 +120,8 @@ function preprocessPlumber(plumber, reviews) {
     .sort((a, b) => a.rating - b.rating)[0];
   if (lowest && !usedReviewIds.has(reviewKey(lowest)) && evidenceQuotes.length < MAX_EVIDENCE_QUOTES) {
     evidenceQuotes.push({
+      review_id: lowest.review_id,
+      author_name: lowest.author_name,
       rating: lowest.rating,
       publishedAt: lowest.publishedAt,
       source: lowest.source,

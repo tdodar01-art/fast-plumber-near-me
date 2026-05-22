@@ -461,6 +461,23 @@ function copyDecisionLayer(fd) {
 // Convert Firestore reviewSynthesis → static JSON synthesis format
 // ---------------------------------------------------------------------------
 
+// Defensive coercion of strengths/weaknesses/redFlags to flat string[].
+// Older Firestore writes (pre-2026-05-22) may contain the structured
+// {text, supporting_review_ids[]} shape directly in reviewSynthesis.strengths
+// — the render layer expects string[] and crashes during Next.js static
+// generation with "a.toLowerCase is not a function" if it sees objects.
+// This coercion is idempotent and safe whether the source is already strings.
+function flattenClaimsForExport(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .map((item) => {
+      if (typeof item === "string") return item;
+      if (item && typeof item === "object" && typeof item.text === "string") return item.text;
+      return null;
+    })
+    .filter((s) => typeof s === "string" && s.length > 0);
+}
+
 function buildSynthesis(fd) {
   const rs = fd.reviewSynthesis;
   if (!rs) return fd.synthesis || null;
@@ -469,15 +486,21 @@ function buildSynthesis(fd) {
     score: fd.reliabilityScore || 0,
     trustLevel: fd.reliabilityScore >= 70 ? "high" : fd.reliabilityScore >= 40 ? "moderate" : "low",
     summary: rs.summary || "",
-    strengths: rs.strengths || [],
-    weaknesses: rs.weaknesses || [],
+    strengths: flattenClaimsForExport(rs.strengths),
+    weaknesses: flattenClaimsForExport(rs.weaknesses),
     bestFor: rs.bestFor || [],
-    redFlags: rs.redFlags || [],
+    redFlags: flattenClaimsForExport(rs.redFlags),
     priceSignal: rs.pricingTier || "unknown",
     emergencyReadiness: rs.emergencyReadiness || "unknown",
     emergencyNotes: rs.emergencyNotes || "",
     topQuote: rs.topQuote || null,
     worstQuote: rs.worstQuote || null,
+    // Structured-claim form (added 2026-05-22): each strength/weakness/red-flag
+    // carries the review_ids that ground it. Only emit when populated — older
+    // synthesis versions don't have these.
+    ...(Array.isArray(rs.strengthsEvidence) && rs.strengthsEvidence.length > 0 && { strengthsEvidence: rs.strengthsEvidence }),
+    ...(Array.isArray(rs.weaknessesEvidence) && rs.weaknessesEvidence.length > 0 && { weaknessesEvidence: rs.weaknessesEvidence }),
+    ...(Array.isArray(rs.redFlagsEvidence) && rs.redFlagsEvidence.length > 0 && { redFlagsEvidence: rs.redFlagsEvidence }),
     ...(rs.platformDiscrepancy && { platformDiscrepancy: rs.platformDiscrepancy }),
     ...(rs.servicesMentioned && Object.keys(rs.servicesMentioned).length > 0 && { servicesMentioned: rs.servicesMentioned }),
   };

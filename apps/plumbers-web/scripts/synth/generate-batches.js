@@ -51,6 +51,10 @@ function parseArgs() {
     maxAgeDays: Number(get("--max-age-days")) || DEFAULT_MAX_AGE_DAYS,
     limit: get("--limit") ? Number(get("--limit")) : undefined,
     cities: get("--cities") ? get("--cities").split(",").map((s) => s.trim()) : undefined,
+    // --method <name>: force-include plumbers whose scores.method matches.
+    // Overrides plumberNeedsResynth — used for canonical-path backfill runs
+    // that target plumbers by method version rather than staleness signal.
+    method: get("--method") || undefined,
     dryRun: a.includes("--dry-run"),
   };
 }
@@ -111,8 +115,10 @@ async function loadReviewsFor(db, plumberId, cap = 100) {
     .where("plumberId", "==", plumberId)
     .get();
   // Newest first, capped — we already preprocess down to ≤12 evidence quotes.
+  // Preserve the doc id as `id` so preprocess-reviews can carry it through
+  // onto each evidenceQuote (used for supporting_review_ids citation linking).
   return snap.docs
-    .map((d) => d.data())
+    .map((d) => ({ id: d.id, ...d.data() }))
     .sort((a, b) => String(b.publishedAt || "").localeCompare(String(a.publishedAt || "")))
     .slice(0, cap);
 }
@@ -158,17 +164,24 @@ async function main() {
   const maxAgeMs = args.maxAgeDays * 24 * 60 * 60 * 1000;
 
   // Filter to plumbers needing re-synth.
+  // --method <name> short-circuits the staleness logic and targets plumbers
+  // by current scores.method instead. Used for canonical-path backfill where
+  // staleness isn't the signal — we want to re-process specific method buckets.
   const candidates = [];
   for (const doc of snap.docs) {
     const data = doc.data();
     if (data.isActive === false) continue;
-    if (!plumberNeedsResynth(data, maxAgeMs)) continue;
+    if (args.method) {
+      if (data.scores?.method !== args.method) continue;
+    } else {
+      if (!plumberNeedsResynth(data, maxAgeMs)) continue;
+    }
     const city = primaryCity(data);
     if (!city) continue;
     if (args.cities && !args.cities.includes(city)) continue;
     candidates.push({ id: doc.id, data, city });
   }
-  console.error(`[generate-batches] ${candidates.length} plumbers need re-synth`);
+  console.error(`[generate-batches] ${candidates.length} plumbers selected${args.method ? ` (method=${args.method})` : " (need re-synth)"}`);
 
   const limited = args.limit ? candidates.slice(0, args.limit) : candidates;
 

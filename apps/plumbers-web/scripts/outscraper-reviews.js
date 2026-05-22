@@ -478,7 +478,7 @@ async function main() {
         });
 
         // Update plumber document
-        await db.collection(COLLECTIONS.businesses).doc(doc.id).update({
+        const plumberUpdate = {
           lastOutscraperPull: admin.firestore.Timestamp.now(),
           cachedReviewCount: allSnap.size,
           googleReviewsCached: gCount,
@@ -486,7 +486,18 @@ async function main() {
           reviewSource: googleOnly ? "outscraper" : "outscraper-multi",
           reviewGap: (data.googleReviewCount || 0) - gCount,
           ...(platformStats.yelpRating && { yelpRating: platformStats.yelpRating, yelpReviewCount: platformStats.yelpReviewCount }),
-        });
+        };
+
+        // Re-synthesis trigger (added 2026-05-22). Multi-source pulls land
+        // many more reviews than the daily Google refresh — these are exactly
+        // the plumbers whose synthesis matters most, so flag them for the
+        // next score-plumbers Pass 1 run.
+        if (newCount > 0) {
+          plumberUpdate.pendingRescoreSince = admin.firestore.Timestamp.now();
+          plumberUpdate.pendingRescoreReason = `${newCount} new review(s) via Outscraper`;
+        }
+
+        await db.collection(COLLECTIONS.businesses).doc(doc.id).update(plumberUpdate);
 
       } catch (err) {
         console.error(`    ERROR: ${err.message}`);

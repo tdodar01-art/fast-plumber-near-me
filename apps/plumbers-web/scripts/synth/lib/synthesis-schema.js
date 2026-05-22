@@ -63,6 +63,39 @@ function isStringArray(v, maxLen = Infinity, maxItem = 500) {
   return v.every((x) => typeof x === "string" && x.length <= maxItem);
 }
 
+/**
+ * Accept either a string[] (legacy) or an EvidencedClaim[] (new cited form).
+ * Returns null on shape failure, else { texts: string[], evidenced: [{text, supporting_review_ids[]}] }.
+ * The "evidenced" form is empty for legacy string[] input — the writeback layer
+ * treats an empty evidenced form as "claim present but un-cited."
+ */
+function normalizeClaimArray(v, maxLen, maxItem, validReviewIds) {
+  if (!Array.isArray(v) || v.length > maxLen) return null;
+  const texts = [];
+  const evidenced = [];
+  for (const entry of v) {
+    if (typeof entry === "string") {
+      if (entry.length > maxItem) return null;
+      texts.push(entry);
+      evidenced.push({ text: entry, supporting_review_ids: [] });
+      continue;
+    }
+    if (!isPlainObject(entry)) return null;
+    if (typeof entry.text !== "string" || entry.text.length === 0 || entry.text.length > maxItem) {
+      return null;
+    }
+    const idsRaw = Array.isArray(entry.supporting_review_ids)
+      ? entry.supporting_review_ids
+      : [];
+    const ids = idsRaw.filter(
+      (id) => typeof id === "string" && (!validReviewIds || validReviewIds.has(id)),
+    );
+    texts.push(entry.text);
+    evidenced.push({ text: entry.text, supporting_review_ids: ids });
+  }
+  return { texts, evidenced };
+}
+
 function isScoreOrNull(v) {
   if (v === null) return true;
   return typeof v === "number" && v >= 0 && v <= 100;
@@ -103,9 +136,25 @@ function validateSynthesisResult(result, batchPlumber) {
       if (lower.includes(banned)) errors.push(`summary contains banned phrase: "${banned}"`);
     }
   }
-  if (!isStringArray(result.strengths, 5)) errors.push("strengths must be a string[] of length <= 5");
-  if (!isStringArray(result.weaknesses, 5)) errors.push("weaknesses must be a string[] of length <= 5");
-  if (!isStringArray(result.redFlags, 5)) errors.push("redFlags must be a string[] of length <= 5");
+  // Claims may be string[] (legacy) or [{text, supporting_review_ids[]}] (cited form).
+  // Build a set of valid review_ids from the batch input — supporting_review_ids
+  // referencing anything else are dropped silently. Mutates result so downstream
+  // writeback can read normalized evidenced forms.
+  const validReviewIds = new Set();
+  if (batchPlumber && Array.isArray(batchPlumber.evidenceQuotes)) {
+    for (const q of batchPlumber.evidenceQuotes) {
+      if (q && typeof q.review_id === "string") validReviewIds.add(q.review_id);
+    }
+  }
+  for (const field of ["strengths", "weaknesses", "redFlags"]) {
+    const norm = normalizeClaimArray(result[field], 5, 500, validReviewIds);
+    if (!norm) {
+      errors.push(`${field} must be a string[] or [{text, supporting_review_ids[]}] of length <= 5`);
+      continue;
+    }
+    result[field] = norm.texts;
+    result[`${field}Evidence`] = norm.evidenced;
+  }
   if (typeof result.emergencyNotes !== "string") errors.push("emergencyNotes must be a string");
   if (result.platformDiscrepancy !== null && typeof result.platformDiscrepancy !== "string") {
     errors.push("platformDiscrepancy must be string or null");
@@ -150,11 +199,22 @@ function validateSynthesisResult(result, batchPlumber) {
       if (typeof info.count !== "number" || info.count < 0) {
         errors.push(`servicesMentioned.${slug}.count must be a non-negative number`);
       }
-      if (typeof info.avgRating !== "number" || info.avgRating < 0 || info.avgRating > 5) {
-        errors.push(`servicesMentioned.${slug}.avgRating must be 0..5`);
+      // avgRating: tolerate null and coerce to 0. Agents emit null when the
+      // cited quotes don't carry rating context — semantically equivalent to
+      // "no signal" for downstream service-page consumers. A negative or
+      // out-of-range number is still a hard error.
+      if (info.avgRating === null) {
+        info.avgRating = 0;
+      } else if (typeof info.avgRating !== "number" || info.avgRating < 0 || info.avgRating > 5) {
+        errors.push(`servicesMentioned.${slug}.avgRating must be 0..5 or null`);
       }
-      if (typeof info.topQuote !== "string") {
-        errors.push(`servicesMentioned.${slug}.topQuote must be a string`);
+      // topQuote: tolerate null (no representative quote available) and coerce
+      // to empty string. Same rationale as avgRating: agents emit null when
+      // the service slug has no cited evidence with quote-worthy text.
+      if (info.topQuote === null) {
+        info.topQuote = "";
+      } else if (typeof info.topQuote !== "string") {
+        errors.push(`servicesMentioned.${slug}.topQuote must be a string or null`);
       }
     }
   }

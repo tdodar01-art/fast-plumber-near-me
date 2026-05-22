@@ -42,7 +42,9 @@ It contains ${count} preprocessed plumbers. Each plumber has:
   - signals.themeCounts             { "fast_response": N, "fair_pricing": N, "expensive": N, ... }
   - signals.totalReviewsAnalyzed
   - evidenceQuotes                  up to 12 selected review excerpts, each with
-                                     {rating, publishedAt, source, themes[], services[], text}
+                                     {review_id, author_name, rating, publishedAt, source, themes[], services[], text}
+                                     review_id is the cited identifier — copy it verbatim into
+                                     evidenceQuotes[].review_id and into supporting_review_ids[].
 
 PRODUCE one synthesis object per plumber.
 
@@ -58,16 +60,23 @@ Each \`results[i]\` MUST match this exact schema:
   "placeId": "<copy from batch input>",
 
   // --- Display synthesis (drives PlumberCard copy) ---
+  // Each claim (strength/weakness/redFlag) MUST cite the review_ids that
+  // support it via supporting_review_ids[]. Use the review_id values from
+  // input.evidenceQuotes — do not invent ids. Claims without at least one
+  // valid cited id will be DROPPED by the validator.
   "summary": "≤220 chars, ONE specific punchy sentence. Reference real counts.",
   "strengths": [
-    // 0-3 items. Each cites a signal count or quote.
-    // e.g. "themeCounts.fast_response=14: under-hour arrival cited in 14 of 18 reviews"
+    // 0-3 items. Each is { text, supporting_review_ids[] }
+    // e.g. { "text": "Under-hour arrival cited in 4 of 18 reviews", "supporting_review_ids": ["rev_abc", "rev_def"] }
   ],
   "weaknesses": [
-    // 0-2 items. Use 'Not enough data to identify weaknesses' ONLY if every signal is positive.
+    // 0-2 items. Each is { text, supporting_review_ids[] }
+    // Use { "text": "Not enough data to identify weaknesses", "supporting_review_ids": [] }
+    // ONLY if every signal is positive — supporting_review_ids may be empty in that one case.
   ],
   "redFlags": [
-    // 0-3 items. For <25 reviews even 1-2 mentions of the same complaint = a flag.
+    // 0-3 items. Each is { text, supporting_review_ids[] }
+    // For <25 reviews even 1-2 mentions of the same complaint = a flag.
     // Empty array [] if genuinely none.
   ],
   "emergencyNotes": "≤200 chars about emergency capability signals (after-hours mentions, response time).",
@@ -100,10 +109,19 @@ Each \`results[i]\` MUST match this exact schema:
   },
 
   // --- Evidence quotes — pick 2-4 highest-signal verbatim quotes from input.evidenceQuotes
-  // Each MUST be verbatim or near-verbatim from input.evidenceQuotes[i].text
-  // dimension is one of: ${DIMENSION_KEYS.join(" | ")}
+  // Each MUST be verbatim or near-verbatim from input.evidenceQuotes[i].text.
+  // dimension is one of: ${DIMENSION_KEYS.join(" | ")}.
+  // ECHO the attribution fields (review_id, source, publishedAt, author_name)
+  // from the source input quote verbatim — do not modify them.
   "evidenceQuotes": [
-    { "dimension": "responsiveness", "quote": "Within an hour the tech was on site and unclogged the line." }
+    {
+      "dimension": "responsiveness",
+      "quote": "Within an hour the tech was on site and unclogged the line.",
+      "review_id": "<copy from input.evidenceQuotes[i].review_id>",
+      "source": "<copy from input.evidenceQuotes[i].source>",
+      "publishedAt": "<copy from input.evidenceQuotes[i].publishedAt>",
+      "author_name": "<copy from input.evidenceQuotes[i].author_name>"
+    }
     // ...
   ]
 }
@@ -116,11 +134,17 @@ QUALITY BAR — non-negotiable
    "best in the business". Any generic praise that could apply to any plumber is banned.
 3. evidenceQuotes you cite MUST be verbatim or near-verbatim from input.evidenceQuotes.
    Never invent quote text. The validator will reject hallucinated quotes.
-4. For dimensions where the reviews don't address it AT ALL, return null in dimensionScores —
+4. supporting_review_ids[] on every strength/weakness/redFlag MUST be a subset of the
+   review_id values in input.evidenceQuotes. Never invent review_ids. Claims with no
+   valid supporting_review_ids will be DROPPED by the validator (except the explicit
+   "Not enough data to identify weaknesses" case noted above).
+5. Echo evidenceQuotes attribution (review_id, source, publishedAt, author_name) from
+   input verbatim. Do not modify, summarize, or omit these fields.
+6. For dimensions where the reviews don't address it AT ALL, return null in dimensionScores —
    do NOT guess. The aggregator handles nulls.
-5. specialtyStrength is required for ALL ${SPECIALTY_KEYS.length} specialties (no nulls).
+7. specialtyStrength is required for ALL ${SPECIALTY_KEYS.length} specialties (no nulls).
    When evidence is absent, return 0.
-6. DO NOT produce rankings, city_rank, finalScore, tier, badges, pricingTier, or bestFor.
+8. DO NOT produce rankings, city_rank, finalScore, tier, badges, pricingTier, or bestFor.
    Code computes those deterministically downstream.
 
 ALLOWED TOOLS

@@ -12,6 +12,23 @@ const DIM_LABELS: Record<string, string> = {
   communication: "Communication",
 };
 
+const SOURCE_LABELS: Record<string, string> = {
+  google: "Google",
+  yelp: "Yelp",
+  angi: "Angi",
+  bbb: "BBB",
+};
+
+function formatPublishedAt(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return null;
+  return new Date(t).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+  });
+}
+
 export default function EvidenceToggle({ quotes }: { quotes: EvidenceQuote[] }) {
   const [open, setOpen] = useState(false);
 
@@ -34,19 +51,33 @@ export default function EvidenceToggle({ quotes }: { quotes: EvidenceQuote[] }) 
       </button>
       {open && (
         <div className="px-4 py-3 space-y-3">
-          {quotes.map((eq, i) => (
-            <div key={i} className="flex gap-2 items-start">
-              <Quote className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-300" />
-              <div>
-                <p className="text-sm text-gray-700 font-[family-name:var(--font-dm-sans)] italic">
-                  &ldquo;{eq.quote}&rdquo;
-                </p>
-                <p className="text-xs text-gray-400 mt-0.5 font-[family-name:var(--font-dm-sans)]">
-                  {DIM_LABELS[eq.dimension] ?? eq.dimension}
-                </p>
+          {quotes.map((eq, i) => {
+            const sourceLabel = eq.source
+              ? SOURCE_LABELS[eq.source] ?? eq.source
+              : null;
+            const dateLabel = formatPublishedAt(eq.published_at);
+            const attribution = [
+              DIM_LABELS[eq.dimension] ?? eq.dimension,
+              sourceLabel,
+              dateLabel,
+              eq.author_name || null,
+            ]
+              .filter(Boolean)
+              .join(" · ");
+            return (
+              <div key={i} className="flex gap-2 items-start">
+                <Quote className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-300" />
+                <div>
+                  <p className="text-sm text-gray-700 font-[family-name:var(--font-dm-sans)] italic">
+                    &ldquo;{eq.quote}&rdquo;
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5 font-[family-name:var(--font-dm-sans)]">
+                    {attribution}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
