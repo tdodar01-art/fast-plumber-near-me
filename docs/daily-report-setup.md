@@ -14,7 +14,7 @@ and add the following four secrets:
 | `BREVO_API_KEY`       | Tim's existing AOK Brevo transactional API key (xkeysib-…). Same key used by other AOK products. |
 | `BREVO_SENDER_EMAIL`  | A sender already verified on the Brevo account. For v0, an AOK address like `info@aokquickdry.com` is fine (per control-center playbook-delta 023 — the "borrow the existing verified sender" pattern). Migrate to a verified `fastplumbernearme.com` sender when convenient. |
 | `BREVO_SENDER_NAME`   | Display name in the inbox preview. Recommend: `Fast Plumber Pipeline`. |
-| `REPORT_TO_EMAIL`     | `tim@aokcumdry.net` |
+| `REPORT_TO_EMAIL`     | `tim@aokchemdry.net` |
 
 `FIREBASE_SERVICE_ACCOUNT` should already exist (it's used by the other
 workflows). The daily-report workflow reuses that same secret to read
@@ -31,7 +31,7 @@ cd apps/plumbers-web
 node scripts/daily-report.js --dry-run --window-hours 24
 
 # Send a real email (loads BREVO_* from .env.local if present)
-node scripts/daily-report.js --to tim@aokcumdry.net
+node scripts/daily-report.js --to tim@aokchemdry.net
 ```
 
 ## Verify the workflow
