@@ -100,18 +100,21 @@ function initFirebase() {
 function classifyActivity(run) {
   const script = String(run.script || "").toLowerCase();
   const phase = String(run.phase || "").toLowerCase();
+  // score-plumbers.ts hardcodes phase="score" but stores the actual pass
+  // number under summary.pass — use that as the tiebreaker so Pass 2 (rank)
+  // and Pass 3 (decide) land in the right bucket. "all" runs all three;
+  // attribute to L1 since that's where the heavy Anthropic work happens.
+  const passNum = String(run.summary?.pass ?? "").toLowerCase();
 
   if (script === "daily-scrape" || script === "outscraper-reviews" || script === "refresh-reviews" || script === "bbb-lookup") {
     return "scrape";
   }
-  if (script === "synth-writeback" || (script === "score-plumbers" && (phase === "score" || phase === "" || phase === "pass1"))) {
+  if (script === "synth-writeback") return "l1_synth";
+  if (script === "score-plumbers") {
+    if (passNum === "2" || phase === "rank" || phase === "pass2") return "city_reorg";
+    if (passNum === "3" || phase === "decide" || phase === "pass3") return "l2_synth";
+    // pass "1", "all", or unset → L1
     return "l1_synth";
-  }
-  if (script === "score-plumbers" && (phase === "decide" || phase === "pass3")) {
-    return "l2_synth";
-  }
-  if (script === "score-plumbers" && (phase === "rank" || phase === "pass2")) {
-    return "city_reorg";
   }
   if (script === "export-json" || script === "request-indexing") {
     return "publish";
@@ -128,6 +131,103 @@ function activityLabel(kind) {
     publish: "Publish",
     other: "Other",
   }[kind] || kind;
+}
+
+/**
+ * Aggregate work units across all runs in one activity bucket. The summary
+ * keys differ per script (see the README/CLAUDE.md notes); this picks the
+ * most-meaningful counts per bucket and sums them across runs.
+ *
+ * Returns an object of { label: value } pairs to display in the headline.
+ * Order matters — first key is the "headline metric" for that bucket.
+ */
+function aggregateBucket(kind, runs) {
+  const sum = (key, scriptFilter) => {
+    let total = 0;
+    for (const r of runs) {
+      if (scriptFilter && r.script !== scriptFilter) continue;
+      const v = r.summary?.[key];
+      if (typeof v === "number") total += v;
+    }
+    return total;
+  };
+  const sumLen = (key, scriptFilter) => {
+    let total = 0;
+    for (const r of runs) {
+      if (scriptFilter && r.script !== scriptFilter) continue;
+      const v = r.summary?.[key];
+      if (Array.isArray(v)) total += v.length;
+    }
+    return total;
+  };
+
+  switch (kind) {
+    case "scrape": {
+      // daily-scrape:  newPlumbers, citiesSearched[], apiCalls
+      // outscraper-reviews:  plumbersProcessed, newReviews
+      // refresh-reviews:  plumbersRefreshed, newReviewsCached
+      // bbb-lookup:  plumbersLookedUp, matchedOnBBB
+      // upload-firestore:  created, updated
+      const newPlumbers = sum("newPlumbers", "daily-scrape") + sum("created", "upload-firestore");
+      const reviews = sum("newReviews", "outscraper-reviews") + sum("newReviewsCached", "refresh-reviews");
+      const cities = sumLen("citiesSearched", "daily-scrape") + sumLen("citySlugs", "outscraper-reviews") + sumLen("citySlugs", "bbb-lookup");
+      const deepReviewed = sum("plumbersProcessed", "outscraper-reviews");
+      const bbbChecked = sum("plumbersLookedUp", "bbb-lookup");
+      const out = {};
+      if (newPlumbers > 0) out["+plumbers"] = newPlumbers;
+      if (reviews > 0) out["+reviews"] = reviews;
+      if (cities > 0) out["cities"] = cities;
+      if (deepReviewed > 0) out["deep-reviewed"] = deepReviewed;
+      if (bbbChecked > 0) out["BBB-checked"] = bbbChecked;
+      return out;
+    }
+    case "l1_synth": {
+      // synth-writeback:  plumbersUpdated, jobCount
+      // score-plumbers (pass 1 or no phase):  scored / no explicit count today
+      const synth = sum("plumbersUpdated", "synth-writeback");
+      const jobs = sum("jobCount", "synth-writeback");
+      const sonnetScored = sum("scored", "score-plumbers");
+      const out = {};
+      if (synth > 0) out["plumbers re-synthesized"] = synth;
+      if (jobs > 0) out["batches"] = jobs;
+      if (sonnetScored > 0) out["Sonnet-scored"] = sonnetScored;
+      return out;
+    }
+    case "l2_synth": {
+      const decided = sum("decided", "score-plumbers");
+      const out = {};
+      if (decided > 0) out["plumbers decided"] = decided;
+      return out;
+    }
+    case "city_reorg": {
+      const ranked = sum("ranked", "score-plumbers");
+      const out = {};
+      if (ranked > 0) out["plumbers re-ranked"] = ranked;
+      return out;
+    }
+    case "publish": {
+      // export-json:  plumbersUpdated, plumbersAdded, citiesAffected[]
+      // request-indexing:  urlsRequested, indexingSubmitted
+      const exported = sum("plumbersUpdated", "export-json") + sum("plumbersAdded", "export-json");
+      const citiesAffected = sumLen("citiesAffected", "export-json");
+      const indexed = sum("indexingSubmitted", "request-indexing");
+      const out = {};
+      if (exported > 0) out["plumbers exported"] = exported;
+      if (citiesAffected > 0) out["cities affected"] = citiesAffected;
+      if (indexed > 0) out["URLs indexed"] = indexed;
+      return out;
+    }
+    default:
+      return {};
+  }
+}
+
+function formatHeadlineMetrics(metrics) {
+  const entries = Object.entries(metrics);
+  if (entries.length === 0) return "";
+  return entries
+    .map(([label, val]) => `${val.toLocaleString()} ${label}`)
+    .join(" · ");
 }
 
 function shortSummary(run) {
@@ -283,7 +383,14 @@ function buildEmail({ runs, queues, totals, windowHours }) {
   for (const r of runs) byKind[r.kind].push(r);
   const errors = runs.filter((r) => r.status === "error");
 
-  // Headline counts
+  // Headline counts + work-unit aggregations per bucket.
+  const metrics = {
+    scrape: aggregateBucket("scrape", byKind.scrape),
+    l1_synth: aggregateBucket("l1_synth", byKind.l1_synth),
+    l2_synth: aggregateBucket("l2_synth", byKind.l2_synth),
+    city_reorg: aggregateBucket("city_reorg", byKind.city_reorg),
+    publish: aggregateBucket("publish", byKind.publish),
+  };
   const headline = {
     scrape: byKind.scrape.length,
     l1_synth: byKind.l1_synth.length,
@@ -293,17 +400,24 @@ function buildEmail({ runs, queues, totals, windowHours }) {
     errors: errors.length,
   };
 
-  const subject = `Fast Plumber daily — ${new Date().toISOString().slice(0, 10)} | ${headline.scrape} scrape · ${headline.l1_synth} L1 · ${headline.l2_synth} L2 · ${headline.city_reorg} reorg · queue: L1=${queues.queues.l1_synth.count}`;
+  // Subject line — squeeze the headline metric into each slot.
+  const subjectMetric = (kind) => {
+    const m = metrics[kind];
+    const first = Object.entries(m)[0];
+    if (!first) return "";
+    return ` (${first[1].toLocaleString()})`;
+  };
+  const subject = `Fast Plumber daily — ${new Date().toISOString().slice(0, 10)} | ${headline.scrape} scrape${subjectMetric("scrape")} · ${headline.l1_synth} L1${subjectMetric("l1_synth")} · ${headline.l2_synth} L2${subjectMetric("l2_synth")} · ${headline.city_reorg} reorg${subjectMetric("city_reorg")} · queue: L1=${queues.queues.l1_synth.count}`;
 
   // HTML body — keep visual style minimal and inbox-safe.
   let html = `<div style="font-family: -apple-system, system-ui, sans-serif; color: #1a202c; max-width: 720px;">`;
   html += `<h2 style="margin-bottom: 4px;">Fast Plumber Near Me — daily activity</h2>`;
   html += `<p style="color:#718096; margin-top:0;">Window: last ${windowHours}h · ${runs.length} pipeline runs total · ${totals.totalActiveBusinesses} active plumbers · ${totals.totalCities} cities tracked</p>`;
 
-  // Headline table
+  // Headline table — runs + work units per bucket.
   html += `<h3>Today at a glance</h3>`;
-  html += `<table cellpadding="6" cellspacing="0" style="border-collapse: collapse; font-size: 14px;">`;
-  html += `<tr style="background:#f7fafc;"><th align="left">Activity</th><th align="right">Runs</th></tr>`;
+  html += `<table cellpadding="6" cellspacing="0" style="border-collapse: collapse; font-size: 14px; width: 100%;">`;
+  html += `<tr style="background:#f7fafc;"><th align="left">Activity</th><th align="right">Runs</th><th align="left">Work performed</th></tr>`;
   for (const [k, label] of [
     ["scrape", "Scrape"],
     ["l1_synth", "Level 1 synthesis"],
@@ -313,9 +427,14 @@ function buildEmail({ runs, queues, totals, windowHours }) {
     ["other", "Other"],
   ]) {
     const n = byKind[k]?.length || 0;
-    html += `<tr><td>${label}</td><td align="right" style="font-variant-numeric: tabular-nums;">${n}</td></tr>`;
+    const m = metrics[k] || {};
+    const workStr = formatHeadlineMetrics(m);
+    const workDisplay = n === 0
+      ? `<span style="color:#a0aec0;">—</span>`
+      : (workStr || `<span style="color:#a0aec0;">(no counts logged)</span>`);
+    html += `<tr><td>${label}</td><td align="right" style="font-variant-numeric: tabular-nums;">${n}</td><td style="color:#4a5568;">${workDisplay}</td></tr>`;
   }
-  html += `<tr style="background:#fff5f5; color:#742a2a;"><td><strong>Errors</strong></td><td align="right" style="font-variant-numeric: tabular-nums;"><strong>${errors.length}</strong></td></tr>`;
+  html += `<tr style="background:#fff5f5; color:#742a2a;"><td><strong>Errors</strong></td><td align="right" style="font-variant-numeric: tabular-nums;"><strong>${errors.length}</strong></td><td></td></tr>`;
   html += `</table>`;
 
   // Queue depths
@@ -368,16 +487,22 @@ function buildEmail({ runs, queues, totals, windowHours }) {
   html += `</div>`;
 
   // Plain-text version
+  const textRow = (label, kind) => {
+    const n = headline[kind] ?? 0;
+    const m = metrics[kind] || {};
+    const work = formatHeadlineMetrics(m);
+    return n === 0 ? `  ${label}: 0 runs` : `  ${label}: ${n} run${n === 1 ? "" : "s"}${work ? ` · ${work}` : ""}`;
+  };
   const text = [
     `Fast Plumber Near Me — daily activity (last ${windowHours}h)`,
     `${runs.length} pipeline runs · ${totals.totalActiveBusinesses} active plumbers · ${totals.totalCities} cities tracked`,
     ``,
     `Today at a glance:`,
-    `  Scrape: ${headline.scrape}`,
-    `  Level 1 synthesis: ${headline.l1_synth}`,
-    `  Level 2 synthesis (decision): ${headline.l2_synth}`,
-    `  City page reorg (rank): ${headline.city_reorg}`,
-    `  Publish: ${headline.publish}`,
+    textRow("Scrape", "scrape"),
+    textRow("Level 1 synthesis", "l1_synth"),
+    textRow("Level 2 synthesis (decision)", "l2_synth"),
+    textRow("City page reorg (rank)", "city_reorg"),
+    textRow("Publish", "publish"),
     `  Errors: ${headline.errors}`,
     ``,
     `Queue depths:`,
