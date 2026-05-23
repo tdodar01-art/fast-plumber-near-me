@@ -1,0 +1,98 @@
+name: Outscraper Batch (one-off)
+
+# Manual-only workflow that runs scripts/outscraper-reviews.js against an
+# arbitrary list of cities provided at dispatch time. Built 2026-05-22 as
+# the right home for the 100-city Outscraper backfill — the local Bash run
+# kept timing out, and deep-review-pull.yml is hardwired to 3 cities per
+# run via the GSC-tier filter (sensible default, wrong for backfills).
+#
+# This workflow has no schedule. Trigger via:
+#   gh workflow run "Outscraper Batch (one-off)" \
+#     --field cities="brandon sandy-springs pasadena ..."
+#
+# The script handles the full publish tail itself — Firestore writes,
+# export-firestore-to-json, git commit + push, request-indexing — so this
+# workflow is just a long-running container.
+
+on:
+  workflow_dispatch:
+    inputs:
+      cities:
+        description: 'Space-separated list of city slugs to pull reviews for'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  outscraper-batch:
+    runs-on: ubuntu-latest
+    # 100 cities × ~5 min each (worst case) = ~8h, but typical run is shorter.
+    # Hard cap at 350 minutes — under GitHub Actions' 6h job ceiling.
+    timeout-minutes: 350
+    defaults:
+      run:
+        working-directory: apps/plumbers-web
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --filter plumbers-web --frozen-lockfile
+
+      - name: Check secrets
+        id: secrets
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ] || [ -z "$OUTSCRAPER_API_KEY" ]; then
+            echo "ERROR: missing required secret(s)" >&2
+            echo "  FIREBASE_SERVICE_ACCOUNT: $([ -n "$FIREBASE_SERVICE_ACCOUNT" ] && echo set || echo MISSING)" >&2
+            echo "  OUTSCRAPER_API_KEY:       $([ -n "$OUTSCRAPER_API_KEY" ] && echo set || echo MISSING)" >&2
+            exit 1
+          fi
+
+      - name: Setup service account
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
+      - name: Show city count
+        run: |
+          CITIES="${{ github.event.inputs.cities }}"
+          COUNT=$(echo "$CITIES" | wc -w)
+          echo "=== Outscraper Batch: $COUNT cities queued ==="
+          echo "First 5: $(echo "$CITIES" | awk '{for(i=1;i<=5&&i<=NF;i++) printf "%s ",$i; print ""}')"
+
+      - name: Git setup (for the script's post-run commit)
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run Outscraper reviews
+        env:
+          OUTSCRAPER_API_KEY: ${{ secrets.OUTSCRAPER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "=== STAGE: OUTSCRAPER START ==="
+          node scripts/outscraper-reviews.js ${{ github.event.inputs.cities }}
+
+      - name: Cleanup service account
+        if: always()
+        run: rm -f service-account.json
