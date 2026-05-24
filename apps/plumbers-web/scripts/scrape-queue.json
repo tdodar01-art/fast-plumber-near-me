@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-05",
   "monthlyBudget": 5000,
-  "usedThisMonth": 1143,
+  "usedThisMonth": 1213,
   "queue": [
-    {
-      "city": "Ken Caryl",
-      "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Largo",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Selinsgrove",
-      "state": "PA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Gaithersburg",
-      "state": "MD",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Broomfield",
-      "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Clearwater",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Conroe",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Oklahoma City",
-      "state": "OK",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Shorewood",
       "state": "IL",
@@ -3458,6 +3386,86 @@
       "actualCalls": 9,
       "plumbersFound": 8,
       "completedAt": "2026-05-23"
+    },
+    {
+      "city": "Ken Caryl",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 4,
+      "plumbersFound": 3,
+      "completedAt": "2026-05-24"
+    },
+    {
+      "city": "Largo",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 15,
+      "completedAt": "2026-05-24"
+    },
+    {
+      "city": "Selinsgrove",
+      "state": "PA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 6,
+      "completedAt": "2026-05-24"
+    },
+    {
+      "city": "Gaithersburg",
+      "state": "MD",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 4,
+      "plumbersFound": 3,
+      "completedAt": "2026-05-24"
+    },
+    {
+      "city": "Broomfield",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 5,
+      "plumbersFound": 4,
+      "completedAt": "2026-05-24"
+    },
+    {
+      "city": "Clearwater",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 10,
+      "plumbersFound": 8,
+      "completedAt": "2026-05-24"
+    },
+    {
+      "city": "Conroe",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 18,
+      "plumbersFound": 17,
+      "completedAt": "2026-05-24"
+    },
+    {
+      "city": "Oklahoma City",
+      "state": "OK",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 4,
+      "plumbersFound": 3,
+      "completedAt": "2026-05-24"
     }
   ]
 }
