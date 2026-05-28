@@ -107,6 +107,15 @@ function normalizeResultObject(r) {
     changed = true;
   }
 
+  // Coerce null/undefined emergencyNotes → "" (validator requires string).
+  // Observed during 2026-05-27 burn — agents occasionally emit null when no
+  // emergency signals exist in reviews; semantic intent is "no notes" which
+  // is equivalent to empty string for downstream consumers.
+  if (r.emergencyNotes === null || r.emergencyNotes === undefined) {
+    r.emergencyNotes = "";
+    changed = true;
+  }
+
   // Coerce non-empty array servicesMentioned to {} (agents sometimes return an array
   // instead of an object — semantic intent is "none mentioned").
   if (Array.isArray(r.servicesMentioned)) {

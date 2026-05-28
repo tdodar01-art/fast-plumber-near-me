@@ -286,7 +286,7 @@ async function main() {
   const runDir = argv[0];
   const dryRun = argv.includes("--dry-run");
   if (!runDir) {
-    console.error("usage: node writeback.js <runDir> [--dry-run]");
+    console.error("usage: node writeback.js <runDir> [--dry-run] [--no-publish]");
     process.exit(1);
   }
 
@@ -350,7 +350,18 @@ if (require.main === module) {
       // on 2026-05-22 published changes to git but never submitted the
       // affected city URLs for re-crawl — Google would have only picked up
       // the changes via sitemap re-discovery (slower).
+      //
+      // --no-publish: skip this hook so multiple per-wave writebacks in one
+      // burn session don't burn the 200/day indexing quota on intermediate
+      // states. Operator should run one final publish at the end of the burn
+      // (either a writeback without --no-publish, or directly invoke
+      // export-firestore-to-json.js + request-indexing.js).
       const dryRun = process.argv.includes("--dry-run");
+      const noPublish = process.argv.includes("--no-publish");
+      if (noPublish) {
+        console.log("[writeback] --no-publish set — skipping post-publish hook");
+        process.exit(0);
+      }
       try {
         const { publishAfterWriteback } = require("../lib/post-writeback-publish");
         await publishAfterWriteback({ dryRun, label: "synth-writeback" });

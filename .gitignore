@@ -79,3 +79,11 @@ service-account*.json
 credentials*.json
 gcp-*.json
 firebase-adminsdk-*.json
+
+# Claude Code session-local state — never commit
+.claude/
+
+# Synth pipeline intermediate stderr/stdout logs from generate-batches.js
+apps/plumbers-web/generate*.log
+apps/plumbers-web/generate*.stdout.log
+apps/plumbers-web/generate*.stderr.log
