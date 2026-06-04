@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-06",
   "monthlyBudget": 5000,
-  "usedThisMonth": 316,
+  "usedThisMonth": 418,
   "queue": [
-    {
-      "city": "Mountain View",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Clarendon Hills",
-      "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Georgetown",
-      "state": "KY",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Winter Park",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Fairmont",
-      "state": "WV",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Loveland",
-      "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Lansdale",
-      "state": "PA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Cartersville",
-      "state": "GA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Valrico",
       "state": "FL",
@@ -4760,6 +4688,86 @@
       "actualCalls": 14,
       "plumbersFound": 11,
       "completedAt": "2026-06-03"
+    },
+    {
+      "city": "Mountain View",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-06-04"
+    },
+    {
+      "city": "Clarendon Hills",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 7,
+      "plumbersFound": 6,
+      "completedAt": "2026-06-04"
+    },
+    {
+      "city": "Georgetown",
+      "state": "KY",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-06-04"
+    },
+    {
+      "city": "Winter Park",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 13,
+      "plumbersFound": 12,
+      "completedAt": "2026-06-04"
+    },
+    {
+      "city": "Fairmont",
+      "state": "WV",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 9,
+      "plumbersFound": 8,
+      "completedAt": "2026-06-04"
+    },
+    {
+      "city": "Loveland",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 16,
+      "completedAt": "2026-06-04"
+    },
+    {
+      "city": "Lansdale",
+      "state": "PA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-06-04"
+    },
+    {
+      "city": "Cartersville",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 13,
+      "completedAt": "2026-06-04"
     }
   ]
 }
