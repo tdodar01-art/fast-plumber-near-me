@@ -236,6 +236,12 @@ function buildUpdatePayload(result, batchPlumber, nowTs) {
     "reviewSynthesis.platformDiscrepancy": result.platformDiscrepancy ?? null,
     "reviewSynthesis.reviewCount": batchPlumber.signals?.totalReviewsAnalyzed ?? 0,
     "reviewSynthesis.aiSynthesizedAt": nowTs,
+    // synthesizedAt is the freshness field the re-synth selector keys off
+    // (generate-batches.js plumberNeedsResynth reads `synthesizedAt ?? aiSynthesizedAt`,
+    // preferring synthesizedAt). Writing aiSynthesizedAt alone left the stale
+    // pre-cited-form `synthesizedAt` in place, so every run re-selected the same
+    // plumbers forever. Write both — export-firestore keys off aiSynthesizedAt.
+    "reviewSynthesis.synthesizedAt": nowTs,
     "reviewSynthesis.synthesisVersion": SYNTHESIS_VERSION,
     pendingRescoreSince: admin.firestore.FieldValue.delete(),
     pendingRescoreReason: admin.firestore.FieldValue.delete(),
