@@ -1,0 +1,76 @@
+name: exp-003 SERP CTR Report
+
+# Fires once on 2026-07-07 (exp-003 end +3d for GSC lag) to analyze the
+# title/description CTR test and email the results to tim@aokchemdry.net.
+# Cron is "July 7 @ 13:00 UTC" (~8 AM CT). workflow_dispatch is available to run
+# the report on demand (e.g. a mid-experiment sanity check). Remove this workflow
+# once exp-003 is closed out.
+on:
+  schedule:
+    - cron: "0 13 7 7 *"
+  workflow_dispatch:
+
+concurrency:
+  group: exp-003-report
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: apps/plumbers-web
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Guard required secrets
+        id: secrets
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ] && [ -n "$BREVO_API_KEY" ]; then
+            echo "ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "ok=false" >> $GITHUB_OUTPUT
+            echo "WARNING: FIREBASE_SERVICE_ACCOUNT and/or BREVO_API_KEY not set — skipping"
+          fi
+
+      - name: Write service account
+        if: steps.secrets.outputs.ok == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        # analyze-serp-ctr.js reads apps/plumbers-web/service-account.json.
+        run: echo "$FIREBASE_SERVICE_ACCOUNT" > service-account.json
+
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --filter plumbers-web --frozen-lockfile
+
+      - name: Analyze exp-003 and email report
+        if: steps.secrets.outputs.ok == 'true'
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_SENDER_EMAIL: ${{ secrets.BREVO_SENDER_EMAIL }}
+          BREVO_SENDER_NAME: Fast Plumber Experiments
+        run: node scripts/experiments/analyze-serp-ctr.js --to tim@aokchemdry.net
+
+      - name: Cleanup
+        if: always()
+        run: rm -f service-account.json

@@ -1,0 +1,649 @@
+{
+  "experiment": "exp-003-serp-ctr-structure",
+  "builtAt": "2026-06-04T11:27:48.244Z",
+  "window": {
+    "startDate": "2026-05-02",
+    "endDate": "2026-06-01"
+  },
+  "minImpressions": 5,
+  "arms": [
+    "control",
+    "urgency",
+    "social_proof"
+  ],
+  "count": 77,
+  "armSummary": {
+    "control": {
+      "pages": 22,
+      "impressions30d": 8076
+    },
+    "urgency": {
+      "pages": 28,
+      "impressions30d": 8076
+    },
+    "social_proof": {
+      "pages": 27,
+      "impressions30d": 8071
+    }
+  },
+  "assignment": {
+    "tennessee/nashville": "control",
+    "california/alameda": "urgency",
+    "georgia/acworth": "social_proof",
+    "texas/abilene": "social_proof",
+    "georgia/atlanta": "urgency",
+    "south-carolina/aiken": "urgency",
+    "texas/georgetown": "social_proof",
+    "massachusetts/worcester": "social_proof",
+    "virginia/abingdon": "urgency",
+    "alabama/huntsville": "social_proof",
+    "south-carolina/greer": "urgency",
+    "arizona/prescott": "social_proof",
+    "hawaii/aiea": "urgency",
+    "texas/fort-worth": "social_proof",
+    "arizona/cottonwood": "urgency",
+    "maryland/bethesda": "social_proof",
+    "ohio/canton": "control",
+    "arizona/prescott-valley": "urgency",
+    "oklahoma/ardmore": "social_proof",
+    "texas/duncanville": "control",
+    "utah/salt-lake-city": "urgency",
+    "pennsylvania/allentown": "social_proof",
+    "texas/san-antonio": "control",
+    "ohio/stow": "urgency",
+    "oklahoma/edmond": "control",
+    "texas/hurst": "social_proof",
+    "colorado/lakewood": "urgency",
+    "ohio/canal-winchester": "social_proof",
+    "colorado/westminster": "control",
+    "tennessee/gallatin": "urgency",
+    "colorado/northglenn": "control",
+    "wisconsin/stevens-point": "social_proof",
+    "colorado/thornton": "urgency",
+    "tennessee/franklin": "control",
+    "florida/brandon": "social_proof",
+    "west-virginia/hurricane": "urgency",
+    "oklahoma/yukon": "social_proof",
+    "utah/taylorsville": "control",
+    "texas/conroe": "urgency",
+    "arizona/sedona": "social_proof",
+    "illinois/evanston": "control",
+    "south-carolina/clemson": "urgency",
+    "tennessee/crossville": "control",
+    "california/glendale": "social_proof",
+    "oklahoma/muskogee": "urgency",
+    "oregon/woodburn": "social_proof",
+    "kentucky/georgetown": "urgency",
+    "ohio/fairfield": "control",
+    "texas/arlington": "urgency",
+    "california/lompoc": "social_proof",
+    "oregon/mcminnville": "control",
+    "utah/farmington": "control",
+    "oklahoma/duncan": "social_proof",
+    "illinois/carpentersville": "urgency",
+    "pennsylvania/conshohocken": "urgency",
+    "colorado/fort-collins": "social_proof",
+    "colorado/ken-caryl": "control",
+    "south-carolina/greenville": "social_proof",
+    "texas/kyle": "control",
+    "connecticut/trumbull": "urgency",
+    "florida/hialeah": "urgency",
+    "illinois/huntley": "social_proof",
+    "ohio/wadsworth": "control",
+    "massachusetts/pittsfield": "urgency",
+    "north-carolina/pineville": "social_proof",
+    "utah/pleasant-grove": "control",
+    "utah/west-jordan": "urgency",
+    "illinois/hanover-park": "social_proof",
+    "mississippi/natchez": "control",
+    "new-jersey/red-bank": "urgency",
+    "utah/alpine": "social_proof",
+    "colorado/commerce-city": "control",
+    "florida/winter-garden": "control",
+    "illinois/harvard": "urgency",
+    "ohio/alliance": "social_proof",
+    "tennessee/cleveland": "control",
+    "texas/huntsville": "urgency"
+  },
+  "detail": [
+    {
+      "slug": "tennessee/nashville",
+      "impressions": 7288,
+      "clicks": 2,
+      "position": 22,
+      "arm": "control"
+    },
+    {
+      "slug": "california/alameda",
+      "impressions": 2947,
+      "clicks": 0,
+      "position": 13.3,
+      "arm": "urgency"
+    },
+    {
+      "slug": "georgia/acworth",
+      "impressions": 2509,
+      "clicks": 0,
+      "position": 21.8,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "texas/abilene",
+      "impressions": 2498,
+      "clicks": 2,
+      "position": 22.6,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "georgia/atlanta",
+      "impressions": 1755,
+      "clicks": 0,
+      "position": 20.5,
+      "arm": "urgency"
+    },
+    {
+      "slug": "south-carolina/aiken",
+      "impressions": 1732,
+      "clicks": 1,
+      "position": 20.7,
+      "arm": "urgency"
+    },
+    {
+      "slug": "texas/georgetown",
+      "impressions": 1098,
+      "clicks": 2,
+      "position": 38.5,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "massachusetts/worcester",
+      "impressions": 489,
+      "clicks": 0,
+      "position": 12.9,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "virginia/abingdon",
+      "impressions": 318,
+      "clicks": 0,
+      "position": 19.6,
+      "arm": "urgency"
+    },
+    {
+      "slug": "alabama/huntsville",
+      "impressions": 293,
+      "clicks": 0,
+      "position": 18.2,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "south-carolina/greer",
+      "impressions": 248,
+      "clicks": 0,
+      "position": 14.5,
+      "arm": "urgency"
+    },
+    {
+      "slug": "arizona/prescott",
+      "impressions": 208,
+      "clicks": 0,
+      "position": 14.3,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "hawaii/aiea",
+      "impressions": 179,
+      "clicks": 0,
+      "position": 21.1,
+      "arm": "urgency"
+    },
+    {
+      "slug": "texas/fort-worth",
+      "impressions": 168,
+      "clicks": 0,
+      "position": 27.6,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "arizona/cottonwood",
+      "impressions": 158,
+      "clicks": 0,
+      "position": 10.3,
+      "arm": "urgency"
+    },
+    {
+      "slug": "maryland/bethesda",
+      "impressions": 144,
+      "clicks": 0,
+      "position": 17.9,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "ohio/canton",
+      "impressions": 129,
+      "clicks": 0,
+      "position": 8.4,
+      "arm": "control"
+    },
+    {
+      "slug": "arizona/prescott-valley",
+      "impressions": 121,
+      "clicks": 0,
+      "position": 18.9,
+      "arm": "urgency"
+    },
+    {
+      "slug": "oklahoma/ardmore",
+      "impressions": 111,
+      "clicks": 0,
+      "position": 8.6,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "texas/duncanville",
+      "impressions": 111,
+      "clicks": 0,
+      "position": 11.4,
+      "arm": "control"
+    },
+    {
+      "slug": "utah/salt-lake-city",
+      "impressions": 103,
+      "clicks": 0,
+      "position": 28.1,
+      "arm": "urgency"
+    },
+    {
+      "slug": "pennsylvania/allentown",
+      "impressions": 98,
+      "clicks": 0,
+      "position": 14.7,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "texas/san-antonio",
+      "impressions": 88,
+      "clicks": 0,
+      "position": 45.8,
+      "arm": "control"
+    },
+    {
+      "slug": "ohio/stow",
+      "impressions": 86,
+      "clicks": 0,
+      "position": 17.8,
+      "arm": "urgency"
+    },
+    {
+      "slug": "oklahoma/edmond",
+      "impressions": 85,
+      "clicks": 0,
+      "position": 20.1,
+      "arm": "control"
+    },
+    {
+      "slug": "texas/hurst",
+      "impressions": 83,
+      "clicks": 0,
+      "position": 11.5,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "colorado/lakewood",
+      "impressions": 75,
+      "clicks": 1,
+      "position": 12.8,
+      "arm": "urgency"
+    },
+    {
+      "slug": "ohio/canal-winchester",
+      "impressions": 64,
+      "clicks": 0,
+      "position": 15.5,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "colorado/westminster",
+      "impressions": 62,
+      "clicks": 0,
+      "position": 41.2,
+      "arm": "control"
+    },
+    {
+      "slug": "tennessee/gallatin",
+      "impressions": 59,
+      "clicks": 0,
+      "position": 11.1,
+      "arm": "urgency"
+    },
+    {
+      "slug": "colorado/northglenn",
+      "impressions": 51,
+      "clicks": 0,
+      "position": 15,
+      "arm": "control"
+    },
+    {
+      "slug": "wisconsin/stevens-point",
+      "impressions": 51,
+      "clicks": 0,
+      "position": 9.1,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "colorado/thornton",
+      "impressions": 48,
+      "clicks": 0,
+      "position": 22.2,
+      "arm": "urgency"
+    },
+    {
+      "slug": "tennessee/franklin",
+      "impressions": 48,
+      "clicks": 0,
+      "position": 9,
+      "arm": "control"
+    },
+    {
+      "slug": "florida/brandon",
+      "impressions": 45,
+      "clicks": 0,
+      "position": 32.8,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "west-virginia/hurricane",
+      "impressions": 41,
+      "clicks": 0,
+      "position": 13,
+      "arm": "urgency"
+    },
+    {
+      "slug": "oklahoma/yukon",
+      "impressions": 40,
+      "clicks": 0,
+      "position": 23.8,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "utah/taylorsville",
+      "impressions": 39,
+      "clicks": 0,
+      "position": 8.2,
+      "arm": "control"
+    },
+    {
+      "slug": "texas/conroe",
+      "impressions": 34,
+      "clicks": 0,
+      "position": 39.6,
+      "arm": "urgency"
+    },
+    {
+      "slug": "arizona/sedona",
+      "impressions": 31,
+      "clicks": 0,
+      "position": 10.8,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "illinois/evanston",
+      "impressions": 29,
+      "clicks": 0,
+      "position": 13.3,
+      "arm": "control"
+    },
+    {
+      "slug": "south-carolina/clemson",
+      "impressions": 29,
+      "clicks": 0,
+      "position": 16.7,
+      "arm": "urgency"
+    },
+    {
+      "slug": "tennessee/crossville",
+      "impressions": 27,
+      "clicks": 0,
+      "position": 13.6,
+      "arm": "control"
+    },
+    {
+      "slug": "california/glendale",
+      "impressions": 25,
+      "clicks": 0,
+      "position": 16.9,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "oklahoma/muskogee",
+      "impressions": 23,
+      "clicks": 0,
+      "position": 10.5,
+      "arm": "urgency"
+    },
+    {
+      "slug": "oregon/woodburn",
+      "impressions": 23,
+      "clicks": 0,
+      "position": 18.8,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "kentucky/georgetown",
+      "impressions": 22,
+      "clicks": 0,
+      "position": 21.5,
+      "arm": "urgency"
+    },
+    {
+      "slug": "ohio/fairfield",
+      "impressions": 22,
+      "clicks": 0,
+      "position": 14.9,
+      "arm": "control"
+    },
+    {
+      "slug": "texas/arlington",
+      "impressions": 19,
+      "clicks": 0,
+      "position": 20.4,
+      "arm": "urgency"
+    },
+    {
+      "slug": "california/lompoc",
+      "impressions": 18,
+      "clicks": 0,
+      "position": 10.7,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "oregon/mcminnville",
+      "impressions": 17,
+      "clicks": 0,
+      "position": 17.4,
+      "arm": "control"
+    },
+    {
+      "slug": "utah/farmington",
+      "impressions": 17,
+      "clicks": 0,
+      "position": 9.2,
+      "arm": "control"
+    },
+    {
+      "slug": "oklahoma/duncan",
+      "impressions": 16,
+      "clicks": 0,
+      "position": 5.9,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "illinois/carpentersville",
+      "impressions": 15,
+      "clicks": 0,
+      "position": 12.7,
+      "arm": "urgency"
+    },
+    {
+      "slug": "pennsylvania/conshohocken",
+      "impressions": 15,
+      "clicks": 0,
+      "position": 23.2,
+      "arm": "urgency"
+    },
+    {
+      "slug": "colorado/fort-collins",
+      "impressions": 13,
+      "clicks": 0,
+      "position": 18.4,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "colorado/ken-caryl",
+      "impressions": 13,
+      "clicks": 0,
+      "position": 10.7,
+      "arm": "control"
+    },
+    {
+      "slug": "south-carolina/greenville",
+      "impressions": 13,
+      "clicks": 0,
+      "position": 16.1,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "texas/kyle",
+      "impressions": 13,
+      "clicks": 0,
+      "position": 8.1,
+      "arm": "control"
+    },
+    {
+      "slug": "connecticut/trumbull",
+      "impressions": 10,
+      "clicks": 0,
+      "position": 15.4,
+      "arm": "urgency"
+    },
+    {
+      "slug": "florida/hialeah",
+      "impressions": 9,
+      "clicks": 0,
+      "position": 43.9,
+      "arm": "urgency"
+    },
+    {
+      "slug": "illinois/huntley",
+      "impressions": 9,
+      "clicks": 0,
+      "position": 7.8,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "ohio/wadsworth",
+      "impressions": 9,
+      "clicks": 0,
+      "position": 11.6,
+      "arm": "control"
+    },
+    {
+      "slug": "massachusetts/pittsfield",
+      "impressions": 7,
+      "clicks": 1,
+      "position": 8.9,
+      "arm": "urgency"
+    },
+    {
+      "slug": "north-carolina/pineville",
+      "impressions": 7,
+      "clicks": 0,
+      "position": 22.3,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "utah/pleasant-grove",
+      "impressions": 7,
+      "clicks": 0,
+      "position": 9.9,
+      "arm": "control"
+    },
+    {
+      "slug": "utah/west-jordan",
+      "impressions": 7,
+      "clicks": 0,
+      "position": 18.6,
+      "arm": "urgency"
+    },
+    {
+      "slug": "illinois/hanover-park",
+      "impressions": 6,
+      "clicks": 0,
+      "position": 12,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "mississippi/natchez",
+      "impressions": 6,
+      "clicks": 0,
+      "position": 14.3,
+      "arm": "control"
+    },
+    {
+      "slug": "new-jersey/red-bank",
+      "impressions": 6,
+      "clicks": 0,
+      "position": 27.5,
+      "arm": "urgency"
+    },
+    {
+      "slug": "utah/alpine",
+      "impressions": 6,
+      "clicks": 0,
+      "position": 7.7,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "colorado/commerce-city",
+      "impressions": 5,
+      "clicks": 0,
+      "position": 16.2,
+      "arm": "control"
+    },
+    {
+      "slug": "florida/winter-garden",
+      "impressions": 5,
+      "clicks": 0,
+      "position": 61,
+      "arm": "control"
+    },
+    {
+      "slug": "illinois/harvard",
+      "impressions": 5,
+      "clicks": 0,
+      "position": 5.8,
+      "arm": "urgency"
+    },
+    {
+      "slug": "ohio/alliance",
+      "impressions": 5,
+      "clicks": 0,
+      "position": 17,
+      "arm": "social_proof"
+    },
+    {
+      "slug": "tennessee/cleveland",
+      "impressions": 5,
+      "clicks": 0,
+      "position": 7.6,
+      "arm": "control"
+    },
+    {
+      "slug": "texas/huntsville",
+      "impressions": 5,
+      "clicks": 0,
+      "position": 9.8,
+      "arm": "urgency"
+    }
+  ]
+}

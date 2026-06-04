@@ -27,6 +27,7 @@ import type { Plumber } from "@/lib/types";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
 import { getExperimentMetaTitle } from "@/lib/experiments/getExperimentMetaTitle";
+import { getExperimentMetaDescription } from "@/lib/experiments/getExperimentMetaDescription";
 import { absoluteUrl, businessProfilePath, cityPath } from "@/config/plumbing-routes";
 
 // Only prerender cities that have plumber data. Long-tail cities render
@@ -58,16 +59,20 @@ export async function generateMetadata({
   ogUrl.searchParams.set("county", city.county);
 
   const defaultTitle = `${count} Emergency Plumbers in ${city.name}, ${city.state} — Rated & Reviewed (${year})`;
-  const experimentTitle = getExperimentMetaTitle(stateSlug, citySlug);
-  const title = experimentTitle ?? defaultTitle;
-  const description = `Compare ${count} emergency plumbers in ${city.name}, ${city.state} with real Google reviews, honest strengths & weaknesses, and 24-hour availability. Find who actually picks up.`;
+  const defaultDescription = `Compare ${count} emergency plumbers in ${city.name}, ${city.state} with real Google reviews, honest strengths & weaknesses, and 24-hour availability. Find who actually picks up.`;
+
+  // exp-003 SERP CTR test — vary title + description by arm on tracked pages.
+  const expCtx = { cityName: city.name, stateAbbr: city.state, count, year };
+  const title = getExperimentMetaTitle(stateSlug, citySlug, expCtx) ?? defaultTitle;
+  const description = getExperimentMetaDescription(stateSlug, citySlug, expCtx) ?? defaultDescription;
 
   return {
     title,
     description,
     openGraph: {
+      // OG is held constant across arms — only the SERP snippet is under test.
       title: defaultTitle,
-      description,
+      description: defaultDescription,
       images: [{ url: ogUrl.toString(), width: 1200, height: 630 }],
     },
   };

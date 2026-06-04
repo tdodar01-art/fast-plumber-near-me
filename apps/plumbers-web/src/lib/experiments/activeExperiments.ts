@@ -9,6 +9,8 @@
  * control-center experiment .md file.
  */
 
+import { getSerpTrackedSlugs } from "./serpExperiment";
+
 export interface VariantConfig {
   [key: string]: unknown;
 }
@@ -84,6 +86,9 @@ export function getActiveVariant(
 /**
  * Get all unique slugs across all active experiments.
  * Used by the metrics publisher to know which slugs to track.
+ *
+ * Includes exp-003 (SERP CTR) pages, which are sourced from a committed snapshot
+ * rather than hardcoded here — see serpExperiment.getSerpTrackedSlugs().
  */
 export function getAllTrackedSlugs(): string[] {
   const slugs = new Set<string>();
@@ -91,5 +96,6 @@ export function getAllTrackedSlugs(): string[] {
     for (const slug of exp.test_slugs) slugs.add(slug);
     for (const slug of exp.control_slugs) slugs.add(slug);
   }
+  for (const slug of getSerpTrackedSlugs()) slugs.add(slug);
   return [...slugs];
 }

@@ -15,6 +15,19 @@ The **brain** (control-center repo) owns the experiment ledger, judging logic, a
 |----|-----------|------------|--------|
 | exp-001-nearby-cities-expansion | More nearby city links → better GSC metrics | garland, mckinney, denton, round-rock, league-city | active |
 | exp-002-aberdeen-title-urgency | Urgency-led meta title ("24/7 — Fast, Local & Available Now") beats catalog-style title on GSC CTR | maryland/aberdeen | active (started 2026-04-21, ends 2026-06-20) |
+| exp-003-serp-ctr-structure | Title+description **structure** drives CTR controlling for position. 3 arms (control / urgency / social-proof) across 77 trafficked city pages, stratified by impressions. Round 2 adds pain & speed vs winner. | 77-slug snapshot in `data/experiments/exp-003-eligible-slugs.json` | active (started 2026-06-04, ends 2026-07-04; report → tim@aokchemdry.net on 2026-07-07) |
+
+### exp-003 notes
+- **Assignment:** frozen, committed snapshot (`data/experiments/exp-003-eligible-slugs.json`),
+  stratified greedy-balance by impressions so high-traffic pages (Nashville etc.) spread across arms.
+- **Arms / copy:** `src/lib/experiments/serpVariants.ts`. Control = current copy (holdout). Only title + meta
+  description vary; OG/canonical/schema held constant.
+- **Resolution:** `getSerpArm()` (`serpExperiment.ts`) → `getExperimentMetaTitle` / `getExperimentMetaDescription`
+  in the city-page `generateMetadata`.
+- **Metrics:** `publish-experiment-metrics.yml` cron re-enabled 2026-06-04 for the window.
+- **Analysis + email:** `scripts/experiments/analyze-serp-ctr.js` (position-binned CTR, two-proportion z-test),
+  scheduled for 2026-07-07 (end +3d for GSC lag).
+- **Revert:** delete the exp-003 snapshot or remove its tracked slugs → pages fall back to default copy instantly.
 
 ## File map
 
