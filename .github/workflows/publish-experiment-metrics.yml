@@ -1,12 +1,11 @@
 name: Publish Experiment Metrics
 
 on:
-  schedule:
-    # 7:30 AM CT daily. Re-enabled 2026-06-04 to collect daily metrics for
-    # exp-003 (SERP title/description CTR test, runs through 2026-07-04).
-    # Re-disable after exp-003 closes unless another active experiment needs it.
-    - cron: "30 12 * * *"
-  workflow_dispatch: # Manual trigger also available
+  workflow_dispatch: # Manual trigger only — cron disabled 2026-04-23.
+  # NB: exp-003 does NOT rely on this cron. Its report (exp-003-report.yml)
+  # pulls the full settled GSC window directly at analysis time, which is
+  # reliable despite GSC's 2-3 day lag (per-day docs written here for
+  # "yesterday" capture unsettled zeros and are not trustworthy for CTR).
 
 concurrency:
   group: experiment-metrics

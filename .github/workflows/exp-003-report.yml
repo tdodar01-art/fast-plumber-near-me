@@ -66,6 +66,7 @@ jobs:
       - name: Analyze exp-003 and email report
         if: steps.secrets.outputs.ok == 'true'
         env:
+          GSC_SITE_URL: https://www.fastplumbernearme.com/
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           BREVO_SENDER_EMAIL: ${{ secrets.BREVO_SENDER_EMAIL }}
           BREVO_SENDER_NAME: Fast Plumber Experiments

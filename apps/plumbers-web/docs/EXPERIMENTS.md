@@ -24,9 +24,13 @@ The **brain** (control-center repo) owns the experiment ledger, judging logic, a
   description vary; OG/canonical/schema held constant.
 - **Resolution:** `getSerpArm()` (`serpExperiment.ts`) → `getExperimentMetaTitle` / `getExperimentMetaDescription`
   in the city-page `generateMetadata`.
-- **Metrics:** `publish-experiment-metrics.yml` cron re-enabled 2026-06-04 for the window.
-- **Analysis + email:** `scripts/experiments/analyze-serp-ctr.js` (position-binned CTR, two-proportion z-test),
-  scheduled for 2026-07-07 (end +3d for GSC lag).
+- **Metrics:** the report pulls the full **settled** GSC window directly at analysis time
+  (`dimensions:[page,date]`) — reliable despite GSC's 2-3d lag. The daily
+  `publish-experiment-metrics.yml` cron is NOT used (its "yesterday" docs capture unsettled
+  zeros); it stays dispatch-only.
+- **Analysis + email:** `scripts/experiments/analyze-serp-ctr.js` (position-binned CTR, two-proportion
+  z-test) → `exp-003-report.yml` fires it 2026-07-07 (end +3d for GSC lag). For a mid-experiment
+  read, run that workflow via `workflow_dispatch` any time.
 - **Revert:** delete the exp-003 snapshot or remove its tracked slugs → pages fall back to default copy instantly.
 
 ## File map

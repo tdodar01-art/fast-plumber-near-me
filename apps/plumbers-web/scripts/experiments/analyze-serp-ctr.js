@@ -21,14 +21,14 @@
 
 const fs = require("fs");
 const path = require("path");
-const admin = require("firebase-admin");
+const { google } = require("googleapis");
 const { sendBrevoEmail, escapeHtml } = require("../lib/brevo");
+const { SITE_ORIGIN_WITH_WWW } = require("../config/plumbing-directory.cjs");
 
 const APP_ROOT = path.join(__dirname, "..", "..");
 const SA_PATH = path.join(APP_ROOT, "service-account.json");
 const SNAPSHOT_PATH = path.join(APP_ROOT, "data", "experiments", "exp-003-eligible-slugs.json");
 const ENV_PATH = path.join(APP_ROOT, ".env.local");
-const SITE = "plumbers";
 const DEFAULT_TO = "tim@aokchemdry.net";
 
 const ARM_LABELS = {
@@ -99,11 +99,25 @@ async function main() {
   const endDate = arg("--end", "2026-07-04");
 
   if (!fs.existsSync(SA_PATH)) throw new Error("service-account.json not found");
-  if (!admin.apps.length) {
-    admin.initializeApp({ credential: admin.credential.cert(JSON.parse(fs.readFileSync(SA_PATH, "utf-8"))) });
-  }
-  const db = admin.firestore();
-  const base = db.collection("experiment_metrics").doc(SITE);
+
+  // Pull GSC directly for the full window — settled data, in one shot. This
+  // avoids depending on 30 daily metric docs each capturing settled data (GSC
+  // lags ~2-3 days, so per-day docs written for "yesterday" are unreliable).
+  // dimensions [page, date] so each page-day's clicks/impressions can be
+  // attributed to the position the page held THAT day (position-controlled CTR).
+  const credentials = JSON.parse(fs.readFileSync(SA_PATH, "utf-8"));
+  const auth = new google.auth.GoogleAuth({
+    credentials,
+    scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
+  });
+  const searchconsole = google.searchconsole({ version: "v1", auth });
+  const siteUrl = process.env.GSC_SITE_URL || `${SITE_ORIGIN_WITH_WWW}/`;
+
+  const resp = await searchconsole.searchanalytics.query({
+    siteUrl,
+    requestBody: { startDate, endDate, dimensions: ["page", "date"], rowLimit: 25000, type: "web" },
+  });
+  const rows = resp.data.rows || [];
 
   // Accumulators
   const overall = {};   // arm -> {impr, clicks, posWeighted, pages:Set, days}
@@ -113,27 +127,25 @@ async function main() {
   }
   for (const b of POSITION_BINS) { byBin[b.key] = {}; for (const a of arms) byBin[b.key][a] = { impr: 0, clicks: 0 }; }
 
+  const cityRe = /\/emergency-plumbers\/([a-z0-9-]+)\/([a-z0-9-]+)\/?$/;
   let docsRead = 0;
-  for (const [slug, arm] of Object.entries(assignment)) {
-    const enc = slug.replace("/", "__");
-    const sub = await base.collection(enc).get();
-    for (const doc of sub.docs) {
-      const date = doc.id;
-      if (date < startDate || date > endDate) continue;
-      const g = doc.data()?.sources?.gsc;
-      if (!g) continue;
-      const impr = g.impressions || 0, clicks = g.clicks || 0, pos = g.position || 0;
-      docsRead++;
-      if (impr <= 0) continue;
-      overall[arm].impr += impr;
-      overall[arm].clicks += clicks;
-      overall[arm].posWeighted += pos * impr;
-      overall[arm].pages.add(slug);
-      overall[arm].days++;
-      const bk = binFor(pos);
-      byBin[bk][arm].impr += impr;
-      byBin[bk][arm].clicks += clicks;
-    }
+  for (const r of rows) {
+    const m = (r.keys?.[0] || "").match(cityRe);
+    if (!m) continue;
+    const slug = `${m[1]}/${m[2]}`;
+    const arm = assignment[slug];
+    if (!arm) continue;
+    const impr = r.impressions || 0, clicks = r.clicks || 0, pos = r.position || 0;
+    docsRead++;
+    if (impr <= 0) continue;
+    overall[arm].impr += impr;
+    overall[arm].clicks += clicks;
+    overall[arm].posWeighted += pos * impr;
+    overall[arm].pages.add(slug);
+    overall[arm].days++;
+    const bk = binFor(pos);
+    byBin[bk][arm].impr += impr;
+    byBin[bk][arm].clicks += clicks;
   }
 
   const report = buildReport({ snap, arms, startDate, endDate, overall, byBin, docsRead });
