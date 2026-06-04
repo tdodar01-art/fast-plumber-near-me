@@ -1,6 +1,14 @@
 @ROADMAP.md
 
 ## Start Here
+- **Repo layout / working directory:** This is a monorepo. The Next.js app and
+  its entire `scripts/` and `data/` tree live under **`apps/plumbers-web/`**.
+  Unless a path is fully qualified or absolute, treat repo-relative `scripts/…`,
+  `data/…`, and `src/…` references in this doc as rooted at `apps/plumbers-web/`
+  (e.g. the synth pipeline is at `apps/plumbers-web/scripts/synth/`, NOT
+  `scripts/synth/` from the repo root). Exceptions that really are repo-root:
+  `.github/workflows/`, `docs/`, and absolute paths like
+  `~/code/control-center/…`.
 - **Strategy:** Read `docs/plans/STRATEGY-BRIEF.md` first — it defines the three active tracks, what's shipped, and what's next.
 - **Cross-project status and session logs:** Live in `~/code/control-center/`, not here.
 - **Archived plans:** `docs/plans/archive/` — superseded by the strategy brief.
@@ -8,7 +16,8 @@
 ## Canonical scoring path — local Claude Code (active as of 2026-05-22)
 
 The canonical scoring + synthesis path is now the **local Claude Code Max**
-pipeline at `scripts/synth/` — NOT `scripts/score-plumbers.ts` (Sonnet via the
+pipeline at `apps/plumbers-web/scripts/synth/` — NOT
+`apps/plumbers-web/scripts/score-plumbers.ts` (Sonnet via the
 Anthropic API). Reason: zero API spend, equivalent quality with the cited-form
 schema introduced 2026-05-22, and the orchestration runs inside a Claude Code
 session via the Agent tool. The Sonnet path remains available as a fallback
@@ -16,30 +25,35 @@ session via the Agent tool. The Sonnet path remains available as a fallback
 
 Local-synth pipeline at a glance:
 
-1. `scripts/synth/generate-batches.js` — reads Firestore for plumbers needing
-   re-synth (selection: outscraped-after-synth OR no synth OR synth older
-   than `--max-age-days`), preprocesses each plumber's reviews into a
-   compressed signal block, splits into city-grouped batches of 8-12, writes
-   batch input files under `data/synth-runs/<runId>/batches/` and seeds
+1. `apps/plumbers-web/scripts/synth/generate-batches.js` — reads Firestore for
+   plumbers needing re-synth (selection: outscraped-after-synth OR no synth OR
+   synth older than `--max-age-days`), preprocesses each plumber's reviews into
+   a compressed signal block, splits into city-grouped batches of 8-12, writes
+   batch input files under
+   `apps/plumbers-web/data/synth-runs/<runId>/batches/` and seeds
    `queue.json`. Stdout = the runDir, for the orchestrator.
 2. **Subagent fan-out** — one Claude Code subagent per batch. Each subagent
    reads the batch input and writes the result JSON to
-   `data/synth-runs/<runId>/results/<jobId>.json` matching the schema in
-   `scripts/synth/agent-prompt.js`. Concurrency cap defaults to 8.
-3. `scripts/synth/validate-synthesis.js <runDir>` — validates each result
-   against `scripts/synth/lib/synthesis-schema.js`. Anti-hallucination checks:
-   evidence quotes must be near-verbatim from input; supporting_review_ids
-   must be a subset of input.evidenceQuotes review_ids. Validated jobs flip
-   status `running` → `validated`.
-4. `scripts/synth/writeback.js <runDir>` — pushes validated synthesis to
-   Firestore (`reviewSynthesis.*`, `scores.*`, `evidence_quotes`). Sets
-   `scores.method = "claude-code-local-v3-cited"`. Clears
+   `apps/plumbers-web/data/synth-runs/<runId>/results/<jobId>.json` matching the
+   schema in `apps/plumbers-web/scripts/synth/agent-prompt.js`. Concurrency cap
+   defaults to 8.
+3. `apps/plumbers-web/scripts/synth/validate-synthesis.js <runDir>` — validates
+   each result against
+   `apps/plumbers-web/scripts/synth/lib/synthesis-schema.js`. Anti-hallucination
+   checks: evidence quotes must be near-verbatim from input;
+   supporting_review_ids must be a subset of input.evidenceQuotes review_ids.
+   Validated jobs flip status `running` → `validated`.
+4. `apps/plumbers-web/scripts/synth/writeback.js <runDir>` — pushes validated
+   synthesis to Firestore (`reviewSynthesis.*`, `scores.*`, `evidence_quotes`).
+   Sets `scores.method = "claude-code-local-v3-cited"`. Clears
    `pendingRescoreSince`. Single writer of all reviewSynthesis fields for
    plumbers processed by this path.
-5. After writeback completes, run `score-plumbers.ts --pass 2` (rank) +
-   `--pass 3` (decide) — both passes are pure deterministic functions of the
-   scores written by step 4, no API calls.
-6. `scripts/export-firestore-to-json.js` → commit/push → Vercel rebuild.
+5. After writeback completes, run
+   `apps/plumbers-web/scripts/score-plumbers.ts --pass 2` (rank) + `--pass 3`
+   (decide) — both passes are pure deterministic functions of the scores
+   written by step 4, no API calls.
+6. `apps/plumbers-web/scripts/export-firestore-to-json.js` → commit/push →
+   Vercel rebuild.
 
 Cited-form contract (introduced 2026-05-22):
 - `EvidenceQuote` carries `{review_id, source, author_name, published_at, rating}`
@@ -95,8 +109,8 @@ Current state of `.github/workflows/`:
 Removed from `daily-scrape.yml` and now in the manual backlog:
 
 - `score-plumbers.ts` (Sonnet scoring + synthesis) — paid Anthropic API,
-  SUPERSEDED as the canonical path by `scripts/synth/` (local Claude Code
-  Max, $0 marginal cost). Sonnet path remains available as fallback but is
+  SUPERSEDED as the canonical path by `apps/plumbers-web/scripts/synth/` (local
+  Claude Code Max, $0 marginal cost). Sonnet path remains available as fallback but is
   no longer the default scoring engine. See "Canonical scoring path" above.
 - `refresh-reviews.ts` (Places review accumulation) — removed from cron
   2026-04-25 because Google Places API (New) returns at most 5 reviews
