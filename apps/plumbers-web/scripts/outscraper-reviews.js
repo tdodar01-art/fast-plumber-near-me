@@ -107,11 +107,29 @@ function hashGoogleReviewId(authorName, text) {
 
 async function outscraperRequest(path, params) {
   const qs = new URLSearchParams(params).toString();
-  const resp = await fetch(`https://api.app.outscraper.com${path}?${qs}`, {
-    headers: { "X-API-KEY": OUTSCRAPER_API_KEY, "client": "Node Script" },
-  });
+  const url = `https://api.app.outscraper.com${path}?${qs}`;
 
-  const body = await resp.json();
+  // Resilient fetch: Outscraper has transient blips ("fetch failed", 5xx,
+  // "Partial Service Degradation"). Retry a few times with backoff so a single
+  // network hiccup doesn't kill a multi-hundred-plumber worker. Persistent
+  // failures throw, and the pull functions re-throw them so the plumber is left
+  // un-stamped (re-pulled next run) rather than marked done-with-zero-reviews.
+  let body, lastErr;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const resp = await fetch(url, {
+        headers: { "X-API-KEY": OUTSCRAPER_API_KEY, "client": "Node Script" },
+      });
+      if (resp.status >= 500) throw new Error(`Outscraper HTTP ${resp.status}`);
+      body = await resp.json();
+      lastErr = null;
+      break;
+    } catch (e) {
+      lastErr = e;
+      if (attempt < 3) await sleep(1500 * attempt);
+    }
+  }
+  if (lastErr) throw lastErr;
 
   // Synchronous response — data is inline
   if (body.data) return body.data;
@@ -178,6 +196,11 @@ async function pullGoogleReviews(placeId, businessName, cutoffTimestamp) {
     }));
   } catch (err) {
     console.error(`    [Google] Error: ${err.message}`);
+    // Hard failures (out of credits / past-due / auth / network) must NOT be
+    // swallowed as an empty result — that would stamp lastOutscraperPull and
+    // permanently hide a plumber we never actually pulled. Re-throw so the
+    // per-plumber catch skips the stamp and the plumber is re-pulled next run.
+    if (/credit|invoice|past-due|verify your|unauthor|forbidden|401|403|fetch failed|network|timeout|ECONN|ETIMEDOUT|socket|HTTP 5/i.test(err.message)) throw err;
     return [];
   }
 }
@@ -335,6 +358,10 @@ async function pullYelpReviews(businessName, city, state) {
     }));
   } catch (err) {
     console.error(`    [Yelp] Error: ${err.message}`);
+    // Re-throw hard billing/auth/network failures so the plumber isn't marked
+    // pulled (it re-pulls next run via --skip-deep). A normal "no Yelp listing"
+    // is NOT an error here — it returns [] above without throwing.
+    if (/credit|invoice|past-due|verify your|unauthor|forbidden|401|403|fetch failed|network|timeout|ECONN|ETIMEDOUT|socket|HTTP 5/i.test(err.message)) throw err;
     return [];
   }
 }
@@ -396,6 +423,10 @@ async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
   const googleOnly = args.includes("--google-only");
+  // --skip-deep: backfill mode — skip plumbers that already have deep reviews
+  // (cachedReviewCount >= 20), so a re-pull only fills the gaps without
+  // re-spending credits on already-pulled businesses.
+  const skipDeep = args.includes("--skip-deep");
   const citySlugs = args.filter((a) => !a.startsWith("--"));
 
   if (citySlugs.length === 0) {
@@ -457,6 +488,10 @@ async function main() {
         console.log(`    Skipping — no Google Place ID.`);
         plumberDetails.push({ name: data.businessName, id: doc.id, skipped: true, reason: "no placeId" });
         continue;
+      }
+
+      if (skipDeep && (data.cachedReviewCount || 0) >= 20) {
+        continue; // --skip-deep backfill: this plumber already has deep reviews
       }
 
       if (dryRun) {
