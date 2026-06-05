@@ -212,6 +212,47 @@ async function fetchYelpReviews(yelpUrl) {
   return reviews.filter((r) => r.review_id !== "__NO_REVIEWS_FOUND__" && r.review_text);
 }
 
+// --- Yelp match validation ---------------------------------------------------
+// Outscraper's /yelp/reviews needs an exact Yelp identifier, and there is no
+// Yelp name-search endpoint, so we resolve name→URL by guessing the alias or
+// Google-searching. Both can resolve to the WRONG business (e.g. "To the T
+// Plumbing" → "kraemer-mechanical-broomfield"). Before trusting a resolved
+// listing we require its name to fuzzy-match the plumber's — same bigram-Jaccard
+// approach bbb-lookup.js uses — so we never attach another company's reviews.
+const YELP_MATCH_THRESHOLD = 0.5;
+
+function normalizeForMatch(name) {
+  return (name || "")
+    .toLowerCase()
+    .replace(/\b(llc|inc|corp|corporation|co|company|plumbing|sewer|heating|cooling|services|service|and|&)\b/g, "")
+    .replace(/[^a-z0-9]/g, "")
+    .trim();
+}
+
+function nameSimilarity(a, b) {
+  const na = normalizeForMatch(a);
+  const nb = normalizeForMatch(b);
+  if (!na || !nb) return 0;
+  if (na === nb) return 1;
+  if (na.includes(nb) || nb.includes(na)) return 0.9;
+  const bigrams = (s) => { const set = new Set(); for (let i = 0; i < s.length - 1; i++) set.add(s.slice(i, i + 2)); return set; };
+  const setA = bigrams(na), setB = bigrams(nb);
+  let inter = 0;
+  for (const g of setA) if (setB.has(g)) inter++;
+  const union = setA.size + setB.size - inter;
+  return union > 0 ? inter / union : 0;
+}
+
+// Name embedded in a Yelp alias: "kraemer-mechanical-broomfield" → "kraemer mechanical broomfield"
+function yelpAliasName(yelpUrl) {
+  const m = (yelpUrl || "").match(/\/biz\/([a-z0-9-]+)/);
+  return m ? m[1].replace(/-/g, " ") : "";
+}
+
+function yelpNameMatches(ourName, candidate) {
+  return nameSimilarity(ourName, candidate) >= YELP_MATCH_THRESHOLD;
+}
+
 async function pullYelpReviews(businessName, city, state) {
   console.log(`    [Yelp] Looking up "${businessName}" in ${city}, ${state}...`);
 
@@ -246,9 +287,16 @@ async function pullYelpReviews(businessName, city, state) {
 
       if (yelpResult) {
         // Clean URL: strip fragments, query params, and mobile prefix
-        yelpUrl = yelpResult.link
+        const candidateUrl = yelpResult.link
           .replace(/[#?].*$/, "")
           .replace("://m.yelp.com/", "://www.yelp.com/");
+        // GATE: reject obviously-wrong Google matches before spending a reviews call.
+        const candName = yelpAliasName(candidateUrl);
+        if (!yelpNameMatches(businessName, candName)) {
+          console.log(`    [Yelp] Rejected Google match "${candName}" — name mismatch with "${businessName}".`);
+          return [];
+        }
+        yelpUrl = candidateUrl;
         console.log(`    [Yelp] Found via Google: ${yelpUrl}`);
         await sleep(OUTSCRAPER_QPS_DELAY_MS);
         reviews = await fetchYelpReviews(yelpUrl);
@@ -267,6 +315,14 @@ async function pullYelpReviews(businessName, city, state) {
     // Extract aggregate rating from first review's business data if available
     const firstReview = reviews[0] || {};
     const yelpBizName = firstReview.business_name || null;
+
+    // AUTHORITATIVE GATE: the actual Yelp business name (from the pulled reviews)
+    // must fuzzy-match the plumber's. Catches mismatches the URL-level check
+    // can't (e.g. a constructed alias that happens to resolve to a different biz).
+    if (yelpBizName && !yelpNameMatches(businessName, yelpBizName)) {
+      console.log(`    [Yelp] Discarded ${reviews.length} reviews — Yelp business "${yelpBizName}" ≠ "${businessName}".`);
+      return [];
+    }
 
     return reviews.map((r) => ({
       source: "yelp",
@@ -560,6 +616,14 @@ async function main() {
 
 main()
   .then(() => {
+    // --no-publish: reviews are already persisted to Firestore per-plumber.
+    // Skip the export/commit/index side-effect so parallel batch workers don't
+    // race on the JSON write + git index. Publish once, manually, after all
+    // workers finish (and after re-synthesis of the freshly-reviewed plumbers).
+    if (process.argv.includes("--no-publish")) {
+      console.log("\n[outscraper] --no-publish: stored to Firestore; skipping export/commit/index.");
+      return;
+    }
     // Post-run: export to static JSON + request indexing for all affected cities
     const { execSync } = require("child_process");
     const root = path.join(__dirname, "..");
