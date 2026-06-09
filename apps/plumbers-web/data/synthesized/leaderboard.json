@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-09T17:57:45.683Z",
+  "generatedAt": "2026-06-09T18:17:58.332Z",
   "totalRanked": 644,
   "plumbers": [
     {
@@ -219,9 +219,11 @@
       "googleRating": 4.9,
       "reviewCount": 1396,
       "phone": "(864) 412-3695",
-      "summary": "99 of 100 sampled reviews rate 5 stars with 48 mentions of professionalism and 10 of fast response, plus repeat-customer language across multiple years.",
+      "summary": "4.9★ across 1,396 reviews with 99 of 100 sampled at 5-star; fast_response theme in 10 reviews, weekend/emergency dispatch confirmed in 3, and same-day arrivals across burst pipes and toilet clogs.",
       "bestFor": [
-        "Emergency and same-day calls"
+        "Emergency and same-day calls",
+        "Complex installs and remodels",
+        "Emergency and burst pipe repair"
       ],
       "redFlags": []
     },
@@ -638,7 +640,7 @@
       "googleRating": 4.8,
       "reviewCount": 516,
       "phone": "(630) 349-7067",
-      "summary": "No review evidence available — 0 reviews analyzed despite 516 Google reviews on file; synthesis cannot characterize this business.",
+      "summary": "LaCassa Plumbing holds 4.8 stars across 516 Google reviews but 0 reviews were available for analysis in this batch — no synthesis signals could be derived from review text.",
       "bestFor": [],
       "redFlags": []
     },
@@ -1248,8 +1250,11 @@
       "googleRating": 5,
       "reviewCount": 149,
       "phone": "(224) 338-6448",
-      "summary": "Google shows a perfect 5.0 across 149 reviews, but 0 review texts were analyzed — no synthesized evidence to cite yet.",
-      "bestFor": [],
+      "summary": "5.0 stars across 97 reviews (95 five-star, 0 two-star or three-star); fast_response in 20 reviews and fair_pricing in 15, with same-day appointments cited 16 times and emergency middle-of-night response documented.",
+      "bestFor": [
+        "Emergency and same-day calls",
+        "Budget-conscious homeowners"
+      ],
       "redFlags": []
     },
     {
@@ -2521,12 +2526,13 @@
       "googleRating": 4.9,
       "reviewCount": 4190,
       "phone": "(847) 233-1748",
-      "summary": "All 5 analyzed reviews are 5-star (4,190 total at 4.9★); reviewers cite on-time arrival, clear upfront estimates, and clean workspaces across leaks, repipes, and sewer jobs.",
+      "summary": "4.9★ across 4,190 reviews with 98% positive sentiment; fast_response cited 14 times and workmanship 33 times in 100 analyzed reviews, but 2 reviews flag surprise fees and high-pressure sales tactics before any work begins.",
       "bestFor": [
-        "Emergency and same-day calls",
-        "Complex installs and remodels"
+        "Emergency and same-day calls"
       ],
-      "redFlags": []
+      "redFlags": [
+        "1-star review (N8BupDRZkqmyPyehUCEz) describes technicians lecturing on pricing justifications for 10 minutes without examining the problem, then refusing to leave when asked — a pattern that aligns with the surprise_fees theme count of 2."
+      ]
     },
     {
       "rank": 169,
@@ -2758,14 +2764,9 @@
       "googleRating": 4.8,
       "reviewCount": 2054,
       "phone": "(847) 362-0262",
-      "summary": "Water-heater installs drive 4 of 5 analyzed reviews, all 5-star, but two reviewers flag the company as pricey ($1000+).",
-      "bestFor": [
-        "Emergency and same-day calls",
-        "Water heater install/repair"
-      ],
-      "redFlags": [
-        "Cost concerns surface in 2 of 5 analyzed reviews ('how pricey this company can be', '$1000.00+')"
-      ]
+      "summary": "TopTec earns 4.8★ across 2,054 reviews with 100% positive sentiment in 5 sampled reviews; water heater installation is the dominant service (3 of 5 reviews), with multi-tech crews praised for detail and cleanup.",
+      "bestFor": [],
+      "redFlags": []
     },
     {
       "rank": 184,
@@ -3560,7 +3561,7 @@
       "googleRating": 4.9,
       "reviewCount": 498,
       "phone": "(303) 351-5981",
-      "summary": "4.9 stars across 498 reviews with 88 analyzed and only 1 review under 4 stars; Carson, Dylan, and Jared get cited for within-an-hour Sunday arrivals, free in-home estimates, and water heater installs in the same day, with the lone pricing gripe limited to a 3-star Kinda expensive note.",
+      "summary": "4.9-star across 498 reviews with reviewConsistency=0.979 — virtually no negative signal. Same-day and weekend response confirmed in 6 of 89 analyzed reviews; consistent no-surprise-fee pricing praised across 5 quotes.",
       "bestFor": [
         "Emergency and same-day calls",
         "Complex installs and remodels",
@@ -3869,12 +3870,12 @@
       "googleRating": 4.8,
       "reviewCount": 281,
       "phone": "(303) 907-3019",
-      "summary": "4.8 stars across 281 reviews with 100 analyzed; Daniel and son Nicholas show up fast for emergencies (15-min callback, Christmas Eve, Thanksgiving), but multiple 1-star reviews allege bid-versus-final-invoice gaps including a verbal $400-500 estimate billed at $5,000+ and a $530 charge for a 30-minute sink strainer.",
+      "summary": "Strong fast-response record (themeCounts.fast_response=22 of 100 reviews) but recurring pricing complaints in 3+ reviews: $530 for a sink strainer, $5,000+ water heater invoices disputed after verbal quotes.",
       "bestFor": [],
       "redFlags": [
-        "Surprise-fee allegations — verbal estimates substantially below final invoice with no itemized breakdown",
-        "Tankless water heater install accused of failing to meet code with refusal to come back and fix",
-        "Reports of work that failed within a year on Yelp with weeks of unanswered callbacks"
+        "$400–500 verbal quote ballooned to $5,000+ on water heater replacement with no itemization — owner denied original quote",
+        "$530 charged for a 30-minute sink strainer replacement (part cost ~$13) — reviewer calls it a 'total rip off'",
+        "Tankless water heater install refused to be brought to code after failed inspection — customer forced to escalate"
       ]
     },
     {
@@ -4245,8 +4246,12 @@
       "googleRating": 5,
       "reviewCount": 140,
       "phone": "(815) 355-5780",
-      "summary": "5.0 Google rating across 140 reviews in Woodstock, but no review text has been analyzed yet to verify specific strengths.",
-      "bestFor": [],
+      "summary": "Perfect 5-star sweep across 87 analyzed reviews — themeCounts.fast_response=16 and workmanship=14 dominate, with water heater installs (12 mentions) and fair pricing (plumber-cost=14) as the core service pillars.",
+      "bestFor": [
+        "Emergency and same-day calls",
+        "Complex installs and remodels",
+        "Water heater install/repair"
+      ],
       "redFlags": []
     },
     {
@@ -4361,8 +4366,10 @@
       "googleRating": 4.9,
       "reviewCount": 115,
       "phone": "(918) 723-7491",
-      "summary": "Clog Hunter shows a 4.9 Google rating across 114 reviews, but no review text was analyzed in this batch — signal is rating-only.",
-      "bestFor": [],
+      "summary": "4.9 stars across 115 reviews; only 5 analyzed — all 5-star with 100% positive sentiment. Septic and sewer expertise confirmed across 3 of 5 quotes; Sunday availability cited once.",
+      "bestFor": [
+        "Emergency and same-day calls"
+      ],
       "redFlags": []
     },
     {
@@ -4574,9 +4581,13 @@
       "googleRating": 4.9,
       "reviewCount": 75,
       "phone": "(847) 393-8101",
-      "summary": "Google shows 4.9 stars across 75 reviews, but 0 review texts were analyzed — no synthesized evidence to cite yet.",
-      "bestFor": [],
-      "redFlags": []
+      "summary": "4.9 stars across 68 reviews with 63 five-star ratings; fast_response cited 12 times and workmanship 12 times, but 2 of 68 reviews flag overpricing and 1 documents an hour-long upsell pitch.",
+      "bestFor": [
+        "Emergency and same-day calls"
+      ],
+      "redFlags": [
+        "Upsell pressure during quote visit documented: 1 reviewer explicitly compared to 'overpriced and sales pushers' category alongside ABC and 4 Seasons plumbing"
+      ]
     },
     {
       "rank": 305,
@@ -7119,7 +7130,7 @@
       "googleRating": 5,
       "reviewCount": 107,
       "phone": "(773) 340-7473",
-      "summary": "SPG Plumbing carries a 5.0 Google rating across 107 Gurnee reviews, but no review text was ingested for synthesis.",
+      "summary": "5.0★ across 107 Google reviews but 0 reviews were available for analysis — no review text processed; scores and claims based on rating signal only.",
       "bestFor": [],
       "redFlags": []
     },
@@ -8930,7 +8941,7 @@
       "googleRating": 4.6,
       "reviewCount": 34,
       "phone": "(630) 332-0807",
-      "summary": "Google shows 4.6 stars across 34 reviews for A&P Plumbing and Sewer in geneva, but no review text was analyzed so strengths and weaknesses cannot be cited.",
+      "summary": "4.6★ across 34 Google reviews but 0 reviews were available for analysis — no review text processed; scores and claims based on rating signal only.",
       "bestFor": [],
       "redFlags": []
     },
