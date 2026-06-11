@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { CheckCircle, Loader2 } from "lucide-react";
-import { CITY_LIST } from "@/lib/city-list";
 
 const serviceOptions = [
   "emergency",
@@ -33,7 +32,12 @@ export default function AddYourBusinessPage() {
       phone: formData.get("phone") as string,
       email: formData.get("email") as string,
       website: formData.get("website") as string,
-      serviceCities: formData.getAll("serviceCities") as string[],
+      address: {
+        street: formData.get("street") as string,
+        city: formData.get("city") as string,
+        state: (formData.get("state") as string).toUpperCase(),
+        zip: formData.get("zip") as string,
+      },
       services: formData.getAll("services") as string[],
       is24Hour: formData.get("is24Hour") === "yes",
       licenseNumber: formData.get("licenseNumber") as string,
@@ -152,21 +156,56 @@ export default function AddYourBusinessPage() {
             />
           </div>
 
-          {/* Service areas */}
+          {/* Business address — drives listing placement (20-mile radius) */}
           <div>
-            <p className="block text-sm font-medium text-gray-700 mb-2">Service Areas *</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto border border-gray-200 rounded-xl p-3">
-              {CITY_LIST.map((city) => (
-                <label key={`${city.citySlug}-${city.state}`} className="flex items-center gap-2 text-sm text-gray-700">
-                  <input
-                    type="checkbox"
-                    name="serviceCities"
-                    value={`${city.citySlug}-${city.state.toLowerCase()}`}
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  {city.name}, {city.state}
-                </label>
-              ))}
+            <p className="block text-sm font-medium text-gray-700 mb-1">Business Address *</p>
+            <p className="text-xs text-gray-500 mb-2">
+              Your listing appears on every city page within 20 miles of your business address.
+            </p>
+            <div className="space-y-3">
+              <input
+                type="text"
+                id="street"
+                name="street"
+                required
+                aria-label="Street address"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
+                placeholder="123 Main St"
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  required
+                  aria-label="City"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
+                  placeholder="Crystal Lake"
+                />
+                <input
+                  type="text"
+                  id="state"
+                  name="state"
+                  required
+                  maxLength={2}
+                  pattern="[A-Za-z]{2}"
+                  title="Two-letter state abbreviation"
+                  aria-label="State"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900 uppercase"
+                  placeholder="IL"
+                />
+                <input
+                  type="text"
+                  id="zip"
+                  name="zip"
+                  required
+                  pattern="\d{5}(-\d{4})?"
+                  title="5-digit ZIP code"
+                  aria-label="ZIP code"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
+                  placeholder="60014"
+                />
+              </div>
             </div>
           </div>
 

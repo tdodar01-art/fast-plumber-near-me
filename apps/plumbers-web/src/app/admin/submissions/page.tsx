@@ -12,10 +12,17 @@ interface Submission {
   phone: string;
   email: string;
   website: string;
-  serviceCities: string[];
+  address?: { street: string; city: string; state: string; zip: string; lat: number; lng: number };
+  geocodeStatus?: "geocoded" | "city-centroid" | "failed";
+  /** Legacy submissions only — service-area claims no longer drive listing eligibility. */
+  serviceCities?: string[];
   services: string[];
   is24Hour: boolean;
   licenseNumber: string;
+}
+
+function hasCoords(sub: Submission): boolean {
+  return !!(sub.address?.lat && sub.address?.lng);
 }
 
 export default function AdminSubmissionsPage() {
@@ -37,7 +44,7 @@ export default function AdminSubmissionsPage() {
       phone: sub.phone,
       email: sub.email,
       website: sub.website || null,
-      address: { street: "", city: "", state: "", zip: "", lat: 0, lng: 0 },
+      address: sub.address ?? { street: "", city: "", state: "", zip: "", lat: 0, lng: 0 },
       serviceCities: sub.serviceCities || [],
       services: sub.services || [],
       is24Hour: sub.is24Hour || false,
@@ -74,6 +81,9 @@ export default function AdminSubmissionsPage() {
       lastReviewRefreshAt: null,
       reviewSynthesis: null,
       cachedFromGoogle: false,
+      // Enter the scoring queue — picked up by the next scoring run.
+      pendingRescoreSince: Timestamp.now(),
+      pendingRescoreReason: "submission-approved",
     });
     await deleteSubmission(sub.id);
     setSubmissions((prev) => prev.filter((s) => s.id !== sub.id));
@@ -102,6 +112,19 @@ export default function AdminSubmissionsPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900">{sub.businessName}</h3>
                   <p className="text-sm text-gray-600">{sub.phone} | {sub.email}</p>
+                  {sub.address?.street && (
+                    <p className="text-sm text-gray-600">
+                      {sub.address.street}, {sub.address.city}, {sub.address.state} {sub.address.zip}
+                      {sub.geocodeStatus === "city-centroid" && (
+                        <span className="text-amber-600"> (city centroid — address not geocoded)</span>
+                      )}
+                    </p>
+                  )}
+                  {!hasCoords(sub) && (
+                    <p className="text-xs text-red-600 mt-0.5">
+                      No coordinates — listing won&apos;t appear on any city page until the address is geocoded.
+                    </p>
+                  )}
                   {sub.website && <p className="text-xs text-primary mt-0.5">{sub.website}</p>}
                   <div className="flex flex-wrap gap-1 mt-2">
                     {sub.services?.map((s) => (
@@ -137,7 +160,11 @@ export default function AdminSubmissionsPage() {
         title={confirm?.action === "approve" ? "Approve Submission?" : "Reject Submission?"}
         message={
           confirm?.action === "approve"
-            ? `This will create a plumber listing for "${confirm.sub.businessName}" and delete the submission.`
+            ? `This will create a plumber listing for "${confirm.sub.businessName}", queue it for scoring, and delete the submission.${
+                hasCoords(confirm.sub)
+                  ? ""
+                  : " WARNING: no coordinates — the listing won't appear on any city page until its address is geocoded."
+              }`
             : `This will permanently delete the submission from "${confirm?.sub.businessName}".`
         }
         confirmLabel={confirm?.action === "approve" ? "Approve" : "Reject"}

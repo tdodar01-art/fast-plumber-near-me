@@ -75,6 +75,12 @@ export interface Plumber {
   reviewSynthesis: ReviewSynthesis | null;
   cachedFromGoogle: boolean;
 
+  // Scoring queue. Setting pendingRescoreSince enqueues the plumber for the
+  // next scoring run (synth pipeline / score-plumbers.ts); the scorer clears
+  // both fields when it processes the plumber.
+  pendingRescoreSince?: Timestamp | null;
+  pendingRescoreReason?: string | null;
+
   // Decision layer (populated by scripts/score-plumbers.ts). Optional so
   // legacy plumbers without Pass 2/3 data remain readable.
   scores?: Scores;

@@ -59,10 +59,14 @@ export async function getAllPlumbers(): Promise<Plumber[]> {
 }
 
 /**
- * Resolve plumbers for a city page from Firestore: serviceCities direct
- * matches + a 20-mile radius sweep. Both the /emergency-plumbers/[state]/[city]
- * page and the /[service]/[state]/[city] page call this so they render from
- * the same source.
+ * Resolve plumbers for a city page from Firestore: a 20-mile radius sweep
+ * keyed off the BUSINESS ADDRESS (address.lat/lng) only. Self-reported
+ * service-area claims (serviceCities) are deliberately NOT an eligibility
+ * path — a plumber appears on a city page iff their address is within
+ * RADIUS_MILES of the city. Plumbers without geocoded coords never match.
+ * Both the /emergency-plumbers/[state]/[city] page and the
+ * /[service]/[state]/[city] page call this so they render from the same
+ * source.
  *
  * Returns [] if Firestore is unconfigured, empty, or throws — callers should
  * fall back to getPlumbersNearCity() (static synthesized JSON) in that case.
@@ -89,36 +93,18 @@ export async function resolvePlumbersForCity(
   cityCoord: [number, number] | null,
 ): Promise<(Plumber & { distanceMiles?: number })[]> {
   if (!isConfigured || !db) return [];
-  let plumbers: (Plumber & { distanceMiles?: number })[] = [];
-  const firestoreCitySlug = `${citySlug}-${state.toLowerCase()}`;
+  if (!cityCoord) return [];
+  const [cityLat, cityLng] = cityCoord;
+  const plumbers: (Plumber & { distanceMiles: number })[] = [];
 
   try {
-    const directMatch = await getPlumbersByCity(firestoreCitySlug);
-    const matched =
-      directMatch.length > 0 ? directMatch : await getPlumbersByCity(citySlug);
-    plumbers = matched.map((p) => ({ ...p }));
-
-    if (cityCoord) {
-      const [cityLat, cityLng] = cityCoord;
-      const statePlumbers = await getActivePlumbersByState(state);
-      const existingIds = new Set(plumbers.map((p) => p.id));
-      for (const p of statePlumbers) {
-        if (existingIds.has(p.id)) continue;
-        if (!p.address?.lat || !p.address?.lng) continue;
-        const dist = haversineMiles(cityLat, cityLng, p.address.lat, p.address.lng);
-        if (dist <= RADIUS_MILES) {
-          plumbers.push({ ...p, distanceMiles: dist });
-          existingIds.add(p.id);
-        }
+    const statePlumbers = await getActivePlumbersByState(state);
+    for (const p of statePlumbers) {
+      if (!p.address?.lat || !p.address?.lng) continue;
+      const dist = haversineMiles(cityLat, cityLng, p.address.lat, p.address.lng);
+      if (dist <= RADIUS_MILES) {
+        plumbers.push({ ...p, distanceMiles: dist });
       }
-      for (const p of plumbers) {
-        if (p.distanceMiles == null && p.address?.lat && p.address?.lng) {
-          p.distanceMiles = haversineMiles(cityLat, cityLng, p.address.lat, p.address.lng);
-        }
-      }
-      plumbers = plumbers.filter(
-        (p) => p.distanceMiles == null || p.distanceMiles <= RADIUS_MILES,
-      );
     }
   } catch {
     return [];
@@ -349,40 +335,6 @@ export async function submitContactForm(data: {
   return docRef.id;
 }
 
-// --- Business submission ---
-
-export async function submitBusiness(data: {
-  businessName: string;
-  phone: string;
-  email: string;
-  website: string;
-  serviceCities: string[];
-  services: string[];
-  is24Hour: boolean;
-  licenseNumber: string;
-}): Promise<string> {
-  if (!isConfigured || !db) return "";
-  const docRef = await addDoc(collection(db, COLLECTIONS.businesses), {
-    ...data,
-    ownerName: "",
-    address: { street: "", city: "", state: "", zip: "", lat: 0, lng: 0 },
-    verificationStatus: "unverified",
-    reliabilityScore: 0,
-    lastVerifiedAt: null,
-    totalCallAttempts: 0,
-    totalCallAnswered: 0,
-    answerRate: 0,
-    avgResponseTime: 0,
-    listingTier: "free",
-    googleRating: null,
-    googleReviewCount: null,
-    yelpRating: null,
-    insured: false,
-    yearsInBusiness: null,
-    isActive: false,
-    createdAt: Timestamp.now(),
-    updatedAt: Timestamp.now(),
-    notes: "Submitted via public form — pending review",
-  });
-  return docRef.id;
-}
+// Public business submission goes through /api/submit-business (writes to
+// the businessSubmissions queue, geocodes the address) — never write
+// directly to the businesses collection from the public site.

@@ -30,8 +30,9 @@ function tsToMillis(v) {
 function primaryCity(data) {
   if (Array.isArray(data.serviceCities) && data.serviceCities.length > 0)
     return String(data.serviceCities[0]).toLowerCase();
-  if (data.city)
-    return String(data.city).toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const city = data.city || data.address?.city;
+  if (city)
+    return String(city).toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   return null;
 }
 
@@ -47,7 +48,7 @@ const db = admin.firestore();
 
   let totalActive = 0;
   // local-synth (generate-batches) selection + reasons
-  let localSynth = 0, rOutscrape = 0, rNoSynth = 0, rStale = 0, noReviews = 0;
+  let localSynth = 0, rPending = 0, rOutscrape = 0, rNoSynth = 0, rStale = 0, noReviews = 0;
   const byCity = new Map();
   // canonical daily-report levels
   let l1 = 0, dpEligible = 0, rankStale = 0, decisionStale = 0;
@@ -70,16 +71,21 @@ const db = admin.firestore();
     const hasSummary = typeof rs.summary === "string" && rs.summary.trim().length > 0;
 
     // ---- local-synth selection (generate-batches.js plumberNeedsResynth) ----
-    if (grc === 0) {
+    // pendingRescoreSince bypasses the zero-review guard (the run stamps
+    // review-less pending plumbers no_reviews and they exit the queue).
+    const hasPending = !!data.pendingRescoreSince;
+    if (grc === 0 && !hasPending) {
       noReviews++;
     } else {
       let needs = false, reason = null;
-      if (lastPull > 0 && lastPull > lastSynth) { needs = true; reason = "outscraped-after-synth"; }
+      if (hasPending) { needs = true; reason = "pending-rescore"; }
+      else if (lastPull > 0 && lastPull > lastSynth) { needs = true; reason = "outscraped-after-synth"; }
       else if (!hasSummary) { needs = true; reason = "no-synth"; }
       else if (lastSynth > 0 && now - lastSynth > maxAgeMs) { needs = true; reason = "stale>30d"; }
       if (needs) {
         localSynth++;
-        if (reason === "outscraped-after-synth") rOutscrape++;
+        if (reason === "pending-rescore") rPending++;
+        else if (reason === "outscraped-after-synth") rOutscrape++;
         else if (reason === "no-synth") rNoSynth++;
         else if (reason === "stale>30d") rStale++;
         const city = primaryCity(data) || "(no-city)";
@@ -90,8 +96,6 @@ const db = admin.firestore();
     // ---- canonical daily-report levels ----
     const scoredAt = scores.last_scored_at ? Date.parse(scores.last_scored_at) : 0;
     if (grc >= 20 && (!lastPull || now - lastPull > SIXTY_DAYS_MS)) dpEligible++;
-
-    const hasPending = !!data.pendingRescoreSince;
     const methodOk = CANONICAL_METHODS.has(scores.method);
     const structurallyPinned = scores.method === "no_reviews" || scores.method === "keyword_fallback";
     if (!structurallyPinned && (hasPending || !methodOk || !hasSummary)) l1++;
@@ -111,6 +115,7 @@ const db = admin.firestore();
   console.log("=".repeat(64));
   console.log("\nLOCAL-SYNTH QUEUE — what `generate-batches.js` would pick up NOW");
   console.log(`  TOTAL needing re-synth:        ${localSynth}  (${pct(localSynth)})`);
+  console.log(`    · pending-rescore:           ${rPending}   (explicit flag — new reviews or approved submission)`);
   console.log(`    · outscraped-after-synth:    ${rOutscrape}   (rich Outscraper data arrived since last synth)`);
   console.log(`    · no-synth (has reviews):     ${rNoSynth}   (reviews present, no summary yet)`);
   console.log(`    · stale >${MAX_AGE_DAYS}d:               ${rStale}`);

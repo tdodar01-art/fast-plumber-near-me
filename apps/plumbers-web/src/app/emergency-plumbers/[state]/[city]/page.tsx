@@ -16,13 +16,13 @@ import PlumberListWithSort from "@/components/PlumberListWithSort";
 import CallToAction from "@/components/CallToAction";
 import { getCoveredCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
-import { getPlumbersByCity, getActivePlumbersByState } from "@/lib/firestore";
+import { resolvePlumbersForCity } from "@/lib/firestore";
 import { getPlumbersNearCity, getAllPlumbers, type SynthesizedPlumber } from "@/lib/plumber-data";
 import { calculateQualityScore } from "@/lib/scoring";
 import { MAX_PLUMBERS_PER_PAGE, SERVICE_CONFIGS } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
 import { getCityCoordBySlug } from "@/lib/city-coords";
-import { calculateDistance, getDistanceWeight } from "@/lib/geo";
+import { getDistanceWeight } from "@/lib/geo";
 import type { Plumber } from "@/lib/types";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
@@ -168,52 +168,11 @@ export default async function CityPage({
   const stateInfo = getStateBySlug(stateSlug);
   if (!stateInfo) notFound();
 
-  // Fetch plumbers — combine serviceCities match + 20-mile radius
-  const firestoreCitySlug = `${citySlug}-${city.state.toLowerCase()}`;
+  // Fetch plumbers — business-address 20-mile radius only (service-area
+  // claims are ignored; see resolvePlumbersForCity).
   let plumbers: (Plumber & { distanceMiles?: number })[] = [];
   const cityCoord = getCityCoordBySlug(city.state, citySlug);
-
-  try {
-    // Start with direct serviceCities match from Firestore
-    const directMatch = await getPlumbersByCity(firestoreCitySlug);
-    if (directMatch.length === 0) {
-      const fallback = await getPlumbersByCity(citySlug);
-      plumbers = fallback.map((p) => ({ ...p }));
-    } else {
-      plumbers = directMatch.map((p) => ({ ...p }));
-    }
-
-    // Add radius-based plumbers (20 miles) from Firestore
-    if (cityCoord) {
-      const [cityLat, cityLng] = cityCoord;
-      const statePlumbers = await getActivePlumbersByState(city.state);
-      const existingIds = new Set(plumbers.map((p) => p.id));
-
-      for (const p of statePlumbers) {
-        if (existingIds.has(p.id)) continue;
-        if (!p.address?.lat || !p.address?.lng) continue;
-        const dist = calculateDistance(cityLat, cityLng, p.address.lat, p.address.lng);
-        if (dist <= 20) {
-          plumbers.push({ ...p, distanceMiles: dist });
-          existingIds.add(p.id);
-        }
-      }
-
-      // Attach distance to all plumbers (including direct matches)
-      for (const p of plumbers) {
-        if (p.distanceMiles == null && p.address?.lat && p.address?.lng) {
-          p.distanceMiles = calculateDistance(cityLat, cityLng, p.address.lat, p.address.lng);
-        }
-      }
-
-      // Filter out plumbers beyond 20-mile radius (serviceCities matches may be outside radius)
-      plumbers = plumbers.filter(
-        (p) => p.distanceMiles == null || p.distanceMiles <= 20
-      );
-    }
-  } catch {
-    // Firebase not configured — will fall through to static fallback
-  }
+  plumbers = await resolvePlumbersForCity(city.state, citySlug, cityCoord);
 
   // Fallback: if Firestore returned nothing (not configured or empty),
   // use the static synthesized JSON with 20-mile radius matching.

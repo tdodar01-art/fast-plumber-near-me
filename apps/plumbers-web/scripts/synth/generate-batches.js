@@ -7,9 +7,14 @@
  * and seeds the queue.json with one job per batch.
  *
  * Selection rules — a plumber is "needs re-synth" if ANY of:
+ *   - pendingRescoreSince set (new reviews arrived / submission approved)
  *   - lastOutscraperPull > reviewSynthesis.synthesizedAt   (rich data arrived after last synth)
  *   - reviewSynthesis.summary missing/empty AND googleReviewCount > 0
  *   - reviewSynthesis.synthesizedAt older than --max-age-days (default 30)
+ *
+ * Selected plumbers with ZERO cached reviews can't be synthesized — they get
+ * stamped scores.method="no_reviews" (pending flags cleared), mirroring
+ * score-plumbers.ts, so they exit the queue instead of rotting in it.
  *
  * Usage:
  *   node scripts/synth/generate-batches.js [--max-age-days N] [--batch-size N]
@@ -84,6 +89,10 @@ function tsToMillis(v) {
 
 function plumberNeedsResynth(data, maxAgeMs) {
   if (!data) return false;
+  // (0) Explicit rescore request (new reviews / submission approved). This
+  // bypasses the zero-review guard so the run can stamp review-less plumbers
+  // out of the queue (see main loop).
+  if (data.pendingRescoreSince) return true;
   if ((data.googleReviewCount || 0) === 0) return false; // no reviews → nothing to synthesize
   const lastPull = tsToMillis(data.lastOutscraperPull);
   const lastSynth = tsToMillis(data.reviewSynthesis?.synthesizedAt
@@ -104,8 +113,9 @@ function primaryCity(data) {
   if (Array.isArray(data.serviceCities) && data.serviceCities.length > 0) {
     return String(data.serviceCities[0]).toLowerCase();
   }
-  if (data.city) {
-    return String(data.city).toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const city = data.city || data.address?.city;
+  if (city) {
+    return String(city).toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   }
   return null;
 }
@@ -210,6 +220,7 @@ async function main() {
   let totalJobs = 0;
   let totalPlumbers = 0;
   let totalReviewsFetched = 0;
+  let totalNoReviews = 0;
 
   for (const citySlug of orderedCities) {
     const plumbers = byCity.get(citySlug);
@@ -227,12 +238,32 @@ async function main() {
       for (const p of chunk) {
         const reviews = await loadReviewsFor(db, p.id);
         totalReviewsFetched += reviews.length;
+        if (reviews.length === 0) {
+          // Nothing to synthesize (e.g. freshly approved submission). Stamp
+          // it scored-as-no_reviews and clear the pending flags so it exits
+          // the queue — mirrors the no-reviews branch in score-plumbers.ts.
+          if (!args.dryRun) {
+            await db.collection(COLLECTIONS.businesses).doc(p.id).update({
+              "scores.last_scored_at": new Date().toISOString(),
+              "scores.method": "no_reviews",
+              "scores.review_count_used": 0,
+              pendingRescoreSince: admin.firestore.FieldValue.delete(),
+              pendingRescoreReason: admin.firestore.FieldValue.delete(),
+              updatedAt: admin.firestore.Timestamp.now(),
+            });
+          }
+          totalNoReviews++;
+          console.error(`  - ${p.id} (${citySlug}): no cached reviews — stamped no_reviews, skipped`);
+          continue;
+        }
         const block = preprocessPlumber(
           { ...p.data, placeId: p.id, id: p.id },
           reviews,
         );
         plumberBlocks.push(block);
       }
+
+      if (plumberBlocks.length === 0) continue; // whole chunk was review-less
 
       const batchPayload = {
         jobId,
@@ -266,6 +297,7 @@ async function main() {
   console.error(`  runDir:          ${runDir}`);
   console.error(`  jobs:            ${totalJobs}`);
   console.error(`  plumbers total:  ${totalPlumbers}`);
+  console.error(`  stamped no_reviews: ${totalNoReviews}`);
   console.error(`  reviews fetched: ${totalReviewsFetched}`);
   console.error(`  concurrency:     ${args.concurrency} (cap for orchestrator)`);
   console.error(`  batch size:      ${args.batchSize}`);
