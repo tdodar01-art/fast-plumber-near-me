@@ -67,6 +67,16 @@ function validatePlumber(p, idx, srcFile) {
 
 // ---- Apply --------------------------------------------------------------
 
+/** Coerce a claims array to string[], unwrapping cited-form {text} objects. */
+function flattenClaims(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr.map((item) => {
+    if (typeof item === "string") return item;
+    if (item && typeof item === "object" && typeof item.text === "string") return item.text;
+    return String(item);
+  });
+}
+
 async function applyOne(p) {
   const now = admin.firestore.Timestamp.now();
   const update = {
@@ -81,9 +91,12 @@ async function applyOne(p) {
       method: "manual-claude",
     },
     "reviewSynthesis.summary": p.reviewSynthesis.summary,
-    "reviewSynthesis.strengths": p.reviewSynthesis.strengths || [],
-    "reviewSynthesis.weaknesses": p.reviewSynthesis.weaknesses || [],
-    "reviewSynthesis.redFlags": p.reviewSynthesis.redFlags || [],
+    // Flat fields are contractually string[]. If a batch carries cited-form
+    // {text, supporting_review_ids} objects, flatten to .text — writing objects
+    // here crashes static prerender (truncateClause). Matches scripts/synth/writeback.js.
+    "reviewSynthesis.strengths": flattenClaims(p.reviewSynthesis.strengths),
+    "reviewSynthesis.weaknesses": flattenClaims(p.reviewSynthesis.weaknesses),
+    "reviewSynthesis.redFlags": flattenClaims(p.reviewSynthesis.redFlags),
     "reviewSynthesis.badges": p.reviewSynthesis.badges || [],
     "reviewSynthesis.emergencyReadiness": p.reviewSynthesis.emergencyReadiness || "unknown",
     "reviewSynthesis.emergencyNotes": p.reviewSynthesis.emergencyNotes || "",

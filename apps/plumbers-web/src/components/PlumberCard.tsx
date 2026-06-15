@@ -94,8 +94,23 @@ function formatReviewCount(count: number): string {
   return String(count);
 }
 
+/**
+ * Coerce a synthesis claim to a display string. The flat
+ * `reviewSynthesis.{strengths,weaknesses,redFlags}` fields are contractually
+ * string[], but a doc may carry the cited-form `{text, supporting_review_ids}`
+ * object (Firestore is read raw at build time). Defend against both so a stray
+ * object can never crash prerender. */
+function claimText(item: unknown): string {
+  if (typeof item === "string") return item;
+  if (item && typeof item === "object" && typeof (item as { text?: unknown }).text === "string") {
+    return (item as { text: string }).text;
+  }
+  return String(item ?? "");
+}
+
 /** Truncate to first clause break at or before maxLen. */
-function truncateClause(text: string, maxLen = 60): string {
+function truncateClause(input: unknown, maxLen = 60): string {
+  const text = claimText(input);
   if (text.length <= maxLen) return text;
   const breaks = [". ", "; ", " — ", " – ", " - "];
   let best = -1;
@@ -220,8 +235,8 @@ export default function PlumberCard({
   };
 
   // --- Build merged concerns list: red flags first, then weaknesses, deduped ---
-  const redFlagTexts = syn?.redFlags ?? [];
-  const weaknessTexts = isFullySynthesized ? (syn?.weaknesses ?? []) : [];
+  const redFlagTexts = (syn?.redFlags ?? []).map(claimText);
+  const weaknessTexts = isFullySynthesized ? (syn?.weaknesses ?? []).map(claimText) : [];
   // Dedup weaknesses against red flags
   const dedupedWeaknesses = weaknessTexts.filter(w => !redFlagTexts.some(f => isDuplicate(f, w)));
   // Merge: red flags first (severe), then weaknesses (lesser), cap at 4
@@ -231,7 +246,7 @@ export default function PlumberCard({
   ].slice(0, 4);
   const totalConcernsAvailable = redFlagTexts.length + dedupedWeaknesses.length;
 
-  const strengths = (syn?.strengths ?? []).slice(0, 4);
+  const strengths = (syn?.strengths ?? []).map(claimText).slice(0, 4);
   const totalStrengthsAvailable = (syn?.strengths ?? []).length;
   const hasConcerns = allConcerns.length > 0;
   const hasRedFlags = redFlagTexts.length > 0;
@@ -393,7 +408,7 @@ export default function PlumberCard({
         <ComparisonColumns
           strengths={strengths}
           totalStrengths={totalStrengthsAvailable}
-          allStrengths={syn.strengths ?? []}
+          allStrengths={(syn.strengths ?? []).map(claimText)}
           concerns={allConcerns}
           totalConcerns={totalConcernsAvailable}
           allRedFlags={redFlagTexts}
