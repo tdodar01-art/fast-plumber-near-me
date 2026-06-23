@@ -14,7 +14,10 @@ import path from "path";
 import type { SerpArm } from "./serpVariants";
 
 export const SERP_EXPERIMENT_KEY = "exp-003-serp-ctr-structure";
-export const SERP_WINDOW = { start: "2026-06-04", end: "2026-07-04" };
+// Extended 2026-06-22 from the original 2026-07-04 end: round 1 ran at avg
+// position ~15 (page 2), so CTR was unmeasurable. Held open another ~3 months to
+// let rankings climb into clickable positions before reading results.
+export const SERP_WINDOW = { start: "2026-06-04", end: "2026-10-04" };
 
 interface Snapshot {
   experiment: string;

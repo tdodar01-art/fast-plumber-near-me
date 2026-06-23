@@ -15,7 +15,7 @@ The **brain** (control-center repo) owns the experiment ledger, judging logic, a
 |----|-----------|------------|--------|
 | exp-001-nearby-cities-expansion | More nearby city links → better GSC metrics | garland, mckinney, denton, round-rock, league-city | active |
 | exp-002-aberdeen-title-urgency | Urgency-led meta title ("24/7 — Fast, Local & Available Now") beats catalog-style title on GSC CTR | maryland/aberdeen | active (started 2026-04-21, ends 2026-06-20) |
-| exp-003-serp-ctr-structure | Title+description **structure** drives CTR controlling for position. 3 arms (control / urgency / social-proof) across 77 trafficked city pages, stratified by impressions. Round 2 adds pain & speed vs winner. | 77-slug snapshot in `data/experiments/exp-003-eligible-slugs.json` | active (started 2026-06-04, ends 2026-07-04; report → tim@aokchemdry.net on 2026-07-07) |
+| exp-003-serp-ctr-structure | Title+description **structure** drives CTR controlling for position. 3 arms (control / urgency / social-proof) across 77 trafficked city pages, stratified by impressions. Round 2 adds pain & speed vs winner. | 77-slug snapshot in `data/experiments/exp-003-eligible-slugs.json` | active (started 2026-06-04, ends 2026-10-04 — extended from 2026-07-04 because round 1 ran at avg position ~15/page 2 with ~0 measurable CTR; report → tim@aokchemdry.net on 2026-10-07) |
 
 ### exp-003 notes
 - **Assignment:** frozen, committed snapshot (`data/experiments/exp-003-eligible-slugs.json`),
@@ -29,7 +29,7 @@ The **brain** (control-center repo) owns the experiment ledger, judging logic, a
   `publish-experiment-metrics.yml` cron is NOT used (its "yesterday" docs capture unsettled
   zeros); it stays dispatch-only.
 - **Analysis + email:** `scripts/experiments/analyze-serp-ctr.js` (position-binned CTR, two-proportion
-  z-test) → `exp-003-report.yml` fires it 2026-07-07 (end +3d for GSC lag). For a mid-experiment
+  z-test) → `exp-003-report.yml` fires it 2026-10-07 (end +3d for GSC lag). For a mid-experiment
   read, run that workflow via `workflow_dispatch` any time.
 - **Revert:** delete the exp-003 snapshot or remove its tracked slugs → pages fall back to default copy instantly.
 

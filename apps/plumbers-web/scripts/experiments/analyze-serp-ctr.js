@@ -16,7 +16,7 @@
  *   node scripts/experiments/analyze-serp-ctr.js                 # email tim@aokchemdry.net
  *   node scripts/experiments/analyze-serp-ctr.js --to a@b.com    # override recipient
  *   node scripts/experiments/analyze-serp-ctr.js --dry-run       # print, don't send
- *   node scripts/experiments/analyze-serp-ctr.js --start 2026-06-04 --end 2026-07-04
+ *   node scripts/experiments/analyze-serp-ctr.js --start 2026-06-04 --end 2026-10-04
  */
 
 const fs = require("fs");
@@ -96,7 +96,7 @@ async function main() {
   // Experiment window (NOT snap.window, which is the GSC-pull window used to
   // pick eligible pages). Data only exists from deploy/go-live onward anyway.
   const startDate = arg("--start", "2026-06-04");
-  const endDate = arg("--end", "2026-07-04");
+  const endDate = arg("--end", "2026-10-04");
 
   if (!fs.existsSync(SA_PATH)) throw new Error("service-account.json not found");
 

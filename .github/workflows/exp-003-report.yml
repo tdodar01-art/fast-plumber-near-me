@@ -1,13 +1,13 @@
 name: exp-003 SERP CTR Report
 
-# Fires once on 2026-07-07 (exp-003 end +3d for GSC lag) to analyze the
-# title/description CTR test and email the results to tim@aokchemdry.net.
-# Cron is "July 7 @ 13:00 UTC" (~8 AM CT). workflow_dispatch is available to run
-# the report on demand (e.g. a mid-experiment sanity check). Remove this workflow
-# once exp-003 is closed out.
+# Fires once on 2026-10-07 (exp-003 extended end 2026-10-04, +3d for GSC lag) to
+# analyze the title/description CTR test and email the results to
+# tim@aokchemdry.net. Cron is "Oct 7 @ 13:00 UTC" (~8 AM CT). workflow_dispatch is
+# available to run the report on demand (e.g. a mid-experiment sanity check).
+# Remove this workflow once exp-003 is closed out.
 on:
   schedule:
-    - cron: "0 13 7 7 *"
+    - cron: "0 13 7 10 *"
   workflow_dispatch:
 
 concurrency:
