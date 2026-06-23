@@ -1,170 +1,231 @@
 {
-  "generatedAt": "2026-06-22T15:54:43.827Z",
+  "generatedAt": "2026-06-23T13:46:26.889Z",
   "dateRange": {
-    "start": "2026-03-24",
-    "end": "2026-06-22"
+    "start": "2026-03-25",
+    "end": "2026-06-23"
   },
-  "totalGscPages": 888,
-  "alreadyScraped": 380,
-  "needsScraping": 508,
+  "totalGscPages": 899,
+  "alreadyScraped": 388,
+  "needsScraping": 511,
   "cities": [
     {
-      "city": "Harker Heights",
-      "state": "TX",
-      "citySlug": "harker-heights",
-      "stateSlug": "texas",
-      "impressions": 44,
+      "city": "Olympia",
+      "state": "WA",
+      "citySlug": "olympia",
+      "stateSlug": "washington",
+      "impressions": 70,
       "clicks": 0,
-      "avgPosition": 13.2,
+      "avgPosition": 52.3,
       "pageTypes": [
-        "bathroom-remodel-plumbing",
+        "burst-pipe-repair",
+        "clogged-drain",
         "faucet-repair",
-        "gas-line-repair",
-        "kitchen-remodel-plumbing",
+        "garbage-disposal-repair",
         "low-water-pressure",
+        "sewage-backup",
         "sewer-line-replacement",
-        "sump-pump-repair",
-        "water-leak",
-        "water-line-repair"
+        "sewer-repair",
+        "toilet-repair",
+        "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Waynesboro",
-      "state": "VA",
-      "citySlug": "waynesboro",
-      "stateSlug": "virginia",
-      "impressions": 41,
+      "city": "Dundalk",
+      "state": "MD",
+      "citySlug": "dundalk",
+      "stateSlug": "maryland",
+      "impressions": 43,
       "clicks": 0,
-      "avgPosition": 18.3,
+      "avgPosition": 12.3,
       "pageTypes": [
-        "24-hour-plumber",
         "drain-cleaning",
-        "faucet-repair",
-        "same-day-plumber",
         "sewer-line-replacement",
-        "toilet-repair",
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Clermont",
-      "state": "FL",
-      "citySlug": "clermont",
-      "stateSlug": "florida",
-      "impressions": 41,
+      "city": "Middletown",
+      "state": "DE",
+      "citySlug": "middletown",
+      "stateSlug": "delaware",
+      "impressions": 42,
       "clicks": 0,
-      "avgPosition": 26.3,
+      "avgPosition": 22.5,
       "pageTypes": [
-        "gas-line-repair",
-        "sewer-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Charlottesville",
-      "state": "VA",
-      "citySlug": "charlottesville",
-      "stateSlug": "virginia",
-      "impressions": 39,
-      "clicks": 0,
-      "avgPosition": 24.9,
-      "pageTypes": [
-        "clogged-drain",
         "drain-cleaning",
         "faucet-repair",
-        "hydro-jetting",
-        "licensed-plumber",
-        "plumber-cost",
-        "repiping",
-        "sewer-line-replacement",
+        "sewage-backup",
         "sewer-repair",
-        "water-leak",
+        "slab-leak-repair",
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Hueytown",
-      "state": "AL",
-      "citySlug": "hueytown",
-      "stateSlug": "alabama",
-      "impressions": 36,
+      "city": "Lawrence",
+      "state": "IN",
+      "citySlug": "lawrence",
+      "stateSlug": "indiana",
+      "impressions": 39,
       "clicks": 0,
-      "avgPosition": 20.8,
+      "avgPosition": 21.3,
       "pageTypes": [
-        "bathroom-remodel-plumbing",
-        "hydro-jetting",
-        "toilet-repair"
+        "24-hour-plumber",
+        "garbage-disposal-repair",
+        "licensed-plumber",
+        "sewer-repair",
+        "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Lexington",
+      "city": "Warrenton",
+      "state": "VA",
+      "citySlug": "warrenton",
+      "stateSlug": "virginia",
+      "impressions": 37,
+      "clicks": 0,
+      "avgPosition": 9.3,
+      "pageTypes": [
+        "hydro-jetting",
+        "sewer-line-replacement"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Los Angeles",
+      "state": "CA",
+      "citySlug": "los-angeles",
+      "stateSlug": "california",
+      "impressions": 36,
+      "clicks": 0,
+      "avgPosition": 24.7,
+      "pageTypes": [
+        "emergency-plumbers",
+        "water-line-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Somerville",
       "state": "MA",
-      "citySlug": "lexington",
+      "citySlug": "somerville",
       "stateSlug": "massachusetts",
       "impressions": 35,
       "clicks": 0,
-      "avgPosition": 25.2,
+      "avgPosition": 24.9,
       "pageTypes": [
-        "drain-cleaning",
-        "frozen-pipes",
+        "burst-pipe-repair",
+        "garbage-disposal-repair",
+        "hydro-jetting",
         "sewage-backup",
+        "sewer-line-replacement",
+        "sewer-repair",
+        "sump-pump-repair",
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Hialeah",
-      "state": "FL",
-      "citySlug": "hialeah",
-      "stateSlug": "florida",
-      "impressions": 35,
-      "clicks": 0,
-      "avgPosition": 19.6,
-      "pageTypes": [
-        "emergency-plumbers",
-        "slab-leak-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Derry",
       "state": "NH",
       "citySlug": "derry",
       "stateSlug": "new-hampshire",
-      "impressions": 34,
+      "impressions": 35,
       "clicks": 0,
-      "avgPosition": 14.8,
+      "avgPosition": 14.7,
       "pageTypes": [
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Hawthorne",
-      "state": "CA",
-      "citySlug": "hawthorne",
-      "stateSlug": "california",
+      "city": "Erlanger",
+      "state": "KY",
+      "citySlug": "erlanger",
+      "stateSlug": "kentucky",
       "impressions": 34,
       "clicks": 0,
-      "avgPosition": 18.8,
+      "avgPosition": 14,
       "pageTypes": [
-        "repiping",
-        "water-heater-repair"
+        "bathroom-remodel-plumbing",
+        "low-water-pressure",
+        "plumber-cost",
+        "water-heater-repair",
+        "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Alabaster",
+      "state": "AL",
+      "citySlug": "alabaster",
+      "stateSlug": "alabama",
+      "impressions": 34,
+      "clicks": 0,
+      "avgPosition": 29.4,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Portland",
+      "state": "OR",
+      "citySlug": "portland",
+      "stateSlug": "oregon",
+      "impressions": 34,
+      "clicks": 0,
+      "avgPosition": 41.4,
+      "pageTypes": [
+        "garbage-disposal-repair",
+        "low-water-pressure"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Gainesville",
+      "state": "FL",
+      "citySlug": "gainesville",
+      "stateSlug": "florida",
+      "impressions": 34,
+      "clicks": 0,
+      "avgPosition": 63.5,
+      "pageTypes": [
+        "licensed-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Texas City",
+      "state": "TX",
+      "citySlug": "texas-city",
+      "stateSlug": "texas",
+      "impressions": 34,
+      "clicks": 0,
+      "avgPosition": 19.9,
+      "pageTypes": [
+        "repiping",
+        "same-day-plumber",
+        "slab-leak-repair",
+        "toilet-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Del City",
@@ -179,57 +240,40 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Texas City",
-      "state": "TX",
-      "citySlug": "texas-city",
-      "stateSlug": "texas",
-      "impressions": 33,
-      "clicks": 0,
-      "avgPosition": 20.1,
-      "pageTypes": [
-        "repiping",
-        "same-day-plumber",
-        "slab-leak-repair",
-        "toilet-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Erlanger",
-      "state": "KY",
-      "citySlug": "erlanger",
-      "stateSlug": "kentucky",
+      "city": "Salem",
+      "state": "VA",
+      "citySlug": "salem",
+      "stateSlug": "virginia",
       "impressions": 32,
       "clicks": 0,
-      "avgPosition": 13.6,
+      "avgPosition": 18.6,
       "pageTypes": [
-        "bathroom-remodel-plumbing",
-        "low-water-pressure",
-        "plumber-cost",
-        "water-heater-repair",
-        "water-line-repair"
+        "burst-pipe-repair",
+        "cheap-plumber",
+        "no-hot-water",
+        "sewer-repair",
+        "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Los Angeles",
+      "city": "Norwalk",
       "state": "CA",
-      "citySlug": "los-angeles",
+      "citySlug": "norwalk",
       "stateSlug": "california",
       "impressions": 32,
       "clicks": 0,
-      "avgPosition": 24,
+      "avgPosition": 18.4,
       "pageTypes": [
-        "emergency-plumbers",
-        "water-line-repair"
+        "drain-cleaning",
+        "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Wilmington",
@@ -244,22 +288,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Portland",
-      "state": "OR",
-      "citySlug": "portland",
-      "stateSlug": "oregon",
-      "impressions": 32,
-      "clicks": 0,
-      "avgPosition": 41.3,
-      "pageTypes": [
-        "garbage-disposal-repair",
-        "low-water-pressure"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Athens",
@@ -275,22 +304,43 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Norwalk",
-      "state": "CA",
-      "citySlug": "norwalk",
-      "stateSlug": "california",
-      "impressions": 31,
+      "city": "Trussville",
+      "state": "AL",
+      "citySlug": "trussville",
+      "stateSlug": "alabama",
+      "impressions": 32,
       "clicks": 0,
-      "avgPosition": 18.3,
+      "avgPosition": 41.3,
       "pageTypes": [
-        "drain-cleaning",
-        "repiping"
+        "hydro-jetting",
+        "licensed-plumber",
+        "plumber-cost",
+        "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Bartlett",
+      "state": "TN",
+      "citySlug": "bartlett",
+      "stateSlug": "tennessee",
+      "impressions": 31,
+      "clicks": 0,
+      "avgPosition": 44.8,
+      "pageTypes": [
+        "cheap-plumber",
+        "drain-cleaning",
+        "gas-line-repair",
+        "plumber-cost",
+        "same-day-plumber",
+        "sewer-line-replacement"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Pearl City",
@@ -306,24 +356,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Trussville",
-      "state": "AL",
-      "citySlug": "trussville",
-      "stateSlug": "alabama",
-      "impressions": 31,
-      "clicks": 0,
-      "avgPosition": 42.5,
-      "pageTypes": [
-        "hydro-jetting",
-        "licensed-plumber",
-        "plumber-cost",
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Livermore",
@@ -337,47 +370,39 @@
         "hydro-jetting"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Somerville",
-      "state": "MA",
-      "citySlug": "somerville",
-      "stateSlug": "massachusetts",
-      "impressions": 30,
+      "city": "Levittown",
+      "state": "PA",
+      "citySlug": "levittown",
+      "stateSlug": "pennsylvania",
+      "impressions": 31,
       "clicks": 0,
-      "avgPosition": 26,
+      "avgPosition": 11.5,
       "pageTypes": [
-        "burst-pipe-repair",
-        "garbage-disposal-repair",
-        "hydro-jetting",
-        "sewage-backup",
-        "sewer-line-replacement",
-        "sewer-repair",
-        "sump-pump-repair",
-        "toilet-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Bartlett",
-      "state": "TN",
-      "citySlug": "bartlett",
-      "stateSlug": "tennessee",
-      "impressions": 30,
-      "clicks": 0,
-      "avgPosition": 45.6,
-      "pageTypes": [
-        "cheap-plumber",
-        "drain-cleaning",
-        "gas-line-repair",
-        "plumber-cost",
-        "same-day-plumber",
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Jackson",
+      "state": "TN",
+      "citySlug": "jackson",
+      "stateSlug": "tennessee",
+      "impressions": 30,
+      "clicks": 0,
+      "avgPosition": 17.3,
+      "pageTypes": [
+        "burst-pipe-repair",
+        "garbage-disposal-repair",
+        "plumber-cost",
+        "sewage-backup",
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Bonney Lake",
@@ -391,7 +416,22 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Nutley",
+      "state": "NJ",
+      "citySlug": "nutley",
+      "stateSlug": "new-jersey",
+      "impressions": 30,
+      "clicks": 0,
+      "avgPosition": 56.7,
+      "pageTypes": [
+        "clogged-drain",
+        "drain-cleaning"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Cleburne",
@@ -407,38 +447,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Middletown",
-      "state": "DE",
-      "citySlug": "middletown",
-      "stateSlug": "delaware",
-      "impressions": 30,
-      "clicks": 0,
-      "avgPosition": 26.1,
-      "pageTypes": [
-        "drain-cleaning",
-        "faucet-repair",
-        "sewer-repair",
-        "slab-leak-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Alabaster",
-      "state": "AL",
-      "citySlug": "alabaster",
-      "stateSlug": "alabama",
-      "impressions": 30,
-      "clicks": 0,
-      "avgPosition": 31.7,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Brookfield",
@@ -457,7 +466,24 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Johnstown",
+      "state": "CO",
+      "citySlug": "johnstown",
+      "stateSlug": "colorado",
+      "impressions": 29,
+      "clicks": 0,
+      "avgPosition": 9.8,
+      "pageTypes": [
+        "24-hour-plumber",
+        "burst-pipe-repair",
+        "slab-leak-repair",
+        "water-line-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Rome",
@@ -471,41 +497,22 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Salem",
-      "state": "VA",
-      "citySlug": "salem",
-      "stateSlug": "virginia",
+      "city": "South Brunswick",
+      "state": "NJ",
+      "citySlug": "south-brunswick",
+      "stateSlug": "new-jersey",
       "impressions": 29,
       "clicks": 0,
-      "avgPosition": 18.7,
+      "avgPosition": 16.8,
       "pageTypes": [
-        "burst-pipe-repair",
-        "cheap-plumber",
-        "no-hot-water",
-        "sewer-repair",
-        "water-heater-repair"
+        "bathroom-remodel-plumbing",
+        "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Dundalk",
-      "state": "MD",
-      "citySlug": "dundalk",
-      "stateSlug": "maryland",
-      "impressions": 29,
-      "clicks": 0,
-      "avgPosition": 12.5,
-      "pageTypes": [
-        "drain-cleaning",
-        "sewer-line-replacement",
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Berwyn",
@@ -521,38 +528,38 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Levittown",
-      "state": "PA",
-      "citySlug": "levittown",
-      "stateSlug": "pennsylvania",
+      "city": "Alpine",
+      "state": "UT",
+      "citySlug": "alpine",
+      "stateSlug": "utah",
       "impressions": 29,
       "clicks": 0,
-      "avgPosition": 10.8,
+      "avgPosition": 6.1,
       "pageTypes": [
-        "sewer-line-replacement"
+        "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Johnstown",
-      "state": "CO",
-      "citySlug": "johnstown",
-      "stateSlug": "colorado",
-      "impressions": 28,
+      "city": "Bridgeport",
+      "state": "WV",
+      "citySlug": "bridgeport",
+      "stateSlug": "west-virginia",
+      "impressions": 29,
       "clicks": 0,
-      "avgPosition": 9.9,
+      "avgPosition": 10.6,
       "pageTypes": [
-        "24-hour-plumber",
-        "burst-pipe-repair",
-        "slab-leak-repair",
-        "water-line-repair"
+        "frozen-pipes",
+        "gas-line-repair",
+        "kitchen-remodel-plumbing",
+        "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Burien",
@@ -566,54 +573,54 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Jackson",
-      "state": "TN",
-      "citySlug": "jackson",
-      "stateSlug": "tennessee",
+      "city": "Arlington",
+      "state": "MA",
+      "citySlug": "arlington",
+      "stateSlug": "massachusetts",
       "impressions": 28,
       "clicks": 0,
-      "avgPosition": 17.7,
+      "avgPosition": 20.3,
       "pageTypes": [
-        "burst-pipe-repair",
-        "garbage-disposal-repair",
-        "plumber-cost",
-        "sewage-backup",
-        "water-heater-repair"
+        "cheap-plumber",
+        "licensed-plumber",
+        "no-hot-water",
+        "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Nutley",
-      "state": "NJ",
-      "citySlug": "nutley",
-      "stateSlug": "new-jersey",
+      "city": "Mansfield",
+      "state": "OH",
+      "citySlug": "mansfield",
+      "stateSlug": "ohio",
       "impressions": 28,
       "clicks": 0,
-      "avgPosition": 57.8,
+      "avgPosition": 14.6,
       "pageTypes": [
         "clogged-drain",
-        "drain-cleaning"
+        "gas-line-repair",
+        "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Alpine",
-      "state": "UT",
-      "citySlug": "alpine",
-      "stateSlug": "utah",
+      "city": "Ashland",
+      "state": "OR",
+      "citySlug": "ashland",
+      "stateSlug": "oregon",
       "impressions": 28,
       "clicks": 0,
-      "avgPosition": 6,
+      "avgPosition": 11.7,
       "pageTypes": [
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Arvada",
@@ -629,22 +636,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Warrenton",
-      "state": "VA",
-      "citySlug": "warrenton",
-      "stateSlug": "virginia",
-      "impressions": 28,
-      "clicks": 0,
-      "avgPosition": 9.3,
-      "pageTypes": [
-        "hydro-jetting",
-        "sewer-line-replacement"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "San Mateo",
@@ -658,24 +650,52 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Arlington",
-      "state": "MA",
-      "citySlug": "arlington",
-      "stateSlug": "massachusetts",
+      "city": "Pittsburgh",
+      "state": "PA",
+      "citySlug": "pittsburgh",
+      "stateSlug": "pennsylvania",
+      "impressions": 28,
+      "clicks": 0,
+      "avgPosition": 31.2,
+      "pageTypes": [
+        "sump-pump-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Santa Clarita",
+      "state": "CA",
+      "citySlug": "santa-clarita",
+      "stateSlug": "california",
       "impressions": 27,
       "clicks": 0,
-      "avgPosition": 20.6,
+      "avgPosition": 20.4,
       "pageTypes": [
-        "cheap-plumber",
-        "licensed-plumber",
-        "no-hot-water",
+        "burst-pipe-repair",
+        "low-water-pressure",
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Kihei",
+      "state": "HI",
+      "citySlug": "kihei",
+      "stateSlug": "hawaii",
+      "impressions": 27,
+      "clicks": 0,
+      "avgPosition": 12.3,
+      "pageTypes": [
+        "drain-cleaning",
+        "licensed-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Newport Beach",
@@ -689,21 +709,36 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Pittsburgh",
+      "city": "Abington",
       "state": "PA",
-      "citySlug": "pittsburgh",
+      "citySlug": "abington",
       "stateSlug": "pennsylvania",
       "impressions": 27,
       "clicks": 0,
-      "avgPosition": 31.9,
+      "avgPosition": 8.6,
+      "pageTypes": [
+        "sump-pump-repair",
+        "water-leak"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Horsham",
+      "state": "PA",
+      "citySlug": "horsham",
+      "stateSlug": "pennsylvania",
+      "impressions": 27,
+      "clicks": 0,
+      "avgPosition": 6,
       "pageTypes": [
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Smithtown",
@@ -717,24 +752,39 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Lawrence",
-      "state": "IN",
-      "citySlug": "lawrence",
-      "stateSlug": "indiana",
+      "city": "Patchogue",
+      "state": "NY",
+      "citySlug": "patchogue",
+      "stateSlug": "new-york",
+      "impressions": 27,
+      "clicks": 0,
+      "avgPosition": 25.4,
+      "pageTypes": [
+        "water-line-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Middleton",
+      "state": "WI",
+      "citySlug": "middleton",
+      "stateSlug": "wisconsin",
       "impressions": 26,
       "clicks": 0,
-      "avgPosition": 25.3,
+      "avgPosition": 13.3,
       "pageTypes": [
         "24-hour-plumber",
-        "licensed-plumber",
-        "sewer-repair",
+        "clogged-drain",
+        "repiping",
+        "sewer-line-replacement",
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Braselton",
@@ -757,54 +807,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Santa Clarita",
-      "state": "CA",
-      "citySlug": "santa-clarita",
-      "stateSlug": "california",
-      "impressions": 26,
-      "clicks": 0,
-      "avgPosition": 20.8,
-      "pageTypes": [
-        "burst-pipe-repair",
-        "low-water-pressure",
-        "sewer-line-replacement"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Mansfield",
-      "state": "OH",
-      "citySlug": "mansfield",
-      "stateSlug": "ohio",
-      "impressions": 26,
-      "clicks": 0,
-      "avgPosition": 14.8,
-      "pageTypes": [
-        "clogged-drain",
-        "gas-line-repair",
-        "water-line-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Kihei",
-      "state": "HI",
-      "citySlug": "kihei",
-      "stateSlug": "hawaii",
-      "impressions": 26,
-      "clicks": 0,
-      "avgPosition": 12.4,
-      "pageTypes": [
-        "drain-cleaning",
-        "licensed-plumber"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Saratoga Springs",
@@ -819,7 +822,21 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Kyle",
+      "state": "TX",
+      "citySlug": "kyle",
+      "stateSlug": "texas",
+      "impressions": 26,
+      "clicks": 0,
+      "avgPosition": 8.9,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Hilton Head Island",
@@ -834,7 +851,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Issaquah",
@@ -849,7 +866,70 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Savannah",
+      "state": "GA",
+      "citySlug": "savannah",
+      "stateSlug": "georgia",
+      "impressions": 26,
+      "clicks": 0,
+      "avgPosition": 13.7,
+      "pageTypes": [
+        "hydro-jetting",
+        "kitchen-remodel-plumbing"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Havre De Grace",
+      "state": "MD",
+      "citySlug": "havre-de-grace",
+      "stateSlug": "maryland",
+      "impressions": 26,
+      "clicks": 0,
+      "avgPosition": 12.4,
+      "pageTypes": [
+        "same-day-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Compton",
+      "state": "CA",
+      "citySlug": "compton",
+      "stateSlug": "california",
+      "impressions": 26,
+      "clicks": 0,
+      "avgPosition": 13.5,
+      "pageTypes": [
+        "sewer-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Saraland",
+      "state": "AL",
+      "citySlug": "saraland",
+      "stateSlug": "alabama",
+      "impressions": 25,
+      "clicks": 0,
+      "avgPosition": 33.3,
+      "pageTypes": [
+        "24-hour-plumber",
+        "clogged-drain",
+        "drain-cleaning",
+        "hydro-jetting",
+        "same-day-plumber",
+        "sewer-line-replacement",
+        "sewer-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Evans",
@@ -866,7 +946,35 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Huntington",
+      "state": "NY",
+      "citySlug": "huntington",
+      "stateSlug": "new-york",
+      "impressions": 25,
+      "clicks": 0,
+      "avgPosition": 20.3,
+      "pageTypes": [
+        "burst-pipe-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Ansonia",
+      "state": "CT",
+      "citySlug": "ansonia",
+      "stateSlug": "connecticut",
+      "impressions": 25,
+      "clicks": 0,
+      "avgPosition": 12,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Anderson",
@@ -880,35 +988,44 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Kyle",
-      "state": "TX",
-      "citySlug": "kyle",
-      "stateSlug": "texas",
-      "impressions": 25,
+      "city": "Roanoke",
+      "state": "VA",
+      "citySlug": "roanoke",
+      "stateSlug": "virginia",
+      "impressions": 24,
       "clicks": 0,
-      "avgPosition": 8.8,
+      "avgPosition": 39.9,
       "pageTypes": [
-        "emergency-plumbers"
+        "24-hour-plumber",
+        "burst-pipe-repair",
+        "cheap-plumber",
+        "drain-cleaning",
+        "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Havre De Grace",
-      "state": "MD",
-      "citySlug": "havre-de-grace",
-      "stateSlug": "maryland",
-      "impressions": 25,
+      "city": "Kaukauna",
+      "state": "WI",
+      "citySlug": "kaukauna",
+      "stateSlug": "wisconsin",
+      "impressions": 24,
       "clicks": 0,
-      "avgPosition": 12.2,
+      "avgPosition": 23.8,
       "pageTypes": [
-        "same-day-plumber"
+        "bathroom-remodel-plumbing",
+        "drain-cleaning",
+        "garbage-disposal-repair",
+        "no-hot-water",
+        "water-leak",
+        "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Inglewood",
@@ -924,7 +1041,23 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "St Petersburg",
+      "state": "FL",
+      "citySlug": "st-petersburg",
+      "stateSlug": "florida",
+      "impressions": 24,
+      "clicks": 0,
+      "avgPosition": 56.1,
+      "pageTypes": [
+        "emergency-plumbers",
+        "licensed-plumber",
+        "slab-leak-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Harrisonburg",
@@ -941,7 +1074,21 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Mckinney",
+      "state": "TX",
+      "citySlug": "mckinney",
+      "stateSlug": "texas",
+      "impressions": 24,
+      "clicks": 0,
+      "avgPosition": 11.2,
+      "pageTypes": [
+        "garbage-disposal-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Humble",
@@ -955,21 +1102,7 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Compton",
-      "state": "CA",
-      "citySlug": "compton",
-      "stateSlug": "california",
-      "impressions": 24,
-      "clicks": 0,
-      "avgPosition": 13.3,
-      "pageTypes": [
-        "sewer-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Tualatin",
@@ -983,57 +1116,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Patchogue",
-      "state": "NY",
-      "citySlug": "patchogue",
-      "stateSlug": "new-york",
-      "impressions": 24,
-      "clicks": 0,
-      "avgPosition": 23.3,
-      "pageTypes": [
-        "water-line-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Roanoke",
-      "state": "VA",
-      "citySlug": "roanoke",
-      "stateSlug": "virginia",
-      "impressions": 23,
-      "clicks": 0,
-      "avgPosition": 39.6,
-      "pageTypes": [
-        "24-hour-plumber",
-        "burst-pipe-repair",
-        "cheap-plumber",
-        "drain-cleaning",
-        "low-water-pressure"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Middleton",
-      "state": "WI",
-      "citySlug": "middleton",
-      "stateSlug": "wisconsin",
-      "impressions": 23,
-      "clicks": 0,
-      "avgPosition": 13.2,
-      "pageTypes": [
-        "24-hour-plumber",
-        "clogged-drain",
-        "repiping",
-        "sewer-line-replacement",
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Torrance",
@@ -1048,22 +1131,21 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "St Petersburg",
-      "state": "FL",
-      "citySlug": "st-petersburg",
-      "stateSlug": "florida",
+      "city": "Peoria",
+      "state": "AZ",
+      "citySlug": "peoria",
+      "stateSlug": "arizona",
       "impressions": 23,
       "clicks": 0,
-      "avgPosition": 56.8,
+      "avgPosition": 18.1,
       "pageTypes": [
-        "emergency-plumbers",
-        "licensed-plumber"
+        "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Avon",
@@ -1077,7 +1159,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Indianapolis",
@@ -1091,7 +1173,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Muncie",
@@ -1105,39 +1187,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Bridgeport",
-      "state": "WV",
-      "citySlug": "bridgeport",
-      "stateSlug": "west-virginia",
-      "impressions": 23,
-      "clicks": 0,
-      "avgPosition": 10.7,
-      "pageTypes": [
-        "frozen-pipes",
-        "gas-line-repair",
-        "kitchen-remodel-plumbing",
-        "low-water-pressure"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Savannah",
-      "state": "GA",
-      "citySlug": "savannah",
-      "stateSlug": "georgia",
-      "impressions": 23,
-      "clicks": 0,
-      "avgPosition": 13.4,
-      "pageTypes": [
-        "hydro-jetting",
-        "kitchen-remodel-plumbing"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Bolingbrook",
@@ -1151,41 +1201,21 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Horsham",
-      "state": "PA",
-      "citySlug": "horsham",
-      "stateSlug": "pennsylvania",
+      "city": "Perry",
+      "state": "GA",
+      "citySlug": "perry",
+      "stateSlug": "georgia",
       "impressions": 23,
       "clicks": 0,
-      "avgPosition": 6.1,
+      "avgPosition": 17.6,
       "pageTypes": [
-        "sump-pump-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Saraland",
-      "state": "AL",
-      "citySlug": "saraland",
-      "stateSlug": "alabama",
-      "impressions": 22,
-      "clicks": 0,
-      "avgPosition": 32.6,
-      "pageTypes": [
-        "24-hour-plumber",
-        "clogged-drain",
-        "drain-cleaning",
-        "hydro-jetting",
-        "same-day-plumber",
-        "sewer-line-replacement",
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Collierville",
@@ -1202,7 +1232,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Charleston",
@@ -1218,36 +1248,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "South Brunswick",
-      "state": "NJ",
-      "citySlug": "south-brunswick",
-      "stateSlug": "new-jersey",
-      "impressions": 22,
-      "clicks": 0,
-      "avgPosition": 16.4,
-      "pageTypes": [
-        "bathroom-remodel-plumbing",
-        "sewer-line-replacement"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Huntington",
-      "state": "NY",
-      "citySlug": "huntington",
-      "stateSlug": "new-york",
-      "impressions": 22,
-      "clicks": 0,
-      "avgPosition": 22.5,
-      "pageTypes": [
-        "burst-pipe-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Deltona",
@@ -1261,7 +1262,7 @@
         "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Fort Wayne",
@@ -1275,7 +1276,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Horn Lake",
@@ -1289,21 +1290,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Mckinney",
-      "state": "TX",
-      "citySlug": "mckinney",
-      "stateSlug": "texas",
-      "impressions": 22,
-      "clicks": 0,
-      "avgPosition": 11.5,
-      "pageTypes": [
-        "garbage-disposal-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Azusa",
@@ -1317,7 +1304,21 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Hazleton",
+      "state": "PA",
+      "citySlug": "hazleton",
+      "stateSlug": "pennsylvania",
+      "impressions": 22,
+      "clicks": 0,
+      "avgPosition": 12.9,
+      "pageTypes": [
+        "sewer-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Sun City Center",
@@ -1333,7 +1334,24 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Coram",
+      "state": "NY",
+      "citySlug": "coram",
+      "stateSlug": "new-york",
+      "impressions": 21,
+      "clicks": 0,
+      "avgPosition": 20.7,
+      "pageTypes": [
+        "24-hour-plumber",
+        "hydro-jetting",
+        "kitchen-remodel-plumbing",
+        "same-day-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Trumbull",
@@ -1348,21 +1366,57 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Peoria",
-      "state": "AZ",
-      "citySlug": "peoria",
-      "stateSlug": "arizona",
+      "city": "Martinez",
+      "state": "GA",
+      "citySlug": "martinez",
+      "stateSlug": "georgia",
       "impressions": 21,
       "clicks": 0,
-      "avgPosition": 16.8,
+      "avgPosition": 23.7,
       "pageTypes": [
-        "emergency-plumbers"
+        "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Huntington Park",
+      "state": "CA",
+      "citySlug": "huntington-park",
+      "stateSlug": "california",
+      "impressions": 21,
+      "clicks": 0,
+      "avgPosition": 28.2,
+      "pageTypes": [
+        "clogged-drain",
+        "licensed-plumber",
+        "no-hot-water",
+        "sewer-line-replacement",
+        "sump-pump-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Pottstown",
+      "state": "PA",
+      "citySlug": "pottstown",
+      "stateSlug": "pennsylvania",
+      "impressions": 21,
+      "clicks": 0,
+      "avgPosition": 6.2,
+      "pageTypes": [
+        "clogged-drain",
+        "frozen-pipes",
+        "gas-line-repair",
+        "repiping",
+        "sewer-line-replacement"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Saratoga Springs",
@@ -1377,7 +1431,7 @@
         "kitchen-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Montclair",
@@ -1392,7 +1446,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Fitchburg",
@@ -1407,21 +1461,7 @@
         "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Perry",
-      "state": "GA",
-      "citySlug": "perry",
-      "stateSlug": "georgia",
-      "impressions": 21,
-      "clicks": 0,
-      "avgPosition": 18.2,
-      "pageTypes": [
-        "sewer-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Bluffton",
@@ -1435,7 +1475,22 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Michigan City",
+      "state": "IN",
+      "citySlug": "michigan-city",
+      "stateSlug": "indiana",
+      "impressions": 20,
+      "clicks": 0,
+      "avgPosition": 20.9,
+      "pageTypes": [
+        "bathroom-remodel-plumbing",
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Bala Cynwyd",
@@ -1451,7 +1506,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Nashua",
@@ -1466,21 +1521,7 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Martinez",
-      "state": "GA",
-      "citySlug": "martinez",
-      "stateSlug": "georgia",
-      "impressions": 20,
-      "clicks": 0,
-      "avgPosition": 24.4,
-      "pageTypes": [
-        "cheap-plumber"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Crofton",
@@ -1495,21 +1536,7 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Ashland",
-      "state": "OR",
-      "citySlug": "ashland",
-      "stateSlug": "oregon",
-      "impressions": 20,
-      "clicks": 0,
-      "avgPosition": 13.8,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Mcminnville",
@@ -1524,7 +1551,21 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Laurel",
+      "state": "MD",
+      "citySlug": "laurel",
+      "stateSlug": "maryland",
+      "impressions": 20,
+      "clicks": 0,
+      "avgPosition": 6.3,
+      "pageTypes": [
+        "low-water-pressure"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Danville",
@@ -1538,7 +1579,21 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Pelham",
+      "state": "AL",
+      "citySlug": "pelham",
+      "stateSlug": "alabama",
+      "impressions": 20,
+      "clicks": 0,
+      "avgPosition": 32.4,
+      "pageTypes": [
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "San Gabriel",
@@ -1554,7 +1609,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Clarksville",
@@ -1572,22 +1627,22 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Michigan City",
-      "state": "IN",
-      "citySlug": "michigan-city",
-      "stateSlug": "indiana",
+      "city": "Seneca",
+      "state": "SC",
+      "citySlug": "seneca",
+      "stateSlug": "south-carolina",
       "impressions": 19,
       "clicks": 0,
-      "avgPosition": 21.4,
+      "avgPosition": 13.7,
       "pageTypes": [
         "bathroom-remodel-plumbing",
-        "emergency-plumbers"
+        "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Chester",
@@ -1604,43 +1659,7 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Huntington Park",
-      "state": "CA",
-      "citySlug": "huntington-park",
-      "stateSlug": "california",
-      "impressions": 19,
-      "clicks": 0,
-      "avgPosition": 29.8,
-      "pageTypes": [
-        "clogged-drain",
-        "licensed-plumber",
-        "no-hot-water",
-        "sewer-line-replacement",
-        "sump-pump-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Pottstown",
-      "state": "PA",
-      "citySlug": "pottstown",
-      "stateSlug": "pennsylvania",
-      "impressions": 19,
-      "clicks": 0,
-      "avgPosition": 6.2,
-      "pageTypes": [
-        "clogged-drain",
-        "frozen-pipes",
-        "gas-line-repair",
-        "repiping",
-        "sewer-line-replacement"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Jacksonville",
@@ -1655,7 +1674,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Hobart",
@@ -1669,7 +1688,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Metairie",
@@ -1683,26 +1702,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Olympia",
-      "state": "WA",
-      "citySlug": "olympia",
-      "stateSlug": "washington",
-      "impressions": 19,
-      "clicks": 0,
-      "avgPosition": 46.9,
-      "pageTypes": [
-        "faucet-repair",
-        "garbage-disposal-repair",
-        "low-water-pressure",
-        "sewage-backup",
-        "sewer-repair",
-        "water-leak"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Paramount",
@@ -1718,7 +1718,7 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Xenia",
@@ -1734,7 +1734,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Newton",
@@ -1749,26 +1749,22 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Kaukauna",
-      "state": "WI",
-      "citySlug": "kaukauna",
-      "stateSlug": "wisconsin",
-      "impressions": 18,
+      "city": "Vancouver",
+      "state": "WA",
+      "citySlug": "vancouver",
+      "stateSlug": "washington",
+      "impressions": 19,
       "clicks": 0,
-      "avgPosition": 26.3,
+      "avgPosition": 31.1,
       "pageTypes": [
-        "bathroom-remodel-plumbing",
-        "drain-cleaning",
-        "garbage-disposal-repair",
-        "no-hot-water",
-        "water-leak",
+        "sewer-repair",
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Media",
@@ -1784,7 +1780,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Gary",
@@ -1798,7 +1794,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Pharr",
@@ -1813,7 +1809,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Rock Springs",
@@ -1827,7 +1823,25 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Fitchburg",
+      "state": "WI",
+      "citySlug": "fitchburg",
+      "stateSlug": "wisconsin",
+      "impressions": 18,
+      "clicks": 0,
+      "avgPosition": 9.9,
+      "pageTypes": [
+        "faucet-repair",
+        "garbage-disposal-repair",
+        "sewer-repair",
+        "water-leak",
+        "water-line-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Marysville",
@@ -1842,7 +1856,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Bear",
@@ -1860,7 +1874,7 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Flowery Branch",
@@ -1875,7 +1889,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Oregon",
@@ -1903,7 +1917,23 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Parsippany",
+      "state": "NJ",
+      "citySlug": "parsippany",
+      "stateSlug": "new-jersey",
+      "impressions": 17,
+      "clicks": 0,
+      "avgPosition": 20.1,
+      "pageTypes": [
+        "clogged-drain",
+        "kitchen-remodel-plumbing",
+        "slab-leak-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Stockbridge",
@@ -1917,7 +1947,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Maplewood",
@@ -1931,7 +1961,24 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Wilkes Barre",
+      "state": "PA",
+      "citySlug": "wilkes-barre",
+      "stateSlug": "pennsylvania",
+      "impressions": 17,
+      "clicks": 0,
+      "avgPosition": 7.4,
+      "pageTypes": [
+        "emergency-plumbers",
+        "gas-line-repair",
+        "hydro-jetting",
+        "slab-leak-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Farmington",
@@ -1945,7 +1992,24 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Romeoville",
+      "state": "IL",
+      "citySlug": "romeoville",
+      "stateSlug": "illinois",
+      "impressions": 17,
+      "clicks": 0,
+      "avgPosition": 9.6,
+      "pageTypes": [
+        "frozen-pipes",
+        "licensed-plumber",
+        "no-hot-water",
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "El Monte",
@@ -1960,22 +2024,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Vancouver",
-      "state": "WA",
-      "citySlug": "vancouver",
-      "stateSlug": "washington",
-      "impressions": 17,
-      "clicks": 0,
-      "avgPosition": 31.8,
-      "pageTypes": [
-        "sewer-repair",
-        "water-line-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Canby",
@@ -1989,7 +2038,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Hamilton",
@@ -2003,22 +2052,36 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Seneca",
-      "state": "SC",
-      "citySlug": "seneca",
-      "stateSlug": "south-carolina",
+      "city": "Easton",
+      "state": "PA",
+      "citySlug": "easton",
+      "stateSlug": "pennsylvania",
       "impressions": 16,
       "clicks": 0,
-      "avgPosition": 13.6,
+      "avgPosition": 8.9,
       "pageTypes": [
-        "bathroom-remodel-plumbing",
-        "water-heater-repair"
+        "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Anaheim",
+      "state": "CA",
+      "citySlug": "anaheim",
+      "stateSlug": "california",
+      "impressions": 16,
+      "clicks": 0,
+      "avgPosition": 8.5,
+      "pageTypes": [
+        "burst-pipe-repair",
+        "low-water-pressure"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Fort Payne",
@@ -2037,7 +2100,40 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Lake Oswego",
+      "state": "OR",
+      "citySlug": "lake-oswego",
+      "stateSlug": "oregon",
+      "impressions": 16,
+      "clicks": 0,
+      "avgPosition": 42.4,
+      "pageTypes": [
+        "clogged-drain",
+        "sewer-repair",
+        "water-line-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Cumberland",
+      "state": "RI",
+      "citySlug": "cumberland",
+      "stateSlug": "rhode-island",
+      "impressions": 16,
+      "clicks": 0,
+      "avgPosition": 18.8,
+      "pageTypes": [
+        "drain-cleaning",
+        "sewer-repair",
+        "toilet-repair",
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Mcallen",
@@ -2052,7 +2148,23 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Staunton",
+      "state": "VA",
+      "citySlug": "staunton",
+      "stateSlug": "virginia",
+      "impressions": 16,
+      "clicks": 0,
+      "avgPosition": 12.9,
+      "pageTypes": [
+        "faucet-repair",
+        "frozen-pipes",
+        "sewer-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Lake Elsinore",
@@ -2067,7 +2179,22 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Mamaroneck",
+      "state": "NY",
+      "citySlug": "mamaroneck",
+      "stateSlug": "new-york",
+      "impressions": 16,
+      "clicks": 0,
+      "avgPosition": 7.7,
+      "pageTypes": [
+        "sewer-line-replacement",
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Commack",
@@ -2081,21 +2208,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Hazleton",
-      "state": "PA",
-      "citySlug": "hazleton",
-      "stateSlug": "pennsylvania",
-      "impressions": 16,
-      "clicks": 0,
-      "avgPosition": 12.8,
-      "pageTypes": [
-        "sewer-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Towson",
@@ -2109,7 +2222,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Victorville",
@@ -2123,69 +2236,23 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Coram",
-      "state": "NY",
-      "citySlug": "coram",
-      "stateSlug": "new-york",
+      "city": "Glastonbury",
+      "state": "CT",
+      "citySlug": "glastonbury",
+      "stateSlug": "connecticut",
       "impressions": 15,
       "clicks": 0,
-      "avgPosition": 23.5,
+      "avgPosition": 43.4,
       "pageTypes": [
-        "24-hour-plumber",
-        "hydro-jetting",
-        "kitchen-remodel-plumbing",
-        "same-day-plumber"
+        "drain-cleaning",
+        "licensed-plumber",
+        "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Easton",
-      "state": "PA",
-      "citySlug": "easton",
-      "stateSlug": "pennsylvania",
-      "impressions": 15,
-      "clicks": 0,
-      "avgPosition": 8.9,
-      "pageTypes": [
-        "24-hour-plumber"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Anaheim",
-      "state": "CA",
-      "citySlug": "anaheim",
-      "stateSlug": "california",
-      "impressions": 15,
-      "clicks": 0,
-      "avgPosition": 8.7,
-      "pageTypes": [
-        "burst-pipe-repair",
-        "low-water-pressure"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Lake Oswego",
-      "state": "OR",
-      "citySlug": "lake-oswego",
-      "stateSlug": "oregon",
-      "impressions": 15,
-      "clicks": 0,
-      "avgPosition": 41.9,
-      "pageTypes": [
-        "clogged-drain",
-        "sewer-repair",
-        "water-line-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Scranton",
@@ -2202,7 +2269,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Freeport",
@@ -2218,7 +2285,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Noblesville",
@@ -2232,24 +2299,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Wilkes Barre",
-      "state": "PA",
-      "citySlug": "wilkes-barre",
-      "stateSlug": "pennsylvania",
-      "impressions": 15,
-      "clicks": 0,
-      "avgPosition": 6.8,
-      "pageTypes": [
-        "emergency-plumbers",
-        "gas-line-repair",
-        "hydro-jetting",
-        "slab-leak-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Marshfield",
@@ -2265,7 +2315,38 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Edinburg",
+      "state": "TX",
+      "citySlug": "edinburg",
+      "stateSlug": "texas",
+      "impressions": 15,
+      "clicks": 0,
+      "avgPosition": 15,
+      "pageTypes": [
+        "faucet-repair",
+        "sewer-line-replacement"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Lacey",
+      "state": "WA",
+      "citySlug": "lacey",
+      "stateSlug": "washington",
+      "impressions": 15,
+      "clicks": 0,
+      "avgPosition": 28.9,
+      "pageTypes": [
+        "frozen-pipes",
+        "low-water-pressure",
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Drexel Hill",
@@ -2280,7 +2361,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "San Ramon",
@@ -2295,35 +2376,35 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Laurel",
-      "state": "MD",
-      "citySlug": "laurel",
-      "stateSlug": "maryland",
+      "city": "Lake Geneva",
+      "state": "WI",
+      "citySlug": "lake-geneva",
+      "stateSlug": "wisconsin",
       "impressions": 15,
       "clicks": 0,
-      "avgPosition": 6.2,
+      "avgPosition": 5.7,
       "pageTypes": [
-        "low-water-pressure"
+        "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Pelham",
-      "state": "AL",
-      "citySlug": "pelham",
-      "stateSlug": "alabama",
+      "city": "Nederland",
+      "state": "TX",
+      "citySlug": "nederland",
+      "stateSlug": "texas",
       "impressions": 15,
       "clicks": 0,
-      "avgPosition": 35.6,
+      "avgPosition": 16.7,
       "pageTypes": [
-        "water-heater-repair"
+        "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Southlake",
@@ -2337,7 +2418,43 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Radford",
+      "state": "VA",
+      "citySlug": "radford",
+      "stateSlug": "virginia",
+      "impressions": 14,
+      "clicks": 0,
+      "avgPosition": 12.1,
+      "pageTypes": [
+        "24-hour-plumber",
+        "bathroom-remodel-plumbing",
+        "drain-cleaning",
+        "same-day-plumber",
+        "sump-pump-repair",
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Lynchburg",
+      "state": "VA",
+      "citySlug": "lynchburg",
+      "stateSlug": "virginia",
+      "impressions": 14,
+      "clicks": 0,
+      "avgPosition": 26.2,
+      "pageTypes": [
+        "clogged-drain",
+        "sump-pump-repair",
+        "toilet-repair",
+        "water-line-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Brooklyn Park",
@@ -2351,22 +2468,21 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Edinburg",
-      "state": "TX",
-      "citySlug": "edinburg",
-      "stateSlug": "texas",
+      "city": "Red Bank",
+      "state": "NJ",
+      "citySlug": "red-bank",
+      "stateSlug": "new-jersey",
       "impressions": 14,
       "clicks": 0,
-      "avgPosition": 15.3,
+      "avgPosition": 33.6,
       "pageTypes": [
-        "faucet-repair",
-        "sewer-line-replacement"
+        "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Pico Rivera",
@@ -2381,7 +2497,22 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Downingtown",
+      "state": "PA",
+      "citySlug": "downingtown",
+      "stateSlug": "pennsylvania",
+      "impressions": 14,
+      "clicks": 0,
+      "avgPosition": 21.3,
+      "pageTypes": [
+        "hydro-jetting",
+        "sewer-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Beaumont",
@@ -2396,36 +2527,21 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Abington",
-      "state": "PA",
-      "citySlug": "abington",
-      "stateSlug": "pennsylvania",
+      "city": "Conway",
+      "state": "SC",
+      "citySlug": "conway",
+      "stateSlug": "south-carolina",
       "impressions": 14,
       "clicks": 0,
-      "avgPosition": 10.4,
+      "avgPosition": 27.2,
       "pageTypes": [
-        "sump-pump-repair",
-        "water-leak"
+        "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Nederland",
-      "state": "TX",
-      "citySlug": "nederland",
-      "stateSlug": "texas",
-      "impressions": 14,
-      "clicks": 0,
-      "avgPosition": 16.9,
-      "pageTypes": [
-        "water-leak"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Long Beach",
@@ -2440,7 +2556,24 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Willis",
+      "state": "TX",
+      "citySlug": "willis",
+      "stateSlug": "texas",
+      "impressions": 13,
+      "clicks": 0,
+      "avgPosition": 45.2,
+      "pageTypes": [
+        "24-hour-plumber",
+        "frozen-pipes",
+        "licensed-plumber",
+        "slab-leak-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Red Bank",
@@ -2458,7 +2591,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Menomonee Falls",
@@ -2475,7 +2608,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Safety Harbor",
@@ -2490,7 +2623,7 @@
         "no-hot-water"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Camden",
@@ -2504,7 +2637,7 @@
         "clogged-drain"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Puyallup",
@@ -2519,7 +2652,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Rosemead",
@@ -2534,24 +2667,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Cumberland",
-      "state": "RI",
-      "citySlug": "cumberland",
-      "stateSlug": "rhode-island",
-      "impressions": 13,
-      "clicks": 0,
-      "avgPosition": 20.2,
-      "pageTypes": [
-        "drain-cleaning",
-        "sewer-repair",
-        "toilet-repair",
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Brownsburg",
@@ -2565,7 +2681,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Franklin",
@@ -2579,7 +2695,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Greenwood",
@@ -2593,21 +2709,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
-    },
-    {
-      "city": "Red Bank",
-      "state": "NJ",
-      "citySlug": "red-bank",
-      "stateSlug": "new-jersey",
-      "impressions": 13,
-      "clicks": 0,
-      "avgPosition": 32.9,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Pearland",
@@ -2621,7 +2723,22 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Taylor",
+      "state": "TX",
+      "citySlug": "taylor",
+      "stateSlug": "texas",
+      "impressions": 13,
+      "clicks": 0,
+      "avgPosition": 7.8,
+      "pageTypes": [
+        "emergency-plumbers",
+        "low-water-pressure"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Munster",
@@ -2635,7 +2752,7 @@
         "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Ellicott City",
@@ -2650,7 +2767,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Mechanicsburg",
@@ -2669,7 +2786,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Burlington",
@@ -2683,7 +2800,21 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Rialto",
+      "state": "CA",
+      "citySlug": "rialto",
+      "stateSlug": "california",
+      "impressions": 13,
+      "clicks": 0,
+      "avgPosition": 7.7,
+      "pageTypes": [
+        "licensed-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Carson",
@@ -2698,7 +2829,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Brentwood",
@@ -2713,7 +2844,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.827Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Glen Burnie",
@@ -2727,22 +2858,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Mamaroneck",
-      "state": "NY",
-      "citySlug": "mamaroneck",
-      "stateSlug": "new-york",
-      "impressions": 13,
-      "clicks": 0,
-      "avgPosition": 7.5,
-      "pageTypes": [
-        "sewer-line-replacement",
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "St Matthews",
@@ -2756,7 +2872,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "El Cerrito",
@@ -2770,7 +2886,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Plymouth Meeting",
@@ -2784,7 +2900,21 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Hamilton",
+      "state": "NJ",
+      "citySlug": "hamilton",
+      "stateSlug": "new-jersey",
+      "impressions": 12,
+      "clicks": 0,
+      "avgPosition": 13.6,
+      "pageTypes": [
+        "24-hour-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Port Chester",
@@ -2799,7 +2929,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Angleton",
@@ -2815,43 +2945,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Willis",
-      "state": "TX",
-      "citySlug": "willis",
-      "stateSlug": "texas",
-      "impressions": 12,
-      "clicks": 0,
-      "avgPosition": 48.3,
-      "pageTypes": [
-        "24-hour-plumber",
-        "frozen-pipes",
-        "licensed-plumber",
-        "slab-leak-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Radford",
-      "state": "VA",
-      "citySlug": "radford",
-      "stateSlug": "virginia",
-      "impressions": 12,
-      "clicks": 0,
-      "avgPosition": 12.8,
-      "pageTypes": [
-        "24-hour-plumber",
-        "bathroom-remodel-plumbing",
-        "drain-cleaning",
-        "same-day-plumber",
-        "sump-pump-repair",
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Lakewood",
@@ -2865,7 +2959,7 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Culpeper",
@@ -2882,7 +2976,7 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "La Crosse",
@@ -2896,7 +2990,7 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Newnan",
@@ -2911,24 +3005,23 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Lynchburg",
-      "state": "VA",
-      "citySlug": "lynchburg",
-      "stateSlug": "virginia",
+      "city": "Lancaster",
+      "state": "CA",
+      "citySlug": "lancaster",
+      "stateSlug": "california",
       "impressions": 12,
       "clicks": 0,
-      "avgPosition": 28.4,
+      "avgPosition": 12.1,
       "pageTypes": [
-        "clogged-drain",
-        "sump-pump-repair",
-        "toilet-repair",
-        "water-line-repair"
+        "drain-cleaning",
+        "low-water-pressure",
+        "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Florence",
@@ -2942,7 +3035,7 @@
         "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Dublin",
@@ -2957,7 +3050,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Latrobe",
@@ -2972,7 +3065,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Whittier",
@@ -2988,7 +3081,7 @@
         "no-hot-water"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "San Marcos",
@@ -3002,36 +3095,21 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Downingtown",
-      "state": "PA",
-      "citySlug": "downingtown",
-      "stateSlug": "pennsylvania",
+      "city": "Lake Mary",
+      "state": "FL",
+      "citySlug": "lake-mary",
+      "stateSlug": "florida",
       "impressions": 12,
       "clicks": 0,
-      "avgPosition": 23.3,
-      "pageTypes": [
-        "hydro-jetting",
-        "sewer-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Rialto",
-      "state": "CA",
-      "citySlug": "rialto",
-      "stateSlug": "california",
-      "impressions": 12,
-      "clicks": 0,
-      "avgPosition": 7.8,
+      "avgPosition": 19.8,
       "pageTypes": [
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Lodi",
@@ -3047,21 +3125,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Lake Geneva",
-      "state": "WI",
-      "citySlug": "lake-geneva",
-      "stateSlug": "wisconsin",
-      "impressions": 12,
-      "clicks": 0,
-      "avgPosition": 6.3,
-      "pageTypes": [
-        "sewage-backup"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Needham",
@@ -3076,7 +3140,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Twinsburg",
@@ -3090,7 +3154,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "San Rafael",
@@ -3104,21 +3168,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Hamilton",
-      "state": "NJ",
-      "citySlug": "hamilton",
-      "stateSlug": "new-jersey",
-      "impressions": 11,
-      "clicks": 0,
-      "avgPosition": 14,
-      "pageTypes": [
-        "24-hour-plumber"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Muskego",
@@ -3135,7 +3185,23 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Chicopee",
+      "state": "MA",
+      "citySlug": "chicopee",
+      "stateSlug": "massachusetts",
+      "impressions": 11,
+      "clicks": 0,
+      "avgPosition": 36.6,
+      "pageTypes": [
+        "bathroom-remodel-plumbing",
+        "frozen-pipes",
+        "sewer-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Murrysville",
@@ -3150,7 +3216,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Oak Lawn",
@@ -3164,7 +3230,7 @@
         "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Central Point",
@@ -3178,7 +3244,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Converse",
@@ -3192,22 +3258,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Taylor",
-      "state": "TX",
-      "citySlug": "taylor",
-      "stateSlug": "texas",
-      "impressions": 11,
-      "clicks": 0,
-      "avgPosition": 7.1,
-      "pageTypes": [
-        "emergency-plumbers",
-        "low-water-pressure"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "West Bend",
@@ -3221,39 +3272,37 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Fitchburg",
-      "state": "WI",
-      "citySlug": "fitchburg",
-      "stateSlug": "wisconsin",
+      "city": "Ossining",
+      "state": "NY",
+      "citySlug": "ossining",
+      "stateSlug": "new-york",
       "impressions": 11,
       "clicks": 0,
-      "avgPosition": 9.3,
+      "avgPosition": 4.9,
       "pageTypes": [
-        "faucet-repair",
-        "garbage-disposal-repair",
-        "sewer-repair",
-        "water-leak",
-        "water-line-repair"
+        "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Lake Mary",
-      "state": "FL",
-      "citySlug": "lake-mary",
-      "stateSlug": "florida",
+      "city": "Ceres",
+      "state": "CA",
+      "citySlug": "ceres",
+      "stateSlug": "california",
       "impressions": 11,
       "clicks": 0,
-      "avgPosition": 17.9,
+      "avgPosition": 41.8,
       "pageTypes": [
-        "licensed-plumber"
+        "low-water-pressure",
+        "plumber-cost",
+        "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Alvin",
@@ -3269,21 +3318,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Conway",
-      "state": "SC",
-      "citySlug": "conway",
-      "stateSlug": "south-carolina",
-      "impressions": 11,
-      "clicks": 0,
-      "avgPosition": 27.5,
-      "pageTypes": [
-        "same-day-plumber"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Erie",
@@ -3297,7 +3332,21 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Syosset",
+      "state": "NY",
+      "citySlug": "syosset",
+      "stateSlug": "new-york",
+      "impressions": 11,
+      "clicks": 0,
+      "avgPosition": 11.5,
+      "pageTypes": [
+        "sump-pump-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Sheridan",
@@ -3314,7 +3363,23 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Trotwood",
+      "state": "OH",
+      "citySlug": "trotwood",
+      "stateSlug": "ohio",
+      "impressions": 10,
+      "clicks": 0,
+      "avgPosition": 28,
+      "pageTypes": [
+        "24-hour-plumber",
+        "gas-line-repair",
+        "sump-pump-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Maitland",
@@ -3329,7 +3394,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Davie",
@@ -3343,23 +3408,21 @@
         "clogged-drain"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Parsippany",
-      "state": "NJ",
-      "citySlug": "parsippany",
-      "stateSlug": "new-jersey",
+      "city": "Bristol",
+      "state": "CT",
+      "citySlug": "bristol",
+      "stateSlug": "connecticut",
       "impressions": 10,
       "clicks": 0,
-      "avgPosition": 22.6,
+      "avgPosition": 65.7,
       "pageTypes": [
-        "clogged-drain",
-        "kitchen-remodel-plumbing",
-        "slab-leak-repair"
+        "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Kailua",
@@ -3373,21 +3436,21 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Ossining",
-      "state": "NY",
-      "citySlug": "ossining",
-      "stateSlug": "new-york",
+      "city": "Pineville",
+      "state": "NC",
+      "citySlug": "pineville",
+      "stateSlug": "north-carolina",
       "impressions": 10,
       "clicks": 0,
-      "avgPosition": 4.5,
+      "avgPosition": 19.2,
       "pageTypes": [
-        "faucet-repair"
+        "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Albany",
@@ -3402,7 +3465,7 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Severn",
@@ -3416,7 +3479,7 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Santa Ana",
@@ -3430,7 +3493,7 @@
         "hydro-jetting"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Fairfield",
@@ -3445,7 +3508,22 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Haverhill",
+      "state": "MA",
+      "citySlug": "haverhill",
+      "stateSlug": "massachusetts",
+      "impressions": 10,
+      "clicks": 0,
+      "avgPosition": 33.3,
+      "pageTypes": [
+        "licensed-plumber",
+        "sewer-line-replacement"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Round Rock",
@@ -3459,23 +3537,7 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Ceres",
-      "state": "CA",
-      "citySlug": "ceres",
-      "stateSlug": "california",
-      "impressions": 10,
-      "clicks": 0,
-      "avgPosition": 45.5,
-      "pageTypes": [
-        "low-water-pressure",
-        "plumber-cost",
-        "repiping"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Ocoee",
@@ -3489,7 +3551,7 @@
         "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Gresham",
@@ -3504,7 +3566,35 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Livonia",
+      "state": "MI",
+      "citySlug": "livonia",
+      "stateSlug": "michigan",
+      "impressions": 10,
+      "clicks": 0,
+      "avgPosition": 44.4,
+      "pageTypes": [
+        "sewer-line-replacement"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Bound Brook",
+      "state": "NJ",
+      "citySlug": "bound-brook",
+      "stateSlug": "new-jersey",
+      "impressions": 10,
+      "clicks": 0,
+      "avgPosition": 18.1,
+      "pageTypes": [
+        "toilet-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Windsor",
@@ -3518,7 +3608,22 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Lakewood",
+      "state": "NJ",
+      "citySlug": "lakewood",
+      "stateSlug": "new-jersey",
+      "impressions": 9,
+      "clicks": 0,
+      "avgPosition": 27.7,
+      "pageTypes": [
+        "bathroom-remodel-plumbing",
+        "drain-cleaning"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Mount Lebanon",
@@ -3534,7 +3639,7 @@
         "hydro-jetting"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Howell",
@@ -3549,37 +3654,21 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Lancaster",
-      "state": "CA",
-      "citySlug": "lancaster",
-      "stateSlug": "california",
+      "city": "Nicholasville",
+      "state": "KY",
+      "citySlug": "nicholasville",
+      "stateSlug": "kentucky",
       "impressions": 9,
       "clicks": 0,
-      "avgPosition": 13,
-      "pageTypes": [
-        "drain-cleaning",
-        "low-water-pressure",
-        "repiping"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Pineville",
-      "state": "NC",
-      "citySlug": "pineville",
-      "stateSlug": "north-carolina",
-      "impressions": 9,
-      "clicks": 0,
-      "avgPosition": 20.1,
+      "avgPosition": 17.3,
       "pageTypes": [
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Huntsville",
@@ -3594,7 +3683,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Plant City",
@@ -3608,24 +3697,7 @@
         "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Romeoville",
-      "state": "IL",
-      "citySlug": "romeoville",
-      "stateSlug": "illinois",
-      "impressions": 9,
-      "clicks": 0,
-      "avgPosition": 11.1,
-      "pageTypes": [
-        "frozen-pipes",
-        "licensed-plumber",
-        "no-hot-water",
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Miami Gardens",
@@ -3639,7 +3711,21 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Sapulpa",
+      "state": "OK",
+      "citySlug": "sapulpa",
+      "stateSlug": "oklahoma",
+      "impressions": 9,
+      "clicks": 0,
+      "avgPosition": 7,
+      "pageTypes": [
+        "gas-line-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Nacogdoches",
@@ -3654,7 +3740,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "North Miami",
@@ -3668,7 +3754,23 @@
         "kitchen-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Northampton",
+      "state": "MA",
+      "citySlug": "northampton",
+      "stateSlug": "massachusetts",
+      "impressions": 9,
+      "clicks": 0,
+      "avgPosition": 20.8,
+      "pageTypes": [
+        "no-hot-water",
+        "sewer-line-replacement",
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Mountain Brook",
@@ -3682,21 +3784,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Livonia",
-      "state": "MI",
-      "citySlug": "livonia",
-      "stateSlug": "michigan",
-      "impressions": 9,
-      "clicks": 0,
-      "avgPosition": 43.9,
-      "pageTypes": [
-        "sewer-line-replacement"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Island Lake",
@@ -3710,7 +3798,21 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Woonsocket",
+      "state": "RI",
+      "citySlug": "woonsocket",
+      "stateSlug": "rhode-island",
+      "impressions": 9,
+      "clicks": 0,
+      "avgPosition": 20,
+      "pageTypes": [
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Bowling Green",
@@ -3724,23 +3826,40 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Trotwood",
-      "state": "OH",
-      "citySlug": "trotwood",
-      "stateSlug": "ohio",
+      "city": "Erie",
+      "state": "PA",
+      "citySlug": "erie",
+      "stateSlug": "pennsylvania",
       "impressions": 8,
       "clicks": 0,
-      "avgPosition": 15.3,
+      "avgPosition": 13,
       "pageTypes": [
         "24-hour-plumber",
-        "gas-line-repair",
-        "sump-pump-repair"
+        "bathroom-remodel-plumbing",
+        "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Sun Prairie",
+      "state": "WI",
+      "citySlug": "sun-prairie",
+      "stateSlug": "wisconsin",
+      "impressions": 8,
+      "clicks": 0,
+      "avgPosition": 11.8,
+      "pageTypes": [
+        "24-hour-plumber",
+        "low-water-pressure",
+        "no-hot-water",
+        "sewer-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "St Cloud",
@@ -3756,7 +3875,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Santa Maria",
@@ -3770,7 +3889,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Honolulu",
@@ -3785,7 +3904,7 @@
         "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Holmdel",
@@ -3799,7 +3918,7 @@
         "clogged-drain"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Waipahu",
@@ -3816,7 +3935,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Elkhart",
@@ -3830,7 +3949,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Marion",
@@ -3844,7 +3963,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Westfield",
@@ -3858,7 +3977,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Alliance",
@@ -3873,7 +3992,35 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Morristown",
+      "state": "TN",
+      "citySlug": "morristown",
+      "stateSlug": "tennessee",
+      "impressions": 8,
+      "clicks": 0,
+      "avgPosition": 20.6,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Syracuse",
+      "state": "UT",
+      "citySlug": "syracuse",
+      "stateSlug": "utah",
+      "impressions": 8,
+      "clicks": 0,
+      "avgPosition": 16,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Waukegan",
@@ -3888,22 +4035,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Staunton",
-      "state": "VA",
-      "citySlug": "staunton",
-      "stateSlug": "virginia",
-      "impressions": 8,
-      "clicks": 0,
-      "avgPosition": 14.3,
-      "pageTypes": [
-        "faucet-repair",
-        "frozen-pipes"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Avondale",
@@ -3917,7 +4049,7 @@
         "frozen-pipes"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Rock Island",
@@ -3931,7 +4063,23 @@
         "frozen-pipes"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "La Marque",
+      "state": "TX",
+      "citySlug": "la-marque",
+      "stateSlug": "texas",
+      "impressions": 8,
+      "clicks": 0,
+      "avgPosition": 22.8,
+      "pageTypes": [
+        "garbage-disposal-repair",
+        "plumber-cost",
+        "water-heater-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Gloucester",
@@ -3946,21 +4094,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Sapulpa",
-      "state": "OK",
-      "citySlug": "sapulpa",
-      "stateSlug": "oklahoma",
-      "impressions": 8,
-      "clicks": 0,
-      "avgPosition": 7.5,
-      "pageTypes": [
-        "gas-line-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "San Bruno",
@@ -3975,7 +4109,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Mcdonough",
@@ -3991,21 +4125,21 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Syosset",
-      "state": "NY",
-      "citySlug": "syosset",
-      "stateSlug": "new-york",
+      "city": "Reading",
+      "state": "MA",
+      "citySlug": "reading",
+      "stateSlug": "massachusetts",
       "impressions": 8,
       "clicks": 0,
-      "avgPosition": 12.3,
+      "avgPosition": 13.5,
       "pageTypes": [
-        "sump-pump-repair"
+        "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Calumet City",
@@ -4019,21 +4153,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Woonsocket",
-      "state": "RI",
-      "citySlug": "woonsocket",
-      "stateSlug": "rhode-island",
-      "impressions": 8,
-      "clicks": 0,
-      "avgPosition": 17.4,
-      "pageTypes": [
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Buena Park",
@@ -4049,66 +4169,65 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Erie",
+      "city": "Riverside",
+      "state": "CA",
+      "citySlug": "riverside",
+      "stateSlug": "california",
+      "impressions": 7,
+      "clicks": 0,
+      "avgPosition": 5.3,
+      "pageTypes": [
+        "burst-pipe-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Ashwaubenon",
+      "state": "WI",
+      "citySlug": "ashwaubenon",
+      "stateSlug": "wisconsin",
+      "impressions": 7,
+      "clicks": 0,
+      "avgPosition": 11.9,
+      "pageTypes": [
+        "clogged-drain"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Conyers",
+      "state": "GA",
+      "citySlug": "conyers",
+      "stateSlug": "georgia",
+      "impressions": 7,
+      "clicks": 0,
+      "avgPosition": 18.1,
+      "pageTypes": [
+        "drain-cleaning",
+        "kitchen-remodel-plumbing"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Warren",
       "state": "PA",
-      "citySlug": "erie",
+      "citySlug": "warren",
       "stateSlug": "pennsylvania",
       "impressions": 7,
       "clicks": 0,
-      "avgPosition": 13.4,
+      "avgPosition": 23.4,
       "pageTypes": [
-        "24-hour-plumber",
-        "bathroom-remodel-plumbing",
-        "water-leak"
+        "drain-cleaning",
+        "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Lakewood",
-      "state": "NJ",
-      "citySlug": "lakewood",
-      "stateSlug": "new-jersey",
-      "impressions": 7,
-      "clicks": 0,
-      "avgPosition": 28.6,
-      "pageTypes": [
-        "bathroom-remodel-plumbing",
-        "drain-cleaning"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Ansonia",
-      "state": "CT",
-      "citySlug": "ansonia",
-      "stateSlug": "connecticut",
-      "impressions": 7,
-      "clicks": 0,
-      "avgPosition": 12.4,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Nicholasville",
-      "state": "KY",
-      "citySlug": "nicholasville",
-      "stateSlug": "kentucky",
-      "impressions": 7,
-      "clicks": 0,
-      "avgPosition": 18.9,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Grove City",
@@ -4122,23 +4241,7 @@
         "frozen-pipes"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "La Marque",
-      "state": "TX",
-      "citySlug": "la-marque",
-      "stateSlug": "texas",
-      "impressions": 7,
-      "clicks": 0,
-      "avgPosition": 24.3,
-      "pageTypes": [
-        "garbage-disposal-repair",
-        "plumber-cost",
-        "water-heater-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Perris",
@@ -4153,7 +4256,7 @@
         "kitchen-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Mission Viejo",
@@ -4167,7 +4270,7 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Lowell",
@@ -4181,7 +4284,7 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Superior",
@@ -4195,7 +4298,7 @@
         "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Norfolk",
@@ -4210,7 +4313,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Lewis Center",
@@ -4224,7 +4327,7 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Long Beach",
@@ -4238,21 +4341,21 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Reading",
-      "state": "MA",
-      "citySlug": "reading",
-      "stateSlug": "massachusetts",
+      "city": "Winchester",
+      "state": "KY",
+      "citySlug": "winchester",
+      "stateSlug": "kentucky",
       "impressions": 7,
       "clicks": 0,
-      "avgPosition": 13.1,
+      "avgPosition": 13.9,
       "pageTypes": [
-        "slab-leak-repair"
+        "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Upland",
@@ -4268,7 +4371,21 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Plainfield",
+      "state": "IL",
+      "citySlug": "plainfield",
+      "stateSlug": "illinois",
+      "impressions": 6,
+      "clicks": 0,
+      "avgPosition": 10.5,
+      "pageTypes": [
+        "24-hour-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Norristown",
@@ -4283,7 +4400,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Signal Mountain",
@@ -4299,7 +4416,7 @@
         "hydro-jetting"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Brigham City",
@@ -4316,24 +4433,24 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Sun Prairie",
+      "city": "Beloit",
       "state": "WI",
-      "citySlug": "sun-prairie",
+      "citySlug": "beloit",
       "stateSlug": "wisconsin",
       "impressions": 6,
       "clicks": 0,
-      "avgPosition": 8.8,
+      "avgPosition": 7.3,
       "pageTypes": [
         "24-hour-plumber",
-        "low-water-pressure",
-        "no-hot-water",
-        "sewer-repair"
+        "clogged-drain",
+        "gas-line-repair",
+        "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Birmingham",
@@ -4347,21 +4464,7 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Riverside",
-      "state": "CA",
-      "citySlug": "riverside",
-      "stateSlug": "california",
-      "impressions": 6,
-      "clicks": 0,
-      "avgPosition": 5.7,
-      "pageTypes": [
-        "burst-pipe-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Greeley",
@@ -4375,7 +4478,7 @@
         "burst-pipe-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Oxford",
@@ -4391,22 +4494,21 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Conyers",
-      "state": "GA",
-      "citySlug": "conyers",
-      "stateSlug": "georgia",
+      "city": "Hermiston",
+      "state": "OR",
+      "citySlug": "hermiston",
+      "stateSlug": "oregon",
       "impressions": 6,
       "clicks": 0,
-      "avgPosition": 13,
+      "avgPosition": 14.8,
       "pageTypes": [
-        "drain-cleaning",
-        "kitchen-remodel-plumbing"
+        "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Sammamish",
@@ -4420,7 +4522,7 @@
         "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Fishers",
@@ -4434,21 +4536,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Morristown",
-      "state": "TN",
-      "citySlug": "morristown",
-      "stateSlug": "tennessee",
-      "impressions": 6,
-      "clicks": 0,
-      "avgPosition": 24.2,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Pigeon Forge",
@@ -4462,7 +4550,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Corsicana",
@@ -4476,7 +4564,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Frederick",
@@ -4490,7 +4578,7 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Chickasha",
@@ -4507,7 +4595,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Centereach",
@@ -4522,7 +4610,7 @@
         "no-hot-water"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Barberton",
@@ -4536,7 +4624,7 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Simi Valley",
@@ -4551,7 +4639,7 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Fort Atkinson",
@@ -4568,7 +4656,22 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Decatur",
+      "state": "AL",
+      "citySlug": "decatur",
+      "stateSlug": "alabama",
+      "impressions": 6,
+      "clicks": 0,
+      "avgPosition": 23.5,
+      "pageTypes": [
+        "no-hot-water",
+        "same-day-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Cibolo",
@@ -4582,7 +4685,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Dickinson",
@@ -4596,7 +4699,21 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "La Quinta",
+      "state": "CA",
+      "citySlug": "la-quinta",
+      "stateSlug": "california",
+      "impressions": 6,
+      "clicks": 0,
+      "avgPosition": 11.3,
+      "pageTypes": [
+        "sewage-backup"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Powder Springs",
@@ -4610,7 +4727,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Milford",
@@ -4624,7 +4741,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Ocean",
@@ -4638,7 +4755,21 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Shelbyville",
+      "state": "TN",
+      "citySlug": "shelbyville",
+      "stateSlug": "tennessee",
+      "impressions": 6,
+      "clicks": 0,
+      "avgPosition": 6,
+      "pageTypes": [
+        "water-line-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Schertz",
@@ -4652,7 +4783,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Keyser",
@@ -4667,7 +4798,7 @@
         "hydro-jetting"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Palmdale",
@@ -4682,7 +4813,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Richmond",
@@ -4696,38 +4827,7 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Plainfield",
-      "state": "IL",
-      "citySlug": "plainfield",
-      "stateSlug": "illinois",
-      "impressions": 5,
-      "clicks": 0,
-      "avgPosition": 10.6,
-      "pageTypes": [
-        "24-hour-plumber"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Beloit",
-      "state": "WI",
-      "citySlug": "beloit",
-      "stateSlug": "wisconsin",
-      "impressions": 5,
-      "clicks": 0,
-      "avgPosition": 7,
-      "pageTypes": [
-        "24-hour-plumber",
-        "clogged-drain",
-        "gas-line-repair",
-        "plumber-cost"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Diamond Bar",
@@ -4741,7 +4841,21 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Happy Valley",
+      "state": "OR",
+      "citySlug": "happy-valley",
+      "stateSlug": "oregon",
+      "impressions": 5,
+      "clicks": 0,
+      "avgPosition": 22.4,
+      "pageTypes": [
+        "bathroom-remodel-plumbing"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Tigard",
@@ -4756,7 +4870,7 @@
         "no-hot-water"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Lisle",
@@ -4771,7 +4885,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Sandy",
@@ -4786,7 +4900,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Brookhaven",
@@ -4801,21 +4915,23 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Hermiston",
-      "state": "OR",
-      "citySlug": "hermiston",
-      "stateSlug": "oregon",
+      "city": "Goshen",
+      "state": "IN",
+      "citySlug": "goshen",
+      "stateSlug": "indiana",
       "impressions": 5,
       "clicks": 0,
-      "avgPosition": 14,
+      "avgPosition": 11,
       "pageTypes": [
-        "drain-cleaning"
+        "clogged-drain",
+        "garbage-disposal-repair",
+        "no-hot-water"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Lebanon",
@@ -4830,22 +4946,7 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Warren",
-      "state": "PA",
-      "citySlug": "warren",
-      "stateSlug": "pennsylvania",
-      "impressions": 5,
-      "clicks": 0,
-      "avgPosition": 28,
-      "pageTypes": [
-        "drain-cleaning",
-        "same-day-plumber"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Bloomington",
@@ -4859,7 +4960,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Crawfordsville",
@@ -4873,7 +4974,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Plainfield",
@@ -4887,7 +4988,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "South Bend",
@@ -4901,21 +5002,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Syracuse",
-      "state": "UT",
-      "citySlug": "syracuse",
-      "stateSlug": "utah",
-      "impressions": 5,
-      "clicks": 0,
-      "avgPosition": 21.8,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Verona",
@@ -4932,7 +5019,22 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Newark",
+      "state": "NJ",
+      "citySlug": "newark",
+      "stateSlug": "new-jersey",
+      "impressions": 5,
+      "clicks": 0,
+      "avgPosition": 16.4,
+      "pageTypes": [
+        "gas-line-repair",
+        "water-leak"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Burlington",
@@ -4946,7 +5048,7 @@
         "kitchen-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Tinton Falls",
@@ -4960,7 +5062,7 @@
         "kitchen-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Claremore",
@@ -4974,7 +5076,7 @@
         "kitchen-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Bethel Park",
@@ -4989,7 +5091,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Helena",
@@ -5003,7 +5105,7 @@
         "no-hot-water"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Miami Beach",
@@ -5017,37 +5119,21 @@
         "no-hot-water"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Northampton",
-      "state": "MA",
-      "citySlug": "northampton",
-      "stateSlug": "massachusetts",
+      "city": "Killeen",
+      "state": "TX",
+      "citySlug": "killeen",
+      "stateSlug": "texas",
       "impressions": 5,
       "clicks": 0,
-      "avgPosition": 14.8,
+      "avgPosition": 4.8,
       "pageTypes": [
-        "no-hot-water",
-        "sewer-line-replacement",
-        "water-heater-repair"
+        "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "La Quinta",
-      "state": "CA",
-      "citySlug": "la-quinta",
-      "stateSlug": "california",
-      "impressions": 5,
-      "clicks": 0,
-      "avgPosition": 11.8,
-      "pageTypes": [
-        "sewage-backup"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Dayton",
@@ -5061,7 +5147,7 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Orange",
@@ -5076,7 +5162,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Blacksburg",
@@ -5091,7 +5177,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Union City",
@@ -5105,7 +5191,21 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Wilsonville",
+      "state": "OR",
+      "citySlug": "wilsonville",
+      "stateSlug": "oregon",
+      "impressions": 5,
+      "clicks": 0,
+      "avgPosition": 24,
+      "pageTypes": [
+        "sewer-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "North Port",
@@ -5119,35 +5219,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Bound Brook",
-      "state": "NJ",
-      "citySlug": "bound-brook",
-      "stateSlug": "new-jersey",
-      "impressions": 5,
-      "clicks": 0,
-      "avgPosition": 23.8,
-      "pageTypes": [
-        "toilet-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Shelbyville",
-      "state": "TN",
-      "citySlug": "shelbyville",
-      "stateSlug": "tennessee",
-      "impressions": 5,
-      "clicks": 0,
-      "avgPosition": 5.4,
-      "pageTypes": [
-        "water-line-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Box Elder",
@@ -5161,7 +5233,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "San Buenaventura",
@@ -5175,7 +5247,7 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Green",
@@ -5189,21 +5261,7 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Happy Valley",
-      "state": "OR",
-      "citySlug": "happy-valley",
-      "stateSlug": "oregon",
-      "impressions": 4,
-      "clicks": 0,
-      "avgPosition": 23.3,
-      "pageTypes": [
-        "bathroom-remodel-plumbing"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Irvine",
@@ -5217,7 +5275,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Statesboro",
@@ -5231,23 +5289,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Goshen",
-      "state": "IN",
-      "citySlug": "goshen",
-      "stateSlug": "indiana",
-      "impressions": 4,
-      "clicks": 0,
-      "avgPosition": 8.3,
-      "pageTypes": [
-        "clogged-drain",
-        "garbage-disposal-repair",
-        "no-hot-water"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Yonkers",
@@ -5261,7 +5303,21 @@
         "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Upper Arlington",
+      "state": "OH",
+      "citySlug": "upper-arlington",
+      "stateSlug": "ohio",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 18.3,
+      "pageTypes": [
+        "drain-cleaning"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Springfield",
@@ -5275,7 +5331,7 @@
         "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "East Ridge",
@@ -5289,7 +5345,22 @@
         "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Bridgeport",
+      "state": "CT",
+      "citySlug": "bridgeport",
+      "stateSlug": "connecticut",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 54.5,
+      "pageTypes": [
+        "emergency-plumbers",
+        "licensed-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Eugene",
@@ -5303,7 +5374,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Troutdale",
@@ -5317,7 +5388,21 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Plano",
+      "state": "TX",
+      "citySlug": "plano",
+      "stateSlug": "texas",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 64.3,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Oakland",
@@ -5331,7 +5416,7 @@
         "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Oregon City",
@@ -5345,7 +5430,22 @@
         "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "York",
+      "state": "PA",
+      "citySlug": "york",
+      "stateSlug": "pennsylvania",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 10,
+      "pageTypes": [
+        "faucet-repair",
+        "repiping"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Smyrna",
@@ -5359,7 +5459,7 @@
         "frozen-pipes"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Rockledge",
@@ -5373,7 +5473,22 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Westfield",
+      "state": "MA",
+      "citySlug": "westfield",
+      "stateSlug": "massachusetts",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 30,
+      "pageTypes": [
+        "garbage-disposal-repair",
+        "same-day-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Montclair",
@@ -5388,7 +5503,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Klamath Falls",
@@ -5403,37 +5518,21 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Newark",
-      "state": "NJ",
-      "citySlug": "newark",
-      "stateSlug": "new-jersey",
+      "city": "Hartselle",
+      "state": "AL",
+      "citySlug": "hartselle",
+      "stateSlug": "alabama",
       "impressions": 4,
       "clicks": 0,
-      "avgPosition": 14.3,
+      "avgPosition": 6.8,
       "pageTypes": [
-        "gas-line-repair",
-        "water-leak"
+        "hydro-jetting"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Haverhill",
-      "state": "MA",
-      "citySlug": "haverhill",
-      "stateSlug": "massachusetts",
-      "impressions": 4,
-      "clicks": 0,
-      "avgPosition": 40.3,
-      "pageTypes": [
-        "licensed-plumber",
-        "sewer-line-replacement"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Forest Grove",
@@ -5447,7 +5546,7 @@
         "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Reynoldsburg",
@@ -5461,7 +5560,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Firestone",
@@ -5475,7 +5574,35 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Stoughton",
+      "state": "WI",
+      "citySlug": "stoughton",
+      "stateSlug": "wisconsin",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 17.3,
+      "pageTypes": [
+        "same-day-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "North Royalton",
+      "state": "OH",
+      "citySlug": "north-royalton",
+      "stateSlug": "ohio",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 28.8,
+      "pageTypes": [
+        "sewage-backup"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Wichita Falls",
@@ -5489,7 +5616,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Danville",
@@ -5504,7 +5631,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Front Royal",
@@ -5519,7 +5646,22 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
+    },
+    {
+      "city": "Anniston",
+      "state": "AL",
+      "citySlug": "anniston",
+      "stateSlug": "alabama",
+      "impressions": 4,
+      "clicks": 0,
+      "avgPosition": 9.5,
+      "pageTypes": [
+        "sewer-repair",
+        "toilet-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Prichard",
@@ -5534,7 +5676,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Buford",
@@ -5548,35 +5690,21 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
-      "city": "Winchester",
-      "state": "KY",
-      "citySlug": "winchester",
-      "stateSlug": "kentucky",
+      "city": "Schenectady",
+      "state": "NY",
+      "citySlug": "schenectady",
+      "stateSlug": "new-york",
       "impressions": 4,
       "clicks": 0,
-      "avgPosition": 12.5,
+      "avgPosition": 38.8,
       "pageTypes": [
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Wilsonville",
-      "state": "OR",
-      "citySlug": "wilsonville",
-      "stateSlug": "oregon",
-      "impressions": 4,
-      "clicks": 0,
-      "avgPosition": 24,
-      "pageTypes": [
-        "sewer-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Logan",
@@ -5590,7 +5718,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Chino",
@@ -5604,7 +5732,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.889Z"
     },
     {
       "city": "Denver",
@@ -5618,7 +5746,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Newberry",
@@ -5632,7 +5760,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Hempstead",
@@ -5646,7 +5774,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Rancho Santa Margarita",
@@ -5660,7 +5788,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Passaic",
@@ -5674,7 +5802,7 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Silsbee",
@@ -5689,7 +5817,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Englewood",
@@ -5703,7 +5831,7 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Gahanna",
@@ -5717,7 +5845,7 @@
         "burst-pipe-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Villa Park",
@@ -5731,7 +5859,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Cheltenham",
@@ -5745,7 +5873,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Havertown",
@@ -5760,21 +5888,7 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Upper Arlington",
-      "state": "OH",
-      "citySlug": "upper-arlington",
-      "stateSlug": "ohio",
-      "impressions": 3,
-      "clicks": 0,
-      "avgPosition": 17.3,
-      "pageTypes": [
-        "drain-cleaning"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Greensburg",
@@ -5788,7 +5902,7 @@
         "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Lake Jackson",
@@ -5803,7 +5917,7 @@
         "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Gretna",
@@ -5817,7 +5931,21 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "Auburn",
+      "state": "NY",
+      "citySlug": "auburn",
+      "stateSlug": "new-york",
+      "impressions": 3,
+      "clicks": 0,
+      "avgPosition": 9.7,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Lubbock",
@@ -5831,7 +5959,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Williston",
@@ -5845,22 +5973,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "York",
-      "state": "PA",
-      "citySlug": "york",
-      "stateSlug": "pennsylvania",
-      "impressions": 3,
-      "clicks": 0,
-      "avgPosition": 10.3,
-      "pageTypes": [
-        "faucet-repair",
-        "repiping"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Beaumont",
@@ -5874,7 +5987,21 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "Tumwater",
+      "state": "WA",
+      "citySlug": "tumwater",
+      "stateSlug": "washington",
+      "impressions": 3,
+      "clicks": 0,
+      "avgPosition": 51,
+      "pageTypes": [
+        "garbage-disposal-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Gulf Shores",
@@ -5889,7 +6016,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Hackensack",
@@ -5903,7 +6030,7 @@
         "hydro-jetting"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Ashland",
@@ -5918,7 +6045,21 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "Bellflower",
+      "state": "CA",
+      "citySlug": "bellflower",
+      "stateSlug": "california",
+      "impressions": 3,
+      "clicks": 0,
+      "avgPosition": 10,
+      "pageTypes": [
+        "repiping"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Covington",
@@ -5932,7 +6073,7 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Lake Grove",
@@ -5946,35 +6087,7 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Stoughton",
-      "state": "WI",
-      "citySlug": "stoughton",
-      "stateSlug": "wisconsin",
-      "impressions": 3,
-      "clicks": 0,
-      "avgPosition": 17.7,
-      "pageTypes": [
-        "same-day-plumber"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "North Royalton",
-      "state": "OH",
-      "citySlug": "north-royalton",
-      "stateSlug": "ohio",
-      "impressions": 3,
-      "clicks": 0,
-      "avgPosition": 29,
-      "pageTypes": [
-        "sewage-backup"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Princeton",
@@ -5988,22 +6101,7 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Anniston",
-      "state": "AL",
-      "citySlug": "anniston",
-      "stateSlug": "alabama",
-      "impressions": 3,
-      "clicks": 0,
-      "avgPosition": 10,
-      "pageTypes": [
-        "sewer-repair",
-        "toilet-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Montgomery",
@@ -6017,7 +6115,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Broomall",
@@ -6031,7 +6129,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Payson",
@@ -6045,7 +6143,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Ozark",
@@ -6060,7 +6158,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Middletown",
@@ -6075,7 +6173,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Easley",
@@ -6089,7 +6187,7 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Wheaton",
@@ -6104,7 +6202,7 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Elsmere",
@@ -6119,7 +6217,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Homer",
@@ -6133,7 +6231,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "National City",
@@ -6147,7 +6245,21 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "New Haven",
+      "state": "CT",
+      "citySlug": "new-haven",
+      "stateSlug": "connecticut",
+      "impressions": 2,
+      "clicks": 0,
+      "avgPosition": 11,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Kaneohe",
@@ -6161,7 +6273,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Kokomo",
@@ -6175,7 +6287,21 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "Lynn",
+      "state": "MA",
+      "citySlug": "lynn",
+      "stateSlug": "massachusetts",
+      "impressions": 2,
+      "clicks": 0,
+      "avgPosition": 11,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "New Brighton",
@@ -6189,7 +6315,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Pendleton",
@@ -6203,7 +6329,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Laredo",
@@ -6217,7 +6343,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Mount Pleasant",
@@ -6231,7 +6357,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Laramie",
@@ -6245,7 +6371,21 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "Powell",
+      "state": "WY",
+      "citySlug": "powell",
+      "stateSlug": "wyoming",
+      "impressions": 2,
+      "clicks": 0,
+      "avgPosition": 8,
+      "pageTypes": [
+        "emergency-plumbers"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Coconut Creek",
@@ -6260,7 +6400,7 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Federal Way",
@@ -6274,7 +6414,7 @@
         "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Vienna",
@@ -6288,7 +6428,7 @@
         "frozen-pipes"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Tucker",
@@ -6302,7 +6442,7 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Friendswood",
@@ -6316,21 +6456,7 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Tumwater",
-      "state": "WA",
-      "citySlug": "tumwater",
-      "stateSlug": "washington",
-      "impressions": 2,
-      "clicks": 0,
-      "avgPosition": 51.5,
-      "pageTypes": [
-        "garbage-disposal-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "South Gate",
@@ -6344,7 +6470,7 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Hanahan",
@@ -6358,7 +6484,7 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Everett",
@@ -6373,7 +6499,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Yucaipa",
@@ -6387,7 +6513,7 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Beaver Dam",
@@ -6401,7 +6527,7 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Boynton Beach",
@@ -6415,21 +6541,7 @@
         "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Decatur",
-      "state": "AL",
-      "citySlug": "decatur",
-      "stateSlug": "alabama",
-      "impressions": 2,
-      "clicks": 0,
-      "avgPosition": 49,
-      "pageTypes": [
-        "no-hot-water"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Cutler Bay",
@@ -6443,7 +6555,21 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "Brookline",
+      "state": "MA",
+      "citySlug": "brookline",
+      "stateSlug": "massachusetts",
+      "impressions": 2,
+      "clicks": 0,
+      "avgPosition": 4,
+      "pageTypes": [
+        "plumber-cost"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Albany",
@@ -6457,7 +6583,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Wenatchee",
@@ -6471,21 +6597,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Bellflower",
-      "state": "CA",
-      "citySlug": "bellflower",
-      "stateSlug": "california",
-      "impressions": 2,
-      "clicks": 0,
-      "avgPosition": 13.5,
-      "pageTypes": [
-        "repiping"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Thousand Oaks",
@@ -6499,7 +6611,7 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Belton",
@@ -6513,7 +6625,7 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Dearborn",
@@ -6527,7 +6639,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Coos Bay",
@@ -6541,7 +6653,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Sherwood",
@@ -6555,7 +6667,7 @@
         "sewer-line-replacement"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "New Rochelle",
@@ -6569,21 +6681,21 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
-      "city": "Schenectady",
-      "state": "NY",
-      "citySlug": "schenectady",
-      "stateSlug": "new-york",
+      "city": "Evesham",
+      "state": "NJ",
+      "citySlug": "evesham",
+      "stateSlug": "new-jersey",
       "impressions": 2,
       "clicks": 0,
-      "avgPosition": 41.5,
+      "avgPosition": 11,
       "pageTypes": [
-        "sewer-repair"
+        "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Summit",
@@ -6597,7 +6709,21 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "New York",
+      "state": "NY",
+      "citySlug": "new-york",
+      "stateSlug": "new-york",
+      "impressions": 2,
+      "clicks": 0,
+      "avgPosition": 16,
+      "pageTypes": [
+        "slab-leak-repair"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Lewisburg",
@@ -6611,7 +6737,7 @@
         "slab-leak-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Poughkeepsie",
@@ -6625,7 +6751,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Chillicothe",
@@ -6639,7 +6765,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Nolensville",
@@ -6653,7 +6779,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Tillmans Corner",
@@ -6667,7 +6793,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Kingston",
@@ -6681,7 +6807,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Cedarburg",
@@ -6695,7 +6821,7 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Poway",
@@ -6709,7 +6835,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Malden",
@@ -6723,7 +6849,21 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
+    },
+    {
+      "city": "Enfield",
+      "state": "CT",
+      "citySlug": "enfield",
+      "stateSlug": "connecticut",
+      "impressions": 1,
+      "clicks": 0,
+      "avgPosition": 44,
+      "pageTypes": [
+        "24-hour-plumber"
+      ],
+      "source": "gsc",
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Brookside",
@@ -6737,7 +6877,7 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Hinesville",
@@ -6751,7 +6891,7 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Mishawaka",
@@ -6765,7 +6905,7 @@
         "24-hour-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Wellington",
@@ -6779,7 +6919,7 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Kearny",
@@ -6793,7 +6933,7 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Pataskala",
@@ -6807,7 +6947,7 @@
         "bathroom-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Eau Claire",
@@ -6821,7 +6961,7 @@
         "burst-pipe-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Washington",
@@ -6835,7 +6975,7 @@
         "cheap-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Tysons",
@@ -6849,21 +6989,21 @@
         "clogged-drain"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
-      "city": "Ashwaubenon",
-      "state": "WI",
-      "citySlug": "ashwaubenon",
-      "stateSlug": "wisconsin",
+      "city": "Mount Vernon",
+      "state": "WA",
+      "citySlug": "mount-vernon",
+      "stateSlug": "washington",
       "impressions": 1,
       "clicks": 0,
-      "avgPosition": 9,
+      "avgPosition": 30,
       "pageTypes": [
-        "clogged-drain"
+        "drain-cleaning"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Wasilla",
@@ -6877,35 +7017,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Bridgeport",
-      "state": "CT",
-      "citySlug": "bridgeport",
-      "stateSlug": "connecticut",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 10,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "New Haven",
-      "state": "CT",
-      "citySlug": "new-haven",
-      "stateSlug": "connecticut",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 11,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Cumming",
@@ -6919,7 +7031,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Connersville",
@@ -6933,7 +7045,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Logansport",
@@ -6947,7 +7059,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Sulphur",
@@ -6961,7 +7073,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Amsterdam",
@@ -6975,7 +7087,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Brenham",
@@ -6989,35 +7101,7 @@
         "emergency-plumbers"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Plano",
-      "state": "TX",
-      "citySlug": "plano",
-      "stateSlug": "texas",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 63,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Powell",
-      "state": "WY",
-      "citySlug": "powell",
-      "stateSlug": "wyoming",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 8,
-      "pageTypes": [
-        "emergency-plumbers"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Monroe",
@@ -7031,7 +7115,7 @@
         "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Bristol",
@@ -7045,7 +7129,7 @@
         "faucet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Covington",
@@ -7059,7 +7143,7 @@
         "frozen-pipes"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Deerfield Beach",
@@ -7073,7 +7157,7 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "West Chester",
@@ -7087,7 +7171,7 @@
         "garbage-disposal-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Cumberland",
@@ -7101,7 +7185,7 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Keizer",
@@ -7115,7 +7199,7 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Monroeville",
@@ -7129,21 +7213,7 @@
         "gas-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Hartselle",
-      "state": "AL",
-      "citySlug": "hartselle",
-      "stateSlug": "alabama",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 13,
-      "pageTypes": [
-        "hydro-jetting"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Gilroy",
@@ -7157,7 +7227,7 @@
         "hydro-jetting"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Tukwila",
@@ -7171,7 +7241,7 @@
         "kitchen-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Parkersburg",
@@ -7185,7 +7255,7 @@
         "kitchen-remodel-plumbing"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Hockessin",
@@ -7199,7 +7269,7 @@
         "licensed-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Magnolia",
@@ -7213,7 +7283,7 @@
         "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Mineral Wells",
@@ -7227,7 +7297,7 @@
         "low-water-pressure"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Coral Springs",
@@ -7241,21 +7311,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Brookline",
-      "state": "MA",
-      "citySlug": "brookline",
-      "stateSlug": "massachusetts",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 4,
-      "pageTypes": [
-        "plumber-cost"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Ada",
@@ -7269,7 +7325,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Mustang",
@@ -7283,7 +7339,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Ardmore",
@@ -7297,7 +7353,7 @@
         "plumber-cost"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Medford",
@@ -7311,21 +7367,21 @@
         "repiping"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
-      "city": "Killeen",
-      "state": "TX",
-      "citySlug": "killeen",
-      "stateSlug": "texas",
+      "city": "Milford",
+      "state": "CT",
+      "citySlug": "milford",
+      "stateSlug": "connecticut",
       "impressions": 1,
       "clicks": 0,
-      "avgPosition": 6,
+      "avgPosition": 96,
       "pageTypes": [
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Janesville",
@@ -7339,7 +7395,7 @@
         "same-day-plumber"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Woburn",
@@ -7353,7 +7409,7 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Mount Vernon",
@@ -7367,7 +7423,7 @@
         "sewage-backup"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Grand Junction",
@@ -7381,35 +7437,7 @@
         "sewer-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "Evesham",
-      "state": "NJ",
-      "citySlug": "evesham",
-      "stateSlug": "new-jersey",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 10,
-      "pageTypes": [
-        "slab-leak-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
-    },
-    {
-      "city": "New York",
-      "state": "NY",
-      "citySlug": "new-york",
-      "stateSlug": "new-york",
-      "impressions": 1,
-      "clicks": 0,
-      "avgPosition": 10,
-      "pageTypes": [
-        "slab-leak-repair"
-      ],
-      "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Mcalester",
@@ -7423,7 +7451,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Texarkana",
@@ -7437,7 +7465,7 @@
         "sump-pump-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Naperville",
@@ -7451,7 +7479,7 @@
         "toilet-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "West Palm Beach",
@@ -7465,21 +7493,21 @@
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
-      "city": "Lacey",
-      "state": "WA",
-      "citySlug": "lacey",
-      "stateSlug": "washington",
+      "city": "Clinton",
+      "state": "IA",
+      "citySlug": "clinton",
+      "stateSlug": "iowa",
       "impressions": 1,
       "clicks": 0,
-      "avgPosition": 15,
+      "avgPosition": 91,
       "pageTypes": [
         "water-heater-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Troy",
@@ -7493,7 +7521,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Pickerington",
@@ -7507,7 +7535,7 @@
         "water-leak"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Kapolei",
@@ -7521,7 +7549,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     },
     {
       "city": "Lemont",
@@ -7535,7 +7563,7 @@
         "water-line-repair"
       ],
       "source": "gsc",
-      "discoveredAt": "2026-06-22T15:54:43.828Z"
+      "discoveredAt": "2026-06-23T13:46:26.890Z"
     }
   ]
 }
