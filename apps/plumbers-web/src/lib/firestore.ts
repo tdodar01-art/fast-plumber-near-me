@@ -16,6 +16,7 @@ import {
 import { db, isConfigured } from "./firebase";
 import type { Plumber, City, Lead, CachedReview, RatingSnapshot, ApiUsageRecord, ReviewSynthesis, PlumberReport } from "./types";
 import { COLLECTIONS } from "@/config/plumbing-collections";
+import { businessProfileSlug } from "./business-slug";
 
 // --- Plumber helpers ---
 
@@ -103,7 +104,16 @@ export async function resolvePlumbersForCity(
       if (!p.address?.lat || !p.address?.lng) continue;
       const dist = haversineMiles(cityLat, cityLng, p.address.lat, p.address.lng);
       if (dist <= RADIUS_MILES) {
-        plumbers.push({ ...p, distanceMiles: dist });
+        // Attach the canonical profile slug (Firestore doc id === placeId).
+        // Same inputs the export script uses, so the slug matches the JSON
+        // record getPlumberBySlug() resolves the profile link to.
+        const slug = businessProfileSlug({
+          name: p.businessName,
+          city: p.address?.city,
+          state: p.address?.state,
+          placeId: p.id,
+        });
+        plumbers.push({ ...p, slug, distanceMiles: dist });
       }
     }
   } catch {

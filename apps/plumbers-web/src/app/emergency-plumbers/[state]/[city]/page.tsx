@@ -24,6 +24,7 @@ import { CITY_COVERAGE } from "@/lib/city-coverage";
 import { getCityCoordBySlug } from "@/lib/city-coords";
 import { getDistanceWeight } from "@/lib/geo";
 import type { Plumber } from "@/lib/types";
+import { businessProfileSlug } from "@/lib/business-slug";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
 import { getExperimentMetaTitle } from "@/lib/experiments/getExperimentMetaTitle";
@@ -241,8 +242,19 @@ export default async function CityPage({
     ],
   };
 
-  function plumberSlug(name: string) {
-    return name.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  // Canonical profile slug attached by the resolver; fall back to deriving it
+  // from the same inputs. Never re-derive from businessName alone — that
+  // collides for national franchises.
+  function profileSlug(p: Plumber): string {
+    return (
+      p.slug ??
+      businessProfileSlug({
+        name: p.businessName,
+        city: p.address?.city,
+        state: p.address?.state,
+        placeId: p.id,
+      })
+    );
   }
 
   const plumberListJsonLd = {
@@ -256,7 +268,7 @@ export default async function CityPage({
         "@type": "Plumber",
         name: p.businessName,
         telephone: p.phone,
-        url: absoluteUrl(businessProfilePath(plumberSlug(p.businessName))),
+        url: absoluteUrl(businessProfilePath(profileSlug(p))),
         address: {
           "@type": "PostalAddress",
           addressLocality: p.address?.city || city.name,
@@ -302,7 +314,7 @@ export default async function CityPage({
         itemReviewed: {
           "@type": "Plumber",
           name: p.businessName,
-          url: absoluteUrl(businessProfilePath(plumberSlug(p.businessName))),
+          url: absoluteUrl(businessProfilePath(profileSlug(p))),
         },
         author: {
           "@type": "Organization",
@@ -448,7 +460,7 @@ export default async function CityPage({
                         </span>
                       )}
                     </div>
-                    <Link href={`/plumber/${plumberSlug(t.plumber.businessName)}`} className="hover:text-primary transition-colors">
+                    <Link href={`/plumber/${profileSlug(t.plumber)}`} className="hover:text-primary transition-colors">
                       <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{t.plumber.businessName}</h3>
                     </Link>
                     <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">

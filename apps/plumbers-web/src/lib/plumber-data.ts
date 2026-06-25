@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { calculateDistance } from "./geo";
 import { getCityCoordBySlug } from "./city-coords";
+import { businessProfileSlug, legacyBusinessSlug } from "./business-slug";
 import type { Plumber } from "./types";
 import type {
   Scores,
@@ -107,25 +108,83 @@ function loadData(): SynthesizedData {
     "plumbers-synthesized.json"
   );
   const raw = fs.readFileSync(filePath, "utf-8");
-  cachedData = JSON.parse(raw);
-  return cachedData!;
+  const parsed: SynthesizedData = JSON.parse(raw);
+  // Normalize each profile slug to the canonical computed value over stable
+  // fields (name + city + state + placeId). The export script also writes this
+  // slug, but recomputing here means runtime link-generation, getPlumberBySlug,
+  // generateStaticParams, and the sitemap all agree on the NEW scheme the
+  // instant this code deploys — without waiting for the next Firestore→JSON
+  // rebuild. businessProfileSlug is the same function the Firestore-path
+  // resolver and the export script's CJS twin use, so every path matches.
+  for (const p of parsed.plumbers) {
+    p.slug = businessProfileSlug({
+      name: p.name,
+      city: p.city,
+      state: p.state,
+      placeId: p.placeId,
+    });
+  }
+  cachedData = parsed;
+  return cachedData;
 }
 
 export function getAllPlumbers(): SynthesizedPlumber[] {
   return loadData().plumbers;
 }
 
+// Lazily-built slug → record index. getPlumberBySlug is called twice per
+// profile page (metadata + body) across ~5k pages, so a Map beats a linear
+// scan. First-write-wins is a belt-and-suspenders guard; slugs are unique.
+let slugIndex: Map<string, SynthesizedPlumber> | null = null;
+function getSlugIndex(): Map<string, SynthesizedPlumber> {
+  if (!slugIndex) {
+    slugIndex = new Map();
+    for (const p of loadData().plumbers) {
+      if (p.slug && !slugIndex.has(p.slug)) slugIndex.set(p.slug, p);
+    }
+  }
+  return slugIndex;
+}
+
 export function getPlumberBySlug(slug: string): SynthesizedPlumber | undefined {
-  return loadData().plumbers.find((p) => p.slug === slug);
+  return getSlugIndex().get(slug);
 }
 
 export function getAllPlumberSlugs(): string[] {
-  // Dedupe: national franchises (Roto-Rooter, Benjamin Franklin, etc.) appear
-  // once per city but slugify identically, so the raw map has many repeats.
-  // getPlumberBySlug() resolves a slug to a single record anyway, so the page
-  // identifier set must be unique — otherwise the sitemap lists duplicate URLs
-  // and generateStaticParams builds the same page repeatedly.
-  return [...new Set(loadData().plumbers.map((p) => p.slug))];
+  // Slugs are unique per location (businessProfileSlug appends city/state/
+  // placeId), so the index keys are exactly the distinct profile URLs.
+  return [...getSlugIndex().keys()];
+}
+
+// ---------------------------------------------------------------------------
+// Legacy slug redirects
+// ---------------------------------------------------------------------------
+
+let legacySlugMap: Map<string, string> | null = null;
+
+/**
+ * Map a pre-2026-06 name-only slug (e.g. `roto-rooter-plumbing-water-cleanup`)
+ * to its new canonical slug, for 308-redirecting already-indexed URLs.
+ *
+ * For names that collided under the old scheme (every franchise), the OLD URL
+ * resolved to whichever record appeared first in the JSON — `getPlumberBySlug`
+ * used `.find()`. We preserve that by keeping the FIRST occurrence, so a
+ * currently-indexed franchise URL redirects to the same physical business it
+ * shows today. Returns undefined if no legacy match exists (caller 404s).
+ */
+export function resolveLegacySlug(oldSlug: string): string | undefined {
+  if (!legacySlugMap) {
+    legacySlugMap = new Map();
+    for (const p of loadData().plumbers) {
+      const legacy = legacyBusinessSlug(p.name);
+      // First-write-wins → mirrors the old .find() first-match behaviour.
+      if (!legacySlugMap.has(legacy)) legacySlugMap.set(legacy, p.slug);
+    }
+  }
+  const target = legacySlugMap.get(oldSlug);
+  // Guard against a no-op redirect when a legacy slug equals a current slug
+  // (e.g. a unique single-location business whose new slug starts the same).
+  return target && target !== oldSlug ? target : undefined;
 }
 
 export function getPlumbersRanked(): SynthesizedPlumber[] {
@@ -163,6 +222,11 @@ function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { d
   return {
     id: p.placeId,
     businessName: p.name,
+    // Canonical slug straight from the JSON (written by export-firestore-to-json
+    // via businessProfileSlug). Carried through so cards/links use the stored
+    // slug instead of re-deriving from businessName, which collides for
+    // national franchises.
+    slug: p.slug,
     ownerName: "",
     phone: p.phone || "",
     website: p.website || null,

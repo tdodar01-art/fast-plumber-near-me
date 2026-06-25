@@ -19,6 +19,7 @@ const fs = require("fs");
 const path = require("path");
 const { execSync, spawnSync } = require("child_process");
 const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
+const { businessProfileSlug } = require("./lib/business-slug");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -206,6 +207,28 @@ async function main() {
   console.log(`\nResults: ${updated} updated, ${added} added, ${unchanged} unchanged`);
   console.log(`Affected cities: ${affectedCities.size > 0 ? [...affectedCities].join(", ") : "none"}`);
 
+  // Slug uniqueness backstop. The scheme (name-city-state-placeId6) is designed
+  // to be collision-free, but this guards against a future scheme change or a
+  // drift from the runtime twin (src/lib/business-slug.ts) silently
+  // re-introducing the franchise collision bug. Fail loud — a duplicate slug
+  // means getPlumberBySlug() would hide records and city cards would mis-link.
+  const slugCounts = new Map();
+  for (const p of plumbers) {
+    if (!p.slug) continue;
+    slugCounts.set(p.slug, (slugCounts.get(p.slug) || 0) + 1);
+  }
+  const dupeSlugs = [...slugCounts.entries()].filter(([, n]) => n > 1);
+  if (dupeSlugs.length > 0) {
+    const sample = dupeSlugs
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([slug, n]) => `${slug} (×${n})`)
+      .join(", ");
+    const message = `Slug collision detected: ${dupeSlugs.length} slug(s) map to >1 plumber. Sample: ${sample}`;
+    logErrorCLI({ entity: "export-slug-collision", severity: "error", message });
+    throw new Error(message);
+  }
+
   // Update meta
   jsonData.meta.synthesizedAt = new Date().toISOString();
   jsonData.meta.totalPlumbers = plumbers.length;
@@ -366,7 +389,12 @@ function buildJsonEntry(fd, placeId, reviews) {
   return {
     placeId,
     name: fd.businessName,
-    slug: slugify(fd.businessName),
+    slug: businessProfileSlug({
+      name: fd.businessName,
+      city: fd.address?.city,
+      state: fd.address?.state,
+      placeId,
+    }),
     phone: fd.phone || "",
     website: fd.website || null,
     address: fd.address?.full || `${fd.address?.city || ""}, ${fd.address?.state || ""}`,
@@ -399,6 +427,18 @@ function mergeFirestoreData(existing, fd, reviews) {
   // Update Google rating if Firestore has fresher data
   if (fd.googleRating) existing.googleRating = fd.googleRating;
   if (fd.googleReviewCount) existing.googleReviewCount = fd.googleReviewCount;
+
+  // Re-derive the canonical slug on every export. mergeFirestoreData is the
+  // path taken for the ~5k EXISTING entries; without this they would keep
+  // whatever slug they were first written with and a scheme change would only
+  // reach newly-added plumbers. placeId is immutable (the doc key), so this is
+  // stable across runs.
+  existing.slug = businessProfileSlug({
+    name: fd.businessName || existing.name,
+    city: fd.address?.city ?? existing.city,
+    state: fd.address?.state ?? existing.state,
+    placeId: existing.placeId,
+  });
 
   // serviceCities — always take Firestore's version if it exists
   if (fd.serviceCities && fd.serviceCities.length > 0) {
@@ -519,10 +559,6 @@ function cleanBBB(bbb) {
     yearsInBusiness: bbb.yearsInBusiness ?? null,
     bbbUrl: bbb.bbbUrl || null,
   };
-}
-
-function slugify(text) {
-  return text.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 // ---------------------------------------------------------------------------

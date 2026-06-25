@@ -8,6 +8,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import type { Plumber } from "@/lib/types";
+import { businessProfileSlug } from "@/lib/business-slug";
 import { getScoreLabel } from "@/lib/scoring";
 import { getDistanceLabel } from "@/lib/geo";
 import SignalRow from "./SignalRow";
@@ -36,13 +37,6 @@ function getInitialsBg(name: string): string {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/\./g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
 
 function useViewTracking(plumberId: string, citySlug: string) {
   const ref = useRef<HTMLDivElement>(null);
@@ -208,7 +202,17 @@ export default function PlumberCard({
 }) {
   const viewRef = useViewTracking(plumber.id, citySlug);
   const router = useRouter();
-  const slug = slugify(plumber.businessName);
+  // Prefer the canonical slug attached at the resolver boundary; fall back to
+  // deriving it from the same inputs so the link still resolves if a Plumber
+  // reaches this card without one.
+  const slug =
+    plumber.slug ??
+    businessProfileSlug({
+      name: plumber.businessName,
+      city: plumber.address?.city,
+      state: plumber.address?.state,
+      placeId: plumber.id,
+    });
   const syn = plumber.reviewSynthesis;
   const isFullySynthesized = (syn?.weaknesses?.length ?? 0) > 0;
 

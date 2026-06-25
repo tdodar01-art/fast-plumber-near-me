@@ -23,6 +23,7 @@ import {
 } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
 import type { Plumber } from "@/lib/types";
+import { businessProfileSlug } from "@/lib/business-slug";
 import { getExperimentNearbyCityCount } from "@/lib/experiments/getNearbyCityCount";
 import { getExpandedNearbyCities } from "@/lib/experiments/expandNearbyCities";
 import { absoluteUrl, businessProfilePath, cityPath, serviceCityPath } from "@/config/plumbing-routes";
@@ -199,8 +200,19 @@ function getTieredPlumbers(
   return { tier1, tier2, tier3, all, topPickEligible, totalCount: all.length };
 }
 
-function plumberSlug(name: string) {
-  return name.toLowerCase().replace(/\./g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+// Canonical profile slug attached by the resolver; fall back to deriving it
+// from the same inputs. Never re-derive from businessName alone — that
+// collides for national franchises.
+function profileSlug(p: Plumber): string {
+  return (
+    p.slug ??
+    businessProfileSlug({
+      name: p.businessName,
+      city: p.address?.city,
+      state: p.address?.state,
+      placeId: p.id,
+    })
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -271,7 +283,7 @@ export default async function ServiceCityPage({
         "@type": "Plumber",
         name: t.plumber.businessName,
         telephone: t.plumber.phone,
-        url: absoluteUrl(businessProfilePath(plumberSlug(t.plumber.businessName))),
+        url: absoluteUrl(businessProfilePath(profileSlug(t.plumber))),
         ...(t.plumber.address?.lat && t.plumber.address?.lng && {
           geo: { "@type": "GeoCoordinates", latitude: t.plumber.address.lat, longitude: t.plumber.address.lng },
         }),

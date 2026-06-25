@@ -19,6 +19,15 @@ export interface PlumberAddress {
 export interface Plumber {
   id: string;
   businessName: string;
+  /**
+   * Canonical profile slug (`/plumber/[slug]`). Not stored in Firestore — it is
+   * a derived value attached at the resolver boundary (resolvePlumbersForCity,
+   * toPlumber) via businessProfileSlug() so cards/links never re-derive it from
+   * businessName alone (which collides for national franchises). May be absent
+   * on raw Firestore reads that bypass the resolver; consumers should fall back
+   * to businessProfileSlug().
+   */
+  slug?: string;
   ownerName: string;
   phone: string;
   website: string | null;

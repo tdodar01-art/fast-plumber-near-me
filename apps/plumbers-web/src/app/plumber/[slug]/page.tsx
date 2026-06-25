@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import {
   Zap,
   ShieldCheck,
@@ -16,6 +16,7 @@ import {
 import {
   getPlumberBySlug,
   getAllPlumberSlugs,
+  resolveLegacySlug,
 } from "@/lib/plumber-data";
 import { QuoteCard, GoogleReviewCard } from "@/components/profile/ReviewCard";
 import StickyBottomBar from "@/components/profile/StickyBottomBar";
@@ -139,7 +140,14 @@ export default async function PlumberProfilePage({
 }) {
   const { slug } = await params;
   const plumber = getPlumberBySlug(slug);
-  if (!plumber) notFound();
+  if (!plumber) {
+    // Pre-2026-06 name-only URLs are indexed by Google — 308-redirect them to
+    // the new canonical slug rather than 404ing. Franchise URLs map to the
+    // record that was previously the first-match (see resolveLegacySlug).
+    const newSlug = resolveLegacySlug(slug);
+    if (newSlug) permanentRedirect(businessProfilePath(newSlug));
+    notFound();
+  }
 
   const s = plumber.synthesis;
   const badges = s?.strengths ? [] as string[] : [];
