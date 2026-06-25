@@ -120,7 +120,12 @@ export function getPlumberBySlug(slug: string): SynthesizedPlumber | undefined {
 }
 
 export function getAllPlumberSlugs(): string[] {
-  return loadData().plumbers.map((p) => p.slug);
+  // Dedupe: national franchises (Roto-Rooter, Benjamin Franklin, etc.) appear
+  // once per city but slugify identically, so the raw map has many repeats.
+  // getPlumberBySlug() resolves a slug to a single record anyway, so the page
+  // identifier set must be unique — otherwise the sitemap lists duplicate URLs
+  // and generateStaticParams builds the same page repeatedly.
+  return [...new Set(loadData().plumbers.map((p) => p.slug))];
 }
 
 export function getPlumbersRanked(): SynthesizedPlumber[] {
