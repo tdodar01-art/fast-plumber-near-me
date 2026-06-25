@@ -3,6 +3,7 @@ import { Mail, MapPin, Clock } from "lucide-react";
 import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Contact Us",
   description:
     "Get in touch with Fast Plumber Near Me. Questions about listings, verification, or partnerships? We're here to help.",

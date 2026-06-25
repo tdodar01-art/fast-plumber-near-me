@@ -19,15 +19,18 @@ export async function generateMetadata({
   const post = getBlogPost(slug);
   if (!post) return {};
 
+  const ogImage = `${absoluteUrl("/api/og")}?type=blog&title=${encodeURIComponent(post.title)}`;
   return {
     title: post.title,
     description: post.description,
+    alternates: { canonical: absoluteUrl(`/blog/${slug}`) },
     openGraph: {
       title: post.title,
       description: post.description,
       type: "article",
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
+      images: [{ url: ogImage, width: 1200, height: 630 }],
     },
   };
 }
@@ -165,11 +168,13 @@ export default async function BlogPostPage({
   const nextPost = currentIndex < BLOG_POSTS.length - 1 ? BLOG_POSTS[currentIndex + 1] : null;
 
   // Article schema
+  const ogImage = `${absoluteUrl("/api/og")}?type=blog&title=${encodeURIComponent(post.title)}`;
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.description,
+    image: ogImage,
     mainEntityOfPage: absoluteUrl(`/blog/${slug}`),
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
@@ -182,6 +187,12 @@ export default async function BlogPostPage({
       "@type": "Organization",
       name: "Fast Plumber Near Me",
       url: absoluteUrl(),
+      logo: {
+        "@type": "ImageObject",
+        url: absoluteUrl("/logo.svg"),
+        width: 512,
+        height: 512,
+      },
     },
   };
 

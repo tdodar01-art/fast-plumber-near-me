@@ -60,6 +60,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: absoluteUrl(businessProfilePath(slug)) },
     openGraph: { title, description, type: "website" },
   };
 }
@@ -238,14 +239,10 @@ export default async function PlumberProfilePage({
       name: "Fast Plumber Near Me",
       url: absoluteUrl(),
     },
-    ...(plumber.googleRating && {
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: plumber.googleRating,
-        bestRating: 5,
-        worstRating: 1,
-      },
-    }),
+    // No reviewRating here: this is our editorial pros/cons synthesis, not a
+    // star score we computed. The Google-sourced rating lives on the business
+    // entity's aggregateRating above; emitting a reviewRating equal to it would
+    // misattribute Google's stars to us.
     ...(strengths.length > 0 && {
       positiveNotes: {
         "@type": "ItemList",

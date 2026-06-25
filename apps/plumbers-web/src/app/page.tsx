@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Phone, ShieldCheck, Clock, Search, ArrowRight, CheckCircle, MapPin, Building } from "lucide-react";
 import CitySearch from "@/components/CitySearch";
@@ -8,24 +9,26 @@ import { getStatesWithCities, getTotalCityCount } from "@/lib/cities-data";
 import { getCityCoords } from "@/lib/city-coords";
 import { absoluteUrl } from "@/config/plumbing-routes";
 
+export const metadata: Metadata = {
+  alternates: { canonical: absoluteUrl() },
+};
+
 const featuredCities = FEATURED_CITIES;
 const totalCities = getTotalCityCount();
 const totalStates = getStatesWithCities().length;
 const cityCoords = getCityCoords();
 
+// No SearchAction/sitelinks searchbox: the site has no server-side search
+// results endpoint (homepage search is client-side autocomplete that routes
+// straight to a city page). The previous SearchAction pointed at a templated
+// /emergency-plumbers/{state}/{city} URL that can't be filled from a single
+// query term, so Google would reject it. Re-add a SearchAction only once a
+// real /search?q= results route exists.
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Fast Plumber Near Me",
   url: absoluteUrl(),
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: absoluteUrl("/emergency-plumbers/{state}/{city}"),
-    },
-    "query-input": "required name=city",
-  },
 };
 
 const organizationJsonLd = {
@@ -33,6 +36,7 @@ const organizationJsonLd = {
   "@type": "Organization",
   name: "Fast Plumber Near Me",
   url: absoluteUrl(),
+  logo: absoluteUrl("/logo.svg"),
   description:
     "Emergency plumber directory that connects homeowners with verified, responsive plumbers. Real Google review analysis with honest strengths and weaknesses — no pay-to-play rankings.",
 };

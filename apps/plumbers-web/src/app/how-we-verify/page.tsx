@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Phone, CheckCircle, TrendingUp, Clock, BarChart3, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/how-we-verify" },
   title: "How We Verify Plumbers",
   description:
     "Learn how Fast Plumber Near Me uses AI to call and verify every listed plumber for emergency availability, response time, and reliability.",

@@ -6,6 +6,7 @@ import PlumberDirectory, { type DirectoryPlumber } from "./PlumberDirectory";
 import { absoluteUrl } from "@/config/plumbing-routes";
 
 export const metadata: Metadata = {
+  alternates: { canonical: absoluteUrl("/plumbers") },
   title: "Ranked Plumbers — Honest Reviews & Trust Scores",
   description:
     "Every plumber ranked by trust score. AI-analyzed Google reviews show the truth — strengths, weaknesses, and red flags. No paid placements.",

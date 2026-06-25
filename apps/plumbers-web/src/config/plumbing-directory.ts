@@ -5,7 +5,11 @@ export const plumbingDirectoryConfig = {
   label: "Fast Plumber Near Me",
   businessNoun: "plumber",
   businessNounPlural: "plumbers",
-  domain: "https://fastplumbernearme.com",
+  // Canonical host. Production redirects apex → www (Vercel 307), and the
+  // Search Console property is the www host, so www is the single canonical
+  // origin for sitemap, schema, OG, and rel=canonical. Do not change to apex
+  // without also flipping the Vercel redirect direction.
+  domain: "https://www.fastplumbernearme.com",
   collections: {
     businesses: "plumbers",
     reviews: "reviews",

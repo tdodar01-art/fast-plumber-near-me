@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Fast Plumber Near Me">
+  <rect width="512" height="512" rx="96" fill="#1a365d"/>
+  <!-- water droplet -->
+  <path d="M256 96 C 300 172 332 210 332 250 a 76 76 0 1 1 -152 0 C 180 210 212 172 256 96 Z" fill="#ffffff"/>
+  <!-- verified check inside droplet -->
+  <path d="M224 252 l 22 24 l 44 -52" fill="none" stroke="#16a34a" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- urgency accent -->
+  <rect x="170" y="350" width="172" height="14" rx="7" fill="#e53e3e"/>
+  <text x="256" y="412" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="46" font-weight="700" fill="#ffffff" letter-spacing="1">FAST PLUMBER</text>
+  <text x="256" y="456" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="500" fill="#cbd5e1" letter-spacing="6">NEAR ME</text>
+</svg>

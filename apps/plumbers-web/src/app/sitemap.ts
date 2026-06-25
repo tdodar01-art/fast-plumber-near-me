@@ -4,12 +4,14 @@ import { STATES_DATA, getStateBySlug } from "@/lib/states-data";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { getAllServiceSlugs } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
-import { absoluteUrl, cityPath, serviceCityPath } from "@/config/plumbing-routes";
+import { getAllPlumberSlugs } from "@/lib/plumber-data";
+import { absoluteUrl, cityPath, serviceCityPath, businessProfilePath } from "@/config/plumbing-routes";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
     { url: absoluteUrl(), lastModified: new Date(), changeFrequency: "weekly", priority: 1.0 },
     { url: absoluteUrl("/emergency-plumbers"), lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: absoluteUrl("/plumbers"), lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
     { url: absoluteUrl("/blog"), lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
     { url: absoluteUrl("/about"), lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: absoluteUrl("/how-we-verify"), lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
@@ -64,5 +66,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...statePages, ...cityPages, ...servicePages, ...blogPages];
+  // Plumber profile pages — long-tail business-name queries. These are
+  // statically generated (generateStaticParams from getAllPlumberSlugs) but
+  // were previously absent from the sitemap, leaving them undiscoverable.
+  const plumberPages: MetadataRoute.Sitemap = getAllPlumberSlugs().map((slug) => ({
+    url: absoluteUrl(businessProfilePath(slug)),
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
+
+  return [
+    ...staticPages,
+    ...statePages,
+    ...cityPages,
+    ...servicePages,
+    ...blogPages,
+    ...plumberPages,
+  ];
 }

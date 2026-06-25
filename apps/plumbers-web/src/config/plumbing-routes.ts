@@ -5,8 +5,18 @@ import {
 } from "@directory-sites/directory-core";
 import { plumbingDirectoryConfig } from "./plumbing-directory";
 
+// Canonical origin (www — see plumbing-directory.ts). Source of truth for
+// absoluteUrl(), sitemap, schema, OG, and rel=canonical.
 export const SITE_ORIGIN = plumbingDirectoryConfig.domain;
-export const SITE_ORIGIN_WITH_WWW = SITE_ORIGIN.replace("https://", "https://www.");
+// Apex (non-www) origin. Production 307-redirects apex → www; kept for the
+// API origin allowlist so apex referers are still accepted pre-redirect.
+export const SITE_ORIGIN_APEX = SITE_ORIGIN.replace("https://www.", "https://");
+// The www origin is now the canonical SITE_ORIGIN. Alias retained so existing
+// consumers (admin display, GSC site URL, origin allowlist) keep working, and
+// guarded so it never double-prefixes if the canonical host is already www.
+export const SITE_ORIGIN_WITH_WWW = SITE_ORIGIN.includes("://www.")
+  ? SITE_ORIGIN
+  : SITE_ORIGIN.replace("https://", "https://www.");
 
 export function absoluteUrl(path = ""): string {
   if (!path || path === "/") return SITE_ORIGIN;

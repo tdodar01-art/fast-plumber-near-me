@@ -69,6 +69,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: absoluteUrl(cityPath(stateSlug, citySlug)) },
     openGraph: {
       // OG is held constant across arms — only the SERP snippet is under test.
       title: defaultTitle,
@@ -308,14 +309,10 @@ export default async function CityPage({
           name: "Fast Plumber Near Me",
           url: absoluteUrl(),
         },
-        ...(p.googleRating && {
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: p.googleRating,
-            bestRating: 5,
-            worstRating: 1,
-          },
-        }),
+        // No reviewRating here: this is our editorial pros/cons synthesis, not a
+        // star score we computed. The Google-sourced rating lives on the
+        // business entity's aggregateRating in the ItemList above; emitting a
+        // reviewRating equal to it would misattribute Google's stars to us.
         ...(strengths.length > 0 && {
           positiveNotes: {
             "@type": "ItemList",

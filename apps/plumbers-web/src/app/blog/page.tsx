@@ -5,6 +5,7 @@ import { BLOG_POSTS } from "@/lib/blog-data";
 import { absoluteUrl } from "@/config/plumbing-routes";
 
 export const metadata: Metadata = {
+  alternates: { canonical: absoluteUrl("/blog") },
   title: "Plumbing Emergency Guide & Tips",
   description:
     "Expert guides on plumbing emergencies: what to do when a pipe bursts, emergency plumber costs, prevention tips, and more.",

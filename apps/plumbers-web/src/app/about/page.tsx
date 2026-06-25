@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ShieldCheck, Phone, Target, Users } from "lucide-react";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "About Us",
   description:
     "Fast Plumber Near Me is an AI-verified emergency plumber directory. We call every listed plumber to verify they actually pick up and show up.",

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SITE_ORIGIN, SITE_ORIGIN_WITH_WWW } from "@/config/plumbing-routes";
+import { SITE_ORIGIN, SITE_ORIGIN_APEX } from "@/config/plumbing-routes";
 
 const WINDOW_MS = 60_000; // 1 minute
 const MAX_REQUESTS = 10;
@@ -39,8 +39,8 @@ export function checkRateLimit(request: NextRequest): NextResponse | null {
 }
 
 const ALLOWED_ORIGINS = [
-  SITE_ORIGIN,
-  SITE_ORIGIN_WITH_WWW,
+  SITE_ORIGIN,      // canonical www host
+  SITE_ORIGIN_APEX, // apex, accepted pre-redirect
 ];
 
 export function checkOrigin(request: NextRequest): NextResponse | null {

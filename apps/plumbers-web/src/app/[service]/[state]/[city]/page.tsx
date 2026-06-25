@@ -72,6 +72,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: absoluteUrl(serviceCityPath(serviceSlug, stateSlug, citySlug)) },
     openGraph: { title, description },
   };
 }

@@ -28,6 +28,7 @@ export async function generateMetadata({
   return {
     title: `Emergency Plumbers in ${stateInfo.name} — Find 24/7 Service`,
     description: `Find verified emergency plumbers across ${stateInfo.name}. Browse cities, see reliability scores, and call a plumber who actually picks up.`,
+    alternates: { canonical: absoluteUrl(`/emergency-plumbers/${stateSlug}`) },
   };
 }
 

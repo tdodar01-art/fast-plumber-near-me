@@ -6,6 +6,7 @@ import { CITY_DATA, getStatesWithCities, getTotalCityCount } from "@/lib/cities-
 import { absoluteUrl } from "@/config/plumbing-routes";
 
 export const metadata: Metadata = {
+  alternates: { canonical: absoluteUrl("/emergency-plumbers") },
   title: "Emergency Plumbers by State",
   description:
     "Find verified emergency plumbers across the United States. Browse by state to find 24/7 plumbers in your city.",
