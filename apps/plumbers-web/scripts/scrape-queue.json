@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-06",
   "monthlyBudget": 5000,
-  "usedThisMonth": 2670,
+  "usedThisMonth": 2782,
   "queue": [
-    {
-      "city": "Berwyn",
-      "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Sebastian",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Stuart",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Cleburne",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Jackson",
-      "state": "TN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Hazleton",
-      "state": "PA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "San Jacinto",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Ankeny",
-      "state": "IA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Braselton",
       "state": "GA",
@@ -976,6 +904,15 @@
       "source": "gsc"
     },
     {
+      "city": "Cedar Falls",
+      "state": "IA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Avon",
       "state": "IN",
       "county": "",
@@ -1113,15 +1050,6 @@
     {
       "city": "Clarksville",
       "state": "TN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Cedar Falls",
-      "state": "IA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -5010,6 +4938,24 @@
     {
       "city": "Troy",
       "state": "NY",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Highland",
+      "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Natick",
+      "state": "MA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -9587,6 +9533,86 @@
       "actualCalls": 5,
       "plumbersFound": 4,
       "completedAt": "2026-06-28"
+    },
+    {
+      "city": "Berwyn",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 11,
+      "plumbersFound": 10,
+      "completedAt": "2026-06-29"
+    },
+    {
+      "city": "Sebastian",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 16,
+      "completedAt": "2026-06-29"
+    },
+    {
+      "city": "Stuart",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 20,
+      "plumbersFound": 19,
+      "completedAt": "2026-06-29"
+    },
+    {
+      "city": "Cleburne",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 13,
+      "completedAt": "2026-06-29"
+    },
+    {
+      "city": "Jackson",
+      "state": "TN",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 13,
+      "completedAt": "2026-06-29"
+    },
+    {
+      "city": "Hazleton",
+      "state": "PA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-06-29"
+    },
+    {
+      "city": "San Jacinto",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 11,
+      "plumbersFound": 10,
+      "completedAt": "2026-06-29"
+    },
+    {
+      "city": "Ankeny",
+      "state": "IA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 10,
+      "plumbersFound": 9,
+      "completedAt": "2026-06-29"
     }
   ]
 }
