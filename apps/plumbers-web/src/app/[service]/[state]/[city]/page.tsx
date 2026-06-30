@@ -65,15 +65,32 @@ export async function generateMetadata({
 
   const year = new Date().getFullYear();
   const plumbers = await resolveServiceCityPlumbers(city.state, citySlug);
-  const { totalCount } = getTieredPlumbers(plumbers, config);
+  const tiered = getTieredPlumbers(plumbers, config);
+  const { totalCount } = tiered;
 
   const title = `${config.displayName} in ${city.name}, ${city.state} — Top Rated (${year})`;
   const description = `Compare ${totalCount} ${config.displayName.toLowerCase()} pros in ${city.name}, ${city.state} rated on quality, pricing, and responsiveness from real Google reviews. See who to call.`;
 
+  // Indexing policy (post June-2026 spam-update remediation):
+  // - Below the min-listings threshold → noindex (thin doorway page).
+  // - Populated but NOT service-differentiated (no Tier-1 specialty-scored
+  //   plumbers) → the page is a near-duplicate of the base city page with a
+  //   swapped service noun, so canonicalize it TO the city page to consolidate
+  //   signals and shed the duplicate-content / doorway footprint.
+  // - Populated AND differentiated → genuine per-service value; self-canonical
+  //   and indexable.
+  const indexable = totalCount >= MIN_PLUMBERS_FOR_PAGE;
+  const differentiated = tiered.tier1.length > 0;
+  const canonical =
+    indexable && !differentiated
+      ? absoluteUrl(cityPath(stateSlug, citySlug))
+      : absoluteUrl(serviceCityPath(serviceSlug, stateSlug, citySlug));
+
   return {
     title,
     description,
-    alternates: { canonical: absoluteUrl(serviceCityPath(serviceSlug, stateSlug, citySlug)) },
+    alternates: { canonical },
+    ...(indexable ? {} : { robots: { index: false, follow: true } }),
     openGraph: { title, description },
   };
 }
@@ -307,9 +324,9 @@ export default async function ServiceCityPage({
       {plumberListJsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(plumberListJsonLd) }} />
       )}
-      {/* Let Google index every service page. Thin-coverage pages stay
-          discoverable so we can chase them with content once daily-scrape
-          adds plumbers within radius. */}
+      {/* Indexing is governed by generateMetadata: thin pages are noindexed and
+          non-differentiated service pages canonicalize to the base city page
+          (see the indexing-policy note above). */}
 
       {/* Hero */}
       <section className="bg-primary text-white py-10 sm:py-14">

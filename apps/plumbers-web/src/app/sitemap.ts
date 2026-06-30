@@ -2,9 +2,9 @@ import { MetadataRoute } from "next";
 import { getAllCityParams, getStatesWithCities } from "@/lib/cities-data";
 import { STATES_DATA, getStateBySlug } from "@/lib/states-data";
 import { BLOG_POSTS } from "@/lib/blog-data";
-import { getAllServiceSlugs } from "@/lib/services-config";
+import { getAllServiceSlugs, MIN_PLUMBERS_FOR_PAGE } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
-import { getAllPlumberSlugs } from "@/lib/plumber-data";
+import { getAllPlumberSlugs, getPlumbersNearCity } from "@/lib/plumber-data";
 import { absoluteUrl, cityPath, serviceCityPath, businessProfilePath } from "@/config/plumbing-routes";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -34,13 +34,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const cityParams = getAllCityParams();
 
-  // City pages — highest priority after homepage
-  const cityPages: MetadataRoute.Sitemap = cityParams.map(({ state, city }) => ({
-    url: absoluteUrl(cityPath(state, city)),
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
+  // City pages — highest priority after homepage. Only list pages that meet the
+  // index threshold (>= MIN_PLUMBERS_FOR_PAGE listings); empty/thin "coming
+  // soon" shells are noindexed in the page metadata, so they must not appear in
+  // the sitemap either.
+  const cityPages: MetadataRoute.Sitemap = cityParams
+    .filter(({ state, city }) => {
+      const st = getStateBySlug(state);
+      return !!st && getPlumbersNearCity(st.abbreviation, city).length >= MIN_PLUMBERS_FOR_PAGE;
+    })
+    .map(({ state, city }) => ({
+      url: absoluteUrl(cityPath(state, city)),
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
 
   // Service × city pages (Track A) — only for cities with plumber data
   const serviceSlugs = getAllServiceSlugs();
@@ -48,7 +56,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     cityParams
       .filter(({ state, city }) => {
         const stateInfo = getStateBySlug(state);
-        return stateInfo && CITY_COVERAGE[`${stateInfo.abbreviation}:${city}`];
+        if (!stateInfo) return false;
+        if (!CITY_COVERAGE[`${stateInfo.abbreviation}:${city}`]) return false;
+        // Match the page-level index threshold so the sitemap never lists a thin
+        // service page that renders noindex.
+        return getPlumbersNearCity(stateInfo.abbreviation, city).length >= MIN_PLUMBERS_FOR_PAGE;
       })
       .map(({ state, city }) => ({
         url: absoluteUrl(serviceCityPath(svc, state, city)),

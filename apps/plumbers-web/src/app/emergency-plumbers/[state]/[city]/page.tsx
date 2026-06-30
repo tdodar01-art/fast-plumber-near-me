@@ -19,7 +19,7 @@ import { getStateBySlug } from "@/lib/states-data";
 import { resolvePlumbersForCity } from "@/lib/firestore";
 import { getPlumbersNearCity, getAllPlumbers, type SynthesizedPlumber } from "@/lib/plumber-data";
 import { calculateQualityScore } from "@/lib/scoring";
-import { MAX_PLUMBERS_PER_PAGE, SERVICE_CONFIGS } from "@/lib/services-config";
+import { MAX_PLUMBERS_PER_PAGE, MIN_PLUMBERS_FOR_PAGE, SERVICE_CONFIGS } from "@/lib/services-config";
 import { CITY_COVERAGE } from "@/lib/city-coverage";
 import { getCityCoordBySlug } from "@/lib/city-coords";
 import { getDistanceWeight } from "@/lib/geo";
@@ -50,7 +50,11 @@ export async function generateMetadata({
   const city = getCityData(stateSlug, citySlug);
   if (!city) return {};
 
-  const plumbers = getPlumbersNearCity(city.state, citySlug);
+  // Resolve plumbers the same way the page body does (Firestore-aware, with a
+  // static-JSON fallback) so the index decision matches what actually renders.
+  const cityCoord = getCityCoordBySlug(city.state, citySlug);
+  let plumbers = await resolvePlumbersForCity(city.state, citySlug, cityCoord);
+  if (plumbers.length === 0) plumbers = getPlumbersNearCity(city.state, citySlug);
   const count = Math.min(plumbers.length, MAX_PLUMBERS_PER_PAGE);
   const year = new Date().getFullYear();
 
@@ -71,6 +75,10 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: absoluteUrl(cityPath(stateSlug, citySlug)) },
+    // Thin city pages (below the min-listings threshold) are noindexed to shed
+    // the empty-shell / doorway footprint the June-2026 spam update hit.
+    // `follow` keeps link equity flowing to the plumber profile pages.
+    ...(plumbers.length >= MIN_PLUMBERS_FOR_PAGE ? {} : { robots: { index: false, follow: true } }),
     openGraph: {
       // OG is held constant across arms — only the SERP snippet is under test.
       title: defaultTitle,
