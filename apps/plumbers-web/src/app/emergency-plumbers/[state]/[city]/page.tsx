@@ -96,15 +96,60 @@ const emergencyTypes = [
   { title: "Gas Line Issues", description: "If you smell gas, evacuate immediately and call 911 first. Then call a licensed plumber for gas line repair." },
 ];
 
-function getCityFaqs(cityName: string, stateName: string, county: string) {
+// FAQ answers are data-driven, not city-token swaps. Each city's FAQ reflects
+// its actual listings (count, top-rated business, review totals, nearest
+// distance) so no two pages render identical boilerplate — the templated-FAQ
+// pattern was part of the scaled-content signal the June-2026 spam update hit.
+// Only real, already-computed data is interpolated; nothing is fabricated.
+function getCityFaqs(
+  cityName: string,
+  stateName: string,
+  county: string,
+  plumbers: Array<Plumber & { distanceMiles?: number }>,
+) {
+  const total = plumbers.length;
+  const rated = plumbers.filter((p) => typeof p.googleRating === "number" && (p.googleRating ?? 0) > 0);
+  const topRated = rated.slice().sort((a, b) => (b.googleRating ?? 0) - (a.googleRating ?? 0))[0];
+  const totalReviews = plumbers.reduce((sum, p) => sum + (p.googleReviewCount ?? 0), 0);
+  const nearest = Math.min(...plumbers.map((p) => p.distanceMiles ?? Infinity));
+
   return [
-    { question: `How much does an emergency plumber cost in ${cityName}, ${stateName}?`, answer: `Emergency plumber rates in ${cityName} typically range from $150-$300 for the service call, plus parts and labor. After-hours and weekend calls in ${county} County may cost more. Always ask for a written estimate before work begins.` },
-    { question: `What should I do during a plumbing emergency in ${cityName}?`, answer: `Shut off the main water valve to stop water flow. If there's standing water, turn off electricity to affected areas. Move valuables away from water and take photos for insurance. Then call a verified emergency plumber in ${cityName} immediately.` },
-    { question: `How quickly can an emergency plumber arrive in ${cityName}?`, answer: `Most emergency plumbers in ${cityName}, ${stateName} aim to arrive within 30-60 minutes depending on your location in ${county} County. Our verified plumbers are tested for response time and confirmed to dispatch quickly.` },
-    { question: `Should I attempt DIY plumbing repairs in ${cityName}?`, answer: `Only take immediate steps like shutting off water valves and containing water damage. DIY repairs on pressurized water lines or sewer systems can make the problem worse, cause additional damage, and void insurance claims. Call a licensed plumber in ${cityName} instead.` },
-    { question: `Can I get a same-day plumber in ${cityName}?`, answer: `Yes — many plumbers serving ${cityName} and ${county} County offer same-day service for urgent repairs. Plumbers listed here are rated for responsiveness, so you can see which ones consistently arrive quickly. For true emergencies like burst pipes or sewer backups, most can dispatch within 30-60 minutes.` },
-    { question: `Are emergency plumbers in ${cityName} available 24/7?`, answer: `Yes — the emergency plumbers listed on Fast Plumber Near Me serving ${cityName} and ${county} County offer 24/7 availability. We verify that they actually answer emergency calls at all hours, including nights, weekends, and holidays.` },
-    { question: `What are the most common plumbing emergencies in ${cityName}?`, answer: `The most common plumbing emergencies in ${cityName}, ${stateName} include burst or frozen pipes, water heater failures, sewer line backups, clogged drains, and gas line issues. ${county} County homes may be especially susceptible depending on the age and type of construction.` },
+    {
+      question: `How many emergency plumbers in ${cityName} does Fast Plumber Near Me track?`,
+      answer: total > 0
+        ? `We currently track ${total} emergency plumber${total !== 1 ? "s" : ""} serving ${cityName}, ${stateName}${totalReviews > 0 ? `, drawing on ${totalReviews.toLocaleString()} real Google reviews` : ""}. We rank them by quality and responsiveness — and we show each one's weaknesses, not just their stars.`
+        : `We're still building our verified list of emergency plumbers in ${cityName}, ${stateName}. Check back soon.`,
+    },
+    {
+      question: `Who is the highest-rated emergency plumber in ${cityName}, ${stateName}?`,
+      answer: topRated
+        ? `${topRated.businessName} currently holds the highest Google rating among the ${cityName} emergency plumbers we track${topRated.googleRating ? ` (${topRated.googleRating}★${topRated.googleReviewCount ? ` across ${topRated.googleReviewCount.toLocaleString()} reviews` : ""})` : ""}. Ratings are only part of the picture — we also surface the common complaints reviewers raise so you can judge for yourself.`
+        : `We're still gathering rating data for emergency plumbers in ${cityName}. Check back soon.`,
+    },
+    {
+      question: `How much does an emergency plumber cost in ${cityName}, ${stateName}?`,
+      answer: `Emergency plumber rates in ${cityName} typically run $150–$300 for the service call, plus parts and labor; after-hours and weekend calls in ${county} County usually cost more. Always get a written estimate before work begins — surprise fees after the initial quote are one of the most common complaints reviewers raise about plumbers in this area.`,
+    },
+    {
+      question: `How quickly can an emergency plumber arrive in ${cityName}?`,
+      answer: total > 0
+        ? `Most emergency plumbers serving ${cityName} aim to arrive within 30–60 minutes.${Number.isFinite(nearest) ? ` The closest verified plumber on this page is about ${Math.max(1, Math.round(nearest))} mile${Math.round(nearest) !== 1 ? "s" : ""} away.` : ""} We rate plumbers on responsiveness so you can see who actually shows up fast — not just who claims to.`
+        : `Most emergency plumbers in ${county} County aim to arrive within 30–60 minutes for true emergencies like burst pipes or sewer backups.`,
+    },
+    {
+      question: `What should I do during a plumbing emergency in ${cityName}?`,
+      answer: `Shut off the main water valve to stop the flow. If there's standing water, cut power to the affected area. Move valuables and take photos for insurance. Then call a verified emergency plumber in ${cityName} — the listings on this page are ranked by responsiveness so you can reach one fast.`,
+    },
+    {
+      question: `Are emergency plumbers in ${cityName} available 24/7?`,
+      answer: total > 0
+        ? `Yes — among the ${total} plumber${total !== 1 ? "s" : ""} we track in ${cityName}, those flagged for 24/7 availability answer emergency calls at night, on weekends, and on holidays. We verify who actually picks up rather than taking "24/7" at face value.`
+        : `Many plumbers serving ${cityName} and ${county} County advertise 24/7 availability, but not all answer after hours — we verify who actually picks up.`,
+    },
+    {
+      question: `What are the most common plumbing emergencies in ${cityName}?`,
+      answer: `The most common plumbing emergencies in ${cityName}, ${stateName} include burst or frozen pipes, water heater failures, sewer line backups, clogged drains, and gas line issues. Homes in ${county} County can be especially prone depending on their age and construction.`,
+    },
   ];
 }
 
@@ -236,7 +281,7 @@ export default async function CityPage({
   const top3 = getTop3Plumbers(plumbers, city.state, citySlug);
   const hasTop3 = top3.length >= 3;
 
-  const faqs = getCityFaqs(city.name, city.state, city.county);
+  const faqs = getCityFaqs(city.name, city.state, city.county, plumbers);
 
   // JSON-LD
   const breadcrumbJsonLd = {

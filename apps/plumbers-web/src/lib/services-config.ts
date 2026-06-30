@@ -36,8 +36,13 @@ export type ServiceConfig = PageConfig;
 /** Minimum specialty score for Tier 1 rendering */
 export const MIN_SPECIALTY_SCORE = 70;
 
-/** Minimum plumbers needed to render a full page (below this: noindex) */
-export const MIN_PLUMBERS_FOR_PAGE = 3;
+/**
+ * Minimum plumbers needed to render an indexable page (below this: noindex).
+ * Raised 3 → 5 (2026-06-29 spam-update remediation): a 3-listing page isn't a
+ * useful comparison and reads as thin. 5 is the floor for a page that earns its
+ * place in the index. Used by both city + service routes and the sitemap filter.
+ */
+export const MIN_PLUMBERS_FOR_PAGE = 5;
 
 /** Maximum plumbers displayed on a service page (prevents spammy listings) */
 export const MAX_PLUMBERS_PER_PAGE = 15;

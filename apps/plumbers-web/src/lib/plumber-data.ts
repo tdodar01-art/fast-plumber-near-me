@@ -324,6 +324,13 @@ export function getPlumbersNearCity(
   for (const p of allPlumbers) {
     if (!p.location?.lat || !p.location?.lng) continue;
     if (p.businessStatus && p.businessStatus !== "OPERATIONAL") continue;
+    // Same-state only. A 20-mile radius near a state border otherwise pulls in
+    // out-of-state businesses (e.g. a Maryland city listing a plumber across the
+    // line), which reads as low-quality "contamination" to users and Google.
+    // Mirrors the Firestore path (resolvePlumbersForCity → getActivePlumbersByState,
+    // which queries address.state). Guarded on a present p.state so records
+    // missing the field aren't silently dropped.
+    if (p.state && stateAbbr && p.state.toUpperCase() !== stateAbbr.toUpperCase()) continue;
     const dist = calculateDistance(cityLat, cityLng, p.location.lat, p.location.lng);
     if (dist <= radiusMiles) {
       results.push(toPlumber(p, dist));
