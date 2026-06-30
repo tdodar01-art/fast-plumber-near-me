@@ -253,4 +253,11 @@ export interface City {
   publishedAt: Timestamp | null;
   plumberCount: number;
   nearbyCities: string[];
+
+  // Pillar 3 — sponsored placement (built, inactive until set). One paid slot
+  // per city, rendered ABOVE the merit ranking and clearly labeled. The organic
+  // ranking is never reordered for money. Assignment is gated by a quality score
+  // (see SPONSORED_QUALITY_THRESHOLD) so a low-quality plumber can't buy the spot.
+  sponsoredPlumberId?: string | null;
+  sponsoredSince?: Timestamp | null;
 }

@@ -189,16 +189,68 @@ function SourceLogos({ googleReviewCount }: { googleReviewCount: number | null }
 
 // --- Main Component ---
 
+// Element type of the cited evidence_quotes array, derived from the Plumber type
+// so we don't depend on a separate import path.
+type EvQuote = NonNullable<Plumber["evidence_quotes"]>[number];
+
+// Pick the most recent positive (rating >= 4) and negative (rating <= 2) VERBATIM
+// review excerpt from the cited evidence_quotes. These are real quotes copied from
+// the source review at aggregation time with real attribution (author/date/source/
+// rating) — they are NOT model-generated, so displaying them verbatim is safe
+// (republication of third-party content, not our own authored claim).
+function selectExcerpts(
+  quotes: EvQuote[] | undefined,
+): [EvQuote | undefined, EvQuote | undefined] {
+  if (!quotes?.length) return [undefined, undefined];
+  const byDateDesc = (a: EvQuote, b: EvQuote) =>
+    new Date(b.published_at || 0).getTime() - new Date(a.published_at || 0).getTime();
+  const positive = quotes.filter((q) => (q.rating ?? 0) >= 4).sort(byDateDesc);
+  const negative = quotes
+    .filter((q) => (q.rating ?? 0) > 0 && (q.rating ?? 0) <= 2)
+    .sort(byDateDesc);
+  return [positive[0], negative[0]];
+}
+
+// "Author · Mon YYYY · Source" — degrades gracefully when fields are missing.
+function excerptAttribution(q: EvQuote): string {
+  const parts: string[] = [];
+  if (q.author_name) parts.push(q.author_name);
+  if (q.published_at) {
+    const d = new Date(q.published_at);
+    if (!Number.isNaN(d.getTime()))
+      parts.push(d.toLocaleDateString("en-US", { month: "short", year: "numeric" }));
+  }
+  const labels: Record<string, string> = { google: "Google", yelp: "Yelp", angi: "Angi", bbb: "BBB" };
+  if (q.source) parts.push(labels[q.source] ?? q.source);
+  return parts.filter(Boolean).join(" · ");
+}
+
+// Honest recency cue from the newest cached review. We do NOT continuously
+// re-verify listings, so we say "Latest review {Mon YYYY}" (true) rather than
+// implying we updated anything. Hidden when missing or older than ~18 months.
+function latestReviewLabel(iso: string | undefined): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const monthsAgo = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24 * 30);
+  if (monthsAgo > 18) return null;
+  return `Latest review ${d.toLocaleDateString("en-US", { month: "short", year: "numeric" })}`;
+}
+
 export default function PlumberCard({
   plumber,
   citySlug,
   distanceMiles,
   cityName,
+  sponsored = false,
 }: {
   plumber: Plumber & { latestReviewAt?: string };
   citySlug: string;
   distanceMiles?: number;
   cityName?: string;
+  /** Rendered inside a paid Sponsored slot — adds rel="sponsored" to the
+   *  outbound website link (Google requires paid links be qualified). */
+  sponsored?: boolean;
 }) {
   const viewRef = useViewTracking(plumber.id, citySlug);
   const router = useRouter();
@@ -420,6 +472,40 @@ export default function PlumberCard({
         />
       )}
 
+      {/* === VERBATIM REVIEW EXCERPTS — the real quotes behind the synthesis.
+          One recent positive + one recent negative, attributed. Republished
+          verbatim from cached reviews (not authored by us). === */}
+      {(() => {
+        const [pos, neg] = selectExcerpts(plumber.evidence_quotes);
+        if (!pos && !neg) return null;
+        return (
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {pos && (
+              <figure className="m-0 bg-green-50 border border-green-200 rounded-lg p-3">
+                <blockquote className="text-xs text-green-900 italic leading-snug line-clamp-3">
+                  &ldquo;{truncateClause(pos.quote, 120)}&rdquo;
+                </blockquote>
+                <figcaption className="mt-1 text-[10px] text-green-700">{excerptAttribution(pos)}</figcaption>
+              </figure>
+            )}
+            {neg && (
+              <figure className="m-0 bg-red-50 border border-red-200 rounded-lg p-3">
+                <blockquote className="text-xs text-red-900 italic leading-snug line-clamp-3">
+                  &ldquo;{truncateClause(neg.quote, 120)}&rdquo;
+                </blockquote>
+                <figcaption className="mt-1 text-[10px] text-red-700">{excerptAttribution(neg)}</figcaption>
+              </figure>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* === LATEST-REVIEW RECENCY CUE === */}
+      {(() => {
+        const label = latestReviewLabel(plumber.latestReviewAt);
+        return label ? <p className="mt-2 text-[11px] text-gray-400">{label}</p> : null;
+      })()}
+
       {/* === PRELIMINARY LISTING NOTE === */}
       {syn && !isFullySynthesized && (
         <p className="mt-2 text-xs text-gray-400">Preliminary listing — full review analysis coming soon</p>
@@ -440,7 +526,7 @@ export default function PlumberCard({
           <a
             href={plumber.website}
             target="_blank"
-            rel="noopener noreferrer"
+            rel={sponsored ? "noopener noreferrer sponsored" : "noopener noreferrer"}
             onClick={(e) => {
               e.stopPropagation();
               fetch("/api/track-lead", {

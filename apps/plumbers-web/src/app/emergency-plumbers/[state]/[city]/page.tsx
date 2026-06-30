@@ -16,7 +16,7 @@ import PlumberListWithSort from "@/components/PlumberListWithSort";
 import CallToAction from "@/components/CallToAction";
 import { getCoveredCityParams, getCityData } from "@/lib/cities-data";
 import { getStateBySlug } from "@/lib/states-data";
-import { resolvePlumbersForCity } from "@/lib/firestore";
+import { resolvePlumbersForCity, getSponsoredPlumberForCity } from "@/lib/firestore";
 import { getPlumbersNearCity, getAllPlumbers, type SynthesizedPlumber } from "@/lib/plumber-data";
 import { calculateQualityScore } from "@/lib/scoring";
 import { MAX_PLUMBERS_PER_PAGE, MIN_PLUMBERS_FOR_PAGE, SERVICE_CONFIGS } from "@/lib/services-config";
@@ -236,6 +236,15 @@ export default async function CityPage({
     plumbers = getPlumbersNearCity(city.state, citySlug);
   }
 
+  // Pillar 3 — sponsored slot. Resolves to null unless a city doc has a gated
+  // sponsoredPlumberId set, so this stays dark until a sponsor is activated.
+  // Remove it from the organic list so it isn't listed twice; the organic
+  // ranking below is NEVER reordered for money.
+  const sponsoredPlumber = await getSponsoredPlumberForCity(citySlug);
+  if (sponsoredPlumber) {
+    plumbers = plumbers.filter((p) => p.id !== sponsoredPlumber.id);
+  }
+
   // Sort: featured > premium > free, then by decision engine percentile
   // (with fallback to old quality score for unscored plumbers).
   // This ensures the main list ordering agrees with the Top 3 section.
@@ -448,6 +457,29 @@ export default async function CityPage({
       </section>
 
       <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+        {/* Pillar 3 — Sponsored slot. Sits ABOVE the merit ranking, clearly
+            labeled and disclosed; the organic ranking below is independent and
+            not reordered for money, and the sponsored plumber's honest synthesis
+            (including negatives) still renders via the normal PlumberCard. */}
+        {sponsoredPlumber && (
+          <section className="mb-10">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-gray-600 bg-gray-100 border border-gray-300 rounded px-2 py-0.5">
+                Sponsored
+              </span>
+              <p className="text-xs text-gray-500 italic">
+                Paid placement. The ranking below is based on our independent review analysis and is not for sale.
+              </p>
+            </div>
+            <PlumberCard
+              plumber={JSON.parse(JSON.stringify(sponsoredPlumber))}
+              citySlug={citySlug}
+              cityName={city.name}
+              sponsored
+            />
+          </section>
+        )}
+
         {/* Top 3 Plumbers — shown when 3+ plumbers have scoring data */}
         {hasTop3 && (
           <section className="mb-10">

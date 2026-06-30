@@ -47,6 +47,14 @@ export const MIN_PLUMBERS_FOR_PAGE = 5;
 /** Maximum plumbers displayed on a service page (prevents spammy listings) */
 export const MAX_PLUMBERS_PER_PAGE = 15;
 
+/**
+ * Minimum reliabilityScore (0–100) a plumber must have to occupy a paid
+ * "Sponsored" slot (Pillar 3). The whole trust model depends on this: you can
+ * pay to be SEEN, not to be TRUSTED — a low-quality plumber can't buy the top
+ * spot. Enforced at assignment (admin/helper) AND at render (defense in depth).
+ */
+export const SPONSORED_QUALITY_THRESHOLD = 65;
+
 // ---------------------------------------------------------------------------
 // Registry: 27 entries (16 service + 5 intent + 6 symptom)
 // ---------------------------------------------------------------------------

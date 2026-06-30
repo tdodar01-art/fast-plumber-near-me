@@ -17,6 +17,7 @@ import { db, isConfigured } from "./firebase";
 import type { Plumber, City, Lead, CachedReview, RatingSnapshot, ApiUsageRecord, ReviewSynthesis, PlumberReport } from "./types";
 import { COLLECTIONS } from "@/config/plumbing-collections";
 import { businessProfileSlug } from "./business-slug";
+import { SPONSORED_QUALITY_THRESHOLD } from "./services-config";
 
 // --- Plumber helpers ---
 
@@ -183,6 +184,67 @@ export async function updateCity(id: string, data: Partial<City>): Promise<void>
 export async function deleteCity(id: string): Promise<void> {
   if (!isConfigured || !db) return;
   await deleteDoc(doc(db, COLLECTIONS.cities, id));
+}
+
+// --- Sponsored placement (Pillar 3) ---
+
+/**
+ * Assign (or clear, with null) the sponsored plumber for a city. Enforces the
+ * quality gate: a plumber below SPONSORED_QUALITY_THRESHOLD cannot be assigned —
+ * "pay to be seen, not to be trusted." Returns {ok, error} so the caller (admin
+ * UI / script) can surface the reason. Clearing (null) is always allowed.
+ */
+export async function updateCitySponsor(
+  cityId: string,
+  plumberId: string | null,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!isConfigured || !db) return { ok: false, error: "Firestore not configured" };
+  if (plumberId !== null) {
+    const plumber = await getPlumberById(plumberId);
+    if (!plumber) return { ok: false, error: "Plumber not found" };
+    if ((plumber.reliabilityScore ?? 0) < SPONSORED_QUALITY_THRESHOLD) {
+      return {
+        ok: false,
+        error: `Quality score ${plumber.reliabilityScore ?? 0} is below the sponsorship floor of ${SPONSORED_QUALITY_THRESHOLD}`,
+      };
+    }
+  }
+  await updateDoc(doc(db, COLLECTIONS.cities, cityId), {
+    sponsoredPlumberId: plumberId,
+    sponsoredSince: plumberId ? Timestamp.now() : null,
+  });
+  return { ok: true };
+}
+
+/**
+ * Resolve the sponsored plumber for a city, for RENDER. Returns null unless a
+ * city doc has `sponsoredPlumberId` set AND that plumber still clears the quality
+ * gate (re-checked here so a plumber whose score later dropped stops being shown).
+ * Graceful null when Firestore is unconfigured or nothing is assigned — so the
+ * slot stays dark until a sponsor is explicitly activated. Attaches the canonical
+ * profile slug, mirroring resolvePlumbersForCity.
+ */
+export async function getSponsoredPlumberForCity(
+  citySlug: string,
+): Promise<(Plumber & { distanceMiles?: number }) | null> {
+  if (!isConfigured || !db) return null;
+  try {
+    const cityDoc = await getDoc(doc(db, COLLECTIONS.cities, citySlug));
+    const sponsoredId = cityDoc.exists() ? (cityDoc.data() as City).sponsoredPlumberId : null;
+    if (!sponsoredId) return null;
+    const plumber = await getPlumberById(sponsoredId);
+    if (!plumber) return null;
+    if ((plumber.reliabilityScore ?? 0) < SPONSORED_QUALITY_THRESHOLD) return null;
+    const slug = businessProfileSlug({
+      name: plumber.businessName,
+      city: plumber.address?.city,
+      state: plumber.address?.state,
+      placeId: plumber.id,
+    });
+    return { ...plumber, slug };
+  } catch {
+    return null;
+  }
 }
 
 // --- Lead helpers ---
