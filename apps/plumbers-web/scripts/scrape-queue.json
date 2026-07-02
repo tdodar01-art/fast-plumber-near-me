@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-07",
   "monthlyBudget": 5000,
-  "usedThisMonth": 107,
+  "usedThisMonth": 198,
   "queue": [
-    {
-      "city": "Norwalk",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Texas City",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "The Villages",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Boynton Beach",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Alabaster",
-      "state": "AL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Erlanger",
-      "state": "KY",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Saratoga Springs",
-      "state": "NY",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Gary",
-      "state": "IN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Staunton",
       "state": "VA",
@@ -4396,6 +4324,24 @@
       "source": "gsc"
     },
     {
+      "city": "Mentor",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Denton",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Kelso",
       "state": "WA",
       "county": "",
@@ -4803,6 +4749,15 @@
     {
       "city": "Troy",
       "state": "NY",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Dale City",
+      "state": "VA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -9656,6 +9611,86 @@
       "actualCalls": 4,
       "plumbersFound": 3,
       "completedAt": "2026-07-01"
+    },
+    {
+      "city": "Alabaster",
+      "state": "AL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-02"
+    },
+    {
+      "city": "Norwalk",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 10,
+      "plumbersFound": 9,
+      "completedAt": "2026-07-02"
+    },
+    {
+      "city": "Texas City",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 9,
+      "plumbersFound": 8,
+      "completedAt": "2026-07-02"
+    },
+    {
+      "city": "The Villages",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 19,
+      "plumbersFound": 18,
+      "completedAt": "2026-07-02"
+    },
+    {
+      "city": "Boynton Beach",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 11,
+      "plumbersFound": 10,
+      "completedAt": "2026-07-02"
+    },
+    {
+      "city": "Erlanger",
+      "state": "KY",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-07-02"
+    },
+    {
+      "city": "Saratoga Springs",
+      "state": "NY",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-07-02"
+    },
+    {
+      "city": "Gary",
+      "state": "IN",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 7,
+      "plumbersFound": 6,
+      "completedAt": "2026-07-02"
     }
   ]
 }
