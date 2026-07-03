@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-07",
   "monthlyBudget": 5000,
-  "usedThisMonth": 198,
+  "usedThisMonth": 306,
   "queue": [
-    {
-      "city": "Staunton",
-      "state": "VA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Mansfield",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Huntington",
-      "state": "NY",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Westfield",
-      "state": "MA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Issaquah",
-      "state": "WA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Del City",
-      "state": "OK",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Pittsburgh",
-      "state": "PA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Ansonia",
-      "state": "CT",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Alpine",
       "state": "UT",
@@ -1039,6 +967,15 @@
       "source": "gsc"
     },
     {
+      "city": "Bear",
+      "state": "DE",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Danville",
       "state": "CA",
       "county": "",
@@ -1113,15 +1050,6 @@
     {
       "city": "Oakland",
       "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Bear",
-      "state": "DE",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1291,6 +1219,15 @@
       "source": "gsc"
     },
     {
+      "city": "Carson",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Rock Springs",
       "state": "WY",
       "county": "",
@@ -1302,15 +1239,6 @@
     {
       "city": "Fitchburg",
       "state": "WI",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Carson",
-      "state": "CA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -3992,6 +3920,15 @@
     },
     {
       "city": "Yucaipa",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Garden Grove",
       "state": "CA",
       "county": "",
       "region": "",
@@ -9691,6 +9628,86 @@
       "actualCalls": 7,
       "plumbersFound": 6,
       "completedAt": "2026-07-02"
+    },
+    {
+      "city": "Staunton",
+      "state": "VA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 9,
+      "plumbersFound": 8,
+      "completedAt": "2026-07-03"
+    },
+    {
+      "city": "Mansfield",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 13,
+      "completedAt": "2026-07-03"
+    },
+    {
+      "city": "Huntington",
+      "state": "NY",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-07-03"
+    },
+    {
+      "city": "Westfield",
+      "state": "MA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 12,
+      "completedAt": "2026-07-03"
+    },
+    {
+      "city": "Issaquah",
+      "state": "WA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-07-03"
+    },
+    {
+      "city": "Del City",
+      "state": "OK",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 4,
+      "plumbersFound": 3,
+      "completedAt": "2026-07-03"
+    },
+    {
+      "city": "Pittsburgh",
+      "state": "PA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 18,
+      "plumbersFound": 17,
+      "completedAt": "2026-07-03"
+    },
+    {
+      "city": "Ansonia",
+      "state": "CT",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 19,
+      "plumbersFound": 18,
+      "completedAt": "2026-07-03"
     }
   ]
 }
