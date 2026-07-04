@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-07",
   "monthlyBudget": 5000,
-  "usedThisMonth": 306,
+  "usedThisMonth": 371,
   "queue": [
-    {
-      "city": "Alpine",
-      "state": "UT",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Rome",
-      "state": "GA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Chesterfield",
-      "state": "MI",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Harrisonburg",
-      "state": "VA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Trussville",
-      "state": "AL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Savannah",
-      "state": "GA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Brookfield",
-      "state": "WI",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Clive",
-      "state": "IA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Abington",
       "state": "PA",
@@ -724,6 +652,15 @@
       "source": "gsc"
     },
     {
+      "city": "Walnut Creek",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Fort Wayne",
       "state": "IN",
       "county": "",
@@ -825,15 +762,6 @@
     {
       "city": "Peabody",
       "state": "MA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Walnut Creek",
-      "state": "CA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -9708,6 +9636,86 @@
       "actualCalls": 19,
       "plumbersFound": 18,
       "completedAt": "2026-07-03"
+    },
+    {
+      "city": "Alpine",
+      "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 3,
+      "plumbersFound": 2,
+      "completedAt": "2026-07-04"
+    },
+    {
+      "city": "Rome",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-04"
+    },
+    {
+      "city": "Chesterfield",
+      "state": "MI",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-07-04"
+    },
+    {
+      "city": "Harrisonburg",
+      "state": "VA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-04"
+    },
+    {
+      "city": "Trussville",
+      "state": "AL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 11,
+      "plumbersFound": 10,
+      "completedAt": "2026-07-04"
+    },
+    {
+      "city": "Savannah",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-07-04"
+    },
+    {
+      "city": "Brookfield",
+      "state": "WI",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-04"
+    },
+    {
+      "city": "Clive",
+      "state": "IA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 3,
+      "plumbersFound": 2,
+      "completedAt": "2026-07-04"
     }
   ]
 }
