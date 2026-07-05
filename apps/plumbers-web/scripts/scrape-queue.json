@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-07",
   "monthlyBudget": 5000,
-  "usedThisMonth": 371,
+  "usedThisMonth": 454,
   "queue": [
-    {
-      "city": "Abington",
-      "state": "PA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Arvada",
-      "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Burien",
-      "state": "WA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Angleton",
-      "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Newport Beach",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Athens",
-      "state": "TN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Huntington Park",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Pearl City",
-      "state": "HI",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Nutley",
       "state": "NJ",
@@ -105,15 +33,6 @@
     {
       "city": "Peoria",
       "state": "AZ",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Pittsfield",
-      "state": "MA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -177,6 +96,15 @@
     {
       "city": "Indianapolis",
       "state": "IN",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Pittsfield",
+      "state": "MA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -328,15 +256,6 @@
       "source": "gsc"
     },
     {
-      "city": "Natchez",
-      "state": "MS",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Hilton Head Island",
       "state": "SC",
       "county": "",
@@ -429,6 +348,15 @@
     {
       "city": "Syracuse",
       "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Natchez",
+      "state": "MS",
       "county": "",
       "region": "",
       "status": "pending",
@@ -562,6 +490,15 @@
       "source": "gsc"
     },
     {
+      "city": "Walnut Creek",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Avon",
       "state": "IN",
       "county": "",
@@ -645,15 +582,6 @@
     {
       "city": "Wylie",
       "state": "TX",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Walnut Creek",
-      "state": "CA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -2886,6 +2814,15 @@
     {
       "city": "Greeley",
       "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Moses Lake",
+      "state": "WA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -9716,6 +9653,86 @@
       "actualCalls": 3,
       "plumbersFound": 2,
       "completedAt": "2026-07-04"
+    },
+    {
+      "city": "Abington",
+      "state": "PA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 13,
+      "completedAt": "2026-07-05"
+    },
+    {
+      "city": "Arvada",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 3,
+      "plumbersFound": 2,
+      "completedAt": "2026-07-05"
+    },
+    {
+      "city": "Burien",
+      "state": "WA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-07-05"
+    },
+    {
+      "city": "Angleton",
+      "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 9,
+      "plumbersFound": 8,
+      "completedAt": "2026-07-05"
+    },
+    {
+      "city": "Newport Beach",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 19,
+      "plumbersFound": 18,
+      "completedAt": "2026-07-05"
+    },
+    {
+      "city": "Athens",
+      "state": "TN",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 6,
+      "plumbersFound": 5,
+      "completedAt": "2026-07-05"
+    },
+    {
+      "city": "Huntington Park",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 10,
+      "plumbersFound": 9,
+      "completedAt": "2026-07-05"
+    },
+    {
+      "city": "Pearl City",
+      "state": "HI",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 7,
+      "plumbersFound": 6,
+      "completedAt": "2026-07-05"
     }
   ]
 }
