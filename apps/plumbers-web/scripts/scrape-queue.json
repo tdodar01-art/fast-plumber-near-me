@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-07",
   "monthlyBudget": 5000,
-  "usedThisMonth": 542,
+  "usedThisMonth": 627,
   "queue": [
-    {
-      "city": "South Brunswick",
-      "state": "NJ",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Chicopee",
-      "state": "MA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Indianapolis",
-      "state": "IN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Pittsfield",
-      "state": "MA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Pleasanton",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Bluffton",
-      "state": "SC",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Conway",
-      "state": "SC",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Bolingbrook",
-      "state": "IL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Middleton",
       "state": "WI",
@@ -283,15 +211,6 @@
       "source": "gsc"
     },
     {
-      "city": "Natchez",
-      "state": "MS",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Evans",
       "state": "CO",
       "county": "",
@@ -321,6 +240,15 @@
     {
       "city": "Walnut Creek",
       "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Natchez",
+      "state": "MS",
       "county": "",
       "region": "",
       "status": "pending",
@@ -2470,15 +2398,6 @@
       "source": "gsc"
     },
     {
-      "city": "Brooklyn Park",
-      "state": "MN",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Westfield",
       "state": "IN",
       "county": "",
@@ -3397,6 +3316,15 @@
       "source": "gsc"
     },
     {
+      "city": "Union City",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Kennesaw",
       "state": "GA",
       "county": "",
@@ -3703,8 +3631,8 @@
       "source": "gsc"
     },
     {
-      "city": "Pigeon Forge",
-      "state": "TN",
+      "city": "Brooklyn Park",
+      "state": "MN",
       "county": "",
       "region": "",
       "status": "pending",
@@ -4038,6 +3966,24 @@
     {
       "city": "Cumming",
       "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Cuyahoga Falls",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Pigeon Forge",
+      "state": "TN",
       "county": "",
       "region": "",
       "status": "pending",
@@ -4477,26 +4423,8 @@
       "source": "gsc"
     },
     {
-      "city": "Cuyahoga Falls",
-      "state": "OH",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
       "city": "Midwest City",
       "state": "OK",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Union City",
-      "state": "GA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -9777,6 +9705,86 @@
       "actualCalls": 9,
       "plumbersFound": 8,
       "completedAt": "2026-07-06"
+    },
+    {
+      "city": "South Brunswick",
+      "state": "NJ",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 16,
+      "plumbersFound": 15,
+      "completedAt": "2026-07-07"
+    },
+    {
+      "city": "Chicopee",
+      "state": "MA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 11,
+      "plumbersFound": 10,
+      "completedAt": "2026-07-07"
+    },
+    {
+      "city": "Indianapolis",
+      "state": "IN",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 13,
+      "plumbersFound": 12,
+      "completedAt": "2026-07-07"
+    },
+    {
+      "city": "Pittsfield",
+      "state": "MA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-07"
+    },
+    {
+      "city": "Pleasanton",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 11,
+      "completedAt": "2026-07-07"
+    },
+    {
+      "city": "Bluffton",
+      "state": "SC",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 10,
+      "completedAt": "2026-07-07"
+    },
+    {
+      "city": "Conway",
+      "state": "SC",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 7,
+      "plumbersFound": 6,
+      "completedAt": "2026-07-07"
+    },
+    {
+      "city": "Bolingbrook",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 6,
+      "plumbersFound": 5,
+      "completedAt": "2026-07-07"
     }
   ]
 }
