@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-07",
   "monthlyBudget": 5000,
-  "usedThisMonth": 627,
+  "usedThisMonth": 691,
   "queue": [
-    {
-      "city": "Middleton",
-      "state": "WI",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Waterford",
-      "state": "MI",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Pelham",
-      "state": "AL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Roanoke",
-      "state": "VA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Havre De Grace",
-      "state": "MD",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "San Mateo",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Ashland",
-      "state": "OR",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Smithtown",
-      "state": "NY",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Humble",
       "state": "TX",
@@ -1264,6 +1192,15 @@
       "source": "gsc"
     },
     {
+      "city": "Weston",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Noblesville",
       "state": "IN",
       "county": "",
@@ -1381,8 +1318,8 @@
       "source": "gsc"
     },
     {
-      "city": "Weston",
-      "state": "FL",
+      "city": "Hamilton",
+      "state": "NJ",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1608,15 +1545,6 @@
     {
       "city": "Whittier",
       "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Hamilton",
-      "state": "NJ",
       "county": "",
       "region": "",
       "status": "pending",
@@ -1966,6 +1894,15 @@
       "source": "gsc"
     },
     {
+      "city": "Firestone",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Miami",
       "state": "FL",
       "county": "",
@@ -2175,15 +2112,6 @@
     {
       "city": "Marion",
       "state": "IA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Firestone",
-      "state": "CO",
       "county": "",
       "region": "",
       "status": "pending",
@@ -3982,6 +3910,15 @@
       "source": "gsc"
     },
     {
+      "city": "Akron",
+      "state": "OH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Pigeon Forge",
       "state": "TN",
       "county": "",
@@ -4416,6 +4353,15 @@
     {
       "city": "Troy",
       "state": "NY",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Suwanee",
+      "state": "GA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -9785,6 +9731,86 @@
       "actualCalls": 6,
       "plumbersFound": 5,
       "completedAt": "2026-07-07"
+    },
+    {
+      "city": "Middleton",
+      "state": "WI",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 4,
+      "plumbersFound": 3,
+      "completedAt": "2026-07-08"
+    },
+    {
+      "city": "Waterford",
+      "state": "MI",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 15,
+      "plumbersFound": 14,
+      "completedAt": "2026-07-08"
+    },
+    {
+      "city": "Pelham",
+      "state": "AL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 1,
+      "plumbersFound": 0,
+      "completedAt": "2026-07-08"
+    },
+    {
+      "city": "Roanoke",
+      "state": "VA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 6,
+      "plumbersFound": 5,
+      "completedAt": "2026-07-08"
+    },
+    {
+      "city": "Havre De Grace",
+      "state": "MD",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 6,
+      "plumbersFound": 5,
+      "completedAt": "2026-07-08"
+    },
+    {
+      "city": "San Mateo",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 16,
+      "plumbersFound": 14,
+      "completedAt": "2026-07-08"
+    },
+    {
+      "city": "Ashland",
+      "state": "OR",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-08"
+    },
+    {
+      "city": "Smithtown",
+      "state": "NY",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-08"
     }
   ]
 }
