@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-07",
   "monthlyBudget": 5000,
-  "usedThisMonth": 762,
+  "usedThisMonth": 847,
   "queue": [
-    {
-      "city": "Merritt Island",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Marshalltown",
-      "state": "IA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Burlington",
-      "state": "IA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Canby",
-      "state": "OR",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Monroe",
-      "state": "MI",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Davie",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Syracuse",
-      "state": "UT",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Evans",
-      "state": "CO",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Martinez",
       "state": "GA",
@@ -1831,6 +1759,15 @@
       "source": "gsc"
     },
     {
+      "city": "Manchester",
+      "state": "NH",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Miami",
       "state": "FL",
       "county": "",
@@ -2022,15 +1959,6 @@
     {
       "city": "Bangor",
       "state": "ME",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Manchester",
-      "state": "NH",
       "county": "",
       "region": "",
       "status": "pending",
@@ -3496,6 +3424,15 @@
       "source": "gsc"
     },
     {
+      "city": "Altoona",
+      "state": "IA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Brooklyn Park",
       "state": "MN",
       "county": "",
@@ -3543,15 +3480,6 @@
     {
       "city": "Hollywood",
       "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Altoona",
-      "state": "IA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -4299,6 +4227,33 @@
     {
       "city": "Coppell",
       "state": "TX",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Snellville",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Hattiesburg",
+      "state": "MS",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "North Brunswick",
+      "state": "NJ",
       "county": "",
       "region": "",
       "status": "pending",
@@ -9837,6 +9792,86 @@
       "actualCalls": 3,
       "plumbersFound": 2,
       "completedAt": "2026-07-09"
+    },
+    {
+      "city": "Merritt Island",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 8,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-10"
+    },
+    {
+      "city": "Marshalltown",
+      "state": "IA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 16,
+      "completedAt": "2026-07-10"
+    },
+    {
+      "city": "Burlington",
+      "state": "IA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 9,
+      "plumbersFound": 7,
+      "completedAt": "2026-07-10"
+    },
+    {
+      "city": "Canby",
+      "state": "OR",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 7,
+      "plumbersFound": 6,
+      "completedAt": "2026-07-10"
+    },
+    {
+      "city": "Monroe",
+      "state": "MI",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 16,
+      "completedAt": "2026-07-10"
+    },
+    {
+      "city": "Davie",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 17,
+      "plumbersFound": 16,
+      "completedAt": "2026-07-10"
+    },
+    {
+      "city": "Syracuse",
+      "state": "UT",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 4,
+      "plumbersFound": 3,
+      "completedAt": "2026-07-10"
+    },
+    {
+      "city": "Evans",
+      "state": "CO",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 6,
+      "plumbersFound": 5,
+      "completedAt": "2026-07-10"
     }
   ]
 }
