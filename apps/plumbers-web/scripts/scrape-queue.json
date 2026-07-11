@@ -1,80 +1,8 @@
 {
   "currentMonth": "2026-07",
   "monthlyBudget": 5000,
-  "usedThisMonth": 847,
+  "usedThisMonth": 948,
   "queue": [
-    {
-      "city": "Martinez",
-      "state": "GA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Florence",
-      "state": "AL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Walnut Creek",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Natchez",
-      "state": "MS",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Inglewood",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Torrance",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "San Marcos",
-      "state": "CA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Boca Raton",
-      "state": "FL",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
     {
       "city": "Collierville",
       "state": "TN",
@@ -2452,6 +2380,15 @@
       "source": "gsc"
     },
     {
+      "city": "Redwood City",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Moses Lake",
       "state": "WA",
       "county": "",
@@ -3784,6 +3721,15 @@
       "source": "gsc"
     },
     {
+      "city": "Fairview",
+      "state": "OR",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Akron",
       "state": "OH",
       "county": "",
@@ -4234,6 +4180,42 @@
       "source": "gsc"
     },
     {
+      "city": "Wheeling",
+      "state": "IL",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Falls Church",
+      "state": "VA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Santa Clara",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
+      "city": "Surprise",
+      "state": "AZ",
+      "county": "",
+      "region": "",
+      "status": "pending",
+      "estCalls": 18,
+      "source": "gsc"
+    },
+    {
       "city": "Snellville",
       "state": "GA",
       "county": "",
@@ -4317,15 +4299,6 @@
     {
       "city": "Dale City",
       "state": "VA",
-      "county": "",
-      "region": "",
-      "status": "pending",
-      "estCalls": 18,
-      "source": "gsc"
-    },
-    {
-      "city": "Redwood City",
-      "state": "CA",
       "county": "",
       "region": "",
       "status": "pending",
@@ -9872,6 +9845,86 @@
       "actualCalls": 6,
       "plumbersFound": 5,
       "completedAt": "2026-07-10"
+    },
+    {
+      "city": "Martinez",
+      "state": "GA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 5,
+      "plumbersFound": 4,
+      "completedAt": "2026-07-11"
+    },
+    {
+      "city": "Florence",
+      "state": "AL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 13,
+      "plumbersFound": 11,
+      "completedAt": "2026-07-11"
+    },
+    {
+      "city": "Walnut Creek",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 16,
+      "plumbersFound": 15,
+      "completedAt": "2026-07-11"
+    },
+    {
+      "city": "Natchez",
+      "state": "MS",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 7,
+      "plumbersFound": 6,
+      "completedAt": "2026-07-11"
+    },
+    {
+      "city": "Inglewood",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 12,
+      "plumbersFound": 10,
+      "completedAt": "2026-07-11"
+    },
+    {
+      "city": "Torrance",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 14,
+      "plumbersFound": 13,
+      "completedAt": "2026-07-11"
+    },
+    {
+      "city": "San Marcos",
+      "state": "CA",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 16,
+      "plumbersFound": 15,
+      "completedAt": "2026-07-11"
+    },
+    {
+      "city": "Boca Raton",
+      "state": "FL",
+      "county": "",
+      "region": "",
+      "status": "done",
+      "actualCalls": 18,
+      "plumbersFound": 17,
+      "completedAt": "2026-07-11"
     }
   ]
 }
