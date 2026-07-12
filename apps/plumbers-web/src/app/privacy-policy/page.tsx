@@ -1,102 +1,98 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { absoluteUrl } from "@/config/plumbing-routes";
+
+/**
+ * /privacy-policy — 04 §7 red-lines R1–R5 applied: every clause referencing
+ * the nonexistent call-verification program is deleted and replaced with the
+ * public-review-data framing. Corrections route through /contact (no new
+ * mailboxes). Last-updated bumped on publish.
+ */
 
 export const metadata: Metadata = {
-  alternates: { canonical: "/privacy-policy" },
+  alternates: { canonical: absoluteUrl("/privacy-policy") },
   title: "Privacy Policy",
   description: "Privacy policy for Fast Plumber Near Me.",
 };
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Privacy Policy</h1>
-      <p className="text-sm text-gray-500 mb-8">Last updated: March 30, 2026</p>
+    <div className="fpn">
+      <div className="wrap trust">
+        <h1>Privacy Policy</h1>
+        <p className="stamp">Last updated: July 11, 2026</p>
 
-      <div className="prose prose-gray max-w-none space-y-6 text-gray-600 leading-relaxed">
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-3">1. Information We Collect</h2>
-          <p>
-            <strong>For Homeowners:</strong> When you use our directory, we may collect basic usage
-            data such as which city pages you visit and which plumber listings you interact with. We
-            log click-to-call events to provide analytics to listed plumbers. We do not require you
-            to create an account or provide personal information to use the directory.
-          </p>
-          <p>
-            <strong>For Plumbers:</strong> When you submit your business for listing, we collect the
-            information you provide including business name, phone number, email, website, service
-            areas, and license number. We also collect data from our verification calls including
-            whether calls were answered and response times.
-          </p>
-        </section>
+        <h2>1. Information We Collect</h2>
+        <p>
+          <b>For Homeowners:</b> When you use our directory, we may collect basic usage data such
+          as which city pages you visit and which plumber listings you interact with. We log
+          click-to-call events to provide analytics to listed plumbers. We do not require you to
+          create an account or provide personal information to use the directory.
+        </p>
+        <p>
+          <b>For Plumbers:</b> When you submit your business for listing, we collect the
+          information you provide including business name, phone number, email, website, service
+          areas, and license number. We also collect publicly available information about your
+          business, including customer reviews published on third-party platforms such as Google,
+          Yelp, and the Better Business Bureau.
+        </p>
 
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-3">2. How We Use Your Information</h2>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>To operate and improve the plumber directory</li>
-            <li>To verify plumber availability through our AI calling system</li>
-            <li>To calculate and display reliability scores</li>
-            <li>To track leads and provide analytics to listed plumbers</li>
-            <li>To communicate with listed plumbers about their listings</li>
-            <li>To analyze site usage and improve user experience</li>
-          </ul>
-        </section>
+        <h2>2. How We Use Your Information</h2>
+        <ul>
+          <li>To operate and improve the plumber directory</li>
+          <li>
+            To aggregate and synthesize publicly available customer reviews into the assessments
+            displayed on our site
+          </li>
+          <li>To calculate and display editorial quality scores based on public review data</li>
+          <li>To track leads and provide analytics to listed plumbers</li>
+          <li>To communicate with listed plumbers about their listings</li>
+          <li>To analyze site usage and improve user experience</li>
+        </ul>
 
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-3">3. AI Verification Calls</h2>
-          <p>
-            As part of our verification process, we make periodic phone calls to listed plumbers
-            using AI voice technology. These calls may be recorded for quality assurance and
-            scoring purposes. By submitting your business for listing, you consent to receiving
-            these verification calls. Plumbers may opt out of verification calls by contacting us,
-            which will result in an &ldquo;unverified&rdquo; status on their listing.
-          </p>
-        </section>
+        <h2>3. Public Review Data</h2>
+        <p>
+          Our plumber assessments are based on customer reviews published on third-party
+          platforms (Google, Yelp, BBB). We quote these reviews verbatim with the attribution
+          (reviewer name, date, platform) under which they were published. Reviewers whose public
+          reviews are quoted, or plumbers who believe a quoted review has been removed at its
+          source, may reach us through our <Link href="/contact">contact form</Link>; see our{" "}
+          <Link href="/methodology#corrections">Methodology page</Link> for the dispute process.
+        </p>
 
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-3">4. Information Sharing</h2>
-          <p>
-            We do not sell your personal information. We may share information with:
-          </p>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>Service providers who help us operate the site (hosting, analytics)</li>
-            <li>Listed plumbers (aggregate lead data for their listings)</li>
-            <li>Law enforcement when required by law</li>
-          </ul>
-        </section>
+        <h2>4. Information Sharing</h2>
+        <p>We do not sell your personal information. We may share information with:</p>
+        <ul>
+          <li>Service providers who help us operate the site (hosting, analytics)</li>
+          <li>Listed plumbers (aggregate lead data for their listings)</li>
+          <li>Law enforcement when required by law</li>
+        </ul>
 
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-3">5. Cookies and Analytics</h2>
-          <p>
-            We use Google Analytics to understand how visitors use our site. This involves cookies
-            and similar tracking technologies. You can opt out of Google Analytics by installing the
-            Google Analytics opt-out browser add-on.
-          </p>
-        </section>
+        <h2>5. Cookies and Analytics</h2>
+        <p>
+          We use Google Analytics to understand how visitors use our site. This involves cookies
+          and similar tracking technologies. You can opt out of Google Analytics by installing
+          the Google Analytics opt-out browser add-on.
+        </p>
 
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-3">6. Data Security</h2>
-          <p>
-            We implement reasonable security measures to protect your information. However, no
-            method of transmission over the Internet is 100% secure, and we cannot guarantee
-            absolute security.
-          </p>
-        </section>
+        <h2>6. Data Security</h2>
+        <p>
+          We implement reasonable security measures to protect your information. However, no
+          method of transmission over the Internet is 100% secure, and we cannot guarantee
+          absolute security.
+        </p>
 
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-3">7. Contact Us</h2>
-          <p>
-            If you have questions about this privacy policy or want to request removal of your
-            data, contact us at:
-          </p>
-          <p>
-            <strong>Email:</strong>{" "}
-            <a href="mailto:info@fastplumbernearme.com" className="text-primary">
-              info@fastplumbernearme.com
-            </a>
-            <br />
-            <strong>Address:</strong> 135 Erick St Unit F, Crystal Lake, IL 60014
-          </p>
-        </section>
+        <h2>7. Contact Us</h2>
+        <p>
+          If you have questions about this privacy policy or want to request removal of your
+          data, contact us at:
+        </p>
+        <p>
+          <b>Email:</b>{" "}
+          <a href="mailto:info@fastplumbernearme.com">info@fastplumbernearme.com</a>
+          <br />
+          <b>Address:</b> 135 Erick St Unit F, Crystal Lake, IL 60014
+        </p>
       </div>
     </div>
   );

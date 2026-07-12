@@ -1,35 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, DM_Sans, Fraunces } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { SITE_ORIGIN } from "@/config/plumbing-routes";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-dm-sans",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-fraunces",
-});
+/**
+ * Root layout — rebuild design system (02 §1.3): NO webfonts. System sans
+ * stack + Georgia serif for editorial judgment only, both defined in
+ * globals.css. Zero render-blocking font requests on an emergency page.
+ */
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: {
-    default: "Fast Plumber Near Me — Find Verified Emergency Plumbers",
+    default: "Fast Plumber Near Me — Plumbers Ranked by Real Reviews",
     template: "%s | Fast Plumber Near Me",
   },
   description:
-    "Find verified, responsive emergency plumbers near you. We AI-verify every plumber to make sure they actually pick up the phone and show up. 24/7 service.",
+    "City-by-city plumber rankings built from real customer reviews — strengths, complaints, and red flags included. Rankings are never for sale.",
   openGraph: {
     type: "website",
     siteName: "Fast Plumber Near Me",
@@ -42,8 +30,13 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    // favicon.ico is auto-linked by the app-router convention; the PNGs are
+    // rendered by src/app/icon-{192,512}.png/route.tsx (manifest + apple).
+    apple: "/icon-192.png",
+  },
   other: {
-    "theme-color": "#1a365d",
+    "theme-color": "#17293e",
   },
 };
 
@@ -53,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className} ${dmSans.variable} ${fraunces.variable} h-full`}>
+    <html lang="en" className="h-full">
       <head>
         <link rel="manifest" href="/manifest.json" />
       </head>

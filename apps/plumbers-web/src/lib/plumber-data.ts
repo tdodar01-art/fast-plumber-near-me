@@ -9,6 +9,7 @@ import type {
   CityRank,
   DecisionCore,
   EvidenceQuote,
+  EvidencedClaim,
 } from "./decision-engine";
 
 export interface PlumberReview {
@@ -47,6 +48,10 @@ export interface PlumberSynthesis {
   worstQuote: string | null;
   platformDiscrepancy?: string | null;
   servicesMentioned?: Partial<Record<ServiceCategory, ServiceMention>>;
+  /** Cited-form claims (2026-05-22 pipeline) — each with supporting_review_ids. */
+  strengthsEvidence?: EvidencedClaim[];
+  weaknessesEvidence?: EvidencedClaim[];
+  redFlagsEvidence?: EvidencedClaim[];
 }
 
 export interface SynthesizedPlumber {
@@ -72,6 +77,8 @@ export interface SynthesizedPlumber {
   scrapedAt: string;
   synthesis: PlumberSynthesis | null;
   serviceCities?: string[];
+  yelpRating?: number | null;
+  yelpReviewCount?: number | null;
   bbb?: {
     accredited: boolean;
     rating: string | null;
@@ -99,6 +106,45 @@ interface SynthesizedData {
 
 let cachedData: SynthesizedData | null = null;
 
+/**
+ * Hard rule 1 render guard: the synth pipeline occasionally leaks INTERNAL
+ * metrics into editorial text (e.g. "contradicts otherwise perfect reliability
+ * score of 90") — metrics we never publish and that the site claims not to
+ * produce from calls/tests. 15 of 6,204 records at launch. Claims mentioning
+ * them are dropped (same policy as claims with unresolvable quotes); prose
+ * fields drop the offending sentence. Customer quote fields (topQuote/
+ * worstQuote/evidence_quotes/reviews) are verbatim third-party text and are
+ * untouched — a launch-time scan confirmed they carry no such leak. The
+ * durable fix is pipeline-side: keep score context out of synthesis prose.
+ */
+const INTERNAL_METRIC_RE = /reliability\s+scores?|answer\s+rate|verification\s+status/i;
+
+function scrubProse(text: string): string {
+  if (!INTERNAL_METRIC_RE.test(text)) return text;
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .filter((s) => !INTERNAL_METRIC_RE.test(s))
+    .join(" ")
+    .trim();
+}
+
+function scrubSynthesis(syn: PlumberSynthesis): void {
+  const dropLeaky = (arr: string[] | undefined) =>
+    arr?.filter((t) => !INTERNAL_METRIC_RE.test(t)) ?? [];
+  syn.strengths = dropLeaky(syn.strengths);
+  syn.weaknesses = dropLeaky(syn.weaknesses);
+  syn.redFlags = dropLeaky(syn.redFlags);
+  syn.bestFor = dropLeaky(syn.bestFor);
+  const dropLeakyClaims = (arr?: EvidencedClaim[]) =>
+    arr?.filter((c) => !INTERNAL_METRIC_RE.test(c.text));
+  syn.strengthsEvidence = dropLeakyClaims(syn.strengthsEvidence);
+  syn.weaknessesEvidence = dropLeakyClaims(syn.weaknessesEvidence);
+  syn.redFlagsEvidence = dropLeakyClaims(syn.redFlagsEvidence);
+  if (syn.summary) syn.summary = scrubProse(syn.summary);
+  if (syn.emergencyNotes) syn.emergencyNotes = scrubProse(syn.emergencyNotes);
+  if (syn.platformDiscrepancy) syn.platformDiscrepancy = scrubProse(syn.platformDiscrepancy);
+}
+
 function loadData(): SynthesizedData {
   if (cachedData) return cachedData;
   const filePath = path.join(
@@ -123,6 +169,7 @@ function loadData(): SynthesizedData {
       state: p.state,
       placeId: p.placeId,
     });
+    if (p.synthesis) scrubSynthesis(p.synthesis);
   }
   cachedData = parsed;
   return cachedData;
@@ -265,9 +312,9 @@ function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { d
     photoUrl: null,
     logoUrl: null,
     isActive: p.businessStatus === "OPERATIONAL" || !p.businessStatus,
-    // Bridge decision-layer fields directly from the JSON shape. Without
-    // this bridge, VerdictSeal + SignalRow + DimensionBars render empty on
-    // any city page that falls through to the static JSON fallback.
+    // Bridge decision-layer fields directly from the JSON shape so any
+    // consumer of the Firestore-shape Plumber type (admin, API routes) sees
+    // the decision layer even on the static-JSON fallback path.
     scores: p.scores,
     city_rank: p.city_rank,
     decision: p.decision,

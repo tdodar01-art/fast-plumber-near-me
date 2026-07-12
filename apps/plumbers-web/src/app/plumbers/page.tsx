@@ -1,89 +1,119 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { getPlumbersRanked, getDataMeta } from "@/lib/plumber-data";
-import { getCityCoords } from "@/lib/city-coords";
-import PlumberDirectory, { type DirectoryPlumber } from "./PlumberDirectory";
+import Link from "next/link";
+import { getStateByAbbr } from "@/lib/states-data";
+import { getMarkets, getMarketsByState } from "@/lib/markets";
 import { absoluteUrl } from "@/config/plumbing-routes";
+import { breadcrumbLd, homeCrumbs, collectionPageLd, jsonLdString } from "@/lib/schema";
+import MarketSearch, { type SearchMarket } from "@/components/rebuild/MarketSearch";
+
+/**
+ * /plumbers — national index (browse states with market counts). Same path as
+ * the legacy client-side directory, new content (05 §4.4: no redirect).
+ * Rebuild design: hairline list, data-rich links.
+ *
+ * Also the WebSite SearchAction target (/plumbers?q=...): the client-side
+ * MarketSearch prefills from ?q= on mount. The page itself is static and
+ * self-canonical — query strings never produce indexable states (01 §3.4).
+ */
 
 export const metadata: Metadata = {
-  alternates: { canonical: absoluteUrl("/plumbers") },
-  title: "Ranked Plumbers — Honest Reviews & Trust Scores",
+  title: "Find Ranked Plumbers by State & City",
   description:
-    "Every plumber ranked by trust score. AI-analyzed Google reviews show the truth — strengths, weaknesses, and red flags. No paid placements.",
+    "City-by-city plumber rankings built from real customer reviews — strengths, complaints, and red flags included. Browse every ranked market by state.",
+  alternates: { canonical: absoluteUrl("/plumbers") },
 };
 
-const breadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
-    { "@type": "ListItem", position: 2, name: "Plumber Rankings", item: absoluteUrl("/plumbers") },
-  ],
-};
+export default function PlumbersIndexPage() {
+  const byState = getMarketsByState();
 
-export default function PlumbersDirectoryPage() {
-  const plumbers = getPlumbersRanked();
-  const meta = getDataMeta();
-  const withSynthesis = plumbers.filter((p) => p.synthesis);
+  // Sort states by market count desc, then name.
+  const states = [...byState.entries()]
+    .map(([st, markets]) => ({
+      st,
+      name: getStateByAbbr(st)?.name ?? st.toUpperCase(),
+      marketCount: markets.length,
+      plumberCount: markets.reduce((n, m) => n + m.counts.plumbers, 0),
+      quotedCount: markets.reduce((n, m) => n + m.counts.rankableQuoted, 0),
+      topMarkets: markets.slice(0, 5),
+    }))
+    .sort((a, b) => b.marketCount - a.marketCount || a.name.localeCompare(b.name));
 
-  // Build city→coords lookup for distance calculation
-  const allCoords = getCityCoords();
-  const cityCoords: Record<string, [number, number]> = {};
-  for (const c of allCoords) {
-    cityCoords[c.name] = [c.lat, c.lng];
-  }
+  const totalMarkets = states.reduce((n, s) => n + s.marketCount, 0);
+  const totalPlumbers = states.reduce((n, s) => n + s.plumberCount, 0);
 
-  // Project to slim shape before crossing the server/client boundary. The full
-  // SynthesizedPlumber record (~12 KB each, with reviews/evidence_quotes/etc.) blows
-  // Vercel's 19.07 MB RSC fallback cap once the dataset grows past ~1.4k plumbers.
-  // Keep this projection narrow — only fields PlumberDirectory actually reads.
-  const slimPlumbers: DirectoryPlumber[] = plumbers.map((p) => ({
-    placeId: p.placeId,
-    name: p.name,
-    slug: p.slug,
-    phone: p.phone,
-    city: p.city,
-    googleRating: p.googleRating,
-    googleReviewCount: p.googleReviewCount,
-    is24Hour: p.is24Hour,
-    location: p.location,
-    serviceCities: p.serviceCities,
-    synthesis: p.synthesis
-      ? {
-          score: p.synthesis.score,
-          summary: p.synthesis.summary,
-          strengths: p.synthesis.strengths,
-          bestFor: p.synthesis.bestFor,
-          redFlags: p.synthesis.redFlags,
-          priceSignal: p.synthesis.priceSignal,
-        }
-      : null,
+  const searchMarkets: SearchMarket[] = getMarkets().map((m) => ({
+    name: m.name,
+    st: m.st,
+    slug: m.slug,
+    lat: m.lat,
+    lng: m.lng,
+    plumbers: m.counts.plumbers,
+    emergency: m.counts.emergency,
   }));
 
+  const jsonLd = [
+    breadcrumbLd(homeCrumbs()),
+    collectionPageLd({
+      name: "Find Ranked Plumbers by State & City",
+      path: "/plumbers",
+      itemUrls: states.map((s) => absoluteUrl(`/plumbers/${s.st}`)),
+    }),
+  ];
+
   return (
-    <>
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-    <div className="max-w-[600px] mx-auto px-4 py-6 font-[family-name:var(--font-dm-sans)]">
-      <div className="mb-6">
-        <h1 className="font-[family-name:var(--font-fraunces)] text-2xl font-bold text-gray-900 mb-1">
-          Plumber rankings
-        </h1>
-        <p className="text-sm text-gray-500">
-          {withSynthesis.length} plumbers analyzed. Ranked by AI trust score, not ad spend.
+    <div className="fpn">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
+      />
+      <main className="wrap">
+        <nav className="crumbs" aria-label="Breadcrumb">
+          <Link href="/">Home</Link> › Plumbers
+        </nav>
+        <h1 className="report-h1">Plumber rankings by city</h1>
+        <p className="dek num">
+          {totalMarkets.toLocaleString()} city guides across {states.length} states, covering{" "}
+          {totalPlumbers.toLocaleString()} plumbers. Every ranking is built from what customers
+          actually wrote in reviews — rankings are never for sale.
         </p>
-      </div>
 
-      <Suspense fallback={<div className="h-8 mb-5" />}>
-        <PlumberDirectory plumbers={slimPlumbers} cityCoords={cityCoords} />
-      </Suspense>
+        <MarketSearch markets={searchMarkets} initFromUrlQuery />
 
-      <div className="text-center text-xs text-gray-400 mt-8 mb-4">
-        Data from Google Reviews, analyzed by AI · Last updated{" "}
-        {new Date(meta.synthesizedAt).toLocaleDateString("en-US", {
-          month: "long", day: "numeric", year: "numeric",
-        })}
-      </div>
+        <ul className="hub-list">
+          {states.map((s) => (
+            <li key={s.st}>
+              <div className="hub-row">
+                <span className="hub-name">
+                  <Link href={`/plumbers/${s.st}`}>{s.name}</Link>
+                </span>
+                <span className="hub-meta num">
+                  {s.marketCount} {s.marketCount === 1 ? "guide" : "guides"} ·{" "}
+                  {s.plumberCount.toLocaleString()} plumbers · {s.quotedCount.toLocaleString()}{" "}
+                  quote-backed
+                </span>
+              </div>
+              <p className="hub-sub">
+                {s.topMarkets.map((m, i) => (
+                  <span key={m.slug}>
+                    {i > 0 && ", "}
+                    <Link href={`/plumbers/${m.st}/${m.slug}`}>{m.name}</Link>
+                  </span>
+                ))}
+                {s.marketCount > 5 && (
+                  <>
+                    {" "}
+                    <Link href={`/plumbers/${s.st}`}>+{s.marketCount - 5} more</Link>
+                  </>
+                )}
+              </p>
+            </li>
+          ))}
+        </ul>
+
+        <p style={{ marginTop: 32, fontSize: 13, color: "var(--ink-3)" }}>
+          How these rankings work: <Link href="/methodology">our methodology</Link>.
+        </p>
+      </main>
     </div>
-    </>
   );
 }

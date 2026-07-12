@@ -113,10 +113,21 @@ export async function GET(request: NextRequest) {
             maxWidth: "900px",
           }}
         >
-          Emergency Plumbers in {city}
-          {state ? `, ${state}` : ""}
+          {/* Optional heading override (profiles, emergency pages, state hubs). */}
+          {title || `Plumbers in ${city}${state ? `, ${state}` : ""}`}
         </div>
-        {county && (
+        {title && city !== "Your City" ? (
+          <div
+            style={{
+              fontSize: "24px",
+              color: "#93c5fd",
+              marginTop: "12px",
+            }}
+          >
+            {`${city}${state ? `, ${state}` : ""}`}
+          </div>
+        ) : null}
+        {county ? (
           <div
             style={{
               fontSize: "22px",
@@ -124,9 +135,9 @@ export async function GET(request: NextRequest) {
               marginTop: "12px",
             }}
           >
-            {county} County
+            {`${county} County`}
           </div>
-        )}
+        ) : null}
         <div
           style={{
             display: "flex",
@@ -136,11 +147,11 @@ export async function GET(request: NextRequest) {
             color: "#bfdbfe",
           }}
         >
-          <span>Verified 24/7</span>
+          <span>Reviews read honestly</span>
           <span>·</span>
-          <span>AI-Tested Response</span>
+          <span>Strengths &amp; complaints</span>
           <span>·</span>
-          <span>Licensed &amp; Insured</span>
+          <span>Rankings never for sale</span>
         </div>
       </div>
     ),

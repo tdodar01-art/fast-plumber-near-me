@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Mail, MapPin, Clock } from "lucide-react";
+import { absoluteUrl } from "@/config/plumbing-routes";
 import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
-  alternates: { canonical: "/contact" },
+  alternates: { canonical: absoluteUrl("/contact") },
   title: "Contact Us",
   description:
-    "Get in touch with Fast Plumber Near Me. Questions about listings, verification, or partnerships? We're here to help.",
+    "Get in touch with Fast Plumber Near Me. Questions about listings, corrections, disputes, or sponsorship? We're here to help.",
 };
 
 export default function ContactPage() {

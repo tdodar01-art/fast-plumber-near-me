@@ -1,292 +1,131 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { absoluteUrl } from "@/config/plumbing-routes";
+import SubmitForm from "./SubmitForm";
 
-import { useState } from "react";
-import { CheckCircle, Loader2 } from "lucide-react";
+/**
+ * /add-your-business — plumber-facing pitch (04 §6) + the existing submission
+ * form. Dispute/claim affordance routes through /contact (C11 adjusted: no
+ * separate dispute form route at launch — profile OwnerPanels link
+ * /contact?about={slug} and this page points the same way).
+ */
 
-const serviceOptions = [
-  "emergency",
-  "water-heater",
-  "sewer",
-  "drain",
-  "gas-line",
-  "leak-detection",
-  "pipe-repair",
-  "toilet-repair",
-  "faucet-repair",
-  "garbage-disposal",
+export const metadata: Metadata = {
+  title: "Get Listed — Free Listings & Sponsored Placement for Plumbers",
+  description:
+    "We read your public reviews from Google, Yelp, and the BBB and publish an honest assessment. Free listings; one labeled sponsored slot per city.",
+  alternates: { canonical: absoluteUrl("/add-your-business") },
+};
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+      { "@type": "ListItem", position: 2, name: "For plumbers", item: absoluteUrl("/add-your-business") },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Get listed on Fast Plumber Near Me",
+    url: absoluteUrl("/add-your-business"),
+  },
 ];
 
 export default function AddYourBusinessPage() {
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  return (
+    <div className="fpn">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="wrap trust">
+        <nav className="crumbs" aria-label="Breadcrumb">
+          <Link href="/">Home</Link> › <span>For plumbers</span>
+        </nav>
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
+        <h1>Get listed. Get read. Get chosen.</h1>
+        <p className="stamp">For plumbing companies</p>
+        <p className="lede">
+          Fast Plumber Near Me is a review-synthesis directory: we read your public reviews from
+          Google, Yelp, and the BBB, and publish an honest assessment — strengths and complaints
+          — for homeowners comparing plumbers in your area. 6,000+ companies are already listed.
+          Yours may be too.
+        </p>
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+        <h2>The free part</h2>
+        <p>Every qualifying plumber is listed free. No charge, ever, for:</p>
+        <ul>
+          <li>Your listing with phone, hours, service area, and website</li>
+          <li>Our synthesis of your reviews — the same honest treatment everyone gets</li>
+          <li>
+            Claiming your listing to correct business details and post an owner response —{" "}
+            <Link href="/contact">start with our contact form</Link>
+          </li>
+          <li>A quarterly re-read of your reviews on request, so recent improvement shows up here</li>
+        </ul>
+        <div className="rulebox">
+          <b>Straight talk before you submit:</b> we publish complaint patterns too. If your
+          reviews show one, it will appear on your card, and payment can&apos;t remove it. Plenty
+          of directories will hide your negatives for a fee; we&apos;re not one of them, and
+          that&apos;s exactly why homeowners believe the positives we print about you.
+        </div>
 
-    const data = {
-      businessName: formData.get("businessName") as string,
-      phone: formData.get("phone") as string,
-      email: formData.get("email") as string,
-      website: formData.get("website") as string,
-      address: {
-        street: formData.get("street") as string,
-        city: formData.get("city") as string,
-        state: (formData.get("state") as string).toUpperCase(),
-        zip: formData.get("zip") as string,
-      },
-      services: formData.getAll("services") as string[],
-      is24Hour: formData.get("is24Hour") === "yes",
-      licenseNumber: formData.get("licenseNumber") as string,
-    };
+        <h2>Sponsored placement: own the top of your city</h2>
+        <p>
+          One plumber per city page can hold the labeled <b>Sponsored</b> slot — the first card
+          homeowners see for that city.
+        </p>
+        <p>What you get:</p>
+        <ul>
+          <li>Top position on the city page(s) you choose, above the organic rankings</li>
+          <li>
+            The &ldquo;Sponsored&rdquo; label, plus your full assessment — the same one you&apos;d
+            have anyway
+          </li>
+          <li>
+            Placement in front of people actively comparing plumbers in your area — not cold leads
+            you&apos;re bidding on against four competitors
+          </li>
+        </ul>
+        <p>What you should know:</p>
+        <ul>
+          <li>
+            <b>Sponsorship never changes your assessment.</b> Your score, strengths, and complaint
+            patterns read identically, paid or not. Homeowners trust the slot because it
+            can&apos;t lie — which is what makes it worth buying.
+          </li>
+          <li>
+            <b>There&apos;s a quality bar.</b> Companies below our quality threshold can&apos;t
+            purchase placement. If that&apos;s you today, it may not be after your next quarter of
+            reviews — ask us for a re-read.
+          </li>
+          <li>
+            Pricing is per city, month to month, no contract.{" "}
+            <Link href="/contact">Contact us for your city&apos;s rate.</Link>
+          </li>
+        </ul>
+        <p>
+          <em>
+            You can pay to be seen here. You can&apos;t pay to be trusted here. That&apos;s the
+            deal — for you and for every competitor on your page.
+          </em>
+        </p>
 
-    try {
-      const res = await fetch("/api/submit-business", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        setSubmitted(true);
-      }
-    } catch {
-      alert("Something went wrong. Please try again or email us directly.");
-    } finally {
-      setLoading(false);
-    }
-  }
+        <h2 id="submit" className="anchor-target">
+          Submit your business — free
+        </h2>
+        <SubmitForm />
 
-  if (submitted) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <CheckCircle className="w-16 h-16 text-success mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Submission Received!</h1>
-        <p className="text-gray-600">
-          Thank you for submitting your business. Our team will review your listing and reach out
-          if we need any additional information. Most listings are reviewed within 1-2 business days.
+        <p style={{ marginTop: 28 }}>
+          Already listed and something&apos;s wrong?{" "}
+          <Link href="/methodology#corrections">Read our corrections policy</Link> or{" "}
+          <Link href="/contact">dispute a listing through the contact form</Link> — include your
+          listing URL.
         </p>
       </div>
-    );
-  }
-
-  return (
-    <>
-      <section className="bg-primary text-white py-12 sm:py-16">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-3xl sm:text-4xl font-extrabold mb-3">List Your Plumbing Business</h1>
-          <p className="text-lg text-blue-200 max-w-2xl mx-auto">
-            Get found by homeowners with plumbing emergencies in your service area. Free basic
-            listings available.
-          </p>
-        </div>
-      </section>
-
-      <div className="max-w-2xl mx-auto px-4 py-12 sm:py-16">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Business info */}
-          <div>
-            <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 mb-1">
-              Business Name *
-            </label>
-            <input
-              type="text"
-              id="businessName"
-              name="businessName"
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
-              placeholder="ABC Emergency Plumbing"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number *
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
-                placeholder="(815) 555-1234"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email *
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
-                placeholder="you@yourbusiness.com"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-1">
-              Website (optional)
-            </label>
-            <input
-              type="url"
-              id="website"
-              name="website"
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
-              placeholder="https://yourbusiness.com"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-1">
-              License Number (optional)
-            </label>
-            <input
-              type="text"
-              id="licenseNumber"
-              name="licenseNumber"
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
-              placeholder="055-012345"
-            />
-          </div>
-
-          {/* Business address — drives listing placement (20-mile radius) */}
-          <div>
-            <p className="block text-sm font-medium text-gray-700 mb-1">Business Address *</p>
-            <p className="text-xs text-gray-500 mb-2">
-              Your listing appears on every city page within 20 miles of your business address.
-            </p>
-            <div className="space-y-3">
-              <input
-                type="text"
-                id="street"
-                name="street"
-                required
-                aria-label="Street address"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
-                placeholder="123 Main St"
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  required
-                  aria-label="City"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
-                  placeholder="Crystal Lake"
-                />
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                  required
-                  maxLength={2}
-                  pattern="[A-Za-z]{2}"
-                  title="Two-letter state abbreviation"
-                  aria-label="State"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900 uppercase"
-                  placeholder="IL"
-                />
-                <input
-                  type="text"
-                  id="zip"
-                  name="zip"
-                  required
-                  pattern="\d{5}(-\d{4})?"
-                  title="5-digit ZIP code"
-                  aria-label="ZIP code"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-primary focus:outline-none text-gray-900"
-                  placeholder="60014"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Services */}
-          <div>
-            <p className="block text-sm font-medium text-gray-700 mb-2">Services Offered *</p>
-            <div className="grid grid-cols-2 gap-2">
-              {serviceOptions.map((service) => (
-                <label key={service} className="flex items-center gap-2 text-sm text-gray-700">
-                  <input
-                    type="checkbox"
-                    name="services"
-                    value={service}
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  {service
-                    .split("-")
-                    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                    .join(" ")}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* 24/7 */}
-          <div>
-            <p className="block text-sm font-medium text-gray-700 mb-2">
-              Do you offer 24/7 emergency service? *
-            </p>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="radio"
-                  name="is24Hour"
-                  value="yes"
-                  required
-                  className="text-primary focus:ring-primary"
-                />
-                Yes
-              </label>
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="radio"
-                  name="is24Hour"
-                  value="no"
-                  className="text-primary focus:ring-primary"
-                />
-                No
-              </label>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-accent hover:bg-accent-dark text-white font-bold py-3.5 px-6 rounded-xl transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              "Submit Your Business"
-            )}
-          </button>
-
-          <p className="text-xs text-gray-500 text-center">
-            Submissions are reviewed by our team within 1-2 business days. By submitting, you agree
-            to our{" "}
-            <a href="/terms" className="text-primary underline">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="/privacy-policy" className="text-primary underline">
-              Privacy Policy
-            </a>
-            .
-          </p>
-        </form>
-      </div>
-    </>
+    </div>
   );
 }

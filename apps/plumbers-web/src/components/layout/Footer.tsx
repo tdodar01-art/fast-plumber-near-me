@@ -1,85 +1,54 @@
 import Link from "next/link";
-import { Wrench, Mail, MapPin } from "lucide-react";
-import { CITY_LIST } from "@/lib/city-list";
+import { getMarketsByState } from "@/lib/markets";
+import { getStateByAbbr } from "@/lib/states-data";
 
-// Show top cities in footer (by name, capped at 15)
-const cityLinks = CITY_LIST.slice(0, 15).map((c) => ({
-  name: `${c.name}, ${c.state}`,
-  href: `/emergency-plumbers/${c.stateSlug}/${c.citySlug}`,
-}));
+// Top 10 states by market count (01 §4: footer links states, not cities).
+const stateLinks = [...getMarketsByState().entries()]
+  .map(([st, markets]) => ({
+    name: getStateByAbbr(st)?.name ?? st.toUpperCase(),
+    href: `/plumbers/${st}`,
+    count: markets.length,
+  }))
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+  .slice(0, 10);
 
+/**
+ * Site footer — rebuild design: hairline top rule, link row, independence
+ * disclaimer, top-10 state links. No badges, no 44k-link farm.
+ */
 export default function Footer() {
   return (
-    <footer className="bg-primary text-white mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2 font-bold text-lg mb-3">
-              <Wrench className="w-5 h-5 text-accent-light" />
-              Fast Plumber Near Me
-            </div>
-            <p className="text-sm text-blue-200 leading-relaxed">
-              Find verified, responsive emergency plumbers in your area. We call them so you
-              don&apos;t have to wonder if they&apos;ll pick up.
-            </p>
-            <div className="mt-4 space-y-2 text-sm text-blue-200">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                135 Erick St Unit F, Crystal Lake, IL 60014
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                <a href="mailto:info@fastplumbernearme.com" className="hover:text-white transition-colors">
-                  info@fastplumbernearme.com
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold mb-3">Quick Links</h3>
-            <ul className="space-y-2 text-sm text-blue-200">
-              <li><Link href="/emergency-plumbers" className="hover:text-white transition-colors">Find a Plumber</Link></li>
-              <li><Link href="/how-we-verify" className="hover:text-white transition-colors">How We Verify</Link></li>
-              <li><Link href="/add-your-business" className="hover:text-white transition-colors">List Your Business</Link></li>
-              <li><Link href="/blog" className="hover:text-white transition-colors">Emergency Guides</Link></li>
-              <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h3 className="font-semibold mb-3">Legal</h3>
-            <ul className="space-y-2 text-sm text-blue-200">
-              <li><Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-            </ul>
-          </div>
-
-          {/* Cities */}
-          <div>
-            <h3 className="font-semibold mb-3">Service Areas</h3>
-            <ul className="space-y-1.5 text-sm text-blue-200">
-              {cityLinks.map((city) => (
-                <li key={city.href}>
-                  <Link
-                    href={city.href}
-                    className="hover:text-white transition-colors"
-                  >
-                    {city.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <footer className="fpn fpn-site-footer">
+      <div className="wrap-wide">
+        <div className="foot-links">
+          <Link href="/methodology">How we rank</Link>
+          <Link href="/methodology#sponsored">How we make money</Link>
+          <Link href="/about">About</Link>
+          <Link href="/add-your-business">For plumbers</Link>
+          <Link href="/blog">Guides</Link>
+          <Link href="/contact">Contact</Link>
+          <Link href="/terms">Terms</Link>
+          <Link href="/privacy-policy">Privacy</Link>
         </div>
-
-        <div className="border-t border-primary-light mt-10 pt-6 text-center text-sm text-blue-300">
-          &copy; {new Date().getFullYear()} Fast Plumber Near Me. All rights reserved.
+        <p>
+          Fast Plumber Near Me is an independent review service. We are not affiliated with any
+          plumbing business listed. Star ratings and review counts come from Google and Yelp; our
+          summaries are opinions grounded in the customer reviews we quote and cite.
+        </p>
+        <div className="foot-states">
+          <span>Browse by state:</span>
+          {stateLinks.map((s) => (
+            <Link key={s.href} href={s.href}>
+              {s.name}
+            </Link>
+          ))}
+          <Link href="/plumbers">All states →</Link>
         </div>
+        <p className="foot-tagline">The reviews, read honestly.</p>
+        <p style={{ marginTop: 10 }}>
+          © {new Date().getFullYear()} Fast Plumber Near Me ·{" "}
+          <a href="mailto:info@fastplumbernearme.com">info@fastplumbernearme.com</a>
+        </p>
       </div>
     </footer>
   );

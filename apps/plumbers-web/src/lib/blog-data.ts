@@ -55,15 +55,15 @@ Before you start cleaning up, take photos and video of all damage. This document
 - Damaged belongings and surfaces
 - Serial numbers on damaged appliances
 
-## Step 6: Call a Verified Emergency Plumber
+## Step 6: Call an Emergency Plumber
 
 Now call a plumber. When you call:
 - Describe the problem clearly (burst pipe, sewer backup, etc.)
 - Ask for an estimated arrival time
 - Ask about their emergency service rates
-- Confirm they're licensed and insured
+- Ask about licensing and insurance — and check with your state if you have time
 
-**Pro tip:** Don't just call the first plumber you find on Google. Use a service like Fast Plumber Near Me that verifies plumbers actually answer emergency calls and respond quickly.
+**Pro tip:** Don't just call the first plumber you find on Google. Use a service like Fast Plumber Near Me that reads each plumber's reviews — including the complaints — so you know who tends to show up before you dial.
 
 ## Step 7: Open Drains and Spigots
 
@@ -141,11 +141,11 @@ Pipes buried under a concrete slab, inside walls, or in tight crawl spaces take 
 
 **Ask about flat-rate pricing.** Some plumbers offer flat rates for common repairs rather than hourly billing. This protects you from slow work padding the bill.
 
-**Don't panic-hire.** Unless water is actively flooding your home, take 5 minutes to compare at least two plumbers. Services like Fast Plumber Near Me make this easy by showing you verified plumbers with their response times.
+**Don't panic-hire.** Unless water is actively flooding your home, take 5 minutes to compare at least two plumbers. Services like Fast Plumber Near Me make this easy by summarizing each plumber's reviews — strengths and complaints — side by side.
 
 **Check for warranties.** Reputable plumbers warranty their work for 30-90 days minimum. This protects you if the repair fails shortly after.
 
-**Verify licensing and insurance.** Unlicensed plumbers may be cheaper upfront, but if something goes wrong, you have no recourse. Licensed plumbers carry insurance that covers damage to your property.
+**Check licensing and insurance with your state.** Unlicensed plumbers may be cheaper upfront, but if something goes wrong, you have no recourse. Licensed plumbers carry insurance that covers damage to your property.
 
 ## Red Flags to Watch For
 
@@ -160,7 +160,7 @@ Pipes buried under a concrete slab, inside walls, or in tight crawl spaces take 
 
 Almost always, yes. Water damage costs an average of $7,000-$10,000 to remediate, and that number goes up every hour water sits. A $300-$500 emergency plumbing bill to stop a burst pipe at midnight is a fraction of what you'd pay if you waited until morning.
 
-The key is finding a plumber who's honest, responsive, and fairly priced — which is exactly what verification services help you do.`,
+The key is finding a plumber who's honest, responsive, and fairly priced — and the fastest way to judge that is reading what past customers actually wrote, complaints included.`,
   },
   {
     slug: "signs-you-need-emergency-plumber",
@@ -243,7 +243,7 @@ For non-emergencies, schedule a plumber during regular business hours to save on
   {
     slug: "how-to-find-reliable-emergency-plumber",
     title: "How to Find a Reliable Emergency Plumber Near You",
-    description: "Finding a trustworthy emergency plumber is hard when you're panicking. Use this guide to find reliable, verified plumbers in your area before an emergency hits.",
+    description: "Finding a good emergency plumber is hard when you're panicking. Use this guide to pick a plumber in your area — with your eyes open — before an emergency hits.",
     publishedAt: "2025-02-10",
     updatedAt: "2025-03-20",
     readTime: "6 min read",
@@ -263,10 +263,10 @@ This is exactly the problem Fast Plumber Near Me was built to solve.
 ## What to Look for in an Emergency Plumber
 
 ### 1. They Actually Answer the Phone
-This seems obvious, but it's the #1 problem. The best emergency plumber in the world is useless if they don't pick up at 2 AM. Look for plumbers who have been verified to answer after-hours calls.
+This seems obvious, but it's the #1 problem. The best emergency plumber in the world is useless if they don't pick up at 2 AM. Read their reviews for mentions of after-hours response — "answered at midnight" in a customer review is worth more than any badge.
 
-### 2. They're Licensed and Insured
-A licensed plumber has passed exams proving their competency. Insurance protects you if they damage your property during repairs. Never hire an unlicensed plumber for emergency work.
+### 2. They Hold a License You've Checked Yourself
+A licensed plumber has passed exams proving their competency, and insurance protects you if they damage your property during repairs. Check the license with your state or municipality — we don't check licenses for you — and never hire an unlicensed plumber for emergency work.
 
 ### 3. They Provide Upfront Pricing
 A trustworthy plumber will give you an estimate before starting work. They may charge a diagnostic fee, but they shouldn't start repairs without your approval of the cost.
@@ -281,7 +281,7 @@ Reputable plumbers warranty their repairs for 30-90 days minimum. If the same pr
 
 The worst time to find a plumber is during an emergency. Here's how to be ready:
 
-**Save a plumber's number now.** Use Fast Plumber Near Me to find a verified plumber in your city, and save their number in your phone before you need it.
+**Save a plumber's number now.** Use Fast Plumber Near Me to compare the plumbers in your city — reviews read and summarized — and save the best number in your phone before you need it.
 
 **Know your shut-off valves.** Every family member should know where the main water shut-off and the water heater shut-off are located.
 
@@ -299,7 +299,7 @@ Watch out for these warning signs:
 
 ## The Bottom Line
 
-The best emergency plumber is one you've already vetted before the emergency happens. Take 10 minutes today to find a verified plumber in your area, save their number, and know your shut-off valves. When disaster strikes, you'll be glad you did.`,
+The best emergency plumber is one you've already vetted before the emergency happens. Take 10 minutes today to read up on a plumber in your area, save their number, and know your shut-off valves. When disaster strikes, you'll be glad you did.`,
   },
   {
     slug: "burst-pipe-emergency-what-to-do",
@@ -330,7 +330,7 @@ Use buckets, mops, towels, and a wet/dry vacuum to remove standing water. The fa
 Take photos and video before you start cleaning. Document the burst pipe, water levels, and all damaged items. This is critical for insurance claims.
 
 ### 6. Call an Emergency Plumber
-Call a verified emergency plumber. Describe the location and severity of the burst so they can bring the right equipment.
+Call an emergency plumber. Describe the location and severity of the burst so they can bring the right equipment.
 
 ## Common Causes of Burst Pipes
 
@@ -637,7 +637,7 @@ Some situations fall in between. Here's how to decide:
 
 ## How to Get the Best of Both Worlds
 
-**Find your emergency plumber before you need one.** Use a service like Fast Plumber Near Me to identify verified plumbers in your area now. Save their number. When an actual emergency hits, you won't waste precious time searching and calling plumbers who don't answer.
+**Find your emergency plumber before you need one.** Use a service like Fast Plumber Near Me to compare the plumbers in your area now — we read their reviews so you can see the complaint patterns too. Save their number. When an actual emergency hits, you won't waste precious time searching and calling plumbers who don't answer.
 
 **Build a relationship with a regular plumber.** Many plumbers prioritize existing customers for emergency calls. Having a plumber who knows your home's plumbing system means faster, more accurate repairs.
 

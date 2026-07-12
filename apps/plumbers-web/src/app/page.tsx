@@ -1,237 +1,342 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Phone, ShieldCheck, Clock, Search, ArrowRight, CheckCircle, MapPin, Building } from "lucide-react";
-import CitySearch from "@/components/CitySearch";
+import MarketSearch, { type SearchMarket } from "@/components/rebuild/MarketSearch";
 import UseMyLocation from "@/components/UseMyLocation";
-import CallToAction from "@/components/CallToAction";
-import { FEATURED_CITIES, CITY_LIST } from "@/lib/city-list";
-import { getStatesWithCities, getTotalCityCount } from "@/lib/cities-data";
-import { getCityCoords } from "@/lib/city-coords";
+import PlumberReportCard from "@/components/rebuild/PlumberReportCard";
+import { getMarkets, getMarketPlumbers, type Market } from "@/lib/markets";
+import { getAllPlumbers, type SynthesizedPlumber } from "@/lib/plumber-data";
+import { cardTier, cardEvidence, quotePair } from "@/lib/report-card";
 import { absoluteUrl } from "@/config/plumbing-routes";
+import { organizationLd, webSiteLd, jsonLdString } from "@/lib/schema";
+import { ogImagePath } from "@/lib/meta";
+
+/**
+ * Homepage — 04 §2 copy verbatim in 02 §2 layout (C7). Search-first hero,
+ * computed proof strip, a REAL rendered example card (show, don't claim),
+ * 04's "How it works" + "Why we're different", real-count city grid.
+ * No verification claims, no urgency theatre, no badges (hard rule 1).
+ */
+
+const HOME_DESCRIPTION =
+  "We read the public reviews of every plumber we list — Google, Yelp, BBB — and publish the strengths and complaints with the customer quotes to back it up.";
 
 export const metadata: Metadata = {
+  title: "Fast Plumber Near Me — We Read the Reviews, Including the Bad Ones",
+  description: HOME_DESCRIPTION,
   alternates: { canonical: absoluteUrl() },
+  openGraph: {
+    title: "Fast Plumber Near Me — We Read the Reviews, Including the Bad Ones",
+    description: HOME_DESCRIPTION,
+    url: absoluteUrl(),
+    type: "website",
+    images: [
+      {
+        url: ogImagePath({ type: "city", title: "Plumbers ranked by real reviews" }),
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
 };
 
-const featuredCities = FEATURED_CITIES;
-const totalCities = getTotalCityCount();
-const totalStates = getStatesWithCities().length;
-const cityCoords = getCityCoords();
+// Organization (@id: /#org) + WebSite with SearchAction targeting
+// /plumbers?q={search_term_string} — the national index prefills its
+// client-side market search from ?q= (spec §2 table; 01 §2.1).
+const homeJsonLd = [organizationLd(), webSiteLd()];
 
-// No SearchAction/sitelinks searchbox: the site has no server-side search
-// results endpoint (homepage search is client-side autocomplete that routes
-// straight to a city page). The previous SearchAction pointed at a templated
-// /emergency-plumbers/{state}/{city} URL that can't be filled from a single
-// query term, so Google would reject it. Re-add a SearchAction only once a
-// real /search?q= results route exists.
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "Fast Plumber Near Me",
-  url: absoluteUrl(),
-};
-
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Fast Plumber Near Me",
-  url: absoluteUrl(),
-  logo: absoluteUrl("/logo.svg"),
-  description:
-    "Emergency plumber directory that connects homeowners with verified, responsive plumbers. Real Google review analysis with honest strengths and weaknesses — no pay-to-play rankings.",
-};
+/**
+ * Deterministic example pick for the show-don't-tell section: the first
+ * ranked plumber (walking markets by quote-backed depth) whose card shows
+ * real contrast — a strong verdict AND a quotable critical review AND a
+ * concern. No randomness: same record every build until the data changes.
+ */
+function pickExample(): { plumber: SynthesizedPlumber; market: Market } | null {
+  const markets = [...getMarkets()].sort(
+    (a, b) => b.counts.rankableQuoted - a.counts.rankableQuoted,
+  );
+  for (const market of markets.slice(0, 40)) {
+    const ranked = getMarketPlumbers(market)
+      .filter((p) => p.synthesis && (p.evidence_quotes?.length ?? 0) >= 1)
+      .slice(0, 15);
+    for (const p of ranked) {
+      if (cardTier(p).tier !== "top") continue;
+      if ((p.reviews?.length ?? 0) < 10) continue;
+      if (p.googleReviewCount < 500) continue;
+      const pair = quotePair(p);
+      if (!pair.negative || !pair.positive) continue;
+      if (cardEvidence(p).concerns.length === 0) continue;
+      return { plumber: p, market };
+    }
+  }
+  return null;
+}
 
 export default function HomePage() {
+  const markets = getMarkets();
+  const allPlumbers = getAllPlumbers();
+
+  // Proof strip — every number computed from the dataset at build time.
+  const totalTracked = allPlumbers.length;
+  const totalGuides = markets.length;
+
+  const searchMarkets: SearchMarket[] = markets.map((m) => ({
+    name: m.name,
+    st: m.st,
+    slug: m.slug,
+    lat: m.lat,
+    lng: m.lng,
+    plumbers: m.counts.plumbers,
+    emergency: m.counts.emergency,
+  }));
+
+  const locationMarkets = markets.map((m) => ({
+    name: m.name,
+    st: m.st,
+    slug: m.slug,
+    lat: m.lat,
+    lng: m.lng,
+  }));
+
+  const featured = [...markets]
+    .sort((a, b) => b.counts.rankableQuoted - a.counts.rankableQuoted)
+    .slice(0, 12);
+
+  const example = pickExample();
+
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+    <div className="fpn">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(homeJsonLd) }} />
 
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary via-primary-dark to-primary text-white py-14 sm:py-24">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-8 sm:mb-10">
-            <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight mb-4">
-              Find a Reliable Emergency Plumber
-              <span className="text-accent-light"> — Right Now</span>
-            </h1>
-            <p className="text-lg sm:text-xl text-blue-200 max-w-2xl mx-auto">
-              We don&apos;t just list plumbers — we verify they actually pick up
-              the phone and show up. Real reviews, real ratings, real response times.
-            </p>
-          </div>
-
-          {/* Floating CTA card */}
-          <div className="max-w-lg mx-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 text-center mb-1">
-              Find an Emergency Plumber Near You
-            </h2>
-            <p className="text-sm text-gray-500 text-center mb-5">
-              Enter your zip code or city to see rated plumbers in your area
-            </p>
-            <CitySearch />
-            <div className="mt-4 flex flex-col items-center gap-3">
-              <UseMyLocation cities={cityCoords} />
-              {process.env.NEXT_PUBLIC_BUSINESS_PHONE && (
-                <a
-                  href={`tel:${process.env.NEXT_PUBLIC_BUSINESS_PHONE}`}
-                  className="flex items-center gap-2 text-sm font-semibold text-accent hover:text-accent-dark transition-colors"
-                >
-                  <Phone className="w-4 h-4" />
-                  Call for Emergency Help Now
-                </a>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-blue-300">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" />
-              {totalCities} cities
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Building className="w-4 h-4" />
-              {totalStates} states
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-16 sm:py-20 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-12">
-            How It Works
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">1. Search Your City</h3>
-              <p className="text-gray-600">
-                Enter your city or zip code to find emergency plumbers in your area.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-success/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <ShieldCheck className="w-8 h-8 text-success" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">2. See Verified Plumbers</h3>
-              <p className="text-gray-600">
-                Every plumber is AI-verified. We call them to confirm they&apos;re actually available
-                for emergency service.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Phone className="w-8 h-8 text-accent" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">3. Call Now</h3>
-              <p className="text-gray-600">
-                Tap to call a verified plumber who will actually pick up and come help.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust Badges */}
-      <section className="py-12 border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="flex items-center gap-3 justify-center sm:justify-start">
-              <CheckCircle className="w-6 h-6 text-success flex-shrink-0" />
-              <span className="font-semibold text-gray-900">AI-Verified Plumbers</span>
-            </div>
-            <div className="flex items-center gap-3 justify-center">
-              <Clock className="w-6 h-6 text-primary flex-shrink-0" />
-              <span className="font-semibold text-gray-900">24/7 Emergency Service</span>
-            </div>
-            <div className="flex items-center gap-3 justify-center sm:justify-end">
-              <ShieldCheck className="w-6 h-6 text-primary flex-shrink-0" />
-              <span className="font-semibold text-gray-900">Licensed &amp; Insured</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Cities */}
-      <section className="py-16 sm:py-20">
-        <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-4">
-            Emergency Plumbers by City
-          </h2>
-          <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
-            Select your city to see verified emergency plumbers ready to help right now.
+      {/* ============ HERO ============ */}
+      <section className="hero">
+        <div className="wrap-wide">
+          <h1>A burst pipe doesn&apos;t leave time to read 200 reviews. We already did.</h1>
+          <p className="sub">
+            We summarize the public reviews of 6,000+ plumbers — Google, Yelp, and BBB — and show
+            you the strengths <b>and</b> the complaints, quoted word-for-word. The negative
+            reviews other directories bury are the first thing we look for.
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {featuredCities.map((city) => (
-              <Link
-                key={`${city.stateSlug}-${city.citySlug}`}
-                href={`/emergency-plumbers/${city.stateSlug}/${city.citySlug}`}
-                className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-primary hover:bg-blue-50 transition-colors group"
-              >
-                <span className="font-medium text-gray-900 text-sm">
-                  {city.name}, {city.state}
+
+          <MarketSearch markets={searchMarkets} />
+          <UseMyLocation markets={locationMarkets} />
+
+          <div className="proof num">
+            <span>
+              <b>{totalTracked.toLocaleString()}</b> plumbers tracked
+            </span>
+            <span>
+              <b>{totalGuides.toLocaleString()}</b> city guides
+            </span>
+            <span>
+              Reviews read from <b>Google, Yelp &amp; BBB</b>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ SHOW, DON'T TELL — a real rendered card ============ */}
+      {example && (
+        <section className="show-dont-tell">
+          <div className="wrap-wide">
+            <div className="sec-head">
+              <h2>
+                Every plumber looks great at 4.9 stars.
+                <br />
+                Here&apos;s what we show you instead.
+              </h2>
+              <p>
+                A real listing from our{" "}
+                <Link href={`/plumbers/${example.market.st}/${example.market.slug}`}>
+                  {example.market.name}, {example.market.st.toUpperCase()} guide
+                </Link>{" "}
+                — nothing edited.
+              </p>
+            </div>
+
+            <div className="sample-grid">
+              <PlumberReportCard
+                plumber={example.plumber}
+                rank={1}
+                center={{
+                  lat: example.market.lat,
+                  lng: example.market.lng,
+                  label: `downtown ${example.market.name}`,
+                }}
+              />
+
+              <div className="annos">
+                <div className="anno b">
+                  <h4>The concerns other directories hide</h4>
+                  <p>
+                    Negative patterns get equal billing with the praise — even for our top picks.
+                    A single written complaint usually speaks for several customers who never
+                    wrote one.
+                  </p>
+                </div>
+                <div className="anno g">
+                  <h4>Verbatim quotes, always attributed</h4>
+                  <p>
+                    Every quote is copied word-for-word from a public review with its author, star
+                    rating, platform and date. We never paraphrase and call it a quote.
+                  </p>
+                </div>
+                <div className="anno a">
+                  <h4>The rating mix, not just the average</h4>
+                  <p>
+                    A 4.8 average can hide a pile of one-star reviews. We show the distribution of
+                    every review we analyzed — on every single listing.
+                  </p>
+                </div>
+                <div className="anno">
+                  <h4>A judgment you can argue with</h4>
+                  <p>
+                    &ldquo;Our take&rdquo; is an opinion, formed from the evidence shown right
+                    below it. Check the quotes and disagree with us — that&apos;s the point of
+                    showing our work.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ============ HOW IT WORKS (04 §2) ============ */}
+      <section className="steps">
+        <div className="wrap-wide narrow">
+          <div className="sec-head">
+            <h2>How it works</h2>
+          </div>
+          <div className="steps-grid">
+            <div className="step">
+              <h3>
+                <span className="step-n">1.</span>We collect the reviews.
+              </h3>
+              <p>
+                For every plumber we list, we pull their public reviews from Google, Yelp, and the
+                Better Business Bureau — hundreds per company, not the five happiest.
+              </p>
+            </div>
+            <div className="step">
+              <h3>
+                <span className="step-n">2.</span>We read them and take a side.
+              </h3>
+              <p>
+                Our editors, with AI assistance, distill each plumber&apos;s reviews into
+                plain-English strengths and concerns. If three customers mention surprise fees,
+                you&apos;ll see it — with their exact words, names, and dates.
+              </p>
+            </div>
+            <div className="step">
+              <h3>
+                <span className="step-n">3.</span>You call with your eyes open.
+              </h3>
+              <p>
+                No account, no forms, no lead auction. Pick a plumber knowing what past customers
+                loved and what they complained about, and tap to call them directly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ WHY WE'RE DIFFERENT (04 §2) ============ */}
+      <section className="commit">
+        <div className="wrap-wide narrow">
+          <div className="sec-head">
+            <h2>Why we&apos;re different</h2>
+          </div>
+          <div className="commit-grid">
+            <div className="c-item">
+              <h3>
+                <span className="dot" style={{ background: "var(--bad)" }} />
+                We publish the complaints.
+              </h3>
+              <p>
+                Every directory shows you star ratings. We quote the one-star reviews — verbatim
+                and attributed — because a single written complaint usually speaks for several
+                customers who never wrote one. If a plumber has a pattern of no-shows or growing
+                invoices, it&apos;s on their card, not hidden in page four of their Google
+                reviews.
+              </p>
+            </div>
+            <div className="c-item">
+              <h3>
+                <span className="dot" style={{ background: "var(--action)" }} />
+                Plumbers can&apos;t pay to change what we write.
+              </h3>
+              <p>
+                We sell advertising placement, and we label it. What we never sell is the
+                assessment. A sponsored plumber&apos;s concerns section reads exactly as it would
+                if they&apos;d never paid us — and plumbers below our quality bar can&apos;t buy
+                placement at all. <Link href="/methodology">How our ranking works →</Link>
+              </p>
+            </div>
+            <div className="c-item">
+              <h3>
+                <span className="dot" style={{ background: "var(--good)" }} />
+                Our opinion, their words.
+              </h3>
+              <p>
+                Everything we say about a plumber is grounded in quoted customer reviews you can
+                read yourself. We show the full rating picture, link every claim to its source
+                quotes, and correct mistakes fast when a plumber disputes something.{" "}
+                <Link href="/methodology#corrections">Our correction policy →</Link>
+              </p>
+            </div>
+            <div className="c-item">
+              <h3>
+                <span className="dot" style={{ background: "var(--ink)" }} />
+                One job: help you pick.
+              </h3>
+              <p>
+                We don&apos;t sell your info to four plumbers who&apos;ll all call you back
+                (that&apos;s the other guys&apos; business model). You browse free and anonymous,
+                and you call the plumber yourself.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FIND YOUR CITY ============ */}
+      <section className="cities">
+        <div className="wrap-wide">
+          <div className="sec-head">
+            <h2>Find your city guide</h2>
+            <p>Each guide ranks every plumber serving that city, with our full review analysis.</p>
+          </div>
+          <div className="city-grid">
+            {featured.map((m) => (
+              <Link key={`${m.st}-${m.slug}`} href={`/plumbers/${m.st}/${m.slug}`}>
+                {m.name}, {m.st.toUpperCase()}
+                <span className="num">
+                  {m.counts.plumbers} plumbers
+                  {m.counts.emergency > 0 ? ` · ${m.counts.emergency} list 24/7` : ""}
                 </span>
-                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
               </Link>
             ))}
           </div>
-          <div className="text-center mt-8">
-            <Link
-              href="/emergency-plumbers"
-              className="text-primary hover:text-primary-dark font-semibold inline-flex items-center gap-1 transition-colors"
-            >
-              View All Cities <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+          <p className="all-states">
+            <Link href="/plumbers">Browse all states A–Z →</Link>
+          </p>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-16 sm:py-20 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-12">
-            Why Fast Plumber Near Me?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="font-bold text-gray-900 mb-2">We Actually Call Them</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Unlike other directories, we use AI to periodically call every listed plumber at random
-                times — including nights and weekends. If they don&apos;t answer, their score drops. Only
-                responsive plumbers stay listed.
-              </p>
-            </div>
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="font-bold text-gray-900 mb-2">Real Reliability Scores</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Every plumber gets a reliability score based on how often they answer, how fast they
-                respond, and whether they confirm they can come help. No pay-to-play rankings.
-              </p>
-            </div>
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="font-bold text-gray-900 mb-2">Emergency-Focused</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We&apos;re not a general contractor directory. We focus exclusively on emergency
-                plumbing — burst pipes, water heater failures, sewer backups, and drain emergencies.
-              </p>
-            </div>
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="font-bold text-gray-900 mb-2">Click and Call</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                No accounts, no forms, no waiting for quotes. Find a plumber, tap the call button,
-                and get help. That&apos;s it. When your basement is flooding, every second counts.
-              </p>
-            </div>
-          </div>
+      {/* ============ FOR PLUMBERS ============ */}
+      <section className="pro-band">
+        <div className="wrap-wide">
+          <h2>Run a plumbing company?</h2>
+          <p className="serif">
+            You can pay to be <b>seen</b> — a clearly labeled sponsored slot at the top of your
+            city&apos;s guide. You can&apos;t pay to be <b>trusted</b>; that part only comes from
+            your reviews.
+          </p>
+          <Link className="cta" href="/add-your-business">
+            See how sponsorship works →
+          </Link>
         </div>
       </section>
-
-      {/* CTA */}
-      <CallToAction />
-    </>
+    </div>
   );
 }

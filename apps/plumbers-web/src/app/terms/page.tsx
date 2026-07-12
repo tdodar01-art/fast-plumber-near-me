@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { absoluteUrl } from "@/config/plumbing-routes";
 
 export const metadata: Metadata = {
-  alternates: { canonical: "/terms" },
+  alternates: { canonical: absoluteUrl("/terms") },
   title: "Terms of Service",
   description: "Terms of service for Fast Plumber Near Me.",
 };
@@ -10,7 +11,7 @@ export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16">
       <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Terms of Service</h1>
-      <p className="text-sm text-gray-500 mb-8">Last updated: March 30, 2026</p>
+      <p className="text-sm text-gray-500 mb-8">Last updated: July 11, 2026</p>
 
       <div className="prose prose-gray max-w-none space-y-6 text-gray-600 leading-relaxed">
         <section>
@@ -24,21 +25,22 @@ export default function TermsPage() {
         <section>
           <h2 className="text-xl font-bold text-gray-900 mb-3">2. Description of Service</h2>
           <p>
-            Fast Plumber Near Me is an online directory that connects homeowners with emergency
-            plumbing service providers. We provide listings, reliability scores, and contact
-            information for plumbers in various service areas. We are a directory service — we do
-            not employ plumbers and are not a plumbing company.
+            Fast Plumber Near Me is an online directory that connects homeowners with plumbing
+            service providers. We provide listings, editorial review summaries based on publicly
+            available customer reviews, and contact information for plumbers in various service
+            areas. We are a directory service — we do not employ plumbers and are not a plumbing
+            company.
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-bold text-gray-900 mb-3">3. No Guarantee of Service</h2>
           <p>
-            While we make reasonable efforts to verify plumber availability through our AI calling
-            system, we cannot guarantee that any listed plumber will be available, responsive, or
-            provide satisfactory service. Reliability scores are based on historical data and may
-            not reflect current availability. Users should exercise their own judgment when selecting
-            a plumber.
+            Our assessments and rankings are editorial opinions based on customer reviews
+            published on third-party platforms. We cannot guarantee that any listed plumber will
+            be available, responsive, or provide satisfactory service, and our summaries may not
+            reflect a business&apos;s current performance. Users should exercise their own
+            judgment when selecting a plumber.
           </p>
         </section>
 
@@ -48,8 +50,10 @@ export default function TermsPage() {
           <ul className="list-disc pl-5 space-y-2">
             <li>All information provided is accurate and current</li>
             <li>You are authorized to represent the listed business</li>
-            <li>You consent to periodic verification calls from our AI system</li>
-            <li>Your reliability score will be publicly displayed based on verification results</li>
+            <li>
+              Our editorial assessment of your business — including complaint patterns found in
+              public reviews — will be publicly displayed and cannot be altered by payment
+            </li>
             <li>We may remove or modify your listing at our discretion</li>
             <li>You maintain all required licenses and insurance for your service area</li>
           </ul>
@@ -65,7 +69,7 @@ export default function TermsPage() {
             <li>Plumber performance, quality of work, or conduct</li>
             <li>Inaccurate or outdated listing information</li>
             <li>Service interruptions or technical issues</li>
-            <li>Reliance on reliability scores or verification data</li>
+            <li>Reliance on our editorial assessments, scores, or review summaries</li>
           </ul>
         </section>
 

@@ -1,118 +1,93 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck, Phone, Target, Users } from "lucide-react";
+import { absoluteUrl } from "@/config/plumbing-routes";
+
+/**
+ * /about — 04 §6 copy, adjusted per SHARED rule 5: no personal names
+ * (operator voice = "the Fast Plumber Near Me editorial team").
+ */
 
 export const metadata: Metadata = {
-  alternates: { canonical: "/about" },
-  title: "About Us",
+  title: "About Us — The Directory That Shows You the Bad Reviews",
   description:
-    "Fast Plumber Near Me is an AI-verified emergency plumber directory. We call every listed plumber to verify they actually pick up and show up.",
+    "We read the public reviews of 6,000+ plumbers — Google, Yelp, and the BBB — and publish what customers praise and what they complain about, word-for-word.",
+  alternates: { canonical: absoluteUrl("/about") },
 };
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl() },
+      { "@type": "ListItem", position: 2, name: "About", item: absoluteUrl("/about") },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "About Fast Plumber Near Me",
+    url: absoluteUrl("/about"),
+  },
+];
 
 export default function AboutPage() {
   return (
-    <>
-      <section className="bg-primary text-white py-12 sm:py-16">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-3xl sm:text-4xl font-extrabold mb-3">About Fast Plumber Near Me</h1>
-          <p className="text-lg text-blue-200">
-            We&apos;re building the most trustworthy emergency plumber directory in the country.
-          </p>
-        </div>
-      </section>
+    <div className="fpn">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="wrap trust">
+        <nav className="crumbs" aria-label="Breadcrumb">
+          <Link href="/">Home</Link> › <span>About</span>
+        </nav>
 
-      <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16">
-        <div className="prose prose-lg max-w-none">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">The Problem</h2>
-          <p className="text-gray-600 leading-relaxed mb-6">
-            When you have a plumbing emergency — a burst pipe at 2 AM, a flooded basement, a failed
-            water heater in January — you need a plumber who will actually answer the phone and show
-            up. But most plumber directories just list every business with a license. They don&apos;t
-            tell you who&apos;s actually available, who actually answers emergency calls, or who will
-            actually come to your house at midnight.
-          </p>
-          <p className="text-gray-600 leading-relaxed mb-8">
-            We&apos;ve all been there: calling three, four, five plumbers from Google or Yelp, getting
-            voicemails, leaving messages that never get returned. Meanwhile, your basement is flooding.
-          </p>
+        <h1>About Fast Plumber Near Me</h1>
+        <p className="lede">
+          <b>We&apos;re the directory that shows you the bad reviews.</b>
+        </p>
 
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Solution</h2>
-          <p className="text-gray-600 leading-relaxed mb-8">
-            Fast Plumber Near Me is different. We use AI to periodically call every plumber in our
-            directory at random times — including nights, weekends, and holidays. If they answer and
-            confirm they&apos;re available for emergencies, their reliability score goes up. If they
-            don&apos;t answer, it goes down. Only plumbers who consistently respond to emergency calls
-            stay highly ranked in our directory.
-          </p>
+        <p>
+          Every plumber directory promises &ldquo;trusted pros.&rdquo; Here&apos;s the problem:
+          the directories get paid by the pros. The result is an industry where the
+          bury-the-negative business model is standard — star averages up front, complaints
+          unfindable, and rankings quietly sold.
+        </p>
+        <p>
+          We built the opposite. Fast Plumber Near Me reads the public reviews of every plumber
+          we list — 6,000+ companies, from Google, Yelp, and the Better Business Bureau — and
+          publishes an honest synthesis of each one: what customers praise, what they complain
+          about, quoted word-for-word with names and dates. When three reviewers say the invoice
+          grew after the quote, that goes at the top of the card, because the next customer
+          deserves to know before they call, not after.
+        </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-            <div className="bg-gray-50 rounded-xl p-6">
-              <ShieldCheck className="w-8 h-8 text-primary mb-3" />
-              <h3 className="font-bold text-gray-900 mb-2">AI-Verified</h3>
-              <p className="text-sm text-gray-600">
-                Every plumber is called by our AI verification system to confirm real emergency
-                availability. No pay-to-play, no fake reviews.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-6">
-              <Phone className="w-8 h-8 text-primary mb-3" />
-              <h3 className="font-bold text-gray-900 mb-2">Emergency-Focused</h3>
-              <p className="text-sm text-gray-600">
-                We focus exclusively on emergency plumbing. Not remodeling, not general contracting.
-                Just getting you help when you need it most.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-6">
-              <Target className="w-8 h-8 text-primary mb-3" />
-              <h3 className="font-bold text-gray-900 mb-2">Local First</h3>
-              <p className="text-sm text-gray-600">
-                We started in Northern Illinois — McHenry County, Kane County, DuPage County — and
-                we&apos;re growing city by city to ensure quality coverage.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-6">
-              <Users className="w-8 h-8 text-primary mb-3" />
-              <h3 className="font-bold text-gray-900 mb-2">People Over Profits</h3>
-              <p className="text-sm text-gray-600">
-                Our rankings are based on real responsiveness data, not who pays us the most. Free
-                listings are available for every qualified plumber.
-              </p>
-            </div>
-          </div>
+        <p>
+          <b>What we are:</b> an opinionated reading service for plumber reviews. Our rankings
+          are our editorial judgment, grounded in quotes you can check yourself.
+        </p>
+        <p>
+          <b>What we&apos;re not:</b> a lead-gen operation. We don&apos;t take your contact info
+          and auction it to four plumbers. We don&apos;t charge plumbers for leads. We sell
+          exactly one thing — clearly labeled sponsored placement — and it never changes a word
+          of what we write about anyone. The full rules are in{" "}
+          <Link href="/methodology">our methodology</Link>.
+        </p>
+        <p>
+          <b>Who&apos;s behind it:</b> Fast Plumber Near Me is run by its own editorial team,
+          based in Crystal Lake, Illinois — an independent site with no plumbing company,
+          franchise network, or lead-gen broker behind it. It started with a simple observation:
+          when your basement is flooding, you don&apos;t have time to read 200 reviews — but
+          somebody should have. Now somebody has.
+        </p>
 
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Who We Are</h2>
-          <p className="text-gray-600 leading-relaxed mb-6">
-            Fast Plumber Near Me is operated by Tim Dodaro out of Crystal Lake, Illinois. As a
-            local business owner, Tim saw firsthand how difficult it was for homeowners to find
-            reliable emergency plumbers — and how frustrating it was for good plumbers to stand out
-            from the crowd.
-          </p>
-          <p className="text-gray-600 leading-relaxed mb-8">
-            This directory was built to solve both problems: help homeowners find plumbers who actually
-            show up, and help great plumbers get the calls they deserve.
-          </p>
-
-          <div className="bg-primary/5 rounded-xl p-6 sm:p-8">
-            <p className="text-gray-700 font-medium mb-4">
-              Have questions? Want to get listed? We&apos;d love to hear from you.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/contact"
-                className="inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-xl transition-colors"
-              >
-                Contact Us
-              </Link>
-              <Link
-                href="/add-your-business"
-                className="inline-flex items-center justify-center border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-3 px-6 rounded-xl transition-colors"
-              >
-                List Your Business
-              </Link>
-            </div>
-          </div>
-        </div>
+        <p>
+          Found a mistake? <Link href="/methodology#corrections">We correct fast.</Link> Want
+          your business listed or want to sponsor a city?{" "}
+          <Link href="/add-your-business">Start here.</Link>
+        </p>
       </div>
-    </>
+    </div>
   );
 }
