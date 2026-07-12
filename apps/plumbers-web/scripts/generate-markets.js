@@ -327,9 +327,32 @@ for (const mkt of markets) {
   };
 }
 
+// Candidate cities absorbed into a cluster 301 to their cluster's market
+// UNCONDITIONALLY — >=60% shortlist overlap means the market page genuinely
+// covers them, even when hub re-anchoring leaves them >12mi from the anchor
+// (e.g. Schaumburg -> the NW-suburbs market). Distance caps only apply to
+// cities that never qualified as candidates.
+const memberTarget = new Map();
+for (let i = 0; i < kept.length; i++) {
+  const anchor = markets[i];
+  for (const m of kept[i].members || []) {
+    if (m.key !== anchor.stateSlug + "/" + anchor.slug) memberTarget.set(m.key, anchor);
+  }
+}
+
 for (const c of covered) {
   if (keptKeys.has(c.key)) continue;
   if (redirectMap[c.key]) continue; // slug collision with a kept market: market wins
+  const member = memberTarget.get(c.key);
+  if (member) {
+    redirectMap[c.key] = {
+      t: `/plumbers/${member.st}/${member.slug}`,
+      e: member.hasEmergencyPage ? `/plumbers/${member.st}/${member.slug}/emergency` : undefined,
+    };
+    member.clusterCities.push(c.name);
+    suburb301++;
+    continue;
+  }
   const nm = nearestMarket(c.lat, c.lng, SUBURB_REDIRECT_MILES);
   if (nm) {
     redirectMap[c.key] = {
