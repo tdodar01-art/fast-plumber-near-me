@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FastPlumber Near Me — plumbers ranked by people who read the reviews</title>
+<style>
+  :root{
+    --ink:#17293E; --ink-2:#47586C; --ink-3:#7A899B;
+    --paper:#FFFFFF; --surface:#F4F6F8; --line:#E2E8EE;
+    --action:#1656C4; --action-deep:#0F418F;
+    --good:#157A4A; --good-bg:#EBF6F0; --good-line:#BFDECC;
+    --warn:#8A5A00; --warn-bg:#FBF3DF; --warn-line:#EAD9AE;
+    --bad:#B0301F;  --bad-bg:#FBEEEC;  --bad-line:#EBC2BB;
+    --star:#E8A33D;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --shadow-hover:0 2px 8px rgba(23,41,62,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);font-size:15px;line-height:1.55}
+  a{color:var(--action);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px}
+  .narrow{max-width:760px;margin:0 auto}
+  svg{vertical-align:-2px;flex:none}
+  .num{font-variant-numeric:tabular-nums}
+  .cap{font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3)}
+
+  header.site{border-bottom:1px solid var(--line)}
+  .site-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;height:56px}
+  .wordmark{font-weight:800;font-size:16px;letter-spacing:-.2px;color:var(--ink);white-space:nowrap}
+  .wordmark em{font-style:normal;color:var(--action)}
+  .site-nav{display:flex;gap:14px;font-size:12.5px;font-weight:600}
+  .site-nav a{color:var(--ink-2);white-space:nowrap}
+  @media(min-width:720px){.wordmark{font-size:17px}.site-nav{gap:20px;font-size:13px}}
+
+  /* ---------- hero ---------- */
+  .hero{padding:44px 0 36px;text-align:center}
+  .hero h1{font-size:31px;line-height:1.13;font-weight:800;letter-spacing:-.6px;max-width:620px;margin:0 auto}
+  .hero .sub{font-family:var(--serif);font-size:17px;line-height:1.55;color:var(--ink-2);max-width:560px;margin:14px auto 0}
+  .hero .sub b{color:var(--ink);font-weight:700}
+
+  .searchbox{max-width:520px;margin:26px auto 0}
+  .search-row{display:flex;border:2px solid var(--ink);border-radius:10px;overflow:hidden;background:#fff}
+  .search-row:focus-within{border-color:var(--action);box-shadow:0 0 0 3px rgba(22,86,196,.15)}
+  .search-row input{flex:1;border:none;outline:none;font-size:16px;padding:15px 16px;min-width:0;font-family:var(--sans);color:var(--ink)}
+  .search-row input::placeholder{color:var(--ink-3)}
+  .search-row button{border:none;background:var(--action);color:#fff;font-weight:700;font-size:16px;padding:0 22px;cursor:pointer;display:flex;align-items:center;gap:8px}
+  .search-row button:hover{background:var(--action-deep)}
+  .geo{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:14px;font-weight:600;color:var(--action);background:none;border:1px solid var(--line);border-radius:999px;padding:9px 18px;cursor:pointer}
+  .geo:hover{border-color:var(--action)}
+
+  .proof{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 28px;margin-top:26px;font-size:13px;color:var(--ink-3)}
+  .proof b{color:var(--ink);font-weight:700}
+
+  /* ---------- sample card section ---------- */
+  .show-dont-tell{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:48px 0 56px}
+  .sec-head{text-align:center;max-width:620px;margin:0 auto}
+  .sec-head h2{font-size:24px;font-weight:800;letter-spacing:-.4px}
+  .sec-head p{font-family:var(--serif);color:var(--ink-2);margin-top:8px;font-size:16px}
+
+  .sample-grid{display:grid;gap:20px;margin-top:28px;align-items:start}
+  @media(min-width:880px){.sample-grid{grid-template-columns:minmax(0,560px) 1fr}}
+
+  /* condensed real card */
+  .card{border:1px solid var(--line);border-left:3px solid var(--good);border-radius:12px;padding:18px;background:var(--paper)}
+  .id-row{display:flex;align-items:flex-start;gap:10px}
+  .rank{flex:none;width:26px;height:26px;border:1.5px solid var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+  .biz h3{font-size:17px;line-height:1.3;font-weight:700}
+  .chip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 8px;border:1px solid;margin-top:5px}
+  .chip.good{color:var(--good);background:var(--good-bg);border-color:var(--good-line)}
+  .fact-row{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:9px;font-size:13px;color:var(--ink-2)}
+  .fact-row .stars{color:var(--ink);font-weight:700}
+  .star-glyph{color:var(--star)}
+  .take p{font-family:var(--serif);font-size:15px;line-height:1.5;margin-top:4px}
+  .take{margin-top:11px}
+  .mixmini{margin-top:12px;max-width:300px}
+  .mix-row{display:grid;grid-template-columns:22px 1fr 28px;gap:7px;align-items:center;font-size:11.5px;color:var(--ink-3);margin-top:2px}
+  .mix-bar{display:block;height:6px;background:var(--surface);border-radius:3px;overflow:hidden}
+  .mix-fill{display:block;height:100%;background:var(--ink-3);border-radius:3px}
+  .mix-row.r5 .mix-fill{background:var(--good)}
+  .mix-row.r1 .mix-fill{background:var(--bad)}
+  .evmini{margin-top:12px;font-size:13px;color:var(--ink-2)}
+  .evmini div{display:flex;gap:6px;margin-top:5px;line-height:1.45}
+  .evmini svg{margin-top:2px}
+  .q{border-radius:8px;padding:10px 12px;border:1px solid;margin-top:12px}
+  .q.neg{background:var(--bad-bg);border-color:var(--bad-line)}
+  .q .q-label{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--bad)}
+  .q blockquote{font-size:12.5px;line-height:1.5;color:var(--ink);margin-top:4px}
+  .q figcaption{margin-top:6px;font-size:11px;color:var(--ink-3)}
+  .q figcaption b{color:var(--ink-2)}
+  .rstars{color:var(--star);letter-spacing:1px}
+  .call-mini{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--action);color:#fff;font-weight:700;font-size:15px;min-height:46px;border-radius:8px;margin-top:14px}
+  .call-mini:hover{background:var(--action-deep);text-decoration:none}
+
+  /* annotations */
+  .annos{display:grid;gap:14px}
+  .anno{border-left:3px solid var(--ink);padding:2px 0 2px 14px}
+  .anno.g{border-color:var(--good)}
+  .anno.b{border-color:var(--bad)}
+  .anno.a{border-color:var(--warn)}
+  .anno h4{font-size:14.5px;font-weight:700}
+  .anno p{font-size:13.5px;color:var(--ink-2);margin-top:3px}
+  @media(max-width:879px){.annos{grid-template-columns:1fr}.anno{padding-left:12px}}
+
+  /* ---------- commitments ---------- */
+  .commit{padding:52px 0}
+  .commit-grid{display:grid;gap:24px;margin-top:26px}
+  @media(min-width:720px){.commit-grid{grid-template-columns:1fr 1fr 1fr}}
+  .c-item h3{font-size:17px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+  .c-item h3 .dot{width:10px;height:10px;border-radius:3px;flex:none}
+  .c-item p{font-size:14px;color:var(--ink-2);margin-top:8px}
+  .c-item p b{color:var(--ink)}
+
+  /* ---------- cities ---------- */
+  .cities{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:48px 0 56px}
+  .city-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:24px}
+  @media(min-width:720px){.city-grid{grid-template-columns:repeat(4,1fr)}}
+  .city-grid a{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:11px 14px;font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3}
+  .city-grid a span{display:block;color:var(--ink-3);font-weight:400;font-size:12px;margin-top:1px}
+  .city-grid a:hover{border-color:var(--action);text-decoration:none}
+  .all-states{text-align:center;margin-top:20px;font-size:14px;font-weight:600}
+
+  /* ---------- plumber band ---------- */
+  .pro-band{padding:48px 0;text-align:center}
+  .pro-band h2{font-size:22px;font-weight:800;letter-spacing:-.3px}
+  .pro-band .serif{font-family:var(--serif);color:var(--ink-2);max-width:560px;margin:10px auto 0;font-size:16px}
+  .pro-band a.cta{display:inline-block;margin-top:18px;border:2px solid var(--ink);border-radius:8px;padding:11px 24px;font-weight:700;color:var(--ink)}
+  .pro-band a.cta:hover{border-color:var(--action);color:var(--action);text-decoration:none}
+
+  footer.site{border-top:1px solid var(--line);padding:28px 0 40px;font-size:13px;color:var(--ink-3)}
+  .foot-links{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:14px}
+  .foot-links a{color:var(--ink-2);font-weight:600}
+
+  @media(min-width:720px){
+    body{font-size:16px}
+    .hero{padding:64px 0 52px}
+    .hero h1{font-size:40px}
+    .hero .sub{font-size:18px}
+    .sec-head h2{font-size:28px}
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M21 21l-4.5-4.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-cross" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M8.5 12.2l2.4 2.4 4.6-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-oct" viewBox="0 0 24 24"><path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86L7.86 2z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="site">
+  <div class="wrap site-inner">
+    <a class="wordmark" href="#">FastPlumber<em> near me</em></a>
+    <nav class="site-nav"><a href="#">How we rank</a><a href="#">For plumbers</a></nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <h1>Find a plumber who'll actually show up.</h1>
+      <p class="sub">We read the reviews — <b>including the ones other sites bury</b> — and rank plumbers like a friend who's done the research. Rankings are never for sale.</p>
+
+      <form class="searchbox" action="#" role="search">
+        <div class="search-row">
+          <input type="text" inputmode="text" autocomplete="postal-code" placeholder="City or ZIP code" aria-label="City or ZIP code">
+          <button type="submit"><svg width="18" height="18"><use href="#i-search"/></svg>Find plumbers</button>
+        </div>
+        <button type="button" class="geo"><svg width="16" height="16"><use href="#i-cross"/></svg>Use my location</button>
+      </form>
+
+      <div class="proof num">
+        <span><b>6,211</b> plumbers reviewed</span>
+        <span><b>9,708</b> cities &amp; towns covered</span>
+        <span><b>0</b> rankings sold</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHOW, DON'T TELL ============ -->
+  <section class="show-dont-tell">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Every plumber looks great at 4.9 stars.<br>Here's what we show you instead.</h2>
+        <p>A real listing from our Elgin, Illinois guide — nothing edited.</p>
+      </div>
+
+      <div class="sample-grid">
+        <!-- real condensed card: S and J -->
+        <article class="card" aria-label="Example plumber listing">
+          <div class="id-row">
+            <div class="rank num">1</div>
+            <div class="biz">
+              <h3>S and J Plumbing &amp; Sewer</h3>
+              <span class="chip good"><svg width="12" height="12"><use href="#i-check"/></svg>Top pick</span>
+            </div>
+          </div>
+          <div class="fact-row num">
+            <span class="stars"><svg class="star-glyph" width="13" height="13"><use href="#i-star"/></svg> 4.9 <span style="font-weight:400;color:var(--ink-2)">(4,190 Google reviews)</span></span>
+            <span><svg width="12" height="12"><use href="#i-pin"/></svg> 16.2 mi</span>
+            <span><svg width="12" height="12"><use href="#i-clock"/></svg> Open 24/7</span>
+          </div>
+          <div class="take">
+            <div class="cap">Our take</div>
+            <p>The strongest all-rounder near Elgin — but two reviewers describe surprise fees and a hard sell, so get the number in writing before anyone touches a pipe.</p>
+          </div>
+          <div class="mixmini num" aria-label="Rating mix of the 100 reviews we analyzed">
+            <div class="cap" style="margin-bottom:4px">Rating mix — 100 reviews analyzed</div>
+            <div class="mix-row r5"><span>5★</span><span class="mix-bar"><span class="mix-fill" style="width:90%"></span></span><span>90</span></div>
+            <div class="mix-row"><span>4★</span><span class="mix-bar"><span class="mix-fill" style="width:8%"></span></span><span>8</span></div>
+            <div class="mix-row"><span>3★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+            <div class="mix-row"><span>2★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+            <div class="mix-row r1"><span>1★</span><span class="mix-bar"><span class="mix-fill" style="width:2%"></span></span><span>2</span></div>
+          </div>
+          <div class="evmini">
+            <div><svg width="14" height="14" style="color:var(--good)"><use href="#i-check"/></svg><span>Deep workmanship — cited in 33 of 100 reviews we read</span></div>
+            <div><svg width="14" height="14" style="color:var(--bad)"><use href="#i-oct"/></svg><span style="color:var(--bad)">A 1-star reviewer describes a 10-minute pricing lecture before any diagnosis</span></div>
+          </div>
+          <figure class="q neg">
+            <div class="q-label">The most critical take we found</div>
+            <blockquote>"Watch out. … They never mentioned to me that they would have to charge anything to come out."</blockquote>
+            <figcaption><b>K B</b> · <span class="rstars">★</span> · Google · Jun 2026</figcaption>
+          </figure>
+          <a class="call-mini" href="tel:+18472331748"><svg width="18" height="18"><use href="#i-phone"/></svg><span class="num">(847) 233-1748</span></a>
+        </article>
+
+        <!-- annotations -->
+        <div class="annos">
+          <div class="anno b">
+            <h4>The concerns other directories hide</h4>
+            <p>Negative patterns get equal billing with the praise — even for our #1 pick. Each one-star review usually speaks for many customers who never wrote one.</p>
+          </div>
+          <div class="anno g">
+            <h4>Verbatim quotes, always attributed</h4>
+            <p>Every quote is copied word-for-word from a public review with its author, star rating, platform and date. We never paraphrase and call it a quote.</p>
+          </div>
+          <div class="anno a">
+            <h4>The rating mix, not just the average</h4>
+            <p>A 4.8 average can hide a pile of one-star reviews. We show the distribution of every review we analyzed — on every single listing.</p>
+          </div>
+          <div class="anno">
+            <h4>A judgment you can argue with</h4>
+            <p>"Our take" is an opinion, formed from the evidence shown right below it. Check the quotes and disagree with us — that's the point of showing our work.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMMITMENTS ============ -->
+  <section class="commit">
+    <div class="wrap narrow">
+      <div class="sec-head">
+        <h2>Three things we will always do</h2>
+      </div>
+      <div class="commit-grid">
+        <div class="c-item">
+          <h3><span class="dot" style="background:var(--bad)"></span>Show you the bad reviews</h3>
+          <p>We read up to 100 reviews per plumber across Google, Yelp and BBB — and surface the complaint patterns, not just the praise. <b>The negative review other sites bury is the most useful thing on the page.</b></p>
+        </div>
+        <div class="c-item">
+          <h3><span class="dot" style="background:var(--action)"></span>Keep rankings unsellable</h3>
+          <p>Plumbers can buy one clearly-labeled sponsored slot — visibility, never endorsement. <b>No payment has ever moved a ranking</b>, and a business we wouldn't recommend can't buy the slot at all.</p>
+        </div>
+        <div class="c-item">
+          <h3><span class="dot" style="background:var(--good)"></span>Quote, never invent</h3>
+          <p>Every claim we make about a plumber traces to reviews we quote verbatim, with author, rating, platform and date. <b>If we can't cite it, we don't say it.</b></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CITIES ============ -->
+  <section class="cities">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Find your city guide</h2>
+        <p>Each guide ranks every plumber serving that city, with our full review analysis.</p>
+      </div>
+      <div class="city-grid">
+        <a href="#">Elgin, IL<span>14 ranked · 5 open 24/7</span></a>
+        <a href="#">Naperville, IL<span>19 ranked · 8 open 24/7</span></a>
+        <a href="#">Arlington Heights, IL<span>22 ranked · 9 open 24/7</span></a>
+        <a href="#">Elmhurst, IL<span>21 ranked · 7 open 24/7</span></a>
+        <a href="#">Nashville, TN<span>25 ranked · 11 open 24/7</span></a>
+        <a href="#">Denver, CO<span>25 ranked · 12 open 24/7</span></a>
+        <a href="#">Charleston, SC<span>18 ranked · 8 open 24/7</span></a>
+        <a href="#">Columbus, OH<span>24 ranked · 10 open 24/7</span></a>
+        <a href="#">Richmond, VA<span>20 ranked · 9 open 24/7</span></a>
+        <a href="#">Fort Worth, TX<span>25 ranked · 13 open 24/7</span></a>
+        <a href="#">Sacramento, CA<span>23 ranked · 10 open 24/7</span></a>
+        <a href="#">Atlanta, GA<span>25 ranked · 12 open 24/7</span></a>
+      </div>
+      <p class="all-states"><a href="#">Browse all states A–Z →</a></p>
+    </div>
+  </section>
+
+  <!-- ============ FOR PLUMBERS ============ -->
+  <section class="pro-band">
+    <div class="wrap">
+      <h2>Run a plumbing company?</h2>
+      <p class="serif">You can pay to be <b>seen</b> — a clearly labeled sponsored slot at the top of your city's guide. You can't pay to be <b>trusted</b>; that part only comes from your reviews.</p>
+      <a class="cta" href="#">See how sponsorship works →</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="#">How we rank</a><a href="#">How we make money</a><a href="#">About</a><a href="#">For plumbers</a><a href="#">Contact</a><a href="#">Terms</a><a href="#">Privacy</a>
+    </div>
+    <p>FastPlumber Near Me is an independent review service. We are not affiliated with any plumbing business listed. Star ratings and review counts come from Google and Yelp; our summaries are opinions grounded in the customer reviews we quote and cite.</p>
+  </div>
+</footer>
+
+</body>
+</html>

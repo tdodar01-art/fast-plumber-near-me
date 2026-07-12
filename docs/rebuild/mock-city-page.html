@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 14 emergency plumbers serving Elgin, IL — ranked | FastPlumber</title>
+<style>
+  :root{
+    --ink:#17293E; --ink-2:#47586C; --ink-3:#7A899B;
+    --paper:#FFFFFF; --surface:#F4F6F8; --line:#E2E8EE;
+    --action:#1656C4; --action-deep:#0F418F;
+    --good:#157A4A; --good-bg:#EBF6F0; --good-line:#BFDECC;
+    --warn:#8A5A00; --warn-bg:#FBF3DF; --warn-line:#EAD9AE;
+    --bad:#B0301F;  --bad-bg:#FBEEEC;  --bad-line:#EBC2BB;
+    --star:#E8A33D;
+    --spon:#47586C; --spon-bg:#EEF1F4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --shadow-hover:0 2px 8px rgba(23,41,62,.08);
+    --shadow-float:0 -4px 16px rgba(23,41,62,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);font-size:15px;line-height:1.55}
+  a{color:var(--action);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px}
+  svg{vertical-align:-2px;flex:none}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* ---------- header ---------- */
+  header.site{border-bottom:1px solid var(--line)}
+  .site-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;height:56px}
+  .wordmark{font-weight:800;font-size:16px;letter-spacing:-.2px;color:var(--ink);white-space:nowrap}
+  .wordmark em{font-style:normal;color:var(--action)}
+  .site-nav{display:flex;gap:14px;font-size:12.5px;font-weight:600}
+  .site-nav a{color:var(--ink-2);white-space:nowrap}
+  @media(min-width:720px){.wordmark{font-size:17px}.site-nav{gap:20px;font-size:13px}}
+
+  /* ---------- report header ---------- */
+  .crumbs{font-size:13px;color:var(--ink-3);margin:20px 0 10px}
+  .crumbs a{color:var(--ink-3)}
+  h1{font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-.4px}
+  .dek{font-family:var(--serif);font-size:17px;line-height:1.55;color:var(--ink-2);margin-top:12px;max-width:640px}
+  .dek strong{color:var(--ink)}
+  .report-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:13px;color:var(--ink-3)}
+  .report-meta span{display:inline-flex;align-items:center;gap:6px}
+
+  /* methodology disclosure */
+  details.method{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+  details.method summary{cursor:pointer;padding:12px 16px;font-size:14px;font-weight:700;color:var(--ink);list-style:none;display:flex;align-items:center;gap:8px}
+  details.method summary::-webkit-details-marker{display:none}
+  details.method summary .chev{transition:transform .15s;color:var(--ink-3)}
+  details.method[open] summary .chev{transform:rotate(180deg)}
+  .method-body{padding:0 16px 16px;font-size:14px;color:var(--ink-2)}
+  .method-body p{margin-bottom:10px}
+  .method-body b{color:var(--ink)}
+
+  /* triage strip */
+  .triage{display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:12px 16px;border:1px solid var(--line);border-left:3px solid var(--action);border-radius:8px;font-size:14px;color:var(--ink-2)}
+  .triage b{color:var(--ink)}
+
+  /* ---------- caption / labels ---------- */
+  .cap{font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-3)}
+
+  /* ---------- sponsored slot ---------- */
+  .spon-slot{margin-top:28px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .spon-head{background:var(--spon-bg);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+  .spon-tag{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--spon);border:1px solid #C9D2DB;background:#fff;border-radius:4px;padding:1px 7px}
+  .spon-note{font-size:12.5px;color:var(--ink-2)}
+  .spon-slot .card{border:none;border-left:3px solid #C9D2DB;border-radius:0;margin:0}
+
+  /* ---------- tiers ---------- */
+  .tier{margin-top:36px}
+  .tier-head{display:flex;align-items:baseline;gap:12px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+  .tier-head.good{border-color:var(--good)}
+  .tier-head.warn{border-color:var(--warn)}
+  .tier-head.bad{border-color:var(--bad)}
+  .tier-head h2{font-size:21px;font-weight:700;letter-spacing:-.2px}
+  .tier-sub{font-size:13px;color:var(--ink-3)}
+
+  /* ---------- card ---------- */
+  .card{border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:16px;background:var(--paper)}
+  .card.t-good{border-left:3px solid var(--good)}
+  .card.t-warn{border-left:3px solid var(--warn)}
+  .card.t-bad{border-left:3px solid var(--bad)}
+  @media(hover:hover){.card:hover{box-shadow:var(--shadow-hover)}}
+
+  .id-row{display:flex;align-items:flex-start;gap:10px}
+  .rank{flex:none;width:28px;height:28px;border:1.5px solid var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;margin-top:1px}
+  .biz h3{font-size:18px;line-height:1.3;font-weight:700}
+  .biz h3 a{color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+  .chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;border:1px solid}
+  .chip.good{color:var(--good);background:var(--good-bg);border-color:var(--good-line)}
+  .chip.warn{color:var(--warn);background:var(--warn-bg);border-color:var(--warn-line)}
+  .chip.bad{color:var(--bad);background:var(--bad-bg);border-color:var(--bad-line)}
+  .chip.plain{color:var(--ink-2);background:var(--surface);border-color:var(--line)}
+
+  .fact-row{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:10px;font-size:13.5px;color:var(--ink-2)}
+  .fact-row .stars{color:var(--ink);font-weight:700}
+  .fact-row .star-glyph{color:var(--star)}
+
+  .take{margin-top:12px}
+  .take .cap{display:flex;align-items:center;gap:6px}
+  .take .cap a{font-weight:600;text-transform:none;letter-spacing:0}
+  .take p{font-family:var(--serif);font-size:16px;line-height:1.55;margin-top:4px}
+
+  /* rating mix */
+  .mix{margin-top:14px}
+  .mix-title{display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline}
+  .mix-title .cap{color:var(--ink-2)}
+  .mix-title a{font-size:12.5px}
+  .mix-rows{margin-top:6px;max-width:360px}
+  .mix-row{display:grid;grid-template-columns:24px 1fr 34px;gap:8px;align-items:center;font-size:12px;color:var(--ink-3);margin-top:3px}
+  .mix-bar{display:block;height:7px;background:var(--surface);border-radius:4px;overflow:hidden}
+  .mix-fill{display:block;height:100%;border-radius:4px;background:var(--ink-3)}
+  .mix-row.r5 .mix-fill{background:var(--good)}
+  .mix-row.r1 .mix-fill{background:var(--bad)}
+  .mix-note{font-size:12px;color:var(--warn);margin-top:6px}
+
+  /* evidence */
+  .evidence{display:grid;gap:12px;margin-top:14px}
+  @media(min-width:720px){.evidence.two{grid-template-columns:1fr 1fr}}
+  .ev h4{font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px}
+  .ev.str h4{color:var(--good)}
+  .ev.con h4{color:var(--warn)}
+  .ev.con.flag h4{color:var(--bad)}
+  .ev ul{list-style:none}
+  .ev li{display:flex;gap:7px;font-size:14px;line-height:1.45;color:var(--ink-2);margin-top:6px}
+  .ev li svg{margin-top:3px}
+  .ev li .ct{color:var(--ink-3);font-size:12.5px}
+  .ev li.severe{color:var(--bad)}
+
+  /* quotes */
+  .quotes{display:grid;gap:10px;margin-top:14px}
+  @media(min-width:720px){.quotes{grid-template-columns:1fr 1fr}}
+  .q{border-radius:8px;padding:12px 14px;border:1px solid}
+  .q.pos{background:var(--good-bg);border-color:var(--good-line)}
+  .q.neg{background:var(--bad-bg);border-color:var(--bad-line)}
+  .q.none{background:var(--surface);border-color:var(--line)}
+  .q .q-label{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+  .q.pos .q-label{color:var(--good)}
+  .q.neg .q-label{color:var(--bad)}
+  .q.none .q-label{color:var(--ink-3)}
+  .q blockquote{font-size:13.5px;line-height:1.5;color:var(--ink);margin-top:5px}
+  .q.none p{font-size:13.5px;line-height:1.5;color:var(--ink-2);margin-top:5px}
+  .q figcaption{margin-top:7px;font-size:12px;color:var(--ink-3)}
+  .q figcaption b{color:var(--ink-2);font-weight:600}
+  .q .rstars{color:var(--star);letter-spacing:1px}
+
+  .prov{margin-top:12px;font-size:12.5px;color:var(--ink-3)}
+
+  /* actions */
+  .actions{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  @media(min-width:720px){.actions{flex-direction:row;align-items:center}}
+  .call-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--action);color:#fff;font-weight:700;font-size:16px;min-height:52px;border-radius:8px;padding:0 22px}
+  .call-btn:hover{background:var(--action-deep);text-decoration:none}
+  .sec-links{display:flex;gap:18px;font-size:14px;font-weight:600;justify-content:center}
+  .sec-links .ext{color:var(--ink-3);font-weight:500}
+
+  /* unranked */
+  .unranked{margin-top:36px}
+  .unranked-note{font-size:13.5px;color:var(--ink-3);margin-top:6px}
+  .u-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;padding:13px 2px;border-bottom:1px solid var(--line);font-size:14px}
+  .u-row:first-of-type{border-top:1px solid var(--line);margin-top:12px}
+  .u-name{font-weight:700;color:var(--ink);flex:1 1 200px}
+  .u-meta{color:var(--ink-3);font-size:13px}
+  .u-call{font-weight:700}
+
+  /* methodology full */
+  .method-full{margin-top:44px;border-top:2px solid var(--ink);padding-top:16px}
+  .method-full h2{font-size:21px;font-weight:700}
+  .method-full ol{margin:12px 0 0 18px;color:var(--ink-2);font-size:14.5px}
+  .method-full li{margin-top:8px}
+  .method-full b{color:var(--ink)}
+  .disclosure{margin-top:18px;padding:12px 16px;background:var(--surface);border-radius:8px;font-size:13px;color:var(--ink-2)}
+
+  /* nearby */
+  .nearby{margin-top:40px}
+  .nearby h2{font-size:18px;font-weight:700}
+  .near-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .near-grid a{border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:13.5px;color:var(--ink);font-weight:600}
+  .near-grid a span{color:var(--ink-3);font-weight:400}
+  .near-grid a:hover{border-color:var(--action);text-decoration:none}
+
+  footer.site{margin-top:56px;border-top:1px solid var(--line);padding:28px 0 40px;font-size:13px;color:var(--ink-3)}
+  .foot-links{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:14px}
+  .foot-links a{color:var(--ink-2);font-weight:600}
+
+  /* sticky call bar (mobile) */
+  .sticky-call{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);box-shadow:var(--shadow-float);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:none;align-items:center;gap:12px;z-index:50}
+  .sticky-call.show{display:flex}
+  .sticky-meta{flex:1;min-width:0}
+  .sticky-meta .cap{color:var(--good)}
+  .sticky-meta .nm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sticky-call .call-btn{min-height:44px;font-size:15px;padding:0 18px}
+  .sticky-x{background:none;border:none;color:var(--ink-3);font-size:20px;line-height:1;padding:6px;cursor:pointer}
+  @media(min-width:720px){
+    body{font-size:16px}
+    h1{font-size:32px}
+    .dek{font-size:18px}
+    .card{padding:22px 24px}
+    .sticky-call{display:none !important}
+  }
+
+  h2,h3{letter-spacing:-.2px}
+  .anchor-target{scroll-margin-top:16px}
+</style>
+</head>
+<body>
+
+<!-- ============ ICON DEFS ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M8.5 12.2l2.4 2.4 4.6-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-tri" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-oct" viewBox="0 0 24 24"><path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86L7.86 2z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 0 4 4.5v15z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="site">
+  <div class="wrap site-inner">
+    <a class="wordmark" href="#">FastPlumber<em> near me</em></a>
+    <nav class="site-nav"><a href="#how-we-rank">How we rank</a><a href="#">For plumbers</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ REPORT HEADER ============ -->
+  <nav class="crumbs"><a href="#">Illinois</a> › Elgin</nav>
+  <h1>The 14 emergency plumbers serving Elgin, ranked</h1>
+  <p class="dek">We read <strong>425 reviews</strong> across Google, Yelp and BBB for the plumbers working within 20 miles of Elgin — including every one-star review — and ranked them the way we'd rank them for a friend. <strong>5 answer 24/7.</strong> Rankings are not for sale.</p>
+  <div class="report-meta">
+    <span class="num"><svg width="14" height="14"><use href="#i-clock"/></svg>Updated Jun 15, 2026</span>
+    <span class="num"><svg width="14" height="14"><use href="#i-pin"/></svg>20-mile radius of downtown Elgin</span>
+    <span><svg width="14" height="14"><use href="#i-book"/></svg><a href="#how-we-rank">How we rank</a></span>
+  </div>
+
+  <details class="method">
+    <summary>How we rank — the 60-second version <svg class="chev" width="16" height="16"><use href="#i-chev"/></svg></summary>
+    <div class="method-body">
+      <p><b>What we read:</b> for each plumber, up to 100 recent reviews from Google, Yelp and BBB — the full text, not just the stars.</p>
+      <p><b>What moves a plumber up:</b> repeated, independent evidence of showing up when promised, fair and upfront pricing, and work that holds. One glowing review counts for little; twenty that agree count for a lot.</p>
+      <p><b>What moves a plumber down:</b> repeated complaint patterns — surprise fees, missed appointments, pressure sales — especially when they show up on more than one platform.</p>
+      <p><b>What never moves the ranking:</b> money. One clearly labeled sponsored slot may appear above this list; it never changes the order below it.</p>
+      <p>Our take on each plumber is our opinion, grounded in the reviews we quote on this page. <a href="#how-we-rank">Full methodology ↓</a></p>
+    </div>
+  </details>
+
+  <!-- ============ TRIAGE STRIP ============ -->
+  <div class="triage">
+    <svg width="18" height="18" style="color:var(--action);margin-top:2px"><use href="#i-clock"/></svg>
+    <div><b>Water everywhere right now?</b> Shut off your main valve first, then <a href="#pick-1">jump to our 24/7 picks ↓</a>. Every plumber below is one tap to call.</div>
+  </div>
+
+  <!-- ============ SPONSORED SLOT ============ -->
+  <section class="spon-slot" aria-label="Sponsored listing">
+    <div class="spon-head">
+      <span class="spon-tag">Sponsored</span>
+      <span class="spon-note">Advantage Plumbing paid for this placement. The ranking below is <b>not for sale</b>, and this review summary is the same one we'd publish if they hadn't paid. <a href="#">What's this?</a></span>
+    </div>
+    <article class="card">
+      <div class="id-row">
+        <div class="biz">
+          <h3><a href="#">Advantage Plumbing, Heating &amp; Air Conditioning</a></h3>
+          <div class="chips">
+            <span class="chip good"><svg width="12" height="12"><use href="#i-check"/></svg>Meets our top-pick bar</span>
+            <span class="chip plain"><svg width="12" height="12"><use href="#i-clock"/></svg>Open 24/7</span>
+          </div>
+        </div>
+      </div>
+      <div class="fact-row num">
+        <span class="stars"><svg class="star-glyph" width="14" height="14"><use href="#i-star"/></svg> 4.7 <span style="font-weight:400;color:var(--ink-2)">(4,104 Google reviews)</span></span>
+        <span><svg width="13" height="13"><use href="#i-pin"/></svg> 1.6 mi from downtown Elgin</span>
+      </div>
+
+      <div class="take">
+        <div class="cap">Our take <a href="#how-we-rank">— how we form it</a></div>
+        <p>A genuine 24/7 operation based in Elgin itself — same-day dispatch shows up again and again in reviews, including a two-hour turnaround on a water-heater call. The trade-off: pricing runs high, and reviewers say so even when they're happy.</p>
+      </div>
+
+      <div class="mix">
+        <div class="mix-title"><span class="cap">Rating mix — of the 100 reviews we analyzed</span><a href="#" rel="nofollow">All 4,104 on Google →</a></div>
+        <div class="mix-rows num">
+          <div class="mix-row r5"><span>5★</span><span class="mix-bar"><span class="mix-fill" style="width:74%"></span></span><span>74</span></div>
+          <div class="mix-row"><span>4★</span><span class="mix-bar"><span class="mix-fill" style="width:7%"></span></span><span>7</span></div>
+          <div class="mix-row"><span>3★</span><span class="mix-bar"><span class="mix-fill" style="width:1%"></span></span><span>1</span></div>
+          <div class="mix-row"><span>2★</span><span class="mix-bar"><span class="mix-fill" style="width:4%"></span></span><span>4</span></div>
+          <div class="mix-row r1"><span>1★</span><span class="mix-bar"><span class="mix-fill" style="width:14%"></span></span><span>14</span></div>
+        </div>
+      </div>
+
+      <div class="evidence two">
+        <div class="ev str">
+          <h4>What reviewers keep saying</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Same-day appointments for toilet, water-heater and HVAC jobs — one evaluation dispatched within 2 hours of calling. <span class="ct">(9 emergency/weekend mentions in 100 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Weekend coverage confirmed independently — techs took weekend emergency calls; a sump pump was fixed on a weekend.</span></li>
+          </ul>
+        </div>
+        <div class="ev con">
+          <h4>What to watch for</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--warn)"><use href="#i-tri"/></svg><span>Pricing described as "a bit steep" — quality confirmed, but cost runs above some competitors. <span class="ct">(2 of 100 reviews)</span></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="quotes">
+        <figure class="q pos">
+          <div class="q-label">What reviewers praise</div>
+          <blockquote>"I called Four Seasons and they were out within 2 hours to evaluate my situation and make recommendations."</blockquote>
+          <figcaption><b>Matthew Kooperman</b> · <span class="rstars">★★★★★</span> · Google · Feb 2026</figcaption>
+        </figure>
+        <figure class="q neg">
+          <div class="q-label">The most critical take we found</div>
+          <blockquote>"Although the price tag was a bit steep the quality of the work and the experience was excellent and I believe they will stand behind their work."</blockquote>
+          <figcaption><b>Marian Z.</b> · <span class="rstars">★★★★★</span> · Yelp · Oct 2022</figcaption>
+        </figure>
+      </div>
+
+      <p class="prov num">We read 100 of 4,104 reviews · newest from Jun 2026</p>
+
+      <div class="actions">
+        <a class="call-btn" href="tel:+18479944761"><svg width="19" height="19"><use href="#i-phone"/></svg><span class="num">(847) 994-4761</span></a>
+        <div class="sec-links"><a href="#">Full report →</a><a class="ext" href="#" rel="sponsored noopener">Website ↗</a></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ TIER 1 — TOP PICKS ============ -->
+  <section class="tier">
+    <div class="tier-head good">
+      <h2>Our top picks</h2>
+      <span class="tier-sub">Consistent evidence of showing up, honest pricing, and work that lasts</span>
+    </div>
+
+    <!-- #1 S and J -->
+    <article class="card t-good anchor-target" id="pick-1">
+      <div class="id-row">
+        <div class="rank num" aria-label="Ranked number 1">1</div>
+        <div class="biz">
+          <h3><a href="#">S and J Plumbing &amp; Sewer</a></h3>
+          <div class="chips">
+            <span class="chip good"><svg width="12" height="12"><use href="#i-check"/></svg>Top pick</span>
+            <span class="chip plain"><svg width="12" height="12"><use href="#i-clock"/></svg>Open 24/7</span>
+          </div>
+        </div>
+      </div>
+      <div class="fact-row num">
+        <span class="stars"><svg class="star-glyph" width="14" height="14"><use href="#i-star"/></svg> 4.9 <span style="font-weight:400;color:var(--ink-2)">(4,190 Google reviews)</span></span>
+        <span><svg width="13" height="13"><use href="#i-pin"/></svg> 16.2 mi from downtown Elgin</span>
+      </div>
+
+      <div class="take">
+        <div class="cap">Our take <a href="#how-we-rank">— how we form it</a></div>
+        <p>The strongest all-rounder near Elgin: the deepest evidence of careful, complex work in our whole read, plus real same-day dispatch. But two reviewers describe surprise fees and a hard sell — get the number in writing before anyone touches a pipe.</p>
+      </div>
+
+      <div class="mix">
+        <div class="mix-title"><span class="cap">Rating mix — of the 100 reviews we analyzed</span><a href="#" rel="nofollow">All 4,190 on Google →</a></div>
+        <div class="mix-rows num">
+          <div class="mix-row r5"><span>5★</span><span class="mix-bar"><span class="mix-fill" style="width:90%"></span></span><span>90</span></div>
+          <div class="mix-row"><span>4★</span><span class="mix-bar"><span class="mix-fill" style="width:8%"></span></span><span>8</span></div>
+          <div class="mix-row"><span>3★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row"><span>2★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row r1"><span>1★</span><span class="mix-bar"><span class="mix-fill" style="width:2%"></span></span><span>2</span></div>
+        </div>
+      </div>
+
+      <div class="evidence two">
+        <div class="ev str">
+          <h4>What reviewers keep saying</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Deep workmanship: multi-hour complex repairs, second crews coordinated for adjacent issues, clean work areas. <span class="ct">(33 of 100 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Same-day dispatch — diagnosed and fixed in a single visit across multiple job types. <span class="ct">(fast response in 14 of 100)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Estimates given before work starts; workspace kept clean throughout.</span></li>
+          </ul>
+        </div>
+        <div class="ev con flag">
+          <h4>What to watch for</h4>
+          <ul>
+            <li class="severe"><svg width="15" height="15" style="color:var(--bad)"><use href="#i-oct"/></svg><span>A 1-star reviewer describes a 10-minute pricing lecture before any diagnosis — and says the techs refused to leave when asked.</span></li>
+            <li><svg width="15" height="15" style="color:var(--warn)"><use href="#i-tri"/></svg><span>Surprise-fee pattern: one customer was never told about a service-call charge. <span class="ct">(2 of 100 reviews)</span></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="quotes">
+        <figure class="q pos">
+          <div class="q-label">What reviewers praise</div>
+          <blockquote>"Jonny and Robby were great. They came in found the problem quickly and fixed it all the same day. Work was great!"</blockquote>
+          <figcaption><b>Kasha Weinshenk</b> · <span class="rstars">★★★★★</span> · Google · Jun 2026</figcaption>
+        </figure>
+        <figure class="q neg">
+          <div class="q-label">The most critical take we found</div>
+          <blockquote>"Watch out. … They never mentioned to me that they would have to charge anything to come out. They came out to my house and sat me down to tell me allll the reasons why pipes are complicated … and that's why it's going to be more expensive than other places."</blockquote>
+          <figcaption><b>K B</b> · <span class="rstars">★</span> · Google · Jun 2026</figcaption>
+        </figure>
+      </div>
+
+      <p class="prov num">We read 100 of 4,190 reviews · newest from Jun 2026</p>
+
+      <div class="actions">
+        <a class="call-btn" href="tel:+18472331748"><svg width="19" height="19"><use href="#i-phone"/></svg><span class="num">(847) 233-1748</span></a>
+        <div class="sec-links"><a href="#">Full report →</a><a class="ext" href="#" rel="noopener">Website ↗</a></div>
+      </div>
+    </article>
+
+    <!-- #2 River City -->
+    <article class="card t-good">
+      <div class="id-row">
+        <div class="rank num" aria-label="Ranked number 2">2</div>
+        <div class="biz">
+          <h3><a href="#">River City Plumbing, LLC</a></h3>
+          <div class="chips">
+            <span class="chip good"><svg width="12" height="12"><use href="#i-check"/></svg>Top pick</span>
+          </div>
+        </div>
+      </div>
+      <div class="fact-row num">
+        <span class="stars"><svg class="star-glyph" width="14" height="14"><use href="#i-star"/></svg> 4.9 <span style="font-weight:400;color:var(--ink-2)">(738 Google reviews)</span></span>
+        <span><svg width="13" height="13"><use href="#i-pin"/></svg> 11.9 mi from downtown Elgin</span>
+        <span>Not a 24/7 shop</span>
+      </div>
+
+      <div class="take">
+        <div class="cap">Our take <a href="#how-we-rank">— how we form it</a></div>
+        <p>A text-first local shop with the fastest documented weekend response in our read — one basement backup went from text to fixed in under two hours. Not a 24/7 operation, so for a 2 a.m. burst pipe start with #1 or #3.</p>
+      </div>
+
+      <div class="mix">
+        <div class="mix-title"><span class="cap">Rating mix — of the 87 reviews we analyzed</span><a href="#" rel="nofollow">All 738 on Google →</a></div>
+        <div class="mix-rows num">
+          <div class="mix-row r5"><span>5★</span><span class="mix-bar"><span class="mix-fill" style="width:99%"></span></span><span>86</span></div>
+          <div class="mix-row"><span>4★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row"><span>3★</span><span class="mix-bar"><span class="mix-fill" style="width:1.5%"></span></span><span>1</span></div>
+          <div class="mix-row"><span>2★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row r1"><span>1★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+        </div>
+      </div>
+
+      <div class="evidence two">
+        <div class="ev str">
+          <h4>What reviewers keep saying</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Fast response — weekend basement backup resolved start-to-finish in under 2 hours via the company's text line; techs routinely on time or early. <span class="ct">(20 of 87 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Workmanship — injector pump replaced in an hour; drain and toilet problems diagnosed and fixed same visit. <span class="ct">(20 of 87 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>No-upsell honesty called out explicitly. <span class="ct">(3 reviews)</span></span></li>
+          </ul>
+        </div>
+        <div class="ev con">
+          <h4>What to watch for</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--warn)"><use href="#i-tri"/></svg><span>Follow-through on estimates wasn't perfect — one 3-star reviewer waited on a promised water-softener estimate that never arrived.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="quotes">
+        <figure class="q pos">
+          <div class="q-label">What reviewers praise</div>
+          <blockquote>"Our plea for help via RiverCity's text system at 1:55pm went right to the plumber that's done other great work here. Karl responded with the most welcome message ever "We're heading that way!" at 2:30pm. By 3:45, the work was done."</blockquote>
+          <figcaption><b>Lars Thomas</b> · <span class="rstars">★★★★★</span> · Google · May 2026</figcaption>
+        </figure>
+        <figure class="q none">
+          <div class="q-label">The most critical take we found</div>
+          <p>No 1- or 2-star reviews among the 87 we analyzed. The most critical was a single 3-star about a promised estimate that never arrived — quoted in the <a href="#">full report</a>.</p>
+        </figure>
+      </div>
+
+      <p class="prov num">We read 87 of 738 reviews · newest from May 2026 · BBB A+ accredited</p>
+
+      <div class="actions">
+        <a class="call-btn" href="tel:+16304298704"><svg width="19" height="19"><use href="#i-phone"/></svg><span class="num">(630) 429-8704</span></a>
+        <div class="sec-links"><a href="#">Full report →</a><a class="ext" href="#" rel="noopener">Website ↗</a></div>
+      </div>
+    </article>
+
+    <!-- #3 Benjamin Franklin -->
+    <article class="card t-good">
+      <div class="id-row">
+        <div class="rank num" aria-label="Ranked number 3">3</div>
+        <div class="biz">
+          <h3><a href="#">Benjamin Franklin Plumbing</a></h3>
+          <div class="chips">
+            <span class="chip good"><svg width="12" height="12"><use href="#i-check"/></svg>Top pick</span>
+            <span class="chip plain"><svg width="12" height="12"><use href="#i-clock"/></svg>Open 24/7</span>
+            <span class="chip warn">Small track record</span>
+          </div>
+        </div>
+      </div>
+      <div class="fact-row num">
+        <span class="stars"><svg class="star-glyph" width="14" height="14"><use href="#i-star"/></svg> 5.0 <span style="font-weight:400;color:var(--ink-2)">(33 Google reviews)</span></span>
+        <span><svg width="13" height="13"><use href="#i-pin"/></svg> 4.2 mi from downtown Elgin (East Dundee)</span>
+      </div>
+
+      <div class="take">
+        <div class="cap">Our take <a href="#how-we-rank">— how we form it</a></div>
+        <p>The closest 24/7 pick to downtown Elgin — reviews log after-hours calls at 12:51 a.m. and 1:47 a.m., handled without drama or emergency surcharges. Thirty-three reviews is a short track record, though: a perfect score on a small sample is promising, not proven.</p>
+      </div>
+
+      <div class="mix">
+        <div class="mix-title"><span class="cap">Rating mix — of the 33 reviews we analyzed</span><a href="#" rel="nofollow">All 33 on Google →</a></div>
+        <div class="mix-rows num">
+          <div class="mix-row r5"><span>5★</span><span class="mix-bar"><span class="mix-fill" style="width:100%"></span></span><span>33</span></div>
+          <div class="mix-row"><span>4★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row"><span>3★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row"><span>2★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row r1"><span>1★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+        </div>
+        <p class="mix-note">Small sample — every review to date is 5★. Treat as a strong early signal.</p>
+      </div>
+
+      <div class="evidence two">
+        <div class="ev str">
+          <h4>What reviewers keep saying</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>On-time arrival and fast response, including true emergencies — water in the basement, burst pipes. <span class="ct">(8 of 33 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Fair, no-pressure pricing with complete estimates. <span class="ct">(5 of 33 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Techs John and Jim named repeatedly for detail and knowledge. <span class="ct">(9 mentions)</span></span></li>
+          </ul>
+        </div>
+        <div class="ev con">
+          <h4>What to watch for</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--warn)"><use href="#i-tri"/></svg><span>No complaint patterns found — but with only 33 reviews, there's simply less evidence either way.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="quotes">
+        <figure class="q pos">
+          <div class="q-label">What reviewers praise</div>
+          <blockquote>"Reliable, fair and honest work"</blockquote>
+          <figcaption><b>Snowbird</b> · <span class="rstars">★★★★★</span> · Google · 2026</figcaption>
+        </figure>
+        <figure class="q none">
+          <div class="q-label">The most critical take we found</div>
+          <p>No critical reviews among the 33 we analyzed — there is nothing negative to quote yet.</p>
+        </figure>
+      </div>
+
+      <p class="prov num">We read all 33 reviews · newest from Apr 2026</p>
+
+      <div class="actions">
+        <a class="call-btn" href="tel:+16307499603"><svg width="19" height="19"><use href="#i-phone"/></svg><span class="num">(630) 749-9603</span></a>
+        <div class="sec-links"><a href="#">Full report →</a><a class="ext" href="#" rel="noopener">Website ↗</a></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ TIER 2 — WITH CAVEATS ============ -->
+  <section class="tier">
+    <div class="tier-head warn">
+      <h2>Worth a look — with caveats</h2>
+      <span class="tier-sub">Real strengths, but read the concerns first</span>
+    </div>
+
+    <!-- #4 ABC -->
+    <article class="card t-warn">
+      <div class="id-row">
+        <div class="rank num" aria-label="Ranked number 4">4</div>
+        <div class="biz">
+          <h3><a href="#">ABC Plumbing, Sewer, Heating, Cooling &amp; Electric</a></h3>
+          <div class="chips">
+            <span class="chip warn"><svg width="12" height="12"><use href="#i-tri"/></svg>Caveats apply</span>
+            <span class="chip plain"><svg width="12" height="12"><use href="#i-clock"/></svg>Open 24/7</span>
+          </div>
+        </div>
+      </div>
+      <div class="fact-row num">
+        <span class="stars"><svg class="star-glyph" width="14" height="14"><use href="#i-star"/></svg> 4.7 <span style="font-weight:400;color:var(--ink-2)">(22,975 Google reviews)</span></span>
+        <span><svg width="13" height="13"><use href="#i-pin"/></svg> 16.7 mi from downtown Elgin</span>
+      </div>
+
+      <div class="take">
+        <div class="cap">Our take <a href="#how-we-rank">— how we form it</a></div>
+        <p>A huge multi-trade operation with meticulous install crews — but we've read only 5 of its 22,975 reviews so far, and even a fan says it "overcharges quite a bit." Treat this as a first read, not a verdict.</p>
+      </div>
+
+      <div class="mix">
+        <div class="mix-title"><span class="cap">Rating mix — of the 5 reviews we analyzed</span><a href="#" rel="nofollow">All 22,975 on Google →</a></div>
+        <div class="mix-rows num">
+          <div class="mix-row r5"><span>5★</span><span class="mix-bar"><span class="mix-fill" style="width:100%"></span></span><span>5</span></div>
+          <div class="mix-row"><span>4★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row"><span>3★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row"><span>2★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+          <div class="mix-row r1"><span>1★</span><span class="mix-bar"><span class="mix-fill" style="width:0%"></span></span><span>0</span></div>
+        </div>
+        <p class="mix-note">We've analyzed only 5 of 22,975 reviews so far — too few to see the real distribution.</p>
+      </div>
+
+      <div class="evidence two">
+        <div class="ev str">
+          <h4>What reviewers keep saying</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Professionalism — install techs described as meticulous, with layer-by-layer quality checks; one customer called it "building a castle." <span class="ct">(4 of 5 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Membership perks: rescheduled appointments still serviced; free whole-home inspection at install.</span></li>
+          </ul>
+        </div>
+        <div class="ev con">
+          <h4>What to watch for</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--warn)"><use href="#i-tri"/></svg><span>Pricing flagged as high even inside a 5-star review. <span class="ct">(1 of 5 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--warn)"><use href="#i-tri"/></svg><span>Evidence still thin — 5 analyzed reviews can't confirm emergency response times.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="quotes">
+        <figure class="q pos">
+          <div class="q-label">What reviewers praise</div>
+          <blockquote>"…it would be an outright 'INSULT'…! These guys were simply the best of the 'BEST'… End-to-End they were focused and meticulous with their work and 'QUALITY' checks…"</blockquote>
+          <figcaption><b>Samall Hazziez</b> · <span class="rstars">★★★★★</span> · Google · Jan 2026</figcaption>
+        </figure>
+        <figure class="q neg">
+          <div class="q-label">The most critical take we found</div>
+          <blockquote>"My 5 star review is mostly for him. Pricing wise I think they over charge quite a bit but I'm happy with the outcome of the work itself!"</blockquote>
+          <figcaption><b>Sara Qawwas</b> · <span class="rstars">★★★★★</span> · Google · Feb 2026</figcaption>
+        </figure>
+      </div>
+
+      <p class="prov num">We read 5 of 22,975 reviews · newest from Mar 2026 · deeper read queued</p>
+
+      <div class="actions">
+        <a class="call-btn" href="tel:+18889913942"><svg width="19" height="19"><use href="#i-phone"/></svg><span class="num">(888) 991-3942</span></a>
+        <div class="sec-links"><a href="#">Full report →</a><a class="ext" href="#" rel="noopener">Website ↗</a></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ TIER 3 — WE'D KEEP LOOKING ============ -->
+  <section class="tier">
+    <div class="tier-head bad">
+      <h2>We'd keep looking</h2>
+      <span class="tier-sub">The average rating hides complaint patterns we can't ignore</span>
+    </div>
+
+    <!-- #5 Precision Today -->
+    <article class="card t-bad">
+      <div class="id-row">
+        <div class="rank num" aria-label="Ranked number 5">5</div>
+        <div class="biz">
+          <h3><a href="#">Precision Today Plumbing Heating Cooling Electrical</a></h3>
+          <div class="chips">
+            <span class="chip bad"><svg width="12" height="12"><use href="#i-oct"/></svg>We'd call someone else first</span>
+            <span class="chip plain"><svg width="12" height="12"><use href="#i-clock"/></svg>Open 24/7</span>
+          </div>
+        </div>
+      </div>
+      <div class="fact-row num">
+        <span class="stars"><svg class="star-glyph" width="14" height="14"><use href="#i-star"/></svg> 4.8 <span style="font-weight:400;color:var(--ink-2)">(7,770 Google reviews)</span></span>
+        <span><svg width="13" height="13"><use href="#i-pin"/></svg> 13.5 mi from downtown Elgin</span>
+      </div>
+
+      <div class="take">
+        <div class="cap">Our take <a href="#how-we-rank">— how we form it</a></div>
+        <p>The 4.8 average hides a different story: in the 100 recent reviews we read — Google <em>and</em> Yelp — one-star reviews outnumber five-star. Repeated reports of far-above-market pricing and missed appointments. In an emergency we'd call our top picks first.</p>
+      </div>
+
+      <div class="mix">
+        <div class="mix-title"><span class="cap">Rating mix — of the 100 reviews we analyzed</span><a href="#" rel="nofollow">All 7,770 on Google →</a></div>
+        <div class="mix-rows num">
+          <div class="mix-row r5"><span>5★</span><span class="mix-bar"><span class="mix-fill" style="width:36%"></span></span><span>36</span></div>
+          <div class="mix-row"><span>4★</span><span class="mix-bar"><span class="mix-fill" style="width:2%"></span></span><span>2</span></div>
+          <div class="mix-row"><span>3★</span><span class="mix-bar"><span class="mix-fill" style="width:2%"></span></span><span>2</span></div>
+          <div class="mix-row"><span>2★</span><span class="mix-bar"><span class="mix-fill" style="width:4%"></span></span><span>4</span></div>
+          <div class="mix-row r1"><span>1★</span><span class="mix-bar"><span class="mix-fill" style="width:56%"></span></span><span>56</span></div>
+        </div>
+        <p class="mix-note" style="color:var(--bad)">Our sample skews heavily 1★ — it disagrees sharply with the Google average shown above.</p>
+      </div>
+
+      <div class="evidence two">
+        <div class="ev con flag" style="order:-1">
+          <h4>Why we're cautious</h4>
+          <ul>
+            <li class="severe"><svg width="15" height="15" style="color:var(--bad)"><use href="#i-oct"/></svg><span>Prices far above market in multiple reviews — $520 for a 20-minute shut-off-valve install; sewer rodding at ~5× a competitor's rate for identical scope.</span></li>
+            <li class="severe"><svg width="15" height="15" style="color:var(--bad)"><use href="#i-oct"/></svg><span>One caller was assured all plumbers are licensed and bonded — the tech who arrived wasn't a licensed plumber.</span></li>
+            <li><svg width="15" height="15" style="color:var(--warn)"><use href="#i-tri"/></svg><span>Missed appointments — after a $15k job, the promised concrete repair crew stood the homeowner up repeatedly. <span class="ct">(slow response in 12 of 100 reviews)</span></span></li>
+          </ul>
+        </div>
+        <div class="ev str">
+          <h4>To be fair</h4>
+          <ul>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Same-day dispatch for burst pipes and some emergencies. <span class="ct">(fast response in 13 of 100 reviews)</span></span></li>
+            <li><svg width="15" height="15" style="color:var(--good)"><use href="#i-check"/></svg><span>Techs praised by name for diagnosing root causes — one avoided an unnecessary heater replacement.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="quotes">
+        <figure class="q neg">
+          <div class="q-label">The most critical take we found</div>
+          <blockquote>"In-line shut off water valve installation costs $520 after their 10% discount. 20 min of work. Parts are very cheap... some celebrity pricing idk. I feel taken advantage of!"</blockquote>
+          <figcaption><b>Paulina L.</b> · <span class="rstars">★</span> · Yelp · Sep 2021</figcaption>
+        </figure>
+        <figure class="q pos">
+          <div class="q-label">What reviewers praise</div>
+          <blockquote>"We had two separate issues come up and had the pleasure of working with Carlos and Daniel. They were knowledgeable. They were quick. They were kind and willing to answer any questions that we had…"</blockquote>
+          <figcaption><b>riana trice</b> · <span class="rstars">★★★★★</span> · Google · Feb 2026</figcaption>
+        </figure>
+      </div>
+
+      <p class="prov num">We read 100 of 7,770 reviews across Google and Yelp · newest from Jun 2026</p>
+
+      <div class="actions">
+        <a class="call-btn" href="tel:+16303267850"><svg width="19" height="19"><use href="#i-phone"/></svg><span class="num">(630) 326-7850</span></a>
+        <div class="sec-links"><a href="#">Full report →</a><a class="ext" href="#" rel="noopener">Website ↗</a></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ UNRANKED ============ -->
+  <section class="unranked">
+    <div class="tier-head">
+      <h2>Also serving Elgin — not enough reviews to rank</h2>
+    </div>
+    <p class="unranked-note">We don't rank a plumber until we've read enough reviews to have an opinion. Ratings below are Google's, not ours.</p>
+
+    <div class="u-row">
+      <span class="u-name">Regal Plumbers</span>
+      <span class="u-meta num"><svg class="star-glyph" width="12" height="12" style="color:var(--star)"><use href="#i-star"/></svg> 5.0 (4 Google reviews) · Hanover Park · 5.9 mi</span>
+      <a class="u-call num" href="tel:+16305550138"><svg width="14" height="14"><use href="#i-phone"/></svg> Call</a>
+    </div>
+    <div class="u-row">
+      <span class="u-name">Elite Plumbing and Piping Inc.</span>
+      <span class="u-meta num"><svg class="star-glyph" width="12" height="12" style="color:var(--star)"><use href="#i-star"/></svg> 4.3 (6 Google reviews) · Lake in the Hills · 10.7 mi</span>
+      <a class="u-call num" href="tel:+18475550164"><svg width="14" height="14"><use href="#i-phone"/></svg> Call</a>
+    </div>
+    <div class="u-row">
+      <span class="u-name">Schmid Plumbing Services</span>
+      <span class="u-meta num"><svg class="star-glyph" width="12" height="12" style="color:var(--star)"><use href="#i-star"/></svg> 4.6 (7 Google reviews) · Algonquin · 13.0 mi</span>
+      <a class="u-call num" href="tel:+18475550172"><svg width="14" height="14"><use href="#i-phone"/></svg> Call</a>
+    </div>
+  </section>
+
+  <!-- ============ METHODOLOGY (FULL) ============ -->
+  <section class="method-full anchor-target" id="how-we-rank">
+    <h2>How we rank the plumbers on this page</h2>
+    <ol>
+      <li><b>We read the reviews — all of them we can get.</b> For each plumber serving Elgin we pulled up to 100 recent reviews from Google, Yelp and BBB and read the full text. For this page: 425 reviews across 8 businesses.</li>
+      <li><b>Patterns beat anecdotes.</b> A plumber moves up when independent reviewers keep describing the same behavior: showing up when promised, quoting before working, work that holds. One rave changes nothing.</li>
+      <li><b>Complaints count double when they repeat.</b> Surprise fees, missed appointments, pressure sales — when the same complaint appears across reviewers (or across platforms), it caps how high we'll rank a business regardless of its star average.</li>
+      <li><b>Money never moves the ranking.</b> A plumber can buy the clearly-labeled sponsored slot at the top of the page — visibility, not endorsement. A business we wouldn't list can't buy the slot at all, and no payment changes the ranked order.</li>
+      <li><b>Our take is our opinion.</b> It's grounded in the reviews we quote and count on this page — check our evidence and disagree with us if you like. That's the point of showing it.</li>
+    </ol>
+    <div class="disclosure">
+      Every quotation on this page is reproduced <b>verbatim</b> from a publicly posted review and attributed to its author, star rating, platform and date. Star averages and review counts are Google's (or Yelp's) as of our last data pull. "Rating mix" charts describe only the set of reviews we analyzed, which we state on every card.
+    </div>
+  </section>
+
+  <!-- ============ NEARBY ============ -->
+  <section class="nearby">
+    <h2>Nearby city guides</h2>
+    <div class="near-grid">
+      <a href="#">South Elgin <span>· 12 ranked</span></a>
+      <a href="#">St. Charles <span>· 11 ranked</span></a>
+      <a href="#">Streamwood <span>· 9 ranked</span></a>
+      <a href="#">Carpentersville <span>· 8 ranked</span></a>
+      <a href="#">Bartlett <span>· 10 ranked</span></a>
+      <a href="#">Geneva <span>· 9 ranked</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="#how-we-rank">How we rank</a><a href="#">How we make money</a><a href="#">About</a><a href="#">For plumbers</a><a href="#">Contact</a><a href="#">Terms</a><a href="#">Privacy</a>
+    </div>
+    <p>FastPlumber Near Me is an independent review service. We are not affiliated with any plumbing business listed. Our summaries are opinions grounded in the customer reviews we quote and cite.</p>
+  </div>
+</footer>
+
+<!-- ============ STICKY CALL BAR (mobile, ranked #1 only) ============ -->
+<div class="sticky-call" id="stickyBar" role="complementary" aria-label="Quick call our number one pick">
+  <div class="sticky-meta">
+    <div class="cap">#1 our pick · open 24/7</div>
+    <div class="nm">S and J Plumbing &amp; Sewer</div>
+  </div>
+  <a class="call-btn" href="tel:+18472331748"><svg width="17" height="17"><use href="#i-phone"/></svg>Call</a>
+  <button class="sticky-x" id="stickyX" aria-label="Dismiss">×</button>
+</div>
+
+<script>
+  // Progressive enhancement only — page is fully usable without JS.
+  (function(){
+    var bar = document.getElementById('stickyBar');
+    var pick = document.getElementById('pick-1');
+    var dismissed = false;
+    document.getElementById('stickyX').addEventListener('click', function(){ dismissed = true; bar.classList.remove('show'); });
+    function onScroll(){
+      if (dismissed || window.innerWidth >= 720) { bar.classList.remove('show'); return; }
+      var r = pick.getBoundingClientRect();
+      bar.classList.toggle('show', r.bottom < 0);
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll);
+  })();
+</script>
+</body>
+</html>
