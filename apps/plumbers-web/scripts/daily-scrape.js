@@ -14,6 +14,7 @@ const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
+const { businessProfileSlug } = require("./lib/business-slug");
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -566,7 +567,7 @@ async function main() {
           existingPlumbers[plumber.placeId] = plumber;
           cityNew++;
           totalNewPlumbers++;
-          newPlumberDetails.push({ name: plumber.name, slug: slugify(plumber.name), city: cityName, state: cityState });
+          newPlumberDetails.push({ name: plumber.name, slug: businessProfileSlug({ name: plumber.name, city: cityName, state: cityState, placeId: plumber.placeId }), city: cityName, state: cityState });
 
           // Store reviews in Firestore immediately (same collection as refresh-reviews)
           try {

@@ -14,6 +14,7 @@
 const fs = require("fs");
 const path = require("path");
 const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
+const { businessProfileSlug } = require("./lib/business-slug");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -179,7 +180,7 @@ async function main() {
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
         created++;
-        createdPlumbers.push({ name: plumber.name, slug: slugify(plumber.name), city: plumber.city, state: plumber.state });
+        createdPlumbers.push({ name: plumber.name, slug: businessProfileSlug({ name: plumber.name, city: plumber.city, state: plumber.state, placeId: plumber.placeId }), city: plumber.city, state: plumber.state });
       }
 
       batchCount++;
