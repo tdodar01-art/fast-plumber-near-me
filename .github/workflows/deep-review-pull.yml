@@ -32,6 +32,9 @@ jobs:
           node-version: '20'
           cache: pnpm
 
+      - name: Check export capacity before ingestion
+        run: node scripts/check-artifact-sizes.js --preflight
+
       - name: Install dependencies
         working-directory: .
         run: pnpm install --filter plumbers-web --frozen-lockfile

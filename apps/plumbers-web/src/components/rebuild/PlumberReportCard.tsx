@@ -154,8 +154,8 @@ export default function PlumberReportCard({
 
       {/* Zone G — provenance line (honest recency cue) */}
       <p className="prov num">
-        We read {read.toLocaleString()} of {p.googleReviewCount.toLocaleString()} reviews
-        {newest ? ` · newest from ${newest}` : ""}
+        Analysis covers {read.toLocaleString()} reviews · {p.googleReviewCount.toLocaleString()} total on Google
+        {newest ? ` · newest available evidence ${newest}` : ""}
         {p.bbb?.accredited ? ` · BBB${p.bbb.rating ? ` ${p.bbb.rating}` : ""} accredited` : ""}
       </p>
 

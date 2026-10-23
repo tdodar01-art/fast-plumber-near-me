@@ -29,6 +29,9 @@ jobs:
           node-version: '20'
           cache: pnpm
 
+      - name: Check export capacity before ingestion
+        run: node scripts/check-artifact-sizes.js --preflight
+
       - name: Install dependencies
         working-directory: .
         run: pnpm install --filter plumbers-web --frozen-lockfile
@@ -61,6 +64,9 @@ jobs:
         if: steps.firebase.outputs.configured == 'true'
         continue-on-error: true
         run: node scripts/generate-city-coverage.js
+
+      - name: Check publish artifact sizes
+        run: node scripts/check-artifact-sizes.js
 
       - name: Commit and push if changed
         if: steps.firebase.outputs.configured == 'true'

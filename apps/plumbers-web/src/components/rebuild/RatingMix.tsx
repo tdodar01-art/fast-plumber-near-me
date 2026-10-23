@@ -1,9 +1,8 @@
 import type { RatingMixData } from "@/lib/report-card";
 
 /**
- * Rating-mix bars — computed ONLY over the analyzed review set (C10).
- * The caption states the analyzed count on every card; we never render (or
- * imply) Google's full histogram, which we don't have.
+ * Bars describe the selected exported excerpts. The exporter deliberately
+ * selects by rating, recency and length; this is not a representative sample.
  */
 export default function RatingMix({
   mix,
@@ -20,7 +19,7 @@ export default function RatingMix({
     <div className="mix">
       <div className="mix-title">
         <span className="cap">
-          Rating mix — of the {mix.analyzed} review{mix.analyzed === 1 ? "" : "s"} we analyzed
+          Rating mix — {mix.analyzed} selected review{mix.analyzed === 1 ? "" : "s"}
         </span>
         {!compact && googleReviewCount > mix.analyzed && (
           <span className="num" style={{ fontSize: "12.5px", color: "var(--ink-3)" }}>
@@ -43,15 +42,19 @@ export default function RatingMix({
           );
         })}
       </div>
+      <p className="mix-note">
+        These excerpts were selected for recency, detail, and a range of ratings.
+        This chart does not represent all reviews or the full analysis sample.
+      </p>
       {mix.disagreesWithAverage ? (
         <p className="mix-note bad">
-          Our sample skews heavily toward critical reviews — it disagrees with the Google average
-          shown above.
+          This selected set contains a higher share of critical reviews than the Google average
+          suggests. Selection affects this comparison.
         </p>
       ) : mix.smallSample ? (
         <p className="mix-note">
-          Small sample — we&apos;ve analyzed only {mix.analyzed} of{" "}
-          {googleReviewCount.toLocaleString()} reviews so far. Treat this as a first read.
+          Only {mix.analyzed} selected excerpts are shown in this chart. Check the analysis
+          count separately before judging the depth of our assessment.
         </p>
       ) : null}
     </div>

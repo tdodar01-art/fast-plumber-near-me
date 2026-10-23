@@ -47,6 +47,8 @@ const VERDICT_DISPLAY: Record<string, VerdictInfo> = {
  * bands aligned with the decision engine's composite thresholds (80/70/60).
  */
 export function verdictInfo(p: SynthesizedPlumber): VerdictInfo | null {
+  // Missing evidence cannot justify either a hire recommendation or a warning.
+  if (p.scores?.method === "no_reviews" || reviewsReadCount(p) === 0 || !(p.evidence_quotes?.length)) return null;
   const v = p.decision?.verdict;
   if (v && VERDICT_DISPLAY[v]) return VERDICT_DISPLAY[v];
   const s = p.synthesis?.score;

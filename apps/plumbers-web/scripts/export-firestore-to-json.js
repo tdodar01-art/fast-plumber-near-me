@@ -20,13 +20,44 @@ const path = require("path");
 const { execSync, spawnSync } = require("child_process");
 const { COLLECTIONS } = require("./config/plumbing-directory.cjs");
 const { businessProfileSlug } = require("./lib/business-slug");
+const {
+  prepareJsonArtifact,
+  writeJsonArtifact,
+} = require("./lib/json-artifact");
 
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "..", "service-account.json");
-const JSON_PATH = path.join(__dirname, "..", "data", "synthesized", "plumbers-synthesized.json");
+const JSON_PATH = path.join(
+  __dirname,
+  "..",
+  "data",
+  "synthesized",
+  "plumbers-synthesized.json",
+);
+
+// Offline, lossless migration of existing artifacts. No credentials, network,
+// data refresh, commit or push. This exporter remains the sole data writer.
+if (process.argv.includes("--compact-local")) {
+  const paths = [
+    JSON_PATH,
+    path.join(path.dirname(JSON_PATH), "leaderboard.json"),
+  ];
+  const artifacts = paths
+    .filter((file) => fs.existsSync(file))
+    .map((file) =>
+      prepareJsonArtifact(file, JSON.parse(fs.readFileSync(file, "utf8"))),
+    );
+  for (const artifact of artifacts) {
+    writeJsonArtifact(artifact);
+    console.log(
+      `${path.basename(artifact.filePath)}: ${(artifact.bytes / 1048576).toFixed(2)} MiB (lossless compact JSON)`,
+    );
+  }
+  process.exit(0);
+}
 
 // ---------------------------------------------------------------------------
 // Error logging — append-only JSONL via control-center log-error.mjs.
@@ -35,22 +66,39 @@ const JSON_PATH = path.join(__dirname, "..", "data", "synthesized", "plumbers-sy
 
 const LOG_ERROR_CLI =
   process.env.CONTROL_CENTER_LOG_ERROR_CLI ||
-  path.resolve(__dirname, "..", "..", "..", "..", "..", "control-center", "scripts", "log-error.mjs");
+  path.resolve(
+    __dirname,
+    "..",
+    "..",
+    "..",
+    "..",
+    "..",
+    "control-center",
+    "scripts",
+    "log-error.mjs",
+  );
 
 function logErrorCLI({ entity, severity = "error", message, context }) {
   if (!fs.existsSync(LOG_ERROR_CLI)) return;
   const args = [
     LOG_ERROR_CLI,
-    "--project", "plumber",
-    "--entity", entity,
-    "--severity", severity,
-    "--source", "export-firestore",
-    "--message", message,
+    "--project",
+    "plumber",
+    "--entity",
+    entity,
+    "--severity",
+    severity,
+    "--source",
+    "export-firestore",
+    "--message",
+    message,
   ];
   if (context) args.push("--context", JSON.stringify(context));
   const res = spawnSync("node", args, { encoding: "utf-8" });
   if (res.status !== 0) {
-    console.error(`  [log-error] CLI exited ${res.status}: ${res.stderr || res.stdout}`);
+    console.error(
+      `  [log-error] CLI exited ${res.status}: ${res.stderr || res.stdout}`,
+    );
   }
 }
 
@@ -93,7 +141,9 @@ if (!fs.existsSync(JSON_PATH)) {
 // ---------------------------------------------------------------------------
 
 const admin = require("firebase-admin");
-const serviceAccount = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"));
+const serviceAccount = JSON.parse(
+  fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf-8"),
+);
 if (!admin.apps.length) {
   admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 }
@@ -136,7 +186,9 @@ async function main() {
     });
   }
 
-  console.log(`Firestore: ${firestoreSnap.size} plumbers, ${allReviewsSnap.size} reviews | JSON: ${plumbers.length} plumbers\n`);
+  console.log(
+    `Firestore: ${firestoreSnap.size} plumbers, ${allReviewsSnap.size} reviews | JSON: ${plumbers.length} plumbers\n`,
+  );
 
   let updated = 0;
   let unchanged = 0;
@@ -186,7 +238,13 @@ async function main() {
       (existing.city_rank && !fd.city_rank) ||
       (existing.decision && !fd.decision);
 
-    if (!isNewer && !hasBBB && !hasNewSynthesis && !hasNewScoring && !hasStaleDecisionLayer) {
+    if (
+      !isNewer &&
+      !hasBBB &&
+      !hasNewSynthesis &&
+      !hasNewScoring &&
+      !hasStaleDecisionLayer
+    ) {
       unchanged++;
       continue;
     }
@@ -204,8 +262,12 @@ async function main() {
     console.log(`  ↻ ${fd.businessName} (${changes.join(", ") || "updated"})`);
   }
 
-  console.log(`\nResults: ${updated} updated, ${added} added, ${unchanged} unchanged`);
-  console.log(`Affected cities: ${affectedCities.size > 0 ? [...affectedCities].join(", ") : "none"}`);
+  console.log(
+    `\nResults: ${updated} updated, ${added} added, ${unchanged} unchanged`,
+  );
+  console.log(
+    `Affected cities: ${affectedCities.size > 0 ? [...affectedCities].join(", ") : "none"}`,
+  );
 
   // Slug uniqueness backstop. The scheme (name-city-state-placeId6) is designed
   // to be collision-free, but this guards against a future scheme change or a
@@ -225,7 +287,11 @@ async function main() {
       .map(([slug, n]) => `${slug} (×${n})`)
       .join(", ");
     const message = `Slug collision detected: ${dupeSlugs.length} slug(s) map to >1 plumber. Sample: ${sample}`;
-    logErrorCLI({ entity: "export-slug-collision", severity: "error", message });
+    logErrorCLI({
+      entity: "export-slug-collision",
+      severity: "error",
+      message,
+    });
     throw new Error(message);
   }
 
@@ -235,18 +301,23 @@ async function main() {
   jsonData.plumbers = plumbers;
 
   if (dryRun) {
-    console.log("\n[DRY RUN] Would write changes to plumbers-synthesized.json");
+    prepareJsonArtifact(JSON_PATH, jsonData);
+    console.log(
+      "\n[DRY RUN] Export fits the size limit; would write changes to plumbers-synthesized.json",
+    );
     return { updated, added, affectedCities: [...affectedCities] };
   }
 
   // Always write — this is the SOLE writer to plumbers-synthesized.json.
   // Even if Firestore had no newer data, the JSON may have been overwritten
   // by a scrape working file, so we always rewrite from Firestore truth.
-  fs.writeFileSync(JSON_PATH, JSON.stringify(jsonData, null, 2));
-  console.log(`\nWrote ${JSON_PATH}`);
+  const businessArtifact = prepareJsonArtifact(JSON_PATH, jsonData);
 
   // Generate leaderboard (derived from the same data)
-  const LEADERBOARD_PATH = path.join(path.dirname(JSON_PATH), "leaderboard.json");
+  const LEADERBOARD_PATH = path.join(
+    path.dirname(JSON_PATH),
+    "leaderboard.json",
+  );
   const ranked = plumbers
     .filter((p) => p.synthesis?.score)
     .sort((a, b) => b.synthesis.score - a.synthesis.score)
@@ -263,20 +334,34 @@ async function main() {
       bestFor: p.synthesis.bestFor || [],
       redFlags: p.synthesis.redFlags || [],
     }));
-  fs.writeFileSync(LEADERBOARD_PATH, JSON.stringify({
+  const leaderboardArtifact = prepareJsonArtifact(LEADERBOARD_PATH, {
     generatedAt: new Date().toISOString(),
     totalRanked: ranked.length,
     plumbers: ranked,
-  }, null, 2));
-  console.log(`Wrote ${LEADERBOARD_PATH}`);
+  });
+  // Validate both sizes before touching either destination. Retain every field.
+  writeJsonArtifact(businessArtifact);
+  writeJsonArtifact(leaderboardArtifact);
+  console.log(
+    `Wrote ${JSON_PATH} (${(businessArtifact.bytes / 1048576).toFixed(2)} MiB)`,
+  );
+  console.log(
+    `Wrote ${LEADERBOARD_PATH} (${(leaderboardArtifact.bytes / 1048576).toFixed(2)} MiB)`,
+  );
 
   // Git commit + push
   if (!noPush) {
     try {
       const root = path.join(__dirname, "..");
-      execSync("git add data/synthesized/plumbers-synthesized.json data/synthesized/leaderboard.json", { cwd: root, stdio: "pipe" });
+      execSync(
+        "git add data/synthesized/plumbers-synthesized.json data/synthesized/leaderboard.json",
+        { cwd: root, stdio: "pipe" },
+      );
 
-      const diff = execSync("git diff --cached --stat", { cwd: root, encoding: "utf-8" });
+      const diff = execSync("git diff --cached --stat", {
+        cwd: root,
+        encoding: "utf-8",
+      });
       if (!diff.trim()) {
         console.log("No git changes detected.");
       } else {
@@ -292,7 +377,12 @@ async function main() {
         entity: "git-push",
         severity: "warn",
         message: `Git commit/push failed during Firestore export: ${err.message}`,
-        context: { stderr: err.stderr && err.stderr.toString ? err.stderr.toString() : undefined },
+        context: {
+          stderr:
+            err.stderr && err.stderr.toString
+              ? err.stderr.toString()
+              : undefined,
+        },
       });
     }
   }
@@ -300,7 +390,9 @@ async function main() {
   // Log to pipelineRuns collection
   if (!dryRun) {
     try {
-      const durationSeconds = Math.round((Date.now() - startedAt.getTime()) / 1000);
+      const durationSeconds = Math.round(
+        (Date.now() - startedAt.getTime()) / 1000,
+      );
       await db.collection("pipelineRuns").add({
         script: "export-json",
         phase: "publish",
@@ -363,18 +455,28 @@ function selectTopReviews(reviews, max = 15) {
   }
 
   // Sort by date descending (newest first) — treat empty dates as oldest
-  const byDate = [...reviews].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  const byDate = [...reviews].sort((a, b) =>
+    (b.date || "").localeCompare(a.date || ""),
+  );
 
   // 1. Up to 3 most recent 5-star reviews
-  pick(byDate.filter((r) => r.rating === 5), 3);
+  pick(
+    byDate.filter((r) => r.rating === 5),
+    3,
+  );
 
   // 2. Up to 2 most recent 1-2 star reviews
-  pick(byDate.filter((r) => r.rating <= 2 && r.rating > 0), 2);
+  pick(
+    byDate.filter((r) => r.rating <= 2 && r.rating > 0),
+    2,
+  );
 
   // 3. Fill remaining slots with longest reviews (most detailed), any rating
   const remaining = max - selected.length;
   if (remaining > 0) {
-    const byLength = [...reviews].sort((a, b) => (b.text || "").length - (a.text || "").length);
+    const byLength = [...reviews].sort(
+      (a, b) => (b.text || "").length - (a.text || "").length,
+    );
     pick(byLength, remaining);
   }
 
@@ -397,11 +499,16 @@ function buildJsonEntry(fd, placeId, reviews) {
     }),
     phone: fd.phone || "",
     website: fd.website || null,
-    address: fd.address?.full || `${fd.address?.city || ""}, ${fd.address?.state || ""}`,
+    address:
+      fd.address?.full ||
+      `${fd.address?.city || ""}, ${fd.address?.state || ""}`,
     city: fd.address?.city || "",
     state: fd.address?.state || "",
     region: fd.region || "",
-    location: (fd.address?.lat && fd.address?.lng) ? { lat: fd.address.lat, lng: fd.address.lng } : null,
+    location:
+      fd.address?.lat && fd.address?.lng
+        ? { lat: fd.address.lat, lng: fd.address.lng }
+        : null,
     googleRating: fd.googleRating || null,
     googleReviewCount: fd.googleReviewCount || 0,
     businessStatus: fd.businessStatus || "OPERATIONAL",
@@ -411,7 +518,8 @@ function buildJsonEntry(fd, placeId, reviews) {
     reviews: selectTopReviews(reviews || []),
     is24Hour: fd.is24Hour || false,
     workingHours: fd.workingHours || null,
-    scrapedAt: fd.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+    scrapedAt:
+      fd.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
     synthesis: buildSynthesis(fd),
     serviceCities: fd.serviceCities || [],
     ...(fd.bbb && { bbb: cleanBBB(fd.bbb) }),
@@ -446,7 +554,10 @@ function mergeFirestoreData(existing, fd, reviews) {
   }
 
   // Merge AI synthesis from Firestore if it exists
-  if (fd.reviewSynthesis?.aiSynthesizedAt || fd.reviewSynthesis?.synthesisVersion?.includes("outscraper")) {
+  if (
+    fd.reviewSynthesis?.aiSynthesizedAt ||
+    fd.reviewSynthesis?.synthesisVersion?.includes("outscraper")
+  ) {
     existing.synthesis = buildSynthesis(fd);
   }
 
@@ -493,7 +604,8 @@ function copyDecisionLayer(fd) {
   if (fd.scores) out.scores = fd.scores;
   if (fd.city_rank) out.city_rank = fd.city_rank;
   if (fd.decision) out.decision = fd.decision;
-  if (Array.isArray(fd.evidence_quotes)) out.evidence_quotes = fd.evidence_quotes;
+  if (Array.isArray(fd.evidence_quotes))
+    out.evidence_quotes = fd.evidence_quotes;
   return out;
 }
 
@@ -512,7 +624,8 @@ function flattenClaimsForExport(arr) {
   return arr
     .map((item) => {
       if (typeof item === "string") return item;
-      if (item && typeof item === "object" && typeof item.text === "string") return item.text;
+      if (item && typeof item === "object" && typeof item.text === "string")
+        return item.text;
       return null;
     })
     .filter((s) => typeof s === "string" && s.length > 0);
@@ -524,7 +637,12 @@ function buildSynthesis(fd) {
 
   return {
     score: fd.reliabilityScore || 0,
-    trustLevel: fd.reliabilityScore >= 70 ? "high" : fd.reliabilityScore >= 40 ? "moderate" : "low",
+    trustLevel:
+      fd.reliabilityScore >= 70
+        ? "high"
+        : fd.reliabilityScore >= 40
+          ? "moderate"
+          : "low",
     summary: rs.summary || "",
     strengths: flattenClaimsForExport(rs.strengths),
     weaknesses: flattenClaimsForExport(rs.weaknesses),
@@ -538,11 +656,25 @@ function buildSynthesis(fd) {
     // Structured-claim form (added 2026-05-22): each strength/weakness/red-flag
     // carries the review_ids that ground it. Only emit when populated — older
     // synthesis versions don't have these.
-    ...(Array.isArray(rs.strengthsEvidence) && rs.strengthsEvidence.length > 0 && { strengthsEvidence: rs.strengthsEvidence }),
-    ...(Array.isArray(rs.weaknessesEvidence) && rs.weaknessesEvidence.length > 0 && { weaknessesEvidence: rs.weaknessesEvidence }),
-    ...(Array.isArray(rs.redFlagsEvidence) && rs.redFlagsEvidence.length > 0 && { redFlagsEvidence: rs.redFlagsEvidence }),
-    ...(rs.platformDiscrepancy && { platformDiscrepancy: rs.platformDiscrepancy }),
-    ...(rs.servicesMentioned && Object.keys(rs.servicesMentioned).length > 0 && { servicesMentioned: rs.servicesMentioned }),
+    ...(Array.isArray(rs.strengthsEvidence) &&
+      rs.strengthsEvidence.length > 0 && {
+        strengthsEvidence: rs.strengthsEvidence,
+      }),
+    ...(Array.isArray(rs.weaknessesEvidence) &&
+      rs.weaknessesEvidence.length > 0 && {
+        weaknessesEvidence: rs.weaknessesEvidence,
+      }),
+    ...(Array.isArray(rs.redFlagsEvidence) &&
+      rs.redFlagsEvidence.length > 0 && {
+        redFlagsEvidence: rs.redFlagsEvidence,
+      }),
+    ...(rs.platformDiscrepancy && {
+      platformDiscrepancy: rs.platformDiscrepancy,
+    }),
+    ...(rs.servicesMentioned &&
+      Object.keys(rs.servicesMentioned).length > 0 && {
+        servicesMentioned: rs.servicesMentioned,
+      }),
   };
 }
 
@@ -569,7 +701,9 @@ main()
   .then((result) => {
     // Output affected cities as JSON for callers to parse
     if (result.affectedCities.length > 0) {
-      console.log(`\n__AFFECTED_CITIES__:${JSON.stringify(result.affectedCities)}`);
+      console.log(
+        `\n__AFFECTED_CITIES__:${JSON.stringify(result.affectedCities)}`,
+      );
     }
   })
   .catch((err) => {

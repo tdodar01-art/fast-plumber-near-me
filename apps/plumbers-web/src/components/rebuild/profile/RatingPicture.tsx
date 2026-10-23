@@ -28,7 +28,7 @@ export default function RatingPicture({
           <div className="panel">
             <RatingMix mix={mix} googleReviewCount={googleReviewCount} />
             {newestLabel && (
-              <p className="caption num">Newest review in our sample: {newestLabel}.</p>
+              <p className="caption num">Newest available review evidence: {newestLabel}.</p>
             )}
           </div>
         )}

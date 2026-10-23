@@ -49,8 +49,8 @@ export default function MethodologyBlock({
         Every quotation on this page is reproduced <b>verbatim</b> from a publicly posted review
         and attributed to its author, star rating, platform and date. Star averages and review
         counts are Google&apos;s (or Yelp&apos;s) as of our last data pull. &ldquo;Rating
-        mix&rdquo; charts describe only the set of reviews we analyzed, which we state on every
-        card. Read the full policy — including what we do <b>not</b> do — on{" "}
+        mix&rdquo; charts describe selected excerpts, chosen for recency, detail, and a range of
+        ratings. They do not represent all reviews or the full analysis sample. Read the full policy — including what we do <b>not</b> do — on{" "}
         <Link href="/methodology">our methodology page</Link>.
       </div>
     </section>

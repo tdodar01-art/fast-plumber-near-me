@@ -99,13 +99,13 @@ export const TIER_HEADINGS: Record<
 };
 
 // ---------------------------------------------------------------------------
-// Rating mix — computed strictly over the analyzed review set we hold (C10).
+// Rating mix — selected exported excerpts, not the full analysis population.
 // ---------------------------------------------------------------------------
 
 export interface RatingMixData {
   /** counts[0] = 1★ … counts[4] = 5★ */
   counts: [number, number, number, number, number];
-  /** Size of the analyzed set the bars describe. */
+  /** Number of selected exported reviews the bars describe. */
   analyzed: number;
   /** True when analyzed < 10 → render the small-sample caveat. */
   smallSample: boolean;
@@ -258,7 +258,7 @@ export function formatMonthYear(iso: string | null | undefined): string | null {
   if (!iso) return null;
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  return d.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
 }
 
 /** Verbatim-or-ellipsized trim at a word boundary (quotes may only be trimmed with ellipses). */
@@ -359,7 +359,7 @@ export function quotePair(p: SynthesizedPlumber): QuotePairData {
   const absenceNote =
     negative == null
       ? analyzed > 0
-        ? `No critical reviews among the ${analyzed} we analyzed — there is nothing negative to quote yet.`
+        ? `No critical review is available among these ${analyzed} selected excerpts. This does not mean the business has no complaints.`
         : "We haven't analyzed enough of this plumber's reviews to quote a critical take."
       : null;
 
@@ -376,12 +376,17 @@ export function reviewsReadCount(p: SynthesizedPlumber): number {
 }
 
 export function newestReviewLabel(p: SynthesizedPlumber): string | null {
-  const newest = (p.reviews ?? [])
-    .map((r) => r.time)
-    .filter(Boolean)
-    .sort()
-    .pop();
-  return formatMonthYear(newest ?? null);
+  // Evidence quotes can be newer than the selected review excerpts. Compare
+  // parsed timestamps, ignoring invalid values rather than sorting date strings.
+  const dates = [
+    ...(p.reviews ?? []).map((r) => r.time),
+    ...(p.evidence_quotes ?? []).map((q) => q.published_at),
+  ].flatMap((value) => {
+    if (!value) return [];
+    const timestamp = new Date(value).getTime();
+    return Number.isFinite(timestamp) ? [timestamp] : [];
+  });
+  return dates.length ? formatMonthYear(new Date(Math.max(...dates)).toISOString()) : null;
 }
 
 export function distanceMiles(

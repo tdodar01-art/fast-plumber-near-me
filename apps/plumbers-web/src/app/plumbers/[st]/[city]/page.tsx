@@ -1,3 +1,5 @@
+import CuratedShortlist from "@/components/curated/CuratedShortlist";
+import { shortlistData } from "@/lib/shortlist-data";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -13,18 +15,19 @@ import {
 import { isIndexableMarket } from "@/lib/indexable";
 import type { SynthesizedPlumber } from "@/lib/plumber-data";
 import { absoluteUrl } from "@/config/plumbing-routes";
-import { breadcrumbLd, homeCrumbs, plumberItemListLd, jsonLdString } from "@/lib/schema";
+import {
+  breadcrumbLd,
+  homeCrumbs,
+  plumberItemListLd,
+  jsonLdString,
+} from "@/lib/schema";
 import { fitTitle, fitDescription, ogImagePath } from "@/lib/meta";
-import { composeCityIntro } from "@/lib/city-intro";
 import {
   cardEvidence,
   reviewsReadCount,
-  telHref,
   splitRanked,
   tierGroups,
 } from "@/lib/report-card";
-import ReportHeader from "@/components/rebuild/ReportHeader";
-import TriageStrip from "@/components/rebuild/TriageStrip";
 import SponsoredSlot from "@/components/rebuild/SponsoredSlot";
 import RankTier from "@/components/rebuild/RankTier";
 import PlumberReportCard from "@/components/rebuild/PlumberReportCard";
@@ -32,7 +35,6 @@ import UnrankedRow from "@/components/rebuild/UnrankedRow";
 import MethodologyBlock from "@/components/rebuild/MethodologyBlock";
 import AreasServed from "@/components/rebuild/AreasServed";
 import NearbyMarkets from "@/components/rebuild/NearbyMarkets";
-import StickyCallBar from "@/components/rebuild/StickyCallBar";
 import { TriangleIcon, OctagonIcon } from "@/components/rebuild/icons";
 
 interface Props {
@@ -60,12 +62,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // C8: 01's title formula, measured <=60 with real shorter fallbacks.
   const title = fitTitle(
-    `${ranked.length} Best Plumbers in ${market.name}, ${ST} — Ranked by Real Reviews`,
-    `${ranked.length} Best Plumbers in ${market.name}, ${ST} — Ranked by Reviews`,
-    `${ranked.length} Best Plumbers in ${market.name}, ${ST}`,
+    `Plumbers in ${market.name}, ${ST} — Who Should You Call?`,
+    `Plumbers in ${market.name}, ${ST} — Compare Your Options`,
+    `Plumbers in ${market.name}, ${ST}`,
   );
   const description = fitDescription(
-    `We read ${reviewsRead.toLocaleString()} reviews of ${market.counts.plumbers} plumbers serving ${market.name}, ${stateName} and ranked the top ${ranked.length}. Includes what reviewers complain about.`,
+    `Compare plumbers near ${market.name}, ${stateName} by job evidence, pricing concerns, and reliability. ${reviewsRead.toLocaleString()} reviews analyzed across ${ranked.length} detailed directory assessments.`,
   );
   const canonical = absoluteUrl(`/plumbers/${market.st}/${market.slug}`);
 
@@ -95,7 +97,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * @id -> profile URL, telephone, PostalAddress, GeoCoordinates, openingHours,
  * areaServed GeoCircle, sameAs). No FAQPage, no Review/AggregateRating (C1).
  */
-function marketJsonLd(market: Market, ranked: SynthesizedPlumber[], stateName: string) {
+function marketJsonLd(
+  market: Market,
+  ranked: SynthesizedPlumber[],
+  stateName: string,
+) {
   return [
     breadcrumbLd([
       ...homeCrumbs(),
@@ -115,7 +121,12 @@ function complaintItems(
   ranked: SynthesizedPlumber[],
   ranks: Map<string, number>,
 ): { name: string; anchor: string; text: string; severe: boolean }[] {
-  const items: { name: string; anchor: string; text: string; severe: boolean }[] = [];
+  const items: {
+    name: string;
+    anchor: string;
+    text: string;
+    severe: boolean;
+  }[] = [];
   for (const p of ranked) {
     const ev = cardEvidence(p);
     for (const c of ev.concerns) {
@@ -147,115 +158,156 @@ export default async function MarketPage({ params }: Props) {
   const displayOrder = groups.flatMap((g) => g.plumbers);
   const ranks = new Map(displayOrder.map((p, i) => [p.placeId, i + 1]));
 
-  const intro = composeCityIntro(market, allPlumbers);
   const nearby = nearbyMarkets(market, 6);
   const radiusMiles = getMarketsMeta().radiusMiles;
-  const center = { lat: market.lat, lng: market.lng, label: `downtown ${market.name}` };
+  const center = {
+    lat: market.lat,
+    lng: market.lng,
+    label: `downtown ${market.name}`,
+  };
 
   const reviewsReadTotal = ranked.reduce((s, p) => s + reviewsReadCount(p), 0);
   const lastmodDate = new Date(market.lastmod);
   const updatedLabel = Number.isNaN(lastmodDate.getTime())
     ? null
-    : lastmodDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    : lastmodDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
 
-  const first24 = displayOrder.find((p) => p.is24Hour);
-  const triageAnchor = first24 ? `pick-${ranks.get(first24.placeId)}` : null;
-  const top = displayOrder[0];
   const complaints = complaintItems(displayOrder, ranks);
 
   return (
     <div className="fpn">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdString(marketJsonLd(market, displayOrder, stateName)) }}
+        dangerouslySetInnerHTML={{
+          __html: jsonLdString(marketJsonLd(market, displayOrder, stateName)),
+        }}
       />
-      <main className="wrap">
-        <ReportHeader
-          crumbs={[
-            { label: "Plumbers", href: "/plumbers" },
-            { label: stateName, href: `/plumbers/${market.st}` },
-            { label: market.name },
-          ]}
-          h1={`The ${ranked.length} plumbers serving ${market.name}, ranked.`}
-          dekHtmlSentences={intro.dek}
-          introMore={intro.more}
-          updatedLabel={updatedLabel}
-          radiusLabel={`${radiusMiles}-mile radius of downtown ${market.name}`}
-          reviewsReadTotal={reviewsReadTotal}
-          businessesRead={ranked.length}
+      <div className="wrap">
+        <header className="curated-market-intro">
+          <nav className="crumbs" aria-label="Breadcrumb">
+            <Link href="/plumbers">Find a plumber</Link> /{" "}
+            <Link href={`/plumbers/${market.st}`}>{stateName}</Link> /{" "}
+            <span>{market.name}</span>
+          </nav>
+          <span className="eyebrow">LOCAL OPTIONS. A HIGHER STANDARD.</span>
+          <h1>
+            A good plumber in {market.name}.<br />
+            <em>For the right reasons.</em>
+          </h1>
+          <p>
+            Start with fair-dealing evidence and job fit. Compare a short list,
+            read the reservations, and call directly.
+          </p>
+          <div className="market-scope">
+            {allPlumbers.length} directory records considered · Within{" "}
+            {radiusMiles} miles of downtown {market.name} · Coverage must be
+            confirmed
+            {updatedLabel ? ` · Directory updated ${updatedLabel}` : ""}
+          </div>
+        </header>
+
+        <CuratedShortlist
+          candidates={allPlumbers.map(shortlistData)}
+          city={market.name}
+          state={market.st.toUpperCase()}
         />
 
-        <TriageStrip anchorId={triageAnchor} count24h={market.counts.emergency} />
+<p className="shortlist-afterhours"><a href="#job=any&urgency=after-hours">Need an after-hours option? Filter the shortlist →</a></p>
 
         {market.hasEmergencyPage && (
           <p style={{ marginTop: 10, fontSize: 14 }}>
             Only need the after-hours list?{" "}
             <Link href={`/plumbers/${market.st}/${market.slug}/emergency`}>
-              See the 24/7 plumbers serving {market.name} →
+              Browse the full after-hours directory (business-stated hours) →
             </Link>
           </p>
         )}
 
-        {/* Sponsored slot — renders nothing while unsold (no placeholder on the money page). */}
-        <SponsoredSlot sponsor={null} center={center} />
+        <details className="full-directory" id="full-directory">
+          <summary>
+            Explore the full directory{" "}
+            <span>
+              {allPlumbers.length} records · {ranked.length} detailed
+              assessments
+            </span>
+          </summary>
+          <p className="directory-disclosure">
+            These are existing directory assessments, with different evidence
+            depth. Inclusion here does not mean a business meets the shortlist’s
+            fair-dealing standard.
+          </p>
+          {/* Sponsored slot — renders nothing while unsold (no placeholder on the money page). */}
+          <SponsoredSlot sponsor={null} center={center} />
 
-        {groups.map((g) => (
-          <RankTier key={g.tier} tier={g.tier}>
-            {g.plumbers.map((p) => (
-              <PlumberReportCard
-                key={p.placeId}
-                plumber={p}
-                rank={ranks.get(p.placeId)}
-                center={center}
-                anchorId={`pick-${ranks.get(p.placeId)}`}
-              />
-            ))}
-          </RankTier>
-        ))}
-
-        {unranked.length > 0 && (
-          <section className="unranked">
-            <div className="tier-head">
-              <h2>Also serving {market.name} — not enough reviews to rank</h2>
-            </div>
-            <p className="unranked-note">
-              We don&apos;t rank a plumber until we&apos;ve read enough reviews to have an opinion.
-              Ratings below are Google&apos;s, not ours.
-            </p>
-            {unranked.map((p) => (
-              <UnrankedRow key={p.placeId} plumber={p} center={center} />
-            ))}
-          </section>
-        )}
-
-        {complaints.length > 0 && (
-          <section className="complaints">
-            <h2>What reviewers complain about in {market.name}</h2>
-            <p style={{ marginTop: 6, fontSize: 14, color: "var(--ink-2)" }}>
-              The repeated complaint patterns our read surfaced, business by business — each links
-              to the card where the supporting quotes live.{" "}
-              <Link href="/methodology">How we find these →</Link>
-            </p>
-            <ul>
-              {complaints.map((c, i) => (
-                <li key={i}>
-                  {c.severe ? (
-                    <OctagonIcon size={15} style={{ color: "var(--bad)", flex: "none" }} />
-                  ) : (
-                    <TriangleIcon size={15} style={{ color: "var(--warn)", flex: "none" }} />
-                  )}
-                  <span>
-                    <a className="who" href={`#${c.anchor}`}>
-                      {c.name}
-                    </a>
-                    {" — "}
-                    {c.text}
-                  </span>
-                </li>
+          {groups.map((g) => (
+            <RankTier key={g.tier} tier={g.tier}>
+              {g.plumbers.map((p) => (
+                <PlumberReportCard
+                  key={p.placeId}
+                  plumber={p}
+                  rank={ranks.get(p.placeId)}
+                  center={center}
+                  anchorId={`pick-${ranks.get(p.placeId)}`}
+                />
               ))}
-            </ul>
-          </section>
-        )}
+            </RankTier>
+          ))}
+
+          {unranked.length > 0 && (
+            <section className="unranked">
+              <div className="tier-head">
+                <h2>Also serving {market.name} — not enough reviews to rank</h2>
+              </div>
+              <p className="unranked-note">
+                We don&apos;t rank a plumber until we&apos;ve read enough
+                reviews to have an opinion. Ratings below are Google&apos;s, not
+                ours.
+              </p>
+              {unranked.map((p) => (
+                <UnrankedRow key={p.placeId} plumber={p} center={center} />
+              ))}
+            </section>
+          )}
+
+          {complaints.length > 0 && (
+            <section className="complaints">
+              <h2>What reviewers complain about in {market.name}</h2>
+              <p style={{ marginTop: 6, fontSize: 14, color: "var(--ink-2)" }}>
+                The repeated complaint patterns our read surfaced, business by
+                business — each links to the card where the supporting quotes
+                live. <Link href="/methodology">How we find these →</Link>
+              </p>
+              <ul>
+                {complaints.map((c, i) => (
+                  <li key={i}>
+                    {c.severe ? (
+                      <OctagonIcon
+                        size={15}
+                        style={{ color: "var(--bad)", flex: "none" }}
+                      />
+                    ) : (
+                      <TriangleIcon
+                        size={15}
+                        style={{ color: "var(--warn)", flex: "none" }}
+                      />
+                    )}
+                    <span>
+                      <a className="who" href={`#${c.anchor}`}>
+                        {c.name}
+                      </a>
+                      {" — "}
+                      {c.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </details>
 
         <MethodologyBlock
           cityName={market.name}
@@ -263,19 +315,13 @@ export default async function MarketPage({ params }: Props) {
           businessesRead={ranked.length}
         />
 
-        <AreasServed cityName={market.name} clusterCities={market.clusterCities} />
+        <AreasServed
+          cityName={market.name}
+          clusterCities={market.clusterCities}
+        />
 
         <NearbyMarkets nearby={nearby} />
-      </main>
-
-      {top?.phone && (
-        <StickyCallBar
-          name={top.name}
-          telHref={telHref(top.phone)}
-          targetId={`pick-${ranks.get(top.placeId)}`}
-          is24Hour={top.is24Hour}
-        />
-      )}
+      </div>
     </div>
   );
 }

@@ -211,3 +211,8 @@ The experiments system is already split brain/body across repos. The engine (jud
 ---
 
 **However:** Follow the Monorepo Extensibility Principle — avoid baking "plumber" into generic concepts, keep vertical-specific prompts/config in named files, and flag items for this doc as they're built. When the second directory arrives, this doc is the extraction map.
+
+
+## October 23 curation follow-up
+
+Generic candidates for a second vertical: compact/bounded JSON artifact preparation and size guards (scripts/lib/json-artifact.js), shortlist evidence-confidence and operational/freshness gating. Keep these in the plumbing app until a second directory validates the abstraction. Plumbing job categories and call questions remain vertical configuration.

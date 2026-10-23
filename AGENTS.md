@@ -1,7 +1,7 @@
 @ROADMAP.md
 
 ## Start Here
-- **Strategy:** Read `docs/plans/STRATEGY-BRIEF.md` first — it defines the three active tracks, what's shipped, and what's next.
+- **Strategy:** Read `docs/plans/NATIONAL-UTILITY-PLAN.md` first for current product priorities. The April `STRATEGY-BRIEF.md` is historical; the July rebuild spec remains the architectural baseline.
 - **Cross-project status and session logs:** Live in `~/code/control-center/`, not here.
 - **Archived plans:** `docs/plans/archive/` — superseded by the strategy brief.
 
