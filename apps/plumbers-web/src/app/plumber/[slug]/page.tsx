@@ -289,8 +289,8 @@ export default async function PlumberProfilePage({
             {honesty && <p className="pf-honesty">{honesty}</p>}
             {smallSample && syn && (
               <p className="pf-honesty">
-                Only {mix.analyzed} review{mix.analyzed === 1 ? "" : "s"} analyzed — treat this
-                assessment as a first impression, not a track record.
+                Only {mix.analyzed} selected review excerpt{mix.analyzed === 1 ? "" : "s"} available here.
+                The analysis count above describes a separate set.
               </p>
             )}
 
@@ -305,7 +305,7 @@ export default async function PlumberProfilePage({
             )}
 
             {/* ============ CONCERNS (equal-or-greater weight, never collapsed) ============ */}
-            {claims && (
+            {verdict && claims && (
               <section aria-labelledby="concerns-h" className="pf-section">
                 <h2 id="concerns-h">What reviewers report — the concerns</h2>
                 {claims.concerns.length > 0 ? (
@@ -347,7 +347,7 @@ export default async function PlumberProfilePage({
             />
 
             {/* ============ DECISION GRID ============ */}
-            {p.decision && <DecisionGrid decision={p.decision} name={p.name} />}
+            {verdict && p.decision && <DecisionGrid decision={p.decision} name={p.name} />}
 
             {/* Facts panel lands here in the mobile flow (03 §3): rendered in
                 the rail on desktop via CSS order, single column on mobile. */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { ZIP_PREFIX_COORDS } from "@/lib/zip-prefixes";
 import { SearchIcon } from "./icons";
@@ -19,13 +19,20 @@ export interface SearchMarket {
   emergency: number;
 }
 
-function haversineMiles(lat1: number, lon1: number, lat2: number, lon2: number): number {
+function haversineMiles(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+): number {
   const R = 3959;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
@@ -53,8 +60,10 @@ interface Suggestion {
 export default function MarketSearch({
   markets,
   initFromUrlQuery = false,
+  routeFragment = "",
 }: {
   markets: SearchMarket[];
+  routeFragment?: string;
   /**
    * Read ?q= from the URL on mount and prefill the search (used on /plumbers,
    * the WebSite SearchAction target). Client-only — the page itself stays
@@ -63,17 +72,31 @@ export default function MarketSearch({
   initFromUrlQuery?: boolean;
 }) {
   const router = useRouter();
-  const [query, setQuery] = useState("");
+  const urlQuery = useSyncExternalStore(
+    (listener) => {
+      window.addEventListener("popstate", listener);
+      return () => window.removeEventListener("popstate", listener);
+    },
+    () =>
+      initFromUrlQuery
+        ? (new URLSearchParams(window.location.search).get("q") ?? "").slice(
+            0,
+            80,
+          )
+        : "",
+    () => "",
+  );
+  const [editedQuery, setQuery] = useState<string | null>(null);
+  const query = editedQuery ?? urlQuery;
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!initFromUrlQuery) return;
-    const q = new URLSearchParams(window.location.search).get("q");
-    if (q) setQuery(q.slice(0, 80));
-  }, [initFromUrlQuery]);
-
   const normalized = useMemo(
-    () => markets.map((m) => ({ m, norm: normalize(m.name), full: `${normalize(m.name)}, ${m.st}` })),
+    () =>
+      markets.map((m) => ({
+        m,
+        norm: normalize(m.name),
+        full: `${normalize(m.name)}, ${m.st}`,
+      })),
     [markets],
   );
 
@@ -87,7 +110,10 @@ export default function MarketSearch({
       if (!coords) return [];
       const [lat, lng] = coords;
       return markets
-        .map((m) => ({ market: m, distanceMiles: haversineMiles(lat, lng, m.lat, m.lng) }))
+        .map((m) => ({
+          market: m,
+          distanceMiles: haversineMiles(lat, lng, m.lat, m.lng),
+        }))
         .sort((a, b) => a.distanceMiles - b.distanceMiles)
         .slice(0, 5);
     }
@@ -97,7 +123,8 @@ export default function MarketSearch({
     const starts: Suggestion[] = [];
     const includes: Suggestion[] = [];
     for (const { m, norm, full } of normalized) {
-      if (norm.startsWith(nq) || full.startsWith(nq)) starts.push({ market: m });
+      if (norm.startsWith(nq) || full.startsWith(nq))
+        starts.push({ market: m });
       else if (norm.includes(nq)) includes.push({ market: m });
       if (starts.length >= 8) break;
     }
@@ -105,7 +132,7 @@ export default function MarketSearch({
   }, [query, markets, normalized]);
 
   const go = (m: SearchMarket) => {
-    router.push(`/plumbers/${m.st}/${m.slug}`);
+    router.push(`/plumbers/${m.st}/${m.slug}${routeFragment}`);
   };
 
   const onSubmit = (e: React.FormEvent) => {
@@ -123,8 +150,8 @@ export default function MarketSearch({
   return (
     <form className="searchbox" role="search" onSubmit={onSubmit}>
       <p className="search-help">
-        Enter your city or zip. We&apos;ll show every plumber within 20 miles, ranked by our read
-        of their reviews.
+        Search a city or ZIP to find a nearby guide. ZIP matches use an
+        approximate area; confirm the business serves your address.
       </p>
       <div className="search-row">
         <input
@@ -141,7 +168,7 @@ export default function MarketSearch({
         />
         <button type="submit">
           <SearchIcon size={18} />
-          Find plumbers
+          Build my shortlist
         </button>
       </div>
       {suggestions.length > 0 && (
@@ -158,8 +185,12 @@ export default function MarketSearch({
               </span>
               <span className="sug-meta num">
                 {s.market.plumbers} plumbers
-                {s.market.emergency > 0 ? ` · ${s.market.emergency} list 24/7` : ""}
-                {s.distanceMiles != null ? ` · ${Math.round(s.distanceMiles)} mi` : ""}
+                {s.market.emergency > 0
+                  ? ` · ${s.market.emergency} list 24/7`
+                  : ""}
+                {s.distanceMiles != null
+                  ? ` · ${Math.round(s.distanceMiles)} mi`
+                  : ""}
               </span>
             </button>
           ))}

@@ -14,7 +14,7 @@ export default function AreasServed({
     <section className="areas">
       <h2>Areas served</h2>
       <p>
-        The plumbers on this page also serve {clusterCities.join(", ")} — this {cityName} guide
+        Nearby communities grouped into this guide include {clusterCities.join(", ")} — this {cityName} guide
         covers those areas.
       </p>
     </section>

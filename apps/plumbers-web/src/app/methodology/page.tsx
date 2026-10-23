@@ -60,9 +60,23 @@ export default function MethodologyPage() {
           works, what we do not do, and how to reach us if we got something wrong.
         </p>
         <p className="stamp">
-          <em>Last updated: July 11, 2026. This page changes when our process does.</em>
+          <em>Last updated: October 23, 2026. This page changes when our process does.</em>
         </p>
 
+        <section id="shortlist-standard">
+          <h2>The curated shortlist: fair dealing comes first</h2>
+          <p>Our job-specific shortlist uses a stricter bar than the full directory: at least 10 analyzed
+            reviews, three attributed evidence quotes, and a fair-dealing claim supported by two
+            distinct available quotes. We look for clear estimates, honest pricing, repair advice,
+            and no-pressure service.</p>
+          <p>Repeated sales-pressure, surprise-fee, or unnecessary-work concerns supported by two
+            available cited quotes hold a business out. Existing unresolved red flags also require editorial review before inclusion. We prioritize fair-dealing evidence, pricing
+            fairness, reliability, job mentions, and editorial score. Stars and sponsorship cannot buy inclusion.</p>
+          <p>These automated, review-based suggestions are not inspections or proof of conduct.
+            Missing evidence means we cannot recommend yet, not that a business is bad. The full
+            directory uses older, different assessment criteria. Confirm current prices, coverage,
+            and availability directly.</p>
+        </section>
         <h2>What we do</h2>
 
         <h3>1. We aggregate public reviews.</h3>
@@ -114,8 +128,9 @@ export default function MethodologyPage() {
           A written complaint usually represents more than one unhappy customer — most people
           never write the review. So when reviews show a repeated concern (no-shows, surprise
           fees, unreturned calls, failed inspections), it appears on the plumber&apos;s card,
-          above the fold, with the quotes behind it. We also show each plumber&apos;s full rating
-          distribution, not a cherry-picked average.
+          above the fold, with the quotes behind it. Rating charts show only the selected review excerpts available on the site,
+          chosen for recency, detail, and a range of ratings. They are not a representative
+          distribution of all reviews or the full analysis sample.
         </p>
 
         <h2 id="what-we-do-not-do" className="anchor-target">
