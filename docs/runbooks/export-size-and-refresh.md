@@ -4,7 +4,7 @@ October 23, 2026.
 
 Firestore remains the source of truth. export-firestore-to-json.js remains the only entry point that writes the business and leaderboard artifacts. JSON whitespace is not evidence; compact serialization retains all values and fields.
 
-- Business artifact before: 97.45 MiB; lossless compact result: 76.83 MiB.
+- Initial business artifact: 97.45 MiB; lossless compact result: 76.83 MiB. After integrating newer main data, the current compact artifact is 78.57 MiB with 6,437 businesses; every upstream field was retained.
 - The previous failed August publishing run exceeded GitHub's 100 MiB hard limit.
 - Export preparation rejects artifacts over 90 MiB before replacing existing files. Both business and leaderboard serializations are validated before either is written; individual replacement uses a same-directory temporary file and rename.
 - CI preflight checks compact size against 80 MiB before paid ingestion (10 MiB reserve below the export ceiling). A second actual-file size check precedes commits in daily/safety workflows. Deep-review publishing runs the exporter's size checks before its internal commit.

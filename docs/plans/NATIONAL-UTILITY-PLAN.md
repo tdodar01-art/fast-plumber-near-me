@@ -80,3 +80,7 @@ Fixed the legacy business adapter with complete typed fields and real Timestamp 
 Compacted both derived artifacts through the sole exporter without changing any JSON values (97.45 → 76.83 MiB business artifact); added atomic replacement, a 90 MiB export ceiling and 80 MiB pre-ingestion guard. Workflows remain disabled. See ../runbooks/export-size-and-refresh.md.
 
 Hardened shortlist eligibility for known sources, valid dates, positive supporting quotes, operational status and quote evidence in the past year. Current coverage: 97/693 markets. MPT research is recorded in ../research/2026-10-23-mpt-plumbing.md; first-hand job detail is pending. No paid ingestion, outreach, Firestore writes or production deploy performed.
+
+### Integration with newer main data
+
+Resolved the PR's two generated-JSON conflicts by retaining latest main data and compacting it through the sole exporter. Semantic comparison with origin/main confirms every upstream field retained: 6,437 businesses, 78.57 MiB business artifact. Final build passes type checking and generates 7,585 pages; all 13 tests pass. Updated qualifying-market count: 99 of 693. Pipeline preflight still passes, but at 78.57 MiB there is limited headroom below the 80 MiB pre-ingestion threshold; shard planning remains necessary before broad growth.
