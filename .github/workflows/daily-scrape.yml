@@ -32,6 +32,9 @@ jobs:
           node-version: '20'
           cache: pnpm
 
+      - name: Check export capacity before ingestion
+        run: node scripts/check-artifact-sizes.js --preflight
+
       - name: Install dependencies
         working-directory: .
         run: pnpm install --filter plumbers-web --frozen-lockfile
@@ -153,6 +156,9 @@ jobs:
       # GSC queue, and rebuilt JSON. cities-generated.ts + city-coverage.ts are
       # included so the sitemap reflects newly-discovered cities and newly-
       # covered city × service combos on the next Vercel rebuild.
+      - name: Check publish artifact sizes
+        run: node scripts/check-artifact-sizes.js
+
       - name: Commit and push
         working-directory: .
         run: |

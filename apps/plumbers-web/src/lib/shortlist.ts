@@ -61,6 +61,8 @@ export interface ShortlistCandidate {
   googleCount: number;
   analyzed: number;
   quotes: number;
+  evidenceCurrent: boolean;
+  active: boolean;
   is24Hour: boolean;
   verdict: string | null;
   score: number;
@@ -90,6 +92,8 @@ export function selectShortlist(
     .filter(
       (p) =>
         p.phone &&
+        p.active &&
+        p.evidenceCurrent &&
         p.verdict !== "avoid" &&
         p.analyzed >= 10 &&
         p.quotes >= 3 &&

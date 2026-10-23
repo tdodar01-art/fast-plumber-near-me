@@ -1,4 +1,5 @@
 import fs from "fs";
+import { Timestamp } from "firebase/firestore";
 import path from "path";
 import { calculateDistance } from "./geo";
 import { getCityCoordBySlug } from "./city-coords";
@@ -28,10 +29,22 @@ export interface ServiceMention {
 }
 
 export type ServiceCategory =
-  | "burst-pipe" | "flooding" | "sewer" | "gas-leak" | "water-heater"
-  | "toilet" | "sump-pump" | "drain-cleaning" | "water-line" | "slab-leak"
-  | "garbage-disposal" | "faucet-fixture" | "backflow" | "repiping"
-  | "water-softener" | "bathroom-remodel";
+  | "burst-pipe"
+  | "flooding"
+  | "sewer"
+  | "gas-leak"
+  | "water-heater"
+  | "toilet"
+  | "sump-pump"
+  | "drain-cleaning"
+  | "water-line"
+  | "slab-leak"
+  | "garbage-disposal"
+  | "faucet-fixture"
+  | "backflow"
+  | "repiping"
+  | "water-softener"
+  | "bathroom-remodel";
 
 export interface PlumberSynthesis {
   score: number;
@@ -117,7 +130,8 @@ let cachedData: SynthesizedData | null = null;
  * untouched — a launch-time scan confirmed they carry no such leak. The
  * durable fix is pipeline-side: keep score context out of synthesis prose.
  */
-const INTERNAL_METRIC_RE = /reliability\s+scores?|answer\s+rate|verification\s+status/i;
+const INTERNAL_METRIC_RE =
+  /reliability\s+scores?|answer\s+rate|verification\s+status/i;
 
 function scrubProse(text: string): string {
   if (!INTERNAL_METRIC_RE.test(text)) return text;
@@ -142,7 +156,8 @@ function scrubSynthesis(syn: PlumberSynthesis): void {
   syn.redFlagsEvidence = dropLeakyClaims(syn.redFlagsEvidence);
   if (syn.summary) syn.summary = scrubProse(syn.summary);
   if (syn.emergencyNotes) syn.emergencyNotes = scrubProse(syn.emergencyNotes);
-  if (syn.platformDiscrepancy) syn.platformDiscrepancy = scrubProse(syn.platformDiscrepancy);
+  if (syn.platformDiscrepancy)
+    syn.platformDiscrepancy = scrubProse(syn.platformDiscrepancy);
 }
 
 function loadData(): SynthesizedData {
@@ -151,7 +166,7 @@ function loadData(): SynthesizedData {
     process.cwd(),
     "data",
     "synthesized",
-    "plumbers-synthesized.json"
+    "plumbers-synthesized.json",
   );
   const raw = fs.readFileSync(filePath, "utf-8");
   const parsed: SynthesizedData = JSON.parse(raw);
@@ -236,7 +251,7 @@ export function resolveLegacySlug(oldSlug: string): string | undefined {
 
 export function getPlumbersRanked(): SynthesizedPlumber[] {
   return [...loadData().plumbers].sort(
-    (a, b) => (b.synthesis?.score ?? 0) - (a.synthesis?.score ?? 0)
+    (a, b) => (b.synthesis?.score ?? 0) - (a.synthesis?.score ?? 0),
   );
 }
 
@@ -259,13 +274,25 @@ export function getDataMeta() {
 /**
  * Map a synthesized plumber to the Plumber type used by city pages.
  */
-function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { distanceMiles?: number; latestReviewAt?: string } {
+function toPlumber(
+  p: SynthesizedPlumber,
+  distanceMiles?: number,
+): Plumber & { distanceMiles?: number; latestReviewAt?: string } {
   const syn = p.synthesis;
-  const latestReviewAt = (p.reviews || [])
-    .map(r => r.time)
-    .filter(Boolean)
-    .sort()
-    .reverse()[0] || undefined;
+  const toTimestamp = (value: string | undefined): Timestamp => {
+    const date = value ? new Date(value) : new Date(0);
+    return Timestamp.fromDate(
+      Number.isFinite(date.getTime()) ? date : new Date(0),
+    );
+  };
+  const scrapedAt = toTimestamp(p.scrapedAt);
+  const analysisAt = toTimestamp(p.scores?.last_scored_at ?? p.scrapedAt);
+  const latestReviewAt =
+    (p.reviews || [])
+      .map((r) => r.time)
+      .filter(Boolean)
+      .sort()
+      .reverse()[0] || undefined;
   return {
     id: p.placeId,
     businessName: p.name,
@@ -305,12 +332,22 @@ function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { d
     googleReviewCount: p.googleReviewCount || 0,
     googlePlaceId: p.placeId,
     googleId: null,
-    googleVerified: true,
+    googleVerified: false,
     workingHours: null,
     category: "Plumber",
     isAreaService: false,
     photoUrl: null,
     logoUrl: null,
+    description: p.editorialSummary,
+    businessStatus: p.businessStatus || null,
+    bookingLink: null,
+    social: { facebook: null, instagram: null },
+    yelpRating: p.yelpRating ?? null,
+    lastReviewRefreshAt: null,
+    cachedFromGoogle: true,
+    createdAt: scrapedAt,
+    updatedAt: scrapedAt,
+    notes: "",
     isActive: p.businessStatus === "OPERATIONAL" || !p.businessStatus,
     // Bridge decision-layer fields directly from the JSON shape so any
     // consumer of the Firestore-shape Plumber type (admin, API routes) sees
@@ -319,37 +356,65 @@ function toPlumber(p: SynthesizedPlumber, distanceMiles?: number): Plumber & { d
     city_rank: p.city_rank,
     decision: p.decision,
     evidence_quotes: p.evidence_quotes,
-    reviewSynthesis: syn ? {
-      strengths: syn.strengths || [],
-      weaknesses: syn.weaknesses || [],
-      // Derive emergencySignals from emergencyNotes when readiness is
-      // non-unknown. Matches the Firestore-shape the old Haiku scripts wrote.
-      emergencySignals:
-        syn.emergencyReadiness && syn.emergencyReadiness !== "unknown" && syn.emergencyNotes
-          ? [syn.emergencyNotes]
-          : [],
-      redFlags: syn.redFlags || [],
-      badges: Array.isArray((syn as unknown as { badges?: string[] }).badges)
-        ? ((syn as unknown as { badges: string[] }).badges)
-        : [],
-      bestFor: Array.isArray((syn as { bestFor?: string[] }).bestFor)
-        ? (syn as { bestFor: string[] }).bestFor
-        : [],
-      reviewCount: p.reviews?.length || 0,
-      synthesizedAt: new Date().toISOString(),
-      pricingTier: syn.priceSignal === "budget" || syn.priceSignal === "mid-range" || syn.priceSignal === "premium"
-        ? syn.priceSignal : "unknown",
-      summary: syn.summary || "",
-      emergencyReadiness: syn.emergencyReadiness || "unknown",
-      emergencyNotes: syn.emergencyNotes || "",
-      platformDiscrepancy: (syn as { platformDiscrepancy?: string | null }).platformDiscrepancy ?? null,
-      servicesMentioned: (syn as { servicesMentioned?: Record<string, { count: number; avgRating: number; topQuote: string }> }).servicesMentioned,
-      sampleSizeWarning: (syn as { sampleSizeWarning?: string }).sampleSizeWarning,
-      synthesisVersion: "json-static",
-    } : null,
+    reviewSynthesis: syn
+      ? {
+          strengths: syn.strengths || [],
+          weaknesses: syn.weaknesses || [],
+          // Derive emergencySignals from emergencyNotes when readiness is
+          // non-unknown. Matches the Firestore-shape the old Haiku scripts wrote.
+          emergencySignals:
+            syn.emergencyReadiness &&
+            syn.emergencyReadiness !== "unknown" &&
+            syn.emergencyNotes
+              ? [syn.emergencyNotes]
+              : [],
+          redFlags: syn.redFlags || [],
+          badges: Array.isArray(
+            (syn as unknown as { badges?: string[] }).badges,
+          )
+            ? (syn as unknown as { badges: string[] }).badges
+            : [],
+          bestFor: Array.isArray((syn as { bestFor?: string[] }).bestFor)
+            ? (syn as { bestFor: string[] }).bestFor
+            : [],
+          reviewCount: p.scores?.review_count_used ?? p.reviews?.length ?? 0,
+          synthesizedAt: analysisAt,
+          categories: {
+            emergency: { strengths: [], weaknesses: [] },
+            pricing: { strengths: [], weaknesses: [] },
+            quality: { strengths: [], weaknesses: [] },
+            communication: { strengths: [], weaknesses: [] },
+            homeRespect: { strengths: [], weaknesses: [] },
+            punctuality: { strengths: [], weaknesses: [] },
+          },
+          pricingTier:
+            syn.priceSignal === "budget" ||
+            syn.priceSignal === "mid-range" ||
+            syn.priceSignal === "premium"
+              ? syn.priceSignal
+              : "unknown",
+          summary: syn.summary || "",
+          emergencyReadiness: syn.emergencyReadiness || "unknown",
+          emergencyNotes: syn.emergencyNotes || "",
+          platformDiscrepancy:
+            (syn as { platformDiscrepancy?: string | null })
+              .platformDiscrepancy ?? null,
+          servicesMentioned: (
+            syn as {
+              servicesMentioned?: Record<
+                string,
+                { count: number; avgRating: number; topQuote: string }
+              >;
+            }
+          ).servicesMentioned,
+          sampleSizeWarning: (syn as { sampleSizeWarning?: string })
+            .sampleSizeWarning,
+          synthesisVersion: "json-static",
+        }
+      : null,
     distanceMiles,
     latestReviewAt,
-  } as Plumber & { distanceMiles?: number; latestReviewAt?: string };
+  };
 }
 
 /**
@@ -366,7 +431,10 @@ export function getPlumbersNearCity(
   const [cityLat, cityLng] = coord;
 
   const allPlumbers = loadData().plumbers;
-  const results: (Plumber & { distanceMiles?: number; latestReviewAt?: string })[] = [];
+  const results: (Plumber & {
+    distanceMiles?: number;
+    latestReviewAt?: string;
+  })[] = [];
 
   for (const p of allPlumbers) {
     if (!p.location?.lat || !p.location?.lng) continue;
@@ -377,12 +445,24 @@ export function getPlumbersNearCity(
     // Mirrors the Firestore path (resolvePlumbersForCity → getActivePlumbersByState,
     // which queries address.state). Guarded on a present p.state so records
     // missing the field aren't silently dropped.
-    if (p.state && stateAbbr && p.state.toUpperCase() !== stateAbbr.toUpperCase()) continue;
-    const dist = calculateDistance(cityLat, cityLng, p.location.lat, p.location.lng);
+    if (
+      p.state &&
+      stateAbbr &&
+      p.state.toUpperCase() !== stateAbbr.toUpperCase()
+    )
+      continue;
+    const dist = calculateDistance(
+      cityLat,
+      cityLng,
+      p.location.lat,
+      p.location.lng,
+    );
     if (dist <= radiusMiles) {
       results.push(toPlumber(p, dist));
     }
   }
 
-  return results.sort((a, b) => (a.distanceMiles ?? 99) - (b.distanceMiles ?? 99));
+  return results.sort(
+    (a, b) => (a.distanceMiles ?? 99) - (b.distanceMiles ?? 99),
+  );
 }

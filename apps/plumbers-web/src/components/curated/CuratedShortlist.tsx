@@ -90,9 +90,10 @@ export default function CuratedShortlist({
           <h2 id="shortlist-heading">Our shortlist in {city}.</h2>
           <p>
             Fair dealing and reliable work come first. We require at least 10
-            analyzed reviews and 3 supporting quotes, including repeated
-            evidence of fair dealing; repeated, cited sales-pressure concerns or
-            unresolved red flags hold a business back.
+            analyzed reviews and 3 supporting quotes, including evidence from
+            the past year and repeated positive evidence of fair dealing;
+            repeated, cited sales-pressure concerns or unresolved red flags hold
+            a business back.
           </p>
         </div>
         <span className="editorial-stamp">

@@ -72,3 +72,11 @@ Historical www property access works. June 26 is the initial collapse; 7-day imp
 ### Curation redesign — October 23
 
 User clarified the purpose: promote MPT-type fair-dealing and reliable companies nationally, avoid optimizing for review volume or ad budgets. Current direction is now detailed in CURATED-RECOMMENDATIONS-AND-GROWTH.md. Implemented homepage redesign and job/urgency/location → curated shortlist → comparison and call-preparation flow on existing market routes. Includes a conservative fair-dealing eligibility bar and explicit empty states. No unsupported competitor allegations published. MPT missing-evidence/avoid-verdict regression covered.
+
+### Launch-readiness follow-up — October 23
+
+Fixed the legacy business adapter with complete typed fields and real Timestamp values; removed fabricated Google-verification status and current-time synthesis dates. Build no longer ignores type errors. Production build generates 7,351 pages. Regression suite now has 13 passing tests, plus real-data adapter checks.
+
+Compacted both derived artifacts through the sole exporter without changing any JSON values (97.45 → 76.83 MiB business artifact); added atomic replacement, a 90 MiB export ceiling and 80 MiB pre-ingestion guard. Workflows remain disabled. See ../runbooks/export-size-and-refresh.md.
+
+Hardened shortlist eligibility for known sources, valid dates, positive supporting quotes, operational status and quote evidence in the past year. Current coverage: 97/693 markets. MPT research is recorded in ../research/2026-10-23-mpt-plumbing.md; first-hand job detail is pending. No paid ingestion, outreach, Firestore writes or production deploy performed.

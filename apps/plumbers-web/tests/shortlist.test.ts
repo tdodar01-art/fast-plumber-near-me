@@ -16,6 +16,8 @@ const candidate = (
   googleCount: 900,
   analyzed: 50,
   quotes: 5,
+  evidenceCurrent: true,
+  active: true,
   is24Hour: false,
   verdict: "strong_hire",
   score: 90,
@@ -100,4 +102,78 @@ test("fair-dealing claims require two distinct resolvable attributed quotes", ()
     },
   } as unknown as SynthesizedPlumber;
   assert.deepEqual(shortlistData(p).fairDealing, []);
+});
+
+test("closed businesses and stale evidence cannot be affirmative suggestions", () => {
+  assert.equal(
+    selectShortlist([candidate({ active: false })], "any", false).length,
+    0,
+  );
+  assert.equal(
+    selectShortlist([candidate({ evidenceCurrent: false })], "any", false)
+      .length,
+    0,
+  );
+});
+
+test("fair-dealing eligibility requires positive, attributed evidence rather than matching words alone", () => {
+  const base = {
+    placeId: "evidence",
+    name: "Evidence",
+    reviews: [],
+    evidence_quotes: [
+      {
+        review_id: "a",
+        quote: "The price was clear.",
+        author_name: "A",
+        source: "google",
+        published_at: "2026-10-01",
+        rating: 5,
+      },
+      {
+        review_id: "b",
+        quote: "They explained the estimate.",
+        author_name: "B",
+        source: "google",
+        published_at: "2026-10-02",
+        rating: 5,
+      },
+      {
+        review_id: "c",
+        quote: "Good work.",
+        author_name: "C",
+        source: "google",
+        published_at: "2026-10-03",
+        rating: 4,
+      },
+    ],
+    synthesis: {
+      strengthsEvidence: [
+        { text: "Honest upfront pricing", supporting_review_ids: ["a", "b"] },
+      ],
+    },
+  } as unknown as SynthesizedPlumber;
+  assert.equal(shortlistData(base).fairDealing.length, 1);
+  assert.equal(
+    shortlistData({
+      ...base,
+      evidence_quotes: base.evidence_quotes!.map((q) => ({ ...q, rating: 1 })),
+    }).fairDealing.length,
+    0,
+  );
+  assert.equal(
+    shortlistData({
+      ...base,
+      synthesis: {
+        ...base.synthesis!,
+        strengthsEvidence: [
+          {
+            text: "Not transparent pricing",
+            supporting_review_ids: ["a", "b"],
+          },
+        ],
+      },
+    }).fairDealing.length,
+    0,
+  );
 });

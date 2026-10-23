@@ -8,12 +8,6 @@ const withAnalyzer = withBundleAnalyzer({
 const nextConfig: NextConfig = {
   transpilePackages: ["@directory-sites/directory-core"],
 
-  // Skip type checking during build — @types/react-dom@19.2.3 has a
-  // packaging bug (missing index.d.ts). Types still checked in IDE.
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-
   // Compress responses
   compress: true,
 
@@ -36,8 +30,16 @@ const nextConfig: NextConfig = {
     return [
       // statusCode 301 (not permanent:true which emits 308) — 05 §7 R9/R10
       // specify 301 and the launch curl suite asserts it.
-      { source: "/how-we-verify", destination: "/methodology", statusCode: 301 },
-      { source: "/emergency-plumbers", destination: "/plumbers", statusCode: 301 },
+      {
+        source: "/how-we-verify",
+        destination: "/methodology",
+        statusCode: 301,
+      },
+      {
+        source: "/emergency-plumbers",
+        destination: "/plumbers",
+        statusCode: 301,
+      },
     ];
   },
 

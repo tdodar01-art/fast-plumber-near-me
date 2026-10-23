@@ -1,6 +1,10 @@
 import type { SynthesizedPlumber } from "./plumber-data";
 import type { ShortlistCandidate } from "./shortlist";
-import { reviewsReadCount, newestReviewLabel } from "./report-card";
+import {
+  reviewsReadCount,
+  newestReviewLabel,
+  sourceLabel,
+} from "./report-card";
 /** Keep review bodies and private data out of the client payload. */
 export function shortlistData(p: SynthesizedPlumber): ShortlistCandidate {
   const concerns = [
@@ -9,16 +13,34 @@ export function shortlistData(p: SynthesizedPlumber): ShortlistCandidate {
   ];
   const quotes = new Map(
     (p.evidence_quotes ?? [])
-      .filter((q) => q.quote && q.author_name && q.source && q.published_at)
+      .filter(
+        (q) =>
+          q.review_id &&
+          q.quote &&
+          q.author_name &&
+          sourceLabel(q.source) &&
+          q.published_at &&
+          Number.isFinite(Date.parse(q.published_at)),
+      )
       .map((q) => [q.review_id, q]),
   );
-  const cited = (claim: { supporting_review_ids: string[] }) =>
-    new Set((claim.supporting_review_ids ?? []).filter((id) => quotes.has(id)))
-      .size;
+  const cited = (
+    claim: { supporting_review_ids: string[] },
+    positive = false,
+  ) =>
+    new Set(
+      (claim.supporting_review_ids ?? []).filter(
+        (id) =>
+          quotes.has(id) && (!positive || (quotes.get(id)?.rating ?? 0) >= 4),
+      ),
+    ).size;
   const fairDealing = (p.synthesis?.strengthsEvidence ?? [])
     .filter(
       (c) =>
-        cited(c) >= 2 &&
+        cited(c, true) >= 2 &&
+        !/dishonest|not.{0,12}(honest|transparent|upfront|fair)|lack.{0,12}transparen/i.test(
+          c.text,
+        ) &&
         /upfront|up.front|no.up.?sell|no.pressure|honest|transparent|fair pric|repair.{0,25}replac/i.test(
           c.text,
         ),
@@ -46,7 +68,16 @@ export function shortlistData(p: SynthesizedPlumber): ShortlistCandidate {
         s,
       ),
   );
+  const latestTimestamp = Math.max(
+    0,
+    ...Array.from(quotes.values()).map((q) => Date.parse(q.published_at!)),
+  );
+  const now = Date.now();
   return {
+    active: p.businessStatus === "OPERATIONAL",
+    // Evaluated server-side and serialized, keeping hydration deterministic.
+    evidenceCurrent:
+      latestTimestamp <= now && latestTimestamp >= now - 365 * 86400000,
     id: p.placeId,
     name: p.name,
     slug: p.slug,

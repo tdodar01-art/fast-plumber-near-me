@@ -1424,7 +1424,20 @@ async function runPass3(
       ? data.evidence_quotes
       : [];
 
-    if (!scores || !cityRank) {
+    // Missing evidence is a research gap, not an avoid verdict. Clear stale
+    // decisions on the next explicit scoring run; dry runs remain read-only.
+    if (!scores || scores.method === "no_reviews" || (scores.review_count_used ?? 0) === 0 || evidenceQuotes.length === 0) {
+      if (data.decision) {
+        if (args.dryRun) console.log(`  [dry-run] ${name}: would clear evidence-free decision`);
+        else await db.collection(COLLECTIONS.businesses).doc(plumberDoc.id).update({
+          decision: admin.firestore.FieldValue.delete(),
+          updatedAt: admin.firestore.Timestamp.now(),
+        });
+      }
+      skipped++;
+      continue;
+    }
+    if (!cityRank) {
       skipped++;
       continue;
     }
